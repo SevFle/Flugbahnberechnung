@@ -1,0 +1,17 @@
+﻿  App_Main.cpp
+  frm_CameraCalibration_Menu.cpp
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\frm_cameracalibration_menu.cpp(7): error C2512: 'NmSp_Main::C_Main': no appropriate default constructor available
+  d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\main.h(44): note: see declaration of 'NmSp_Main::C_Main'
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\frm_cameracalibration_menu.cpp(30): error C2819: type 'NmSp_Main::C_Main' does not have an overloaded member 'operator ->'
+  d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\main.h(44): note: see declaration of 'NmSp_Main::C_Main'
+  d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\frm_cameracalibration_menu.cpp(30): note: did you intend to use '.' instead?
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\frm_cameracalibration_menu.cpp(30): error C2232: '->NmSp_Main::C_Main::frm_CameraCalibration_Stereo': left operand has 'class' type, use '.'
+  frm_CameraCalibration_Single.cpp
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\frm_cameracalibration_single.cpp(7): error C2512: 'NmSp_Main::C_Main': no appropriate default constructor available
+  d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\main.h(44): note: see declaration of 'NmSp_Main::C_Main'
+  frm_CameraCalibration_Stereo.cpp
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\frm_cameracalibration_stereo.cpp(7): error C2512: 'NmSp_Main::C_Main': no appropriate default constructor available
+  d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\main.h(44): note: see declaration of 'NmSp_Main::C_Main'
+  frm_Main.cpp
+  Main.cpp
+  Generating Code...
