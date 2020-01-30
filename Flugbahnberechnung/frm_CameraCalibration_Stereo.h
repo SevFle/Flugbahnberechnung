@@ -20,7 +20,7 @@ namespace NmSp_frm_CameraCalibration_Stereo
 
 	  private:
     C_GlobalObjects^      GlobalObjects;
-    C_Main                Main;
+    C_Main^               Main;
 
     UInt32      Zaehler;
 

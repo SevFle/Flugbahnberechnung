@@ -6,12 +6,7 @@ using namespace NmSp_Main;
 
 namespace NmSp_CamerCalibration_Single 
   {
-	using namespace System;
-	using namespace System::ComponentModel;
-	using namespace System::Collections;
-	using namespace System::Windows::Forms;
-	using namespace System::Data;
-	using namespace System::Drawing;
+  using namespace NmSp_GlobalObjects;
 	public ref class C_frm_CameraCalibration_Single : public System::Windows::Forms::Form
 	{
 	  public:
@@ -22,7 +17,7 @@ namespace NmSp_CamerCalibration_Single
 
 	  private:
     C_GlobalObjects^      GlobalObjects;
-    C_Main                Main;
+    C_Main^               Main;
 
     UInt32      Zaehler;
 

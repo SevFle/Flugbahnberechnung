@@ -6,6 +6,7 @@ using namespace NmSp_GlobalObjects;
 
 
 /*********************************************************** Vorwärtsdeklarationen ********************************************************/
+#pragma region Vorwärtsdeklarationen 
 namespace NmSp_frm_Main
   {
   ref class C_frm_Main;
@@ -29,6 +30,7 @@ namespace NmSp_frm_CameraCalibration_Stereo
   ref class C_frm_CameraCalibration_Stereo;
   }
   using namespace NmSp_frm_CameraCalibration_Stereo;
+  #pragma endregion
 
 /*********************************************************** Definition Namespace **************************************************************/
   namespace NmSp_Main

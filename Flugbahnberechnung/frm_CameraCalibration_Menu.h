@@ -24,7 +24,7 @@ namespace NmSp_CamerCalibration_Menu
 
     private:
     C_GlobalObjects^      GlobalObjects;
-    C_Main                Main;
+    C_Main^               Main;
 
     UInt32      Zaehler;
 

@@ -4,7 +4,7 @@
 
 using namespace NmSp_Main;
 
-C_Main::C_Main      (C_GlobalObjects^ GlobalObjects)
+C_Main::C_Main              (C_GlobalObjects^ GlobalObjects)
   {
   this->GlobalObjects = GlobalObjects;
 
@@ -16,6 +16,7 @@ C_Main::C_Main      (C_GlobalObjects^ GlobalObjects)
   this->frm_CameraCalibration_Stereo  = gcnew C_frm_CameraCalibration_Stereo    (this->GlobalObjects, this);
 
   }
+
 C_Main::~C_Main()
   {
   delete (this->frm_CameraCalibration_Stereo);

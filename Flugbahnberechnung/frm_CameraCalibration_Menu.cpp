@@ -3,11 +3,16 @@
 using namespace NmSp_CamerCalibration_Menu;
 
 
-C_frm_CameraCalibration_Menu::C_frm_CameraCalibration_Menu(C_GlobalObjects^ GlobalObjects, C_Main^  Main)
+C_frm_CameraCalibration_Menu::C_frm_CameraCalibration_Menu      (C_GlobalObjects^ GlobalObjects, C_Main^  Main)
   {
-  InitializeComponent();
+  InitializeComponent                                           ();
+  this->GlobalObjects = GlobalObjects;
+  this->Main          = Main;
   }
-C_frm_CameraCalibration_Menu::~C_frm_CameraCalibration_Menu()
+
+
+
+C_frm_CameraCalibration_Menu::~C_frm_CameraCalibration_Menu     ()
   {
   if (components)
     {
@@ -17,6 +22,7 @@ C_frm_CameraCalibration_Menu::~C_frm_CameraCalibration_Menu()
 
 inline System::Void       C_frm_CameraCalibration_Menu::bt_exit_Click(System::Object ^ sender, System::EventArgs ^ e)
   {
+  this->Close();
   }
 
 inline System::Void       C_frm_CameraCalibration_Menu::Taktgeber_Tick(System::Object ^ sender, System::EventArgs ^ e)
@@ -33,6 +39,10 @@ inline System::Void       C_frm_CameraCalibration_Menu::bt_StereoCalibration_Cli
 
 inline System::Void       C_frm_CameraCalibration_Menu::bt_SingleCalibration_Click(System::Object ^ sender, System::EventArgs ^ e)
   {
+  this->Taktgeber->Enabled								= false;
+  this->Main->frm_CameraCalibration_Single->ShowDialog();
+  this->Taktgeber->Enabled								= true;
+
   }
 
 inline System::Void       C_frm_CameraCalibration_Menu::C_frm_CameraCalibration_Menu_FormClosing(System::Object ^ sender, System::Windows::Forms::FormClosingEventArgs ^ e)
