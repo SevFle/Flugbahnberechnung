@@ -23,6 +23,9 @@ C_frm_Main::~C_frm_Main()
 
 inline System::Void NmSp_frm_Main::C_frm_Main::bt_ObjectCalibration_Click(System::Object ^ sender, System::EventArgs ^ e)
   {
+  this->Taktgeber->Enabled								= false;
+  this->Main->frm_ObjectCalibration->ShowDialog();
+  this->Taktgeber->Enabled								= true;
   }
 
 inline System::Void NmSp_frm_Main::C_frm_Main::bt_CameraCalibration_Click(System::Object ^ sender, System::EventArgs ^ e)

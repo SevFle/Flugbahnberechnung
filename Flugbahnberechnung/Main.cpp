@@ -14,6 +14,7 @@ C_Main::C_Main              (C_GlobalObjects^ GlobalObjects)
   this->frm_CameraCalibration_Menu    = gcnew C_frm_CameraCalibration_Menu      (this->GlobalObjects, this);
   this->frm_CameraCalibration_Single  = gcnew C_frm_CameraCalibration_Single    (this->GlobalObjects, this);
   this->frm_CameraCalibration_Stereo  = gcnew C_frm_CameraCalibration_Stereo    (this->GlobalObjects, this);
+  this->frm_ObjectCalibration         = gcnew C_frm_ObjectCalibration           (this->GlobalObjects, this);
 
   }
 

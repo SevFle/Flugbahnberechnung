@@ -30,6 +30,13 @@ namespace NmSp_frm_CameraCalibration_Stereo
   ref class C_frm_CameraCalibration_Stereo;
   }
   using namespace NmSp_frm_CameraCalibration_Stereo;
+
+  namespace NmSp_frm_ObjectCalibration
+    {
+    ref class C_frm_ObjectCalibration;
+  }
+  using namespace NmSp_frm_ObjectCalibration;
+
   #pragma endregion
 
 /*********************************************************** Definition Namespace **************************************************************/
@@ -58,6 +65,7 @@ namespace NmSp_frm_CameraCalibration_Stereo
       C_frm_CameraCalibration_Menu^     frm_CameraCalibration_Menu;
       C_frm_CameraCalibration_Single^   frm_CameraCalibration_Single;
       C_frm_CameraCalibration_Stereo^   frm_CameraCalibration_Stereo;
+      C_frm_ObjectCalibration^          frm_ObjectCalibration; 
 
 
 
@@ -70,4 +78,5 @@ namespace NmSp_frm_CameraCalibration_Stereo
 #include "frm_CameraCalibration_Menu.h"
 #include "frm_CameraCalibration_Single.h"
 #include "frm_CameraCalibration_Stereo.h"
+#include "frm_ObjectCalibration.h"
 
