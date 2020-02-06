@@ -1,5 +1,5 @@
 #pragma once
-namespace NmSp_GlobalObjects
+namespace nmsp_GlobalObjects
   {
   public ref class C_GlobalObjects
     {

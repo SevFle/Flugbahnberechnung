@@ -25,4 +25,17 @@ System::Void				C_frm_ObjectCalibration::Taktgeber_Tick			(System::Object^ sende
   this->txtb_counter->Text = System::String::Format("{0:0}", this->Zaehler++);
   }
 
+System::Void        C_frm_ObjectCalibration::bt_Start_Click     (System::Object^ sender, System::EventArgs^ e)
+  {
+  this->Main->OpenCV_managed->
+  }
+
+System::Void        C_frm_ObjectCalibration::bt_Stop_Click      (System::Object^ sender, System::EventArgs^ e)
+  {
+  }
+
+System::Void        C_frm_ObjectCalibration::nup_Cam_ID_ValueChanged (System::Object^ sender, System::EventArgs^ e)
+  {
+  }
+
 

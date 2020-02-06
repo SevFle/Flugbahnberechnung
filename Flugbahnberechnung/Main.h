@@ -1,8 +1,10 @@
 #pragma once
 
 #include "GlobalObjects.h"
+#include "OpenCV_managed.h"
 
-using namespace NmSp_GlobalObjects;
+using namespace nmsp_opencv_managed;
+using namespace nmsp_GlobalObjects;
 
 
 /*********************************************************** Vorwärtsdeklarationen ********************************************************/
@@ -65,7 +67,11 @@ namespace NmSp_frm_CameraCalibration_Stereo
       C_frm_CameraCalibration_Menu^     frm_CameraCalibration_Menu;
       C_frm_CameraCalibration_Single^   frm_CameraCalibration_Single;
       C_frm_CameraCalibration_Stereo^   frm_CameraCalibration_Stereo;
-      C_frm_ObjectCalibration^          frm_ObjectCalibration; 
+      C_frm_ObjectCalibration^          frm_ObjectCalibration;
+
+      C_OpenCV_managed^                 OpenCV_managed;
+
+      
 
 
 

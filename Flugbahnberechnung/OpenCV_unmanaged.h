@@ -1,57 +1,68 @@
-#pragma once
-#include "OpenCV_unmanaged.h"
-#include <opencv2/opencv.hpp>
+#pragma unmanaged
 #include <opencv2/highgui.hpp>
+#include <opencv2/opencv.hpp>
 
+#include <msclr/marshal_cppstd.h>
 
-
-#include <thread>
-#include <tbb/tbb.h>
-#include <tbb/pipeline.h>
 #include <tbb/concurrent_queue.h>
+#include <tbb/pipeline.h>
+#include <tbb/tbb.h>
 
+#include <vector>
 
-namespace NmSp_OpenCV_unmanaged
+namespace nmsp_open_cv_unmanaged
   {
-  class C_OpenCV_unmanaged
+  class C_opencv_unmanaged
     {
       public:
-      C_OpenCV_unmanaged();
+      C_opencv_unmanaged();
 
-      ~C_OpenCV_unmanaged();
-
-
-      int                   CameraID;
-      int                   HueMin;
-      int                   HueMax;
-      int                   SaturationMin;
-      int                   SaturationMax;
-      int                   ValueMin;
-      int                   ValueMax;
-
-      int                   Target_Size_X;     //Resizing the image to the wanted Values
-      int                   Target_Size_Y;
+      ~C_opencv_unmanaged();
 
 
-      int                   ErosionKernelSize;
-      int                   ErosionIterations;
-      int                   DilationKernelSize;
-      int                   DilationIterations;
 
-      int                   BilateralKernelSize;
-      float                 BilateralSigmaColor;
-      float                 BilateralSigmaSpace;
-      int                   GaussianKernelSize;
-      double                GaussianSigma;
-      int                   OpeningKernelSize;
-      int                   ClosingKernelSize;
-      int                   MorphKernelSize;
+      struct ProcessingChainData
+        {
+        cv::Mat img;
+        std::vector<cv::Rect> faces, faces2;
+        cv::Mat gray, smallImg;
+        };
+      
+      int                   camera_id;
+      int                   hue_min;
+      int                   hue_max;
+      int                   saturation_min;
+      int                   saturation_max;
+      int                   value_min;
+      int                   value_max;
+
+      int                   target_size_x;     //Resizing the image to the wanted Values
+      int                   target_size_y;
+
+
+      int                   erosion_kernel_size;
+      int                   erosion_iterations;
+      int                   dilation_kernel_size;
+      int                   dilation_iterations;
+
+      int                   bilateral_kernel_size;
+      float                 bilateral_sigma_color;
+      float                 bilateral_sigma_space;
+      int                   gaussian_kernel_size;
+      double                gaussian_sigma;
+      int                   opening_kernel_size;
+      int                   closing_kernel_size;
+      int                   morph_kernel_size;
 
       cv::Mat                original_frame;
       cv::Mat                processed_frame;
-      cv::Mat                HSV_frame;
-      cv::Mat                Gaussian_frame;
-      cv::Mat                Bilateral_frame;
+
+      volatile bool         done;
+
+    private:
+      cv::Mat                hsv_frame;
+      cv::Mat                gaussian_frame;
+      cv::Mat                bilateral_frame;
 
       cv::cuda::GpuMat       gpu_original_frame;
       cv::cuda::GpuMat       gpu_processed_frame;
@@ -62,36 +73,45 @@ namespace NmSp_OpenCV_unmanaged
       cv::cuda::GpuMat       gpu_temp_img;
       cv::cuda::GpuMat       gpu_dst_img;
 
+      cv::VideoCapture       camera_capture;
+      std::vector<cv::VideoCapture> camera_vector;
+      int                    camera_vector_count;
+      int                    capture_api_;
 
 
 
-      bool  Open_Cam            (int& WebCam_Nr, int Width, int Height);
-      bool  Close_Cam           (int& WebCam_Nr);
-      bool  Grab_Frame          (cv::Mat& cpu_dst);
+      tbb::pipeline pipeline;
 
 
-      void  PushToGPU           (cv::Mat& src, cv::cuda::GpuMat& gpu_dst);
-      void  PullfromGPU         (cv::cuda::GpuMat& gpu_src, cv::Mat& dst);
+      public:
+      bool  apply_filter          (cv::Mat& cpu_src, cv::Mat& cpu_dst);
+      bool start_camera_thread    ();
+      bool create_camera_thread   ();
+      bool create_camera_threads_objectcalibration();
 
 
-      void  ToHSV               (cv::cuda::GpuMat& gpu_src, cv::cuda::GpuMat& gpu_dst);
-      void  ToHSV_Threshold     (cv::cuda::GpuMat& img, cv::cuda::GpuMat& gpu_dst, int& HueMin, int& HueMax, int& SaturationMin, int& SaturationMax, int& ValueMin, int& ValueMax);
-      void  ToResize            (cv::Mat& cpu_src, cv::Mat& cpu_dst, int& Size_X, int& Size_Y);
-      void  Erosion             (cv::cuda::GpuMat& gpu_src, cv::cuda::GpuMat& gpu_dst, int& ErosionKernelSize, int& ErosionIterations);
-      void  Dilation            (cv::cuda::GpuMat& gpu_src, cv::cuda::GpuMat& gpu_dst, int& DilationKernelSize, int& DilationIterations);
-
-      void  Opening             (cv::cuda::GpuMat& gpu_src, cv::cuda::GpuMat& gpu_dst, int& OpeningKernelSize);
-      void  Closing             (cv::cuda::GpuMat& gpu_src, cv::cuda::GpuMat& gpu_dst, int& ClosingKernelSize);
-      void  Bilateral           (cv::cuda::GpuMat& gpu_src, cv::cuda::GpuMat& gpu_dst, int& BilateralKernelSize, float& BilateralSigmaColor, float& BilateralSigmaSpace);
-      void  GaussianBluring     (cv::cuda::GpuMat& gpu_src, cv::cuda::GpuMat& gpu_dst, int& GaussianKernelSize, double& GaussianSigma);
-
-      void  findContours        (cv::Mat& cpu_src, cv::Mat& cpu_dst);
+      private:
+      bool  grab_frame            (cv::Mat& cpu_dst);
+      void  push_to_gpu           (cv::Mat& src, cv::cuda::GpuMat& gpu_dst);
+      void  pull_from_gpu         (cv::cuda::GpuMat& gpu_src, cv::Mat& dst);
 
 
-        
+      void  to_hsv                (cv::cuda::GpuMat& gpu_src, cv::cuda::GpuMat& gpu_dst);
+      void  to_hsv_threshold      (cv::cuda::GpuMat& img, cv::cuda::GpuMat& gpu_dst, int& hue_min, int& hue_max, int& saturation_min, int& saturation_max, int& value_min, int& value_max);
+      void  to_resize             (cv::Mat& cpu_src, cv::Mat& cpu_dst, int& size_x, int& size_y);
+      void  erosion               (cv::cuda::GpuMat& gpu_src, cv::cuda::GpuMat& gpu_dst, int& erosion_kernel_size, int& erosion_iterations);
+      void  dilation              (cv::cuda::GpuMat& gpu_src, cv::cuda::GpuMat& gpu_dst, int& dilation_kernel_size, int& dilation_iterations);
+
+      void  opening               (cv::cuda::GpuMat& gpu_src, cv::cuda::GpuMat& gpu_dst, int& opening_kernel_size);
+      void  closing               (cv::cuda::GpuMat& gpu_src, cv::cuda::GpuMat& gpu_dst, int& closing_kernel_size);
+      void  bilateral             (cv::cuda::GpuMat& gpu_src, cv::cuda::GpuMat& gpu_dst, int& bilateral_kernel_size, float& bilateral_sigma_color, float& bilateral_sigma_space);
+      void  gaussian_bluring      (cv::cuda::GpuMat& gpu_src, cv::cuda::GpuMat& gpu_dst, int& gaussian_kernel_size, double& gaussian_sigma);
+
+      void  find_contours         (cv::Mat& cpu_src, cv::Mat& cpu_dst);
+
+
 
     };
 
   }
-
 

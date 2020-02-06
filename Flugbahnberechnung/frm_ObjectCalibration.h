@@ -5,7 +5,7 @@ using namespace NmSp_Main;
 
 namespace NmSp_frm_ObjectCalibration 
   {
-  using namespace NmSp_GlobalObjects;
+  using namespace nmsp_GlobalObjects;
   public ref class C_frm_ObjectCalibration : public System::Windows::Forms::Form
 	  {
 	  public:
@@ -85,7 +85,12 @@ namespace NmSp_frm_ObjectCalibration
       private: System::Windows::Forms::NumericUpDown^  nup_erode;
       private: System::Windows::Forms::Label^  label16;
       private: System::Windows::Forms::NumericUpDown^  nup_gaussian_sigma;
-	  System::ComponentModel::Container ^components;
+      private: System::Windows::Forms::NumericUpDown^  nup_Cam_ID;
+      private: System::Windows::Forms::Button^  bt_Start;
+      private: System::Windows::Forms::Button^  bt_Stop;
+      private: System::Windows::Forms::Label^  label17;
+      private: System::ComponentModel::IContainer^  components;
+
   
 
     #pragma region Windows Form Designer generated code
@@ -136,6 +141,10 @@ namespace NmSp_frm_ObjectCalibration
       this->bt_exit = (gcnew System::Windows::Forms::Button());
       this->txtb_counter = (gcnew System::Windows::Forms::TextBox());
       this->Taktgeber = (gcnew System::Windows::Forms::Timer(this->components));
+      this->nup_Cam_ID = (gcnew System::Windows::Forms::NumericUpDown());
+      this->bt_Start = (gcnew System::Windows::Forms::Button());
+      this->bt_Stop = (gcnew System::Windows::Forms::Button());
+      this->label17 = (gcnew System::Windows::Forms::Label());
       (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->pictureBox1))->BeginInit();
       (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->pictureBox2))->BeginInit();
       (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->pictureBox3))->BeginInit();
@@ -150,6 +159,7 @@ namespace NmSp_frm_ObjectCalibration
       (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->nup_opening))->BeginInit();
       (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->nup_dilation))->BeginInit();
       (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->nup_erode))->BeginInit();
+      (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->nup_Cam_ID))->BeginInit();
       this->SuspendLayout();
       // 
       // pictureBox1
@@ -571,12 +581,74 @@ namespace NmSp_frm_ObjectCalibration
       this->txtb_counter->Location = System::Drawing::Point(1310, 699);
       this->txtb_counter->Name = L"txtb_counter";
       this->txtb_counter->Size = System::Drawing::Size(166, 20);
-      this->txtb_counter->TabIndex = 11;      // 
+      this->txtb_counter->TabIndex = 11;
+      // 
+      // nup_Cam_ID
+      // 
+      this->nup_Cam_ID->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 20.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+                                static_cast<System::Byte>(0)));
+      this->nup_Cam_ID->Location = System::Drawing::Point(1310, 238);
+      this->nup_Cam_ID->Maximum = System::Decimal(gcnew cli::array< System::Int32 >(4)
+        {
+        6, 0, 0, 0
+        });
+      this->nup_Cam_ID->Minimum = System::Decimal(gcnew cli::array< System::Int32 >(4)
+        {
+        1, 0, 0, 0
+        });
+      this->nup_Cam_ID->Name = L"nup_Cam_ID";
+      this->nup_Cam_ID->Size = System::Drawing::Size(78, 38);
+      this->nup_Cam_ID->TabIndex = 13;
+      this->nup_Cam_ID->Value = System::Decimal(gcnew cli::array< System::Int32 >(4)
+        {
+        1, 0, 0, 0
+        });
+      this->nup_Cam_ID->ValueChanged += gcnew System::EventHandler(this, &C_frm_ObjectCalibration::nup_Cam_ID_ValueChanged);
+      // 
+      // bt_Start
+      // 
+      this->bt_Start->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 14.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+                              static_cast<System::Byte>(0)));
+      this->bt_Start->Location = System::Drawing::Point(1310, 282);
+      this->bt_Start->Name = L"bt_Start";
+      this->bt_Start->Size = System::Drawing::Size(167, 73);
+      this->bt_Start->TabIndex = 14;
+      this->bt_Start->Text = L"Start";
+      this->bt_Start->UseVisualStyleBackColor = true;
+      this->bt_Start->Click += gcnew System::EventHandler(this, &C_frm_ObjectCalibration::bt_Start_Click);
+      // 
+      // bt_Stop
+      // 
+      this->bt_Stop->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 14.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+                             static_cast<System::Byte>(0)));
+      this->bt_Stop->Location = System::Drawing::Point(1309, 361);
+      this->bt_Stop->Name = L"bt_Stop";
+      this->bt_Stop->Size = System::Drawing::Size(167, 73);
+      this->bt_Stop->TabIndex = 15;
+      this->bt_Stop->Text = L"Stop";
+      this->bt_Stop->UseVisualStyleBackColor = true;
+      this->bt_Stop->Click += gcnew System::EventHandler(this, &C_frm_ObjectCalibration::bt_Stop_Click);
+      // 
+      // label17
+      // 
+      this->label17->AutoSize = true;
+      this->label17->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 11.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+                             static_cast<System::Byte>(0)));
+      this->label17->Location = System::Drawing::Point(1309, 217);
+      this->label17->Name = L"label17";
+      this->label17->Size = System::Drawing::Size(79, 18);
+      this->label17->TabIndex = 59;
+      this->label17->Text = L"Camera ID";
+      // 
       // C_frm_ObjectCalibration
       // 
       this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
       this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
       this->ClientSize = System::Drawing::Size(1489, 732);
+      this->Controls->Add(this->label17);
+      this->Controls->Add(this->bt_Stop);
+      this->Controls->Add(this->bt_Start);
+      this->Controls->Add(this->nup_Cam_ID);
       this->Controls->Add(this->bt_exit);
       this->Controls->Add(this->txtb_counter);
       this->Controls->Add(this->gb_farbfilter);
@@ -606,17 +678,17 @@ namespace NmSp_frm_ObjectCalibration
       (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->nup_opening))->EndInit();
       (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->nup_dilation))->EndInit();
       (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->nup_erode))->EndInit();
+      (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->nup_Cam_ID))->EndInit();
       this->ResumeLayout(false);
       this->PerformLayout();
 
       }
 #pragma endregion
        private:
-      System::Void		bt_exit_Click						(System::Object^  sender, System::EventArgs^  e);
-      System::Void		Taktgeber_Tick						(System::Object^ sender, System::EventArgs^ e);
-
-
-
-
-	  };
+    System::Void		bt_exit_Click						  (System::Object^  sender, System::EventArgs^ e);
+    System::Void		Taktgeber_Tick						(System::Object^  sender, System::EventArgs^ e);
+    System::Void    bt_Start_Click            (System::Object^  sender, System::EventArgs^ e);
+    System::Void    bt_Stop_Click             (System::Object^  sender, System::EventArgs^ e);
+    System::Void    nup_Cam_ID_ValueChanged   (System::Object^  sender, System::EventArgs^ e);
+};
   }//namespace NmSp_frm_ObjectCalibration

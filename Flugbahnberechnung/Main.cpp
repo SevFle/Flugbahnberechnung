@@ -7,6 +7,7 @@ using namespace NmSp_Main;
 C_Main::C_Main              (C_GlobalObjects^ GlobalObjects)
   {
   this->GlobalObjects = GlobalObjects;
+  this->OpenCV_managed  = OpenCV_managed;
 
   this->frm_Main                      = gcnew C_frm_Main                        (this->GlobalObjects, this);
   this->frm_Main->Show();
@@ -15,6 +16,7 @@ C_Main::C_Main              (C_GlobalObjects^ GlobalObjects)
   this->frm_CameraCalibration_Single  = gcnew C_frm_CameraCalibration_Single    (this->GlobalObjects, this);
   this->frm_CameraCalibration_Stereo  = gcnew C_frm_CameraCalibration_Stereo    (this->GlobalObjects, this);
   this->frm_ObjectCalibration         = gcnew C_frm_ObjectCalibration           (this->GlobalObjects, this);
+
 
   }
 

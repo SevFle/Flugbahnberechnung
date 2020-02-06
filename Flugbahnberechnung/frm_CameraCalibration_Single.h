@@ -6,7 +6,7 @@ using namespace NmSp_Main;
 
 namespace NmSp_CamerCalibration_Single 
   {
-  using namespace NmSp_GlobalObjects;
+  using namespace nmsp_GlobalObjects;
 	public ref class C_frm_CameraCalibration_Single : public System::Windows::Forms::Form
 	{
 	  public:

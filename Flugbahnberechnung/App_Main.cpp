@@ -14,7 +14,7 @@
 #include "Main.h"
 
 /************************************************************** using namespaces **************************************************************/
-using namespace NmSp_GlobalObjects;
+using namespace nmsp_GlobalObjects;
 using namespace NmSp_Main;
 using namespace System;
 using namespace System::Windows::Forms;
