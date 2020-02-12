@@ -21,17 +21,42 @@ bool C_opencv_unmanaged::apply_filter (cv::Mat& cpu_src, cv::Mat& cpu_dst)
   return false;
   }
 
-bool C_opencv_unmanaged::create_camera_thread ()
+bool C_opencv_unmanaged::create_camera_vector ()
   {
-  camera_vector.push_back(camera_capture);
-  camera_vector_count = camera_vector.size();
-  start_camera_thread();
+  for (int i =0; i<= this->Cameras_in_use; i++)
+    {
+    camera_vector.push_back(camera_capture(i, capture_api_));
+    }
   }
-
-bool C_opencv_unmanaged::start_camera_thread ()
+  
+bool C_opencv_unmanaged::tbb_camera_pipeline (size_t ntoken)
   {
-
-
+  tbb::parallel_pipeline
+    (
+    ntoken,
+    tbb::make_filter<void, cv::Mat>
+      (
+  tbb::filter::serial_in_order,[&](tbb::flow_control& fc)-> cv::Mat
+        {
+        grabbed_frame = camera_vector[current_pipeline_camera_grab].grab;
+        current_pipeline_camera_grab++;
+        if (current_pipeline_camera_grab > Cameras_in_use-1)
+          {
+          current_pipeline_camera_grab = 0;
+          }
+        return grabbed_frame;
+        }
+      ) &
+    tbb::make_filter<cv::Mat, cv::Mat>
+      (
+  tbb::filter::parallel, [](cv::Mat)
+        {
+    
+        }
+      )
+      
+    )
+  }
 
 bool C_opencv_unmanaged::create_camera_threads_objectcalibration()
   {
@@ -49,6 +74,18 @@ void  thread_camera_grabbing (int cam_ID)
 
     }
   }
+
+bool state_machine()
+  {
+  switch (statemachine_state)
+    {
+      case 1:
+      
+      case 2:
+      case 3:
+    }
+  }
+
 
 bool C_opencv_unmanaged::grab_frame(cv::Mat& cpu_dst)
   {

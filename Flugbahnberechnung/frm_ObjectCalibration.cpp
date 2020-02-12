@@ -27,7 +27,7 @@ System::Void				C_frm_ObjectCalibration::Taktgeber_Tick			(System::Object^ sende
 
 System::Void        C_frm_ObjectCalibration::bt_Start_Click     (System::Object^ sender, System::EventArgs^ e)
   {
-  this->Main->OpenCV_managed->
+  //this->Main->OpenCV_managed->statemachine
   }
 
 System::Void        C_frm_ObjectCalibration::bt_Stop_Click      (System::Object^ sender, System::EventArgs^ e)

@@ -53,9 +53,13 @@ namespace nmsp_open_cv_unmanaged
       int                   opening_kernel_size;
       int                   closing_kernel_size;
       int                   morph_kernel_size;
+      int                   Cameras_in_use;
+      int                   current_pipeline_camera_grab;
+      int                   statemachine_state;
 
       cv::Mat                original_frame;
       cv::Mat                processed_frame;
+      cv::Mat               grabbed_frame;
 
       volatile bool         done;
 
@@ -75,6 +79,8 @@ namespace nmsp_open_cv_unmanaged
 
       cv::VideoCapture       camera_capture;
       std::vector<cv::VideoCapture> camera_vector;
+      std::vector<std::vector<cv::Mat>> camera_captured_vector;
+
       int                    camera_vector_count;
       int                    capture_api_;
 
@@ -86,8 +92,9 @@ namespace nmsp_open_cv_unmanaged
       public:
       bool  apply_filter          (cv::Mat& cpu_src, cv::Mat& cpu_dst);
       bool start_camera_thread    ();
-      bool create_camera_thread   ();
+      bool create_camera_vector   ();
       bool create_camera_threads_objectcalibration();
+      bool state_machine          ();
 
 
       private:
