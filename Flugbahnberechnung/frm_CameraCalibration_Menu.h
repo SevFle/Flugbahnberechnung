@@ -61,6 +61,7 @@ namespace NmSp_CamerCalibration_Menu
       // 
       // bt_StereoCalibration
       // 
+      this->bt_StereoCalibration->Enabled = false;
       this->bt_StereoCalibration->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 14.25F, System::Drawing::FontStyle::Regular,
                                           System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
       this->bt_StereoCalibration->Location = System::Drawing::Point(224, 23);

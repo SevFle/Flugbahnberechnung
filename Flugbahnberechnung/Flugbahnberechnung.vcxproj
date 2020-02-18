@@ -25,7 +25,7 @@
     <Keyword>ManagedCProj</Keyword>
     <RootNamespace>Flugbahnberechnung</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
-    <ProjectName>Flugbahntracker_managed</ProjectName>
+    <ProjectName>Flugbahntracker</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -138,12 +138,17 @@
     <ClCompile Include="frm_CameraCalibration_Single.cpp" />
     <ClCompile Include="frm_CameraCalibration_Stereo.cpp" />
     <ClCompile Include="frm_ObjectCalibration.cpp" />
-    <ClCompile Include="OpenCV_managed.cpp" />
+    <ClCompile Include="Camera_managed.cpp" />
     <ClCompile Include="frm_Main.cpp" />
     <ClCompile Include="GlobalObjects.cpp" />
     <ClCompile Include="Main.cpp" />
-    <ClCompile Include="OpenCV_unmanaged.cpp">
+    <ClCompile Include="Camera_unmanaged.cpp">
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</CompileAsManaged>
+      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsManaged>
+    </ClCompile>
+    <ClCompile Include="opencv_unmanaged.cpp">
+      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</CompileAsManaged>
+      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsManaged>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -171,8 +176,9 @@
     </ClInclude>
     <ClInclude Include="GlobalObjects.h" />
     <ClInclude Include="Main.h" />
-    <ClInclude Include="OpenCV_managed.h" />
-    <ClInclude Include="OpenCV_unmanaged.h" />
+    <ClInclude Include="Camera_managed.h" />
+    <ClInclude Include="Camera_unmanaged.h" />
+    <ClInclude Include="opencv_unmanaged.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram.cd" />
@@ -180,6 +186,9 @@
   <ItemGroup>
     <EmbeddedResource Include="frm_CameraCalibration_Menu.resx">
       <DependentUpon>frm_CameraCalibration_Menu.h</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frm_CameraCalibration_Single.resx">
+      <DependentUpon>frm_CameraCalibration_Single.h</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="frm_Main.resx">
       <DependentUpon>frm_Main.h</DependentUpon>

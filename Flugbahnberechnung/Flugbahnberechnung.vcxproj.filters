@@ -27,12 +27,6 @@
     <ClCompile Include="GlobalObjects.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="OpenCV_unmanaged.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="OpenCV_managed.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="frm_CameraCalibration_Menu.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -43,6 +37,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="frm_ObjectCalibration.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera_managed.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera_unmanaged.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="opencv_unmanaged.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -56,12 +59,6 @@
     <ClInclude Include="GlobalObjects.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="OpenCV_unmanaged.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="OpenCV_managed.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="frm_CameraCalibration_Menu.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -72,6 +69,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="frm_ObjectCalibration.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera_managed.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera_unmanaged.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="opencv_unmanaged.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

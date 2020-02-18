@@ -1,166 +1,126 @@
 #pragma once
 
-#include <vector>
-#include <opencv2/core/cuda.hpp>
+#include <opencv2/opencv.hpp>
+#include <opencv2/highgui.hpp>
 
-/**** Vorwärtsdeklaration der unmanaged OpenCV Klassen ***************************/
-namespace cv
-  {
-  class VideoCapture;
-  class Mat;
-    namespace cuda
-    {
-      GpuMat;
-    }using namespace cuda;
-  } using namespace cv;
-/**** Vorwärtsdeklaration der unmanaged TBB Klassen ******************************/
-namespace tbb
-  {
-  class pipeline;
-  }using namespace tbb;
+namespace nmsp_opencv_unmanaged
 
-
-
-namespace nmsp_open_cv_unmanaged
   {
   class c_opencv_unmanaged
     {
-      
       public:
-/**** Konstruktor ****************************************************************/
-      c_opencv_unmanaged ();
-/**** Dekonstruktor **************************************************************/
-      ~c_opencv_unmanaged ();
-/**** Öffentliche Variablen  *****************************************************/
-      #pragma region Öffentliche Variablen
+      /*************************************************************** Konstruktoren *************************************************************/
+      c_opencv_unmanaged                      (int cameras_in_use,int camera_id);
+      /*************************************************************** Destruktor ****************************************************************/
+      ~c_opencv_unmanaged                     ();
+      /******************************************** Nicht öffentliche private Anwender-Attribute **************************************************/
+      private:
+      cv::Mat                                 cpu_img;
 
+      cv::cuda::GpuMat                        gpu_img;
+      cv::cuda::GpuMat                        gpu_mid_img;
+      cv::cuda::GpuMat                        gpu_src_img;
+      cv::cuda::GpuMat                        gpu_dst_img;
+
+      std::vector<cv::cuda::GpuMat>           gpu_src_vector;
+      std::vector<cv::cuda::GpuMat>           gpu_mid_vector;
+      std::vector<cv::cuda::GpuMat>           gpu_dst_vector;
+
+      /**************************************************** Öffentliche Klassenobjekte ********************************************************/
+      public:
+      cv::VideoCapture                        cap;
+      cv::Mat                                 cpu_src_img;
+      cv::Mat                                 cpu_mid_img;
+      cv::Mat                                 cpu_dst_img;
+      cv::Mat                                 cpu_masked_img;
+      std::vector<cv::Mat>                    cpu_src_vector;
+      std::vector<cv::Mat>                    cpu_mid_vector;
+      std::vector<cv::Mat>                    cpu_dst_vector;
+      std::vector<cv::Mat>                    cpu_masked_vector;
+      std::vector<cv::VideoCapture*>          camera_vector;
+      /**************************************************** Öffentliche Anwender-Attribute ********************************************************/
+      public:
       int                                     cameras_in_use;
-      int                                     current_pipeline_camera_grab;
-
-      volatile bool                           done;
-      #pragma endregion 
-/**** Öffentliche Klassenvariablen  **********************************************/
       int                                     camera_id;
-/**** Öffentliche OpenCV-Variablen  **********************************************/
+      int                                     capture_api;
+
+      /******************************************** Nicht öffentliche private Anwender-Attribute **************************************************/
+      private:
+      int                                     statemachine_state;
+
+
+
+
+      /*********************************************************** Öffentliche OpenCV-Variablen  **************************************************/
       #pragma region Öfffentliche OpenCV-Variablen
-      int                                     hue_min,
-                                              hue_max,
-                                              saturation_min,
-                                              saturation_max,
-                                              value_min,
-                                              value_max;
+      int                                     hue_min;
+      int                                     hue_max;
+      int                                     saturation_min;
+      int                                     saturation_max;
+      int                                     value_min;
+      int                                     value_max;
+      int                                     target_size_width;     //Resizing the image to the wanted width Values
+      int                                     target_size_height;     //Resizing the image to the wanted height Values
 
-       int                                    target_size_x,     //Resizing the image to the wanted Values
-                                              target_size_y;
 
+      int                                     erosion_iterations;
+      int                                     dilation_iterations;
+      int                                     opening_iterations;
+      int                                     closing_iterations;
 
-      int                                     erosion_kernel_size,
-                                              erosion_iterations,
-                                              dilation_kernel_size,
-                                              dilation_iterations;
+      int                                     erosion_kernel_size;
+      int                                     dilation_kernel_size;
+      int                                     bilateral_kernel_size;
+      int                                     opening_kernel_size;
+      int                                     closing_kernel_size;
+      int                                     morph_kernel_size;
+      int                                     gaussian_kernel_size;
+      int                                     ksize;
 
-      int                                     bilateral_kernel_size,
-                                              gaussian_kernel_size,
-                                              opening_kernel_size,
-                                              closing_kernel_size,
-                                              morph_kernel_size;
+      int                                     bordertype;
+
+      int                                     numBoards;
+      int                                     numCornersHor;
+      int                                     numcornersVer;
 
       double                                  gaussian_sigma;
 
 
-      float                                   bilateral_sigma_color,
-                                              bilateral_sigma_space;
+      float                                   bilateral_sigma_color;
+      float                                   bilateral_sigma_space;
 
-      #pragma endregion
-/**** Öffentliche OpenCV-Objekte  ************************************************/
-      #pragma region  Öffentliche OpenCV-Objekte
-
-      cv::Mat^                                original_frame,
-                                              processed_frame,
-                                              grabbed_frame;
+      cv::Point                               anchor;
 
       #pragma endregion
 
-
-      private:
-/**** Private OpenCV-Objekte  ****************************************************/
-      #pragma region  Private OpenCV-Objekte
-
-      cv::VideoCapture^                       camera_capture;
-       
-      cv::Mat^                                hsv_frame,
-                                              gaussian_frame,
-                                              bilateral_frame;
-
-      cv::cuda::GpuMat^                       gpu_original_frame,
-                                              gpu_processed_frame,
-                                              gpu_HSV_frame,
-                                              gpu_Gaussian_frame,
-                                              gpu_Bilateral_frame,
-                                              gpu_src_img,
-                                              gpu_temp_img,
-                                              gpu_dst_img;
-      #pragma endregion 
-/**** Private OpenCV-Variablen  **************************************************/
-      #pragma region Private OpenCV-Variablen
-
-      #pragma endregion
-/**** Private Variablen  *********************************************************/
-      #pragma region Variablen
-
-      std::vector<cv::VideoCapture>           camera_vector;
-      std::vector<std::vector<cv::Mat>>       camera_captured_vector;
-
-      int                                     camera_vector_count;
-      int                                     capture_api_;
-      int                                     statemachine_state;
-      #pragma endregion
-/**** Private TBB-Objekte ********************************************************/
-      #pragma region TBB-Objekte
-
-      tbb::pipeline^                          pipeline;
-
-      #pragma endregion
-
-
-
-/**** Öffentliche Klassenmethoden*************************************************/
-      #pragma region Öffentliche Klassenmethoden
+      /********************************************************* Öffentliche Klassenmethoden*******************************************************/
       public:
+      void            init                                                (int camera_id);
+      void            create_videocapture_vector                          (int camera_id);
+      void            create_img_vectors                                  ();
+      void            cpu_grab_frame                                      (cv::Mat& cpu_dst_img);
+      void            apply_filter                                        (cv::Mat  &cpu_src, cv::Mat &cpu_dst);
+      void            cpu_mask_img                                        (cv::Mat& hsv_cpu_src, cv::Mat& cpu_masked_dst);
+      void            cpu_img_show                                        (cv::Mat& processed_img, cv::Mat& original_img);
 
-      bool            apply_filter                                    (cv::Mat& cpu_src, cv::Mat& cpu_dst);
-      bool            start_camera_thread                             ();
-      bool            create_camera_vector                            ();
-      bool            tbb_camera_pipeline                             (size_t ntoken);
-      bool            create_camera_threads_objectcalibration         ();
-
-      #pragma endregion
-
-/**** Private Klassenmethoden*****************************************************/
-      #pragma region Private Klassenmethoden
+      /******************************************************* Private Klassenmethoden***************************************************************/
       private:
+      void            gpu_to_hsv                                          (cv::cuda::GpuMat& gpu_src, cv::cuda::GpuMat& gpu_dst);
+      void            gpu_to_hsv_threshold                                (cv::cuda::GpuMat& img, cv::cuda::GpuMat& gpu_dst, int hue_min, int hue_max, int saturation_min, int saturation_max, int value_min, int value_max);
+      void            cpu_to_4channel_colour                              (cv::Mat& cpu_src, cv::Mat& cpu_dst);
+      void            gpu_erode                                           (cv::cuda::GpuMat& gpu_src, cv::cuda::GpuMat& gpu_dst, int borderType, cv::Point anchor, int erosion_iterations);
+      void            gpu_dilate                                          (cv::cuda::GpuMat& gpu_src, cv::cuda::GpuMat& gpu_dst, cv::Point anchor, int dilation_iterations);
+      void            gpu_open                                            (cv::cuda::GpuMat& gpu_src, cv::cuda::GpuMat& gpu_dst, cv::Point anchor, int opening_iterations);
+      void            gpu_close                                           (cv::cuda::GpuMat& gpu_src, cv::cuda::GpuMat& gpu_dst, cv::Point anchor, int closing_iterations);
+      void            gpu_bilateral_filter                                (cv::cuda::GpuMat& gpu_src, cv::cuda::GpuMat& gpu_dst, int bilateral_kernel_size, float bilateral_sigma_color, float bilateral_sigma_spatial);
+      void            gpu_gaussian_filter                                 (cv::cuda::GpuMat& gpu_src, cv::cuda::GpuMat& gpu_dst, int gaussian_kernel_size, double gaussian_sigma);
+      void            cpu_find_contours                                   (cv::Mat& cpu_src, cv::Mat& cpu_dst);
 
-      bool            grab_frame                                      (cv::Mat& cpu_dst);
-      bool            state_machine                                   ();
 
 
-      void            push_to_gpu                                     (cv::Mat& src, cv::cuda::GpuMat& gpu_dst);
-      void            pull_from_gpu                                   (cv::cuda::GpuMat& gpu_src, cv::Mat& dst);
-      #pragma region Filtermethoden
-      void            to_hsv                                          (cv::cuda::GpuMat& gpu_src, cv::cuda::GpuMat& gpu_dst);
-      void            to_hsv_threshold                                (cv::cuda::GpuMat& img, cv::cuda::GpuMat& gpu_dst, int& hue_min, int& hue_max, int& saturation_min, int& saturation_max, int& value_min, int& value_max);
-      void            to_resize                                       (cv::Mat& cpu_src, cv::Mat& cpu_dst, int& size_x, int& size_y);
-      void            erosion                                         (cv::cuda::GpuMat& gpu_src, cv::cuda::GpuMat& gpu_dst, int& erosion_kernel_size, int& erosion_iterations);
-      void            dilation                                        (cv::cuda::GpuMat& gpu_src, cv::cuda::GpuMat& gpu_dst, int& dilation_kernel_size, int& dilation_iterations);
 
-      void            opening                                         (cv::cuda::GpuMat& gpu_src, cv::cuda::GpuMat& gpu_dst, int& opening_kernel_size);
-      void            closing                                         (cv::cuda::GpuMat& gpu_src, cv::cuda::GpuMat& gpu_dst, int& closing_kernel_size);
-      void            bilateral                                       (cv::cuda::GpuMat& gpu_src, cv::cuda::GpuMat& gpu_dst, int& bilateral_kernel_size, float& bilateral_sigma_color, float& bilateral_sigma_space);
-      void            gaussian_bluring                                (cv::cuda::GpuMat& gpu_src, cv::cuda::GpuMat& gpu_dst, int& gaussian_kernel_size, double& gaussian_sigma);
 
-      void            find_contours                                   (cv::Mat& cpu_src, cv::Mat& cpu_dst);
-      #pragma endregion
-      #pragma endregion
-    };// c_opencv_unmanaged
-  }//nmsp_open_cv_unmanaged
+    };
+
+  }
 
