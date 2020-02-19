@@ -43,4 +43,20 @@ System::Void        C_frm_ObjectCalibration::nup_Cam_ID_ValueChanged    (System:
   nup_Cam_ID->Value = GlobalObjects->camera_id;
   }
 
+/*************************************************** Nicht öffentliche private Methoden *****************************************************/
+System::Void          C_frm_ObjectCalibration::FillMat2Picturebox                                 (System::Windows::Forms::PictureBox^ Picturebox, cv::Mat &cpu_img)
+  {
+  Int32                              colorImage_cols   =   colorImage.cols;
+  Int32                              colorImage_rows   =   colorImage.rows;
+  Int32                              colorImage_step   =   colorImage.step;
+  Int32                              colorImage_type   =   colorImage.type();
+  System::IntPtr                     colorImage_ptr  (colorImage.ptr());
+
+  FillPicturebox                     (Picturebox, colorImage_cols, colorImage_rows, colorImage_step, colorImage_type, colorImage_ptr);
+  } // FillMatInToPictureBox
+
+System::Void          C_frm_ObjectCalibration::FillPicturebox                                     (System::Windows::Forms::PictureBox^ Picturebox, Int32 ColorImageCols, Int32 ColorImageRows, Int32 ColorImageStep, Int32 ColorImageType, System::IntPtr ColorImagePtr)
+{
+  
+}
 

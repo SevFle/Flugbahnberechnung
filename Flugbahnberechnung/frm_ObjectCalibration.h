@@ -1,5 +1,10 @@
 #pragma once
 #include "Main.h"
+#include <opencv2/core/mat.hpp>
+
+namespace cv {
+  class Mat;
+}
 
 using namespace NmSp_Main;
 
@@ -690,5 +695,9 @@ namespace NmSp_frm_ObjectCalibration
     System::Void    bt_Start_Click            (System::Object^  sender, System::EventArgs^ e);
     System::Void    bt_Stop_Click             (System::Object^  sender, System::EventArgs^ e);
     System::Void    nup_Cam_ID_ValueChanged   (System::Object^  sender, System::EventArgs^ e);
+
+    System::Void    FillMat2Picturebox                                 (System::Windows::Forms::PictureBox^ Picturebox, cv::Mat &cpu_img);
+    System::Void    FillPicturebox                                     (System::Windows::Forms::PictureBox^ Picturebox, Int32 ColorImageCols, Int32 ColorImageRows, Int32 ColorImageStep, Int32 ColorImageType, System::IntPtr ColorImagePtr);
+
 };
   }//namespace NmSp_frm_ObjectCalibration
