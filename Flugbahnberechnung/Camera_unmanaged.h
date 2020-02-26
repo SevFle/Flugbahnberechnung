@@ -1,6 +1,8 @@
 #pragma once
 #include "opencv_unmanaged.h"
 
+#include <thread>
+
 
 namespace nmsp_camera_unmanaged
   {
@@ -20,6 +22,8 @@ namespace nmsp_camera_unmanaged
       int                                                   statemachine_state;
       int                                                   camera_id;
 
+      bool                                                  stop_statemachine;
+
       /******************************************** Nicht öffentliche private Anwender-Attribute **************************************************/
       private:
       std::vector<nmsp_opencv_unmanaged::c_opencv_unmanaged*>    camera_vector;
@@ -29,9 +33,11 @@ namespace nmsp_camera_unmanaged
       void      state_machine_per_object_exe                ();
       void      state_machine_per_vector_exe                ();
       void      state_machine_object_calibration            ();
+      void      start_camera_threads                        (int cameras_in_use);
       /******************************************************* Private Klassenmethoden***************************************************************/
       private:
       void      create_cam_vector                           (int camera_id);
+      
 
     };// c_camera_unmanaged
   }//nmsp_c_camera_unmanaged

@@ -13,7 +13,9 @@ using namespace nmsp_camera_unmanaged;
 /*************************************************************** Konstruktoren **************************************************************/
 c_camera_unmanaged::c_camera_unmanaged                                  (int cameras_in_use)
   {
+  
   this->cameras_in_use  = cameras_in_use;
+  stop_statemachine = false;
   }
 /**************************************************************** Destruktor ****************************************************************/
 c_camera_unmanaged::~c_camera_unmanaged                                 ()
@@ -56,6 +58,7 @@ void  c_camera_unmanaged::create_cam_vector                             (int cam
   nmsp_opencv_unmanaged::c_opencv_unmanaged* opencv = new nmsp_opencv_unmanaged::c_opencv_unmanaged(cameras_in_use, camera_id);
   camera_vector.push_back(opencv);
   }
+
 /******************************************************* Öffentliche Anwender-Methoden ******************************************************/
 
       //Diese Statemachine verwendet erzeugt n Kamera Objekte die mit ihren individuellen cv::Mat Objekten arbeiten.
@@ -131,9 +134,6 @@ void  c_camera_unmanaged::state_machine_per_object_exe                  ()
 void c_camera_unmanaged::state_machine_per_vector_exe                   ()
   {
   nmsp_opencv_unmanaged::c_opencv_unmanaged opencv(cameras_in_use, camera_id);
-
-  while (true)
-    {
     switch (statemachine_state)
       {
         case 0:
@@ -181,5 +181,22 @@ void c_camera_unmanaged::state_machine_per_vector_exe                   ()
 
 
       }
+
+  }
+
+void c_camera_unmanaged::state_machine_object_calibration               ()
+  {
+  while (stop_statemachine == false)
+    {
+    state_machine_per_vector_exe();
     }
   }
+
+void c_camera_unmanaged::start_camera_threads(int cameras_in_use)
+{
+  for (int i = 0; i < cameras_in_use; i++)
+  {
+    std::thread t1();
+  }
+}
+

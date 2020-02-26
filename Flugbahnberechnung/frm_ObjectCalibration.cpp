@@ -31,11 +31,13 @@ System::Void				C_frm_ObjectCalibration::Taktgeber_Tick			        (System::Objec
 System::Void        C_frm_ObjectCalibration::bt_Start_Click             (System::Object^ sender, System::EventArgs^ e)
   {
   //this->Main->OpenCV_managed->opencv_unmanaged->all_camera_state_machine();
-    this->Main->camera_managed->camera_unmanaged
+  this->Main->camera_managed->camera_unmanaged->stop_statemachine = false;
+  this->Main->camera_managed->camera_unmanaged->state_machine_object_calibration();
   }
 
 System::Void        C_frm_ObjectCalibration::bt_Stop_Click              (System::Object^ sender, System::EventArgs^ e)
   {
+  this->Main->camera_managed->camera_unmanaged->stop_statemachine = true;
   }
 
 System::Void        C_frm_ObjectCalibration::nup_Cam_ID_ValueChanged    (System::Object^ sender, System::EventArgs^ e)
@@ -44,19 +46,19 @@ System::Void        C_frm_ObjectCalibration::nup_Cam_ID_ValueChanged    (System:
   }
 
 /*************************************************** Nicht öffentliche private Methoden *****************************************************/
-System::Void          C_frm_ObjectCalibration::FillMat2Picturebox                                 (System::Windows::Forms::PictureBox^ Picturebox, cv::Mat &cpu_img)
-  {
-  Int32                              colorImage_cols   =   colorImage.cols;
-  Int32                              colorImage_rows   =   colorImage.rows;
-  Int32                              colorImage_step   =   colorImage.step;
-  Int32                              colorImage_type   =   colorImage.type();
-  System::IntPtr                     colorImage_ptr  (colorImage.ptr());
-
-  FillPicturebox                     (Picturebox, colorImage_cols, colorImage_rows, colorImage_step, colorImage_type, colorImage_ptr);
-  } // FillMatInToPictureBox
-
-System::Void          C_frm_ObjectCalibration::FillPicturebox                                     (System::Windows::Forms::PictureBox^ Picturebox, Int32 ColorImageCols, Int32 ColorImageRows, Int32 ColorImageStep, Int32 ColorImageType, System::IntPtr ColorImagePtr)
-{
-  
-}
+//System::Void          C_frm_ObjectCalibration::FillMat2Picturebox                                 (System::Windows::Forms::PictureBox^ Picturebox, cv::Mat &cpu_img)
+//  {
+//  Int32                              colorImage_cols   =   colorImage.cols;
+//  Int32                              colorImage_rows   =   colorImage.rows;
+//  Int32                              colorImage_step   =   colorImage.step;
+//  Int32                              colorImage_type   =   colorImage.type();
+//  System::IntPtr                     colorImage_ptr  (colorImage.ptr());
+//
+//  FillPicturebox                     (Picturebox, colorImage_cols, colorImage_rows, colorImage_step, colorImage_type, colorImage_ptr);
+//  } // FillMatInToPictureBox
+//
+//System::Void          C_frm_ObjectCalibration::FillPicturebox                                     (System::Windows::Forms::PictureBox^ Picturebox, Int32 ColorImageCols, Int32 ColorImageRows, Int32 ColorImageStep, Int32 ColorImageType, System::IntPtr ColorImagePtr)
+//{
+//  
+//}
 

@@ -1,13 +1,9 @@
 #pragma once
 #include "GlobalObjects.h"
+#include "Camera_unmanaged.h"
 
 using namespace nmsp_GlobalObjects;
 /*********************************************************** Vorwärtsdeklarationen ************************************************************/
-namespace nmsp_camera_unmanaged
-  {
-  class c_camera_unmanaged;
-  void      state_machine_per_object_exe                                ();
-  }using namespace nmsp_camera_unmanaged;
 
 namespace nmsp_camera_managed
   {

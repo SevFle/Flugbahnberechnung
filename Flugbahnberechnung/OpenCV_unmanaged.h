@@ -103,6 +103,8 @@ namespace nmsp_opencv_unmanaged
       void            cpu_mask_img                                        (cv::Mat& hsv_cpu_src, cv::Mat& cpu_masked_dst);
       void            cpu_img_show                                        (cv::Mat& processed_img, cv::Mat& original_img);
 
+      void            operator()() const;
+
       /******************************************************* Private Klassenmethoden***************************************************************/
       private:
       void            gpu_to_hsv                                          (cv::cuda::GpuMat& gpu_src, cv::cuda::GpuMat& gpu_dst);

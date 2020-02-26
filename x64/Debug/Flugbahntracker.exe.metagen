@@ -1,4 +1,5 @@
   Flugbahnberechnung.frm_CameraCalibration_Menu.resources - Embedded, ContainedInManifestFile, 
+  Flugbahnberechnung.frm_CameraCalibration_Single.resources - Embedded, ContainedInManifestFile, 
   Flugbahnberechnung.frm_Main.resources - Embedded, ContainedInManifestFile, 
   Flugbahnberechnung.frm_ObjectCalibration.resources - Embedded, ContainedInManifestFile, 
 ImageRuntimeVersion: v4.0.30319
@@ -22,6 +23,7 @@ Class nmsp_GlobalObjects.C_GlobalObjects: AutoLayout, AnsiClass, Class, Public, 
     System.IDisposable
   Fields:
     Int32 cameras_in_use : Public
+    Int32 camera_id : Public
   Methods:
     Dispose(): PrivateScope, Public, Final, Virtual, HideBySig
 Class NmSp_Main.C_Main: AutoLayout, AnsiClass, Class, Public, BeforeFieldInit

@@ -92,6 +92,11 @@ void c_opencv_unmanaged::cpu_img_show                                   (cv::Mat
   cv::imshow            ("processed", processed_img);
   }
 
+void c_opencv_unmanaged::operator()() const
+{
+
+}
+
 void c_opencv_unmanaged::cpu_mask_img                                   (cv::Mat& hsv_cpu_src, cv::Mat& cpu_masked_dst)
   {
   cv::inRange(hsv_cpu_src, cv::Scalar(this->hue_min, this->saturation_min, this->value_min), cv::Scalar(this->hue_max, this->saturation_max, this->value_max), cpu_masked_dst);
