@@ -4,13 +4,12 @@
 #include <opencv2/highgui.hpp>
 
 namespace nmsp_opencv_unmanaged
-
   {
   class c_opencv_unmanaged
     {
       public:
       /*************************************************************** Konstruktoren *************************************************************/
-      c_opencv_unmanaged                      (int cameras_in_use,int camera_id);
+      c_opencv_unmanaged                      (int camera_id);
       /*************************************************************** Destruktor ****************************************************************/
       ~c_opencv_unmanaged                     ();
       /******************************************** Nicht öffentliche private Anwender-Attribute **************************************************/
@@ -37,10 +36,9 @@ namespace nmsp_opencv_unmanaged
       std::vector<cv::Mat>                    cpu_mid_vector;
       std::vector<cv::Mat>                    cpu_dst_vector;
       std::vector<cv::Mat>                    cpu_masked_vector;
-      std::vector<cv::VideoCapture*>          camera_vector;
+      std::vector<nmsp_opencv_unmanaged::c_opencv_unmanaged*>          camera_vector;
       /**************************************************** Öffentliche Anwender-Attribute ********************************************************/
       public:
-      int                                     cameras_in_use;
       int                                     camera_id;
       int                                     capture_api;
 
@@ -103,8 +101,7 @@ namespace nmsp_opencv_unmanaged
       void            cpu_mask_img                                        (cv::Mat& hsv_cpu_src, cv::Mat& cpu_masked_dst);
       void            cpu_img_show                                        (cv::Mat& processed_img, cv::Mat& original_img);
 
-      void            operator()() const;
-
+      void            camera_thread                                       ();
       /******************************************************* Private Klassenmethoden***************************************************************/
       private:
       void            gpu_to_hsv                                          (cv::cuda::GpuMat& gpu_src, cv::cuda::GpuMat& gpu_dst);
@@ -117,6 +114,7 @@ namespace nmsp_opencv_unmanaged
       void            gpu_bilateral_filter                                (cv::cuda::GpuMat& gpu_src, cv::cuda::GpuMat& gpu_dst, int bilateral_kernel_size, float bilateral_sigma_color, float bilateral_sigma_spatial);
       void            gpu_gaussian_filter                                 (cv::cuda::GpuMat& gpu_src, cv::cuda::GpuMat& gpu_dst, int gaussian_kernel_size, double gaussian_sigma);
       void            cpu_find_contours                                   (cv::Mat& cpu_src, cv::Mat& cpu_dst);
+
 
 
 

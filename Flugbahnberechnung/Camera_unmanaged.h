@@ -1,7 +1,13 @@
 #pragma once
+#pragma unmanaged
 #include "opencv_unmanaged.h"
 
 #include <thread>
+/************************************************************ Include TBB *******************************************************************/
+#include <tbb/concurrent_queue.h>
+#include <tbb/pipeline.h>
+#include <tbb/tbb.h>
+
 
 
 namespace nmsp_camera_unmanaged
@@ -15,6 +21,12 @@ namespace nmsp_camera_unmanaged
       c_camera_unmanaged (int cameras_in_use);
       /*************************************************************** Destruktor ****************************************************************/
       ~c_camera_unmanaged ();
+
+
+      /**************************************************** Öffentliche Klassenobjekte ********************************************************/
+      public:
+      c_opencv_unmanaged*                                   opencv_unmananged;
+
 
       /**************************************************** Öffentliche Anwender-Attribute ********************************************************/
       public:
@@ -33,7 +45,8 @@ namespace nmsp_camera_unmanaged
       void      state_machine_per_object_exe                ();
       void      state_machine_per_vector_exe                ();
       void      state_machine_object_calibration            ();
-      void      start_camera_threads                        (int cameras_in_use);
+      void      create_camera_threads                       (int cameras_in_use);
+      void      camera_thread                               (int camera_id);
       /******************************************************* Private Klassenmethoden***************************************************************/
       private:
       void      create_cam_vector                           (int camera_id);

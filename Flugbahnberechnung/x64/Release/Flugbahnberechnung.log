@@ -1,1 +1,17 @@
-﻿  Flugbahnberechnung.vcxproj -> C:\Users\sever\Documents\Projekte\Echtzeit_Flugbahnberechnung\x64\Release\Flugbahntracker.exe
+﻿  App_Main.cpp
+c:\program files (x86)\microsoft visual studio\2017\enterprise\vc\tools\msvc\14.16.27023\include\thread(8): fatal error C1189: #error:  <thread> is not supported when compiling with /clr or /clr:pure.
+  frm_CameraCalibration_Menu.cpp
+c:\program files (x86)\microsoft visual studio\2017\enterprise\vc\tools\msvc\14.16.27023\include\thread(8): fatal error C1189: #error:  <thread> is not supported when compiling with /clr or /clr:pure.
+  frm_CameraCalibration_Single.cpp
+c:\program files (x86)\microsoft visual studio\2017\enterprise\vc\tools\msvc\14.16.27023\include\thread(8): fatal error C1189: #error:  <thread> is not supported when compiling with /clr or /clr:pure.
+  frm_CameraCalibration_Stereo.cpp
+c:\program files (x86)\microsoft visual studio\2017\enterprise\vc\tools\msvc\14.16.27023\include\thread(8): fatal error C1189: #error:  <thread> is not supported when compiling with /clr or /clr:pure.
+  frm_ObjectCalibration.cpp
+c:\program files (x86)\microsoft visual studio\2017\enterprise\vc\tools\msvc\14.16.27023\include\thread(8): fatal error C1189: #error:  <thread> is not supported when compiling with /clr or /clr:pure.
+  Camera_managed.cpp
+c:\program files (x86)\microsoft visual studio\2017\enterprise\vc\tools\msvc\14.16.27023\include\thread(8): fatal error C1189: #error:  <thread> is not supported when compiling with /clr or /clr:pure.
+  frm_Main.cpp
+c:\program files (x86)\microsoft visual studio\2017\enterprise\vc\tools\msvc\14.16.27023\include\thread(8): fatal error C1189: #error:  <thread> is not supported when compiling with /clr or /clr:pure.
+  Main.cpp
+c:\program files (x86)\microsoft visual studio\2017\enterprise\vc\tools\msvc\14.16.27023\include\thread(8): fatal error C1189: #error:  <thread> is not supported when compiling with /clr or /clr:pure.
+  Generating Code...

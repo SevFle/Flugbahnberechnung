@@ -3,10 +3,6 @@
 #pragma region Includes
 #include "Camera_unmanaged.h"
 
-/************************************************************ Include TBB *******************************************************************/
-#include <tbb/concurrent_queue.h>
-#include <tbb/pipeline.h>
-#include <tbb/tbb.h>
 #pragma endregion
 /****************************************************************** Namespaces***************************************************************/
 using namespace nmsp_camera_unmanaged;
@@ -192,11 +188,14 @@ void c_camera_unmanaged::state_machine_object_calibration               ()
     }
   }
 
-void c_camera_unmanaged::start_camera_threads(int cameras_in_use)
+void c_camera_unmanaged::create_camera_threads(int cameras_in_use)
 {
   for (int i = 0; i < cameras_in_use; i++)
   {
-    std::thread t1();
-  }
+    nmsp_opencv_unmanaged::c_opencv_unmanaged* cam = new nmsp_opencv_unmanaged::c_opencv_unmanaged (i);
+    camera_vector.push_back                       (cam);
+    std::thread thread(camera_vector[i]->camera_thread());
+    }
 }
+
 

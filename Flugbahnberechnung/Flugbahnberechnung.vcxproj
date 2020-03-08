@@ -137,6 +137,7 @@
     <ClCompile Include="frm_CameraCalibration_Menu.cpp" />
     <ClCompile Include="frm_CameraCalibration_Single.cpp" />
     <ClCompile Include="frm_CameraCalibration_Stereo.cpp" />
+    <ClCompile Include="frm_Camera_Positioning.cpp" />
     <ClCompile Include="frm_ObjectCalibration.cpp" />
     <ClCompile Include="Camera_managed.cpp" />
     <ClCompile Include="frm_Main.cpp" />
@@ -166,6 +167,9 @@
       <FileType>CppForm</FileType>
     </ClInclude>
     <ClInclude Include="frm_CameraCalibration_Stereo.h">
+      <FileType>CppForm</FileType>
+    </ClInclude>
+    <ClInclude Include="frm_Camera_Positioning.h">
       <FileType>CppForm</FileType>
     </ClInclude>
     <ClInclude Include="frm_Main.h">

@@ -4,7 +4,7 @@
 /****************************************************************** Namespaces***************************************************************/
 using namespace nmsp_opencv_unmanaged;
 /*************************************************************** Konstruktoren **************************************************************/
-c_opencv_unmanaged::c_opencv_unmanaged                                  (int cameras_in_use, int camera_id) :
+c_opencv_unmanaged::c_opencv_unmanaged                                  (int camera_id) :
 anchor                      (-1,-1),
 gaussian_kernel_size        (0)
   {
@@ -35,12 +35,12 @@ gaussian_kernel_size        (0)
 
   statemachine_state          = 0;
 
-  this->cameras_in_use = cameras_in_use;
   capture_api = cv::CAP_DSHOW;
   this->camera_id = camera_id;
   }
+
 /**************************************************************** Destruktor ****************************************************************/
-c_opencv_unmanaged::~c_opencv_unmanaged                                 ()
+c_opencv_unmanaged::~c_opencv_unmanaged()
   {
   hue_min                     = 0;
   hue_max                     = 0;
@@ -66,12 +66,11 @@ c_opencv_unmanaged::~c_opencv_unmanaged                                 ()
   bilateral_kernel_size       = 0;
   bilateral_sigma_color       = 0;
   bilateral_sigma_space       = 0;
-  cameras_in_use              = 0;
-  capture_api                 = 0;
-  this->camera_id             = 0;
-
 
   statemachine_state          = 0;
+
+  capture_api = cv::CAP_DSHOW;
+  camera_id = 0;
 
   }
 
@@ -92,21 +91,63 @@ void c_opencv_unmanaged::cpu_img_show                                   (cv::Mat
   cv::imshow            ("processed", processed_img);
   }
 
-void c_opencv_unmanaged::operator()() const
-{
+void c_opencv_unmanaged::camera_thread()
+  {
+  while (true)
+    {
+    switch (statemachine_state)
+      {
+        case 0:
+          std::cout<< "State 0 \n\n";
 
-}
+          init(camera_id);
+          statemachine_state = 1;
+
+
+        case 1:
+          std::cout<< "State 1 \n\n";
+          
+          cpu_grab_frame(cpu_src_img);
+          statemachine_state = 2;
+
+
+        case 2:
+          std::cout<< "State 2 \n\n";
+
+          apply_filter(cpu_src_img, cpu_mid_img);
+          statemachine_state = 3;
+
+
+        case 3:
+          std::cout<< "State 3 \n\n";
+
+          cpu_mask_img(cpu_mid_img, cpu_masked_img);
+          statemachine_state = 4;
+
+
+        case 4:
+          std::cout<< "State 4 \n\n";
+
+          cpu_img_show(cpu_masked_img, cpu_src_img);
+          if (cv::waitKey(5)>=0)
+            break;
+
+          statemachine_state = 1;
+
+      }
+    }
+  }
 
 void c_opencv_unmanaged::cpu_mask_img                                   (cv::Mat& hsv_cpu_src, cv::Mat& cpu_masked_dst)
   {
   cv::inRange(hsv_cpu_src, cv::Scalar(this->hue_min, this->saturation_min, this->value_min), cv::Scalar(this->hue_max, this->saturation_max, this->value_max), cpu_masked_dst);
   }
 
-void c_opencv_unmanaged::create_videocapture_vector                     (int camera_id)
-  {
-  cv::VideoCapture* cap = new cv::VideoCapture  (camera_id, capture_api);
-  camera_vector.push_back                       (cap);
-  }
+//void c_opencv_unmanaged::create_videocapture_vector                     (int camera_id)
+//  {
+//  cv::VideoCapture* cap = new cv::VideoCapture  (camera_id, capture_api);
+//  camera_vector.push_back                       (cap);
+//  }
 
 void c_opencv_unmanaged::create_img_vectors                             ()
   {

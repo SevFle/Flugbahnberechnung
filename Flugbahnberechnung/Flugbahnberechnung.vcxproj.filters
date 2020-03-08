@@ -48,6 +48,9 @@
     <ClCompile Include="opencv_unmanaged.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="frm_Camera_Positioning.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="frm_Main.h">
@@ -78,6 +81,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="opencv_unmanaged.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="frm_Camera_Positioning.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
