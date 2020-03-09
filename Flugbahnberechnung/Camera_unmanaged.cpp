@@ -192,10 +192,16 @@ void c_camera_unmanaged::create_camera_objects                          (int cam
   {
     nmsp_opencv_unmanaged::c_opencv_unmanaged* cam = new nmsp_opencv_unmanaged::c_opencv_unmanaged (i);
     camera_vector_unsorted.push_back                       (*cam);
+
+    
+
     }
 }
 
-void c_camera_unmanaged::sort_camera_vector                             (int camera_current_id, int camera_desired_id) 
+void c_camera_unmanaged::sort_camera_vector                             (int camera_current_id, int camera_desired_id)
   {
+  // Wo ist die feste Position der Kamera? -> Camera_Current_ID
+  // Wo ist die Position der Kamera im unsorted Vector? ->Camera_desired_id
+  // Zeige die fest installierte Position des Vektors "Referrences" auf die Adresse im Unsortierten Vektor
   camera_vector_referrences[camera_current_id] = camera_vector_unsorted[camera_desired_id];
   }

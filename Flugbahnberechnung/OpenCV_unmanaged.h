@@ -32,10 +32,12 @@ namespace nmsp_opencv_unmanaged
       cv::Mat                                 cpu_mid_img;
       cv::Mat                                 cpu_dst_img;
       cv::Mat                                 cpu_masked_img;
+      cv::Mat                                 Mat2Bitmap;
       std::vector<cv::Mat>                    cpu_src_vector;
       std::vector<cv::Mat>                    cpu_mid_vector;
       std::vector<cv::Mat>                    cpu_dst_vector;
       std::vector<cv::Mat>                    cpu_masked_vector;
+
       std::vector<nmsp_opencv_unmanaged::c_opencv_unmanaged*>          camera_vector;
       /**************************************************** Öffentliche Anwender-Attribute ********************************************************/
       public:

@@ -2,7 +2,6 @@
 #include "GlobalObjects.h"
 #include "Camera_unmanaged.h"
 
-#include <wingdi.h>
 
 using namespace nmsp_GlobalObjects;
 /*********************************************************** Vorwärtsdeklarationen ************************************************************/

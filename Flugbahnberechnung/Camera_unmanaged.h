@@ -39,7 +39,10 @@ namespace nmsp_camera_unmanaged
       /******************************************** Nicht öffentliche private Anwender-Attribute **************************************************/
       public:
       std::vector<nmsp_opencv_unmanaged::c_opencv_unmanaged>      camera_vector_unsorted;
-      std::vector<nmsp_opencv_unmanaged::c_opencv_unmanaged*>     camera_vector_referrences;
+     // std::vector<nmsp_opencv_unmanaged::c_opencv_unmanaged*>     camera_vector_referrences;
+      std::vector<std::shared_ptr<nmsp_opencv_unmanaged::c_opencv_unmanaged>>  camera_vector_referrences;
+
+    
       /********************************************************* Öffentliche Klassenmethoden*******************************************************/
       public:
       //void      state_machine_per_object_exe                ();
