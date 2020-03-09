@@ -23,6 +23,7 @@ namespace NmSp_frm_ObjectCalibration
     C_Main^             Main;
 
     UInt32              Zaehler;
+    UInt32              camera_id_in_use;
     UInt32              Taktgeber_Intervall;
 
 

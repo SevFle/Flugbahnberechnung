@@ -1,8 +1,8 @@
 #pragma once
-#pragma unmanaged
-#include "opencv_unmanaged.h"
 
-#include <thread>
+/************************************************************ Includes *******************************************************************/
+
+#include "opencv_unmanaged.h"
 /************************************************************ Include TBB *******************************************************************/
 #include <tbb/concurrent_queue.h>
 #include <tbb/pipeline.h>
@@ -38,7 +38,7 @@ namespace nmsp_camera_unmanaged
 
       /******************************************** Nicht öffentliche private Anwender-Attribute **************************************************/
       private:
-      std::vector<nmsp_opencv_unmanaged::c_opencv_unmanaged*>    camera_vector;
+      std::vector<nmsp_opencv_unmanaged::c_opencv_unmanaged>    camera_vector_unsorted;
 
       /********************************************************* Öffentliche Klassenmethoden*******************************************************/
       public:

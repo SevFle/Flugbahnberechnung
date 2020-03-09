@@ -6,12 +6,14 @@ c:\program files (x86)\microsoft visual studio\2017\enterprise\vc\tools\msvc\14.
 c:\program files (x86)\microsoft visual studio\2017\enterprise\vc\tools\msvc\14.16.27023\include\thread(8): fatal error C1189: #error:  <thread> is not supported when compiling with /clr or /clr:pure.
   frm_CameraCalibration_Stereo.cpp
 c:\program files (x86)\microsoft visual studio\2017\enterprise\vc\tools\msvc\14.16.27023\include\thread(8): fatal error C1189: #error:  <thread> is not supported when compiling with /clr or /clr:pure.
+  frm_Camera_Positioning.cpp
   frm_ObjectCalibration.cpp
 c:\program files (x86)\microsoft visual studio\2017\enterprise\vc\tools\msvc\14.16.27023\include\thread(8): fatal error C1189: #error:  <thread> is not supported when compiling with /clr or /clr:pure.
   Camera_managed.cpp
 c:\program files (x86)\microsoft visual studio\2017\enterprise\vc\tools\msvc\14.16.27023\include\thread(8): fatal error C1189: #error:  <thread> is not supported when compiling with /clr or /clr:pure.
   frm_Main.cpp
 c:\program files (x86)\microsoft visual studio\2017\enterprise\vc\tools\msvc\14.16.27023\include\thread(8): fatal error C1189: #error:  <thread> is not supported when compiling with /clr or /clr:pure.
+  GlobalObjects.cpp
   Main.cpp
 c:\program files (x86)\microsoft visual studio\2017\enterprise\vc\tools\msvc\14.16.27023\include\thread(8): fatal error C1189: #error:  <thread> is not supported when compiling with /clr or /clr:pure.
   Generating Code...

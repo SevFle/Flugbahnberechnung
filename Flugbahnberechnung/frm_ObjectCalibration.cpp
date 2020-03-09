@@ -42,7 +42,7 @@ System::Void        C_frm_ObjectCalibration::bt_Stop_Click              (System:
 
 System::Void        C_frm_ObjectCalibration::nup_Cam_ID_ValueChanged    (System::Object^ sender, System::EventArgs^ e)
   {
-  nup_Cam_ID->Value = GlobalObjects->camera_id;
+  nup_Cam_ID->Value = camera_id_in_use;
   }
 
 /*************************************************** Nicht öffentliche private Methoden *****************************************************/

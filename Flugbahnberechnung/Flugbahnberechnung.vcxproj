@@ -194,6 +194,9 @@
     <EmbeddedResource Include="frm_CameraCalibration_Single.resx">
       <DependentUpon>frm_CameraCalibration_Single.h</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="frm_Camera_Positioning.resx">
+      <DependentUpon>frm_Camera_Positioning.h</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="frm_Main.resx">
       <DependentUpon>frm_Main.h</DependentUpon>
     </EmbeddedResource>
