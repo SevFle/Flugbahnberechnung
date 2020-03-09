@@ -56,7 +56,6 @@ void  c_camera_unmanaged::create_cam_vector                             (int cam
   }
 
 /******************************************************* Öffentliche Anwender-Methoden ******************************************************/
-
       //Diese Statemachine verwendet erzeugt n Kamera Objekte die mit ihren individuellen cv::Mat Objekten arbeiten.
 //void  c_camera_unmanaged::state_machine_per_object_exe                  ()
 //  {
@@ -125,7 +124,6 @@ void  c_camera_unmanaged::create_cam_vector                             (int cam
 //      }
 //    }
 //  }
-
       //Diese Statemachine verwendet die vector<cv::Mat*> Objekte eines Camera Objektes 
 //void c_camera_unmanaged::state_machine_per_vector_exe                   ()
 //  {
@@ -184,18 +182,20 @@ void c_camera_unmanaged::state_machine_object_calibration               ()
   {
   while (stop_statemachine == false)
     {
-    state_machine_per_vector_exe();
+    //state_machine_per_vector_exe();
     }
   }
 
-void c_camera_unmanaged::create_camera_threads(int cameras_in_use)
+void c_camera_unmanaged::create_camera_objects                          (int cameras_in_use)
 {
   for (int i = 0; i < cameras_in_use; i++)
   {
     nmsp_opencv_unmanaged::c_opencv_unmanaged* cam = new nmsp_opencv_unmanaged::c_opencv_unmanaged (i);
-    //camera_vector_unsorted.push_back                       (cam);
-    //std::thread thread(camera_vector_unsorted[i]->camera_thread());
+    camera_vector_unsorted.push_back                       (*cam);
     }
 }
 
-
+void c_camera_unmanaged::sort_camera_vector                             (int camera_current_id, int camera_desired_id) 
+  {
+  camera_vector_referrences[camera_current_id] = camera_vector_unsorted[camera_desired_id];
+  }

@@ -3,11 +3,10 @@
 /************************************************************ Includes *******************************************************************/
 
 #include "opencv_unmanaged.h"
-/************************************************************ Include TBB *******************************************************************/
-#include <tbb/concurrent_queue.h>
-#include <tbb/pipeline.h>
-#include <tbb/tbb.h>
-
+namespace std
+  {
+  class thread;
+  } using namespace std;
 
 
 namespace nmsp_camera_unmanaged
@@ -25,7 +24,7 @@ namespace nmsp_camera_unmanaged
 
       /**************************************************** Öffentliche Klassenobjekte ********************************************************/
       public:
-      c_opencv_unmanaged*                                   opencv_unmananged;
+      //c_opencv_unmanaged*                                   opencv_unmananged;
 
 
       /**************************************************** Öffentliche Anwender-Attribute ********************************************************/
@@ -36,17 +35,19 @@ namespace nmsp_camera_unmanaged
 
       bool                                                  stop_statemachine;
 
-      /******************************************** Nicht öffentliche private Anwender-Attribute **************************************************/
-      private:
-      std::vector<nmsp_opencv_unmanaged::c_opencv_unmanaged>    camera_vector_unsorted;
 
+      /******************************************** Nicht öffentliche private Anwender-Attribute **************************************************/
+      public:
+      std::vector<nmsp_opencv_unmanaged::c_opencv_unmanaged>      camera_vector_unsorted;
+      std::vector<nmsp_opencv_unmanaged::c_opencv_unmanaged*>     camera_vector_referrences;
       /********************************************************* Öffentliche Klassenmethoden*******************************************************/
       public:
-      void      state_machine_per_object_exe                ();
-      void      state_machine_per_vector_exe                ();
+      //void      state_machine_per_object_exe                ();
+      //void      state_machine_per_vector_exe                ();
       void      state_machine_object_calibration            ();
-      void      create_camera_threads                       (int cameras_in_use);
-      void      camera_thread                               (int camera_id);
+      void      create_camera_objects                       (int cameras_in_use);
+      //void      camera_thread                               (int camera_id);
+      void        sort_camera_vector                          (int camera_current_id, int camera_desired_id);
       /******************************************************* Private Klassenmethoden***************************************************************/
       private:
       void      create_cam_vector                           (int camera_id);

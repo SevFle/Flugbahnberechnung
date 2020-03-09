@@ -241,7 +241,6 @@ void c_opencv_unmanaged::gpu_gaussian_filter                            (cv::cud
   cv::Ptr<cv::cuda::Filter> gauss = cv::cuda::createGaussianFilter(gpu_src.type(), -1, cv::Size(gaussian_kernel_size, gaussian_kernel_size), gaussian_sigma, gaussian_sigma, cv::BORDER_DEFAULT);
   gauss->apply(gpu_src, gpu_dst);
   std::cout<<"GPU Gaussian \n\n";
-
   }
 
 void c_opencv_unmanaged::cpu_find_contours                              (cv::Mat& cpu_src, cv::Mat& cpu_dst)
@@ -252,3 +251,4 @@ void c_opencv_unmanaged::cpu_find_contours                              (cv::Mat
 
 
 
+     
