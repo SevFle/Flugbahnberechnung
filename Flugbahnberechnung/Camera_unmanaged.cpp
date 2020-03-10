@@ -9,9 +9,10 @@ using namespace nmsp_camera_unmanaged;
 /*************************************************************** Konstruktoren **************************************************************/
 c_camera_unmanaged::c_camera_unmanaged                                  (int cameras_in_use)
   {
-  
-  this->cameras_in_use  = cameras_in_use;
+  this->cameras_in_use = cameras_in_use;
+  create_camera_objects(cameras_in_use);
   stop_statemachine = false;
+
   }
 /**************************************************************** Destruktor ****************************************************************/
 c_camera_unmanaged::~c_camera_unmanaged                                 ()
@@ -51,7 +52,7 @@ c_camera_unmanaged::~c_camera_unmanaged                                 ()
 /*************************************************** Nicht öffentliche private Methoden *****************************************************/
 void  c_camera_unmanaged::create_cam_vector                             (int camera_id)
   {
-  //nmsp_opencv_unmanaged::c_opencv_unmanaged* opencv = new nmsp_opencv_unmanaged::c_opencv_unmanaged(cameras_in_use, camera_id);
+  //nmsp_opencv_unmanaged::c_opencv_unmanaged* opencv = new nmsp_opencv_unmanaged::c_opencv_unmanaged(camera_id);
   //camera_vector_unsorted.push_back(opencv);
   }
 
@@ -189,13 +190,17 @@ void c_camera_unmanaged::state_machine_object_calibration               ()
 void c_camera_unmanaged::create_camera_objects                          (int cameras_in_use)
 {
   for (int i = 0; i < cameras_in_use; i++)
-  {
-    nmsp_opencv_unmanaged::c_opencv_unmanaged* cam = new nmsp_opencv_unmanaged::c_opencv_unmanaged (i);
-    camera_vector_unsorted.push_back                       (*cam);
-
-    
-
+    {
+    nmsp_opencv_unmanaged::c_opencv_unmanaged *cam = new nmsp_opencv_unmanaged::c_opencv_unmanaged (i);
+    camera_vector_unsorted.push_back                          (cam);
+    camera_vector_referrences.push_back                       (camera_referrence);
     }
+
+  for (int i = 0; i< cameras_in_use; i++) //Zweite For-Schleife nötig, da sich verändernde Vektoren alle Pointer invalid rendern
+    {
+    camera_vector_referrences[i]= reinterpret_cast<int**>(&camera_vector_unsorted[i]);
+    }
+
 }
 
 void c_camera_unmanaged::sort_camera_vector                             (int camera_current_id, int camera_desired_id)
@@ -203,5 +208,5 @@ void c_camera_unmanaged::sort_camera_vector                             (int cam
   // Wo ist die feste Position der Kamera? -> Camera_Current_ID
   // Wo ist die Position der Kamera im unsorted Vector? ->Camera_desired_id
   // Zeige die fest installierte Position des Vektors "Referrences" auf die Adresse im Unsortierten Vektor
-  camera_vector_referrences[camera_current_id] = camera_vector_unsorted[camera_desired_id];
+  //**camera_vector_referrences[camera_current_id] = *camera_vector_unsorted[camera_desired_id];
   }

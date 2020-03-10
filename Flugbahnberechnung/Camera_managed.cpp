@@ -21,12 +21,12 @@ C_camera_managed::~C_camera_managed()
 
 
 
-//System::Drawing::Bitmap C_camera_managed::Mat2Bitmap_unfiltered                                     (int camera_id)
-//  {
-//  cv::Size size = camera_unmanaged->camera_vector_referrences[camera_id]->cpu_src_img.size();
-//  cv::cvtColor(camera_unmanaged->camera_vector_referrences[camera_id]->cpu_src_img, camera_unmanaged->camera_vector_referrences[camera_id]->Mat2Bitmap, cv::COLOR_BGRA2RGBA);
-//  System::Drawing::Bitmap color_Bitmap (size.width, size.height, camera_unmanaged->camera_vector_referrences[camera_id]->Mat2Bitmap.step1(), System::Drawing::Imaging::PixelFormat::Format24bppRgb, &camera_unmanaged->camera_vector_referrences[camera_id]->Mat2Bitmap.ptr);
-//  return color_Bitmap;
-//
-//  }
+System::Void C_camera_managed::Mat2Bitmap_unfiltered                                     (int camera_id)
+  {
+  //cv::Size                size        = camera_unmanaged->camera_vector_referrences[camera_id]
+  //cv::cvtColor                         (camera_unmanaged->camera_vector_referrences[camera_id]->cpu_src_img, camera_unmanaged->camera_vector_referrences[camera_id]->Mat2Bitmap, cv::COLOR_BGRA2RGBA);
+  //System::Drawing::Bitmap color_Bitmap (size.width, size.height, camera_unmanaged->camera_vector_referrences[camera_id]->Mat2Bitmap.step1(), System::Drawing::Imaging::PixelFormat::Format24bppRgb, &camera_unmanaged->camera_vector_referrences[camera_id]->Mat2Bitmap.ptr);
+  return;
+
+  }
 
