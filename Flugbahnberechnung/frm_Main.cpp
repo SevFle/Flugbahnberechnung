@@ -26,7 +26,6 @@ C_frm_Main::~C_frm_Main                                                 ()
 /**************************************************** WinForms Event-Handler *********************************************************/
 System::Void        C_frm_Main::bt_ObjectCalibration_Click              (System::Object ^ sender, System::EventArgs ^ e)
   {
-  GlobalObjects->cameras_in_use           = (int)nup_camera_count->Value;
   this->Taktgeber->Enabled								= false;
   this->Main->frm_ObjectCalibration->ShowDialog();
   this->Taktgeber->Enabled								= true;
@@ -34,7 +33,6 @@ System::Void        C_frm_Main::bt_ObjectCalibration_Click              (System:
 
 System::Void        C_frm_Main::bt_CameraCalibration_Click              (System::Object ^ sender, System::EventArgs ^ e)
   {
-  GlobalObjects->cameras_in_use           = (int)nup_camera_count->Value;
   this->Taktgeber->Enabled								= false;
   this->Main->frm_CameraCalibration_Menu->ShowDialog();
   this->Taktgeber->Enabled								= true;
@@ -60,4 +58,20 @@ System::Void        C_frm_Main::C_frm_Main_FormClosing                  (System:
 System::Void        C_frm_Main::Taktgeber_Tick                          (System::Object ^ sender, System::EventArgs ^ e)
   {
   this->txtb_counter->Text								= System::String::Format("{0:0}", this->Zaehler++);
+  }
+
+System::Void        C_frm_Main::bt_camera_positioning_MouseClick        (System::Object^  sender, System::Windows::Forms::MouseEventArgs^  e)
+  {
+  this->Taktgeber->Enabled								= false;
+  this->Main->frm_Camera_Positioning->ShowDialog();
+  this->Taktgeber->Enabled								= true;
+  }
+
+System::Void        C_frm_Main::bt_apply_cameras_Click                  (System::Object^  sender, System::EventArgs^  e)
+  {
+  GlobalObjects->cameras_in_use           = (int)nup_camera_count->Value;
+  Main->camera_managed->camera_unmanaged->create_camera_vectors(static_cast<int>(nup_camera_count->Value));
+  bt_ObjectCalibration->Enabled = true;
+  bt_CameraCalibration->Enabled = true;
+  bt_camera_positioning->Enabled = true;
   }

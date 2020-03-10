@@ -4,7 +4,7 @@
   Flugbahnberechnung.frm_Main.resources - Embedded, ContainedInManifestFile, 
   Flugbahnberechnung.frm_ObjectCalibration.resources - Embedded, ContainedInManifestFile, 
 ImageRuntimeVersion: v4.0.30319
-Assembly Flugbahntracker, Version=0.0.*, Culture=Invariante Sprache (Invariantes Land): 
+Assembly Flugbahntracker, Version=0.0.*, Culture=Invariant Language (Invariant Country): 
 	hash=SHA1, flags=PublicKey
 Assembly mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089: 
 	hash=None, flags=None

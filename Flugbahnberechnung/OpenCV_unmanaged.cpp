@@ -23,13 +23,14 @@ gaussian_kernel_size        (0)
   bordertype                  = cv::BORDER_DEFAULT;
   gaussian_sigma              = 0;
 
-  erosion_kernel_size         = 0;
-  dilation_kernel_size        = 0;
-  opening_kernel_size         = 0;
-  morph_kernel_size           = 0;
-  closing_kernel_size         = 0;
+  erosion_kernel_size         = 1;
+  dilation_kernel_size        = 1;
+  opening_kernel_size         = 1;
+  morph_kernel_size           = 1;
+  closing_kernel_size         = 1;
+  gaussian_kernel_size        = 1;
 
-  bilateral_kernel_size       = 0;
+  bilateral_kernel_size       = 1;
   bilateral_sigma_color       = 0;
   bilateral_sigma_space       = 0;
 
@@ -37,6 +38,8 @@ gaussian_kernel_size        (0)
 
   capture_api = cv::CAP_DSHOW;
   this->camera_id = camera_id;
+
+//  std::thread t1(&c_opencv_unmanaged::camera_thread, this);
   }
 
 /**************************************************************** Destruktor ****************************************************************/
@@ -91,7 +94,7 @@ void c_opencv_unmanaged::cpu_img_show                                   (cv::Mat
   cv::imshow            ("processed", processed_img);
   }
 
-void c_opencv_unmanaged::camera_thread()
+void c_opencv_unmanaged::camera_thread                                  ()
   {
   while (true)
     {
@@ -143,12 +146,6 @@ void c_opencv_unmanaged::cpu_mask_img                                   (cv::Mat
   cv::inRange(hsv_cpu_src, cv::Scalar(this->hue_min, this->saturation_min, this->value_min), cv::Scalar(this->hue_max, this->saturation_max, this->value_max), cpu_masked_dst);
   }
 
-//void c_opencv_unmanaged::create_videocapture_vector                     (int camera_id)
-//  {
-//  cv::VideoCapture* cap = new cv::VideoCapture  (camera_id, capture_api);
-//  camera_vector.push_back                       (cap);
-//  }
-
 void c_opencv_unmanaged::create_img_vectors                             ()
   {
   cpu_src_vector.push_back        (this->cpu_img);
@@ -174,7 +171,54 @@ void c_opencv_unmanaged::apply_filter                                   (cv::Mat
 
   }
 
-/**** Private Klassenmethoden*****************************************************/
+void c_opencv_unmanaged::operator                                       ()() 
+  {
+  while (true)
+    {
+    switch (statemachine_state)
+      {
+        case 0:
+          std::cout<< "State 0 \n\n";
+
+          init(camera_id);
+          statemachine_state = 1;
+
+
+        case 1:
+          std::cout<< "State 1 \n\n";
+
+          cpu_grab_frame(cpu_src_img);
+          statemachine_state = 2;
+
+
+        case 2:
+          std::cout<< "State 2 \n\n";
+
+          apply_filter(cpu_src_img, cpu_mid_img);
+          statemachine_state = 3;
+
+
+        case 3:
+          std::cout<< "State 3 \n\n";
+
+          cpu_mask_img(cpu_mid_img, cpu_masked_img);
+          statemachine_state = 4;
+
+
+        case 4:
+          std::cout<< "State 4 \n\n";
+
+          cpu_img_show(cpu_masked_img, cpu_src_img);
+          if (cv::waitKey(5)>=0)
+            break;
+
+          statemachine_state = 1;
+
+      }
+    }
+  }
+
+/*************************************************************** Private Klassenmethoden*****************************************************/
 void c_opencv_unmanaged::cpu_to_4channel_colour                         (cv::Mat& cpu_src, cv::Mat& cpu_dst)
   {
   cv::Mat src4ch;

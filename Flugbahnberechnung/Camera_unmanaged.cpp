@@ -10,54 +10,65 @@ using namespace nmsp_camera_unmanaged;
 c_camera_unmanaged::c_camera_unmanaged                                  (int cameras_in_use)
   {
   this->cameras_in_use = cameras_in_use;
-  create_camera_objects(cameras_in_use);
   stop_statemachine = false;
 
   }
 /**************************************************************** Destruktor ****************************************************************/
 c_camera_unmanaged::~c_camera_unmanaged                                 ()
   {
+  stop_statemachine = false;
   cameras_in_use  = 0;
   }
 
-//bool c_opencv_unmanaged::tbb_camera_pipeline (size_t ntoken)
-//  {
-//  /*tbb::parallel_pipeline
-//    (
-//    ntoken,
-//    tbb::make_filter<void, cv::Mat>
-//      (
-//  tbb::filter::serial_in_order,[&](tbb::flow_control& fc)-> cv::Mat
-//        {
-//        grabbed_frame = camera_vector[current_pipeline_camera_grab].grab;
-//        current_pipeline_camera_grab++;
-//        if (current_pipeline_camera_grab > cameras_in_use-1)
-//          {
-//          current_pipeline_camera_grab = 0;
-//          }
-//        return grabbed_frame;
-//        }
-//      ) &
-//    tbb::make_filter<cv::Mat, cv::Mat>
-//      (
-//  tbb::filter::parallel, [](cv::Mat)
-//        {
-//    
-//        }
-//      )
-//      
-//    )*/
-//  
-//  }
 /*************************************************** Nicht öffentliche private Methoden *****************************************************/
-void  c_camera_unmanaged::create_cam_vector                             (int camera_id)
+
+void c_camera_unmanaged::start_camera_thread                            ()
   {
-  //nmsp_opencv_unmanaged::c_opencv_unmanaged* opencv = new nmsp_opencv_unmanaged::c_opencv_unmanaged(camera_id);
-  //camera_vector_unsorted.push_back(opencv);
+  //camera_thread   = new std::thread(&c_camera_unmanaged::camera_vector_unsorted[camera_id]::camera_thread, this);
+  //std::thread Camera_Thread(camera_vector_unsorted[camera_id]->camera_thread());
+ //std::thread cam_thread( camera_vector_unsorted[camera_id]);
+  camera_vector_unsorted[current_camera_id]->camera_thread();
+  }
+/******************************************************* Öffentliche Anwender-Methoden ******************************************************/
+
+void c_camera_unmanaged::state_machine_object_calibration               ()
+  {
+  while (stop_statemachine == false)
+    {
+    //state_machine_per_vector_exe();
+    }
   }
 
-/******************************************************* Öffentliche Anwender-Methoden ******************************************************/
-      //Diese Statemachine verwendet erzeugt n Kamera Objekte die mit ihren individuellen cv::Mat Objekten arbeiten.
+void c_camera_unmanaged::create_camera_vectors                          (int cameras_in_use)
+{
+  for (int i = 0; i < cameras_in_use; i++)
+    {
+    nmsp_opencv_unmanaged::c_opencv_unmanaged *cam = new nmsp_opencv_unmanaged::c_opencv_unmanaged (i);
+    camera_vector_unsorted.push_back                          (cam);
+    camera_vector_referrences.push_back                       (camera_referrence);
+    std::cout << "Created " << i+1 << " Camera Objects with according pointers"<< std::endl;
+    current_camera_id = i;
+    camera_thread   = new std::thread(&c_camera_unmanaged::start_camera_thread, this);
+    std::cout << "Started Camera Thread: " << i+1 << std::endl;
+    }
+
+  for (int i = 0; i< cameras_in_use; i++) //Zweite For-Schleife nötig, da sich verändernde Vektoren alle Pointer invalid rendern
+    {
+    camera_vector_referrences[i]= reinterpret_cast<int**>(&camera_vector_unsorted[i]);
+    }
+
+}
+
+void c_camera_unmanaged::sort_camera_vector                             (int camera_current_id, int camera_desired_id)
+  {
+  // Wo ist die feste Position der Kamera? -> Camera_Current_ID
+  // Wo ist die Position der Kamera im unsorted Vector? ->Camera_desired_id
+  // Zeige die fest installierte Position des Vektors "Referrences" auf die Adresse im Unsortierten Vektor
+  camera_vector_referrences[camera_current_id] = reinterpret_cast<int**>(&camera_vector_unsorted[camera_desired_id]);
+  std::cout << " Set Referrences Kamera " << camera_current_id << " to Camera in unsorted Vector at position " << camera_desired_id << std::endl;
+  }
+
+//Diese Statemachine verwendet erzeugt n Kamera Objekte die mit ihren individuellen cv::Mat Objekten arbeiten.
 //void  c_camera_unmanaged::state_machine_per_object_exe                  ()
 //  {
 //  while (true)
@@ -178,35 +189,3 @@ void  c_camera_unmanaged::create_cam_vector                             (int cam
 //      }
 //
 //  }
-
-void c_camera_unmanaged::state_machine_object_calibration               ()
-  {
-  while (stop_statemachine == false)
-    {
-    //state_machine_per_vector_exe();
-    }
-  }
-
-void c_camera_unmanaged::create_camera_objects                          (int cameras_in_use)
-{
-  for (int i = 0; i < cameras_in_use; i++)
-    {
-    nmsp_opencv_unmanaged::c_opencv_unmanaged *cam = new nmsp_opencv_unmanaged::c_opencv_unmanaged (i);
-    camera_vector_unsorted.push_back                          (cam);
-    camera_vector_referrences.push_back                       (camera_referrence);
-    }
-
-  for (int i = 0; i< cameras_in_use; i++) //Zweite For-Schleife nötig, da sich verändernde Vektoren alle Pointer invalid rendern
-    {
-    camera_vector_referrences[i]= reinterpret_cast<int**>(&camera_vector_unsorted[i]);
-    }
-
-}
-
-void c_camera_unmanaged::sort_camera_vector                             (int camera_current_id, int camera_desired_id)
-  {
-  // Wo ist die feste Position der Kamera? -> Camera_Current_ID
-  // Wo ist die Position der Kamera im unsorted Vector? ->Camera_desired_id
-  // Zeige die fest installierte Position des Vektors "Referrences" auf die Adresse im Unsortierten Vektor
-  //**camera_vector_referrences[camera_current_id] = *camera_vector_unsorted[camera_desired_id];
-  }
