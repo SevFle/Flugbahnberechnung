@@ -33,7 +33,7 @@ namespace nmsp_camera_managed
       
       /********************************************************* Öffentliche Klassenmethoden*******************************************************/
       public:
-      System::Void      Mat2Bitmap_unfiltered                                    (int camera_id);
+      //System::Void      Mat2Bitmap_unfiltered                                    (int camera_id, cv::Mat &Mat2Bit_Img);
 
   
       /******************************************************* Private Klassenmethoden***************************************************************/

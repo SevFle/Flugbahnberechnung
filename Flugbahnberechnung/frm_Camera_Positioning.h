@@ -129,6 +129,10 @@ namespace nmsp_frm_camera_positioning
       this->bt_exit->Text = L"Exit";
       this->bt_exit->UseVisualStyleBackColor = true;
       // 
+      // taktgeber
+      // 
+      this->taktgeber->Tick += gcnew System::EventHandler(this, &c_frm_Camera_Positioning::taktgeber_Tick);
+      // 
       // nup_Camera_L1
       // 
       this->nup_Camera_L1->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 14, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
@@ -354,6 +358,7 @@ namespace nmsp_frm_camera_positioning
     System::Void nup_Camera_R1_ValueChanged(System::Object^  sender, System::EventArgs^  e);
     System::Void nup_Camera_R2_ValueChanged(System::Object^  sender, System::EventArgs^  e);
     System::Void nup_Camera_R3_ValueChanged(System::Object^  sender, System::EventArgs^  e);
+    System::Void taktgeber_Tick(System::Object^  sender, System::EventArgs^  e);
 };
 }
 

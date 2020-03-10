@@ -3,6 +3,7 @@
 #include <opencv2/opencv.hpp>
 #include <opencv2/highgui.hpp>
 
+
 namespace nmsp_opencv_unmanaged
   {
   class c_opencv_unmanaged
@@ -102,8 +103,10 @@ namespace nmsp_opencv_unmanaged
       void            apply_filter                                        (cv::Mat  &cpu_src, cv::Mat &cpu_dst);
       void            cpu_mask_img                                        (cv::Mat& hsv_cpu_src, cv::Mat& cpu_masked_dst);
       void            cpu_img_show                                        (cv::Mat& processed_img, cv::Mat& original_img);
+      void            operator                                            ()();
 
       void            camera_thread                                       ();
+
       /******************************************************* Private Klassenmethoden***************************************************************/
       private:
       void            gpu_to_hsv                                          (cv::cuda::GpuMat& gpu_src, cv::cuda::GpuMat& gpu_dst);

@@ -2,10 +2,6 @@
   App_Main.cpp
 c:\users\111162002.edu\documents\projekte\objecttracking\flugbahnberechnung\main.h(78): warning C4677: 'camera_managed': signature of non-private member contains assembly private type 'nmsp_camera_managed::C_camera_managed'
   c:\users\111162002.edu\documents\projekte\objecttracking\flugbahnberechnung\camera_managed.h(12): note: see declaration of 'nmsp_camera_managed::C_camera_managed'
-  Camera_managed.cpp
-  Main.cpp
-c:\users\111162002.edu\documents\projekte\objecttracking\flugbahnberechnung\main.h(78): warning C4677: 'camera_managed': signature of non-private member contains assembly private type 'nmsp_camera_managed::C_camera_managed'
-  c:\users\111162002.edu\documents\projekte\objecttracking\flugbahnberechnung\camera_managed.h(12): note: see declaration of 'nmsp_camera_managed::C_camera_managed'
   frm_CameraCalibration_Menu.cpp
 c:\users\111162002.edu\documents\projekte\objecttracking\flugbahnberechnung\main.h(78): warning C4677: 'camera_managed': signature of non-private member contains assembly private type 'nmsp_camera_managed::C_camera_managed'
   c:\users\111162002.edu\documents\projekte\objecttracking\flugbahnberechnung\camera_managed.h(12): note: see declaration of 'nmsp_camera_managed::C_camera_managed'
@@ -18,10 +14,14 @@ c:\users\111162002.edu\documents\projekte\objecttracking\flugbahnberechnung\main
   frm_Camera_Positioning.cpp
 c:\users\111162002.edu\documents\projekte\objecttracking\flugbahnberechnung\main.h(78): warning C4677: 'camera_managed': signature of non-private member contains assembly private type 'nmsp_camera_managed::C_camera_managed'
   c:\users\111162002.edu\documents\projekte\objecttracking\flugbahnberechnung\camera_managed.h(12): note: see declaration of 'nmsp_camera_managed::C_camera_managed'
+  frm_ObjectCalibration.cpp
+c:\users\111162002.edu\documents\projekte\objecttracking\flugbahnberechnung\main.h(78): warning C4677: 'camera_managed': signature of non-private member contains assembly private type 'nmsp_camera_managed::C_camera_managed'
+  c:\users\111162002.edu\documents\projekte\objecttracking\flugbahnberechnung\camera_managed.h(12): note: see declaration of 'nmsp_camera_managed::C_camera_managed'
+  Camera_managed.cpp
   frm_Main.cpp
 c:\users\111162002.edu\documents\projekte\objecttracking\flugbahnberechnung\main.h(78): warning C4677: 'camera_managed': signature of non-private member contains assembly private type 'nmsp_camera_managed::C_camera_managed'
   c:\users\111162002.edu\documents\projekte\objecttracking\flugbahnberechnung\camera_managed.h(12): note: see declaration of 'nmsp_camera_managed::C_camera_managed'
-  frm_ObjectCalibration.cpp
+  Main.cpp
 c:\users\111162002.edu\documents\projekte\objecttracking\flugbahnberechnung\main.h(78): warning C4677: 'camera_managed': signature of non-private member contains assembly private type 'nmsp_camera_managed::C_camera_managed'
   c:\users\111162002.edu\documents\projekte\objecttracking\flugbahnberechnung\camera_managed.h(12): note: see declaration of 'nmsp_camera_managed::C_camera_managed'
   Generating Code...
@@ -133,6 +133,5 @@ c:\libraries\opencv\4_2_0\install\include\opencv2\core\mat.inl.hpp(2181): warnin
   	Found an intrinsic not supported in managed code
 c:\libraries\opencv\4_2_0\install\include\opencv2\core\mat.inl.hpp(3781): warning C4793: 'cv::UMat::addref': function compiled as native:
   	Found an intrinsic not supported in managed code
-  Camera_unmanaged.cpp
   App_Main.obj : MSIL module encountered; incremental linking is disabled for MSIL; performing full link
   Flugbahnberechnung.vcxproj -> C:\Users\111162002.EDU\Documents\Projekte\ObjectTracking\x64\Debug\Flugbahntracker.exe

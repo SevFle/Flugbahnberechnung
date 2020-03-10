@@ -44,5 +44,9 @@ System::Void c_frm_Camera_Positioning::nup_Camera_R3_ValueChanged(System::Object
   {
   Main->camera_managed->camera_unmanaged->sort_camera_vector(5, static_cast<int>(nup_Camera_R3->Value));
   }
+System::Void c_frm_Camera_Positioning::taktgeber_Tick(System::Object^  sender, System::EventArgs^  e)
+  {
+
+  }
 
 
