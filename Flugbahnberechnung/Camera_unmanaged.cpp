@@ -45,7 +45,7 @@ void c_camera_unmanaged::create_camera_vectors                          (int cam
     {
     nmsp_opencv_unmanaged::c_opencv_unmanaged *cam = new nmsp_opencv_unmanaged::c_opencv_unmanaged (i);
     camera_vector_unsorted.push_back                          (cam);
-    camera_vector_referrences.push_back                       (camera_referrence);
+    //camera_vector_referrences.push_back                       (camera_referrence);
     std::cout << "Created " << i+1 << " Camera Objects with according pointers"<< std::endl;
     current_camera_id = i;
     camera_thread   = new std::thread(&c_camera_unmanaged::start_camera_thread, this);
@@ -54,18 +54,27 @@ void c_camera_unmanaged::create_camera_vectors                          (int cam
 
   for (int i = 0; i< cameras_in_use; i++) //Zweite For-Schleife nötig, da sich verändernde Vektoren alle Pointer invalid rendern
     {
-    camera_vector_referrences[i]= reinterpret_cast<int**>(&camera_vector_unsorted[i]);
+    //camera_vector_referrences[i]= reinterpret_cast<int**>(&camera_vector_unsorted[i]);
     }
 
 }
 
-void c_camera_unmanaged::sort_camera_vector                             (int camera_current_id, int camera_desired_id)
+void c_camera_unmanaged::move_camera_vector2temp                             (int camera_current_id, int camera_desired_id)
   {
+
   // Wo ist die feste Position der Kamera? -> Camera_Current_ID
   // Wo ist die Position der Kamera im unsorted Vector? ->Camera_desired_id
   // Zeige die fest installierte Position des Vektors "Referrences" auf die Adresse im Unsortierten Vektor
-  camera_vector_referrences[camera_current_id] = reinterpret_cast<int**>(&camera_vector_unsorted[camera_desired_id]);
-  std::cout << " Set Referrences Kamera " << camera_current_id << " to Camera in unsorted Vector at position " << camera_desired_id << std::endl;
+  camera_vector_temp[camera_current_id] = std::move(camera_vector_unsorted[camera_desired_id]);
+  std::cout << " Moved Pointer for Camera " << camera_current_id << " to Position " << camera_desired_id << " in temporary Vector" << std::endl;
+  }
+
+void c_camera_unmanaged::move_camera_temp2vector                             ()
+  {
+  for (int i = 0; i < cameras_in_use; i++)
+    {
+    camera_vector_unsorted[i] = std::move(camera_vector_temp[i]);
+    }
   }
 
 //Diese Statemachine verwendet erzeugt n Kamera Objekte die mit ihren individuellen cv::Mat Objekten arbeiten.

@@ -131,7 +131,7 @@ void c_opencv_unmanaged::camera_thread                                  ()
         case 4:
           std::cout<< "State 4 \n\n";
 
-          cpu_img_show(cpu_masked_img, cpu_src_img);
+          //cpu_img_show(cpu_masked_img, cpu_src_img);
           if (cv::waitKey(5)>=0)
             break;
 

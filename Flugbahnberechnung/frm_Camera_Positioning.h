@@ -35,7 +35,8 @@ namespace nmsp_frm_camera_positioning
     private: System::Windows::Forms::TextBox^  txtb_counter;
     protected:
     private: System::Windows::Forms::Button^  bt_exit;
-    private: System::Windows::Forms::Timer^  taktgeber;
+    private: System::Windows::Forms::Timer^  Taktgeber;
+
     private: System::Windows::Forms::NumericUpDown^  nup_Camera_L1;
     private: System::Windows::Forms::PictureBox^  pb_Camera_L1;
 
@@ -59,6 +60,7 @@ namespace nmsp_frm_camera_positioning
 
     private: System::Windows::Forms::NumericUpDown^  nup_Camera_R1;
     private: System::Windows::Forms::Label^  label1;
+    private: System::Windows::Forms::Button^  bt_appy;
     private: System::ComponentModel::IContainer^  components;
 
 	private:
@@ -77,7 +79,7 @@ namespace nmsp_frm_camera_positioning
       this->components = (gcnew System::ComponentModel::Container());
       this->txtb_counter = (gcnew System::Windows::Forms::TextBox());
       this->bt_exit = (gcnew System::Windows::Forms::Button());
-      this->taktgeber = (gcnew System::Windows::Forms::Timer(this->components));
+      this->Taktgeber = (gcnew System::Windows::Forms::Timer(this->components));
       this->nup_Camera_L1 = (gcnew System::Windows::Forms::NumericUpDown());
       this->pb_Camera_L1 = (gcnew System::Windows::Forms::PictureBox());
       this->groupBox1 = (gcnew System::Windows::Forms::GroupBox());
@@ -93,6 +95,7 @@ namespace nmsp_frm_camera_positioning
       this->pb_Camera_R1 = (gcnew System::Windows::Forms::PictureBox());
       this->nup_Camera_R1 = (gcnew System::Windows::Forms::NumericUpDown());
       this->label1 = (gcnew System::Windows::Forms::Label());
+      this->bt_appy = (gcnew System::Windows::Forms::Button());
       (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->nup_Camera_L1))->BeginInit();
       (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->pb_Camera_L1))->BeginInit();
       this->groupBox1->SuspendLayout();
@@ -128,10 +131,11 @@ namespace nmsp_frm_camera_positioning
       this->bt_exit->TabIndex = 4;
       this->bt_exit->Text = L"Exit";
       this->bt_exit->UseVisualStyleBackColor = true;
+      this->bt_exit->Click += gcnew System::EventHandler(this, &c_frm_Camera_Positioning::bt_exit_Click);
       // 
-      // taktgeber
+      // Taktgeber
       // 
-      this->taktgeber->Tick += gcnew System::EventHandler(this, &c_frm_Camera_Positioning::taktgeber_Tick);
+      this->Taktgeber->Tick += gcnew System::EventHandler(this, &c_frm_Camera_Positioning::taktgeber_Tick);
       // 
       // nup_Camera_L1
       // 
@@ -188,10 +192,6 @@ namespace nmsp_frm_camera_positioning
       this->nup_Camera_L3->Name = L"nup_Camera_L3";
       this->nup_Camera_L3->Size = System::Drawing::Size(49, 34);
       this->nup_Camera_L3->TabIndex = 9;
-      this->nup_Camera_L3->Value = System::Decimal(gcnew cli::array< System::Int32 >(4)
-        {
-        4, 0, 0, 0
-        });
       this->nup_Camera_L3->ValueChanged += gcnew System::EventHandler(this, &c_frm_Camera_Positioning::nup_Camera_L3_ValueChanged);
       // 
       // pb_Camera_L2
@@ -212,10 +212,6 @@ namespace nmsp_frm_camera_positioning
       this->nup_Camera_L2->Name = L"nup_Camera_L2";
       this->nup_Camera_L2->Size = System::Drawing::Size(49, 34);
       this->nup_Camera_L2->TabIndex = 7;
-      this->nup_Camera_L2->Value = System::Decimal(gcnew cli::array< System::Int32 >(4)
-        {
-        2, 0, 0, 0
-        });
       this->nup_Camera_L2->ValueChanged += gcnew System::EventHandler(this, &c_frm_Camera_Positioning::nup_Camera_L2_ValueChanged);
       // 
       // groupBox2
@@ -253,10 +249,6 @@ namespace nmsp_frm_camera_positioning
       this->nup_Camera_R3->Name = L"nup_Camera_R3";
       this->nup_Camera_R3->Size = System::Drawing::Size(49, 34);
       this->nup_Camera_R3->TabIndex = 9;
-      this->nup_Camera_R3->Value = System::Decimal(gcnew cli::array< System::Int32 >(4)
-        {
-        5, 0, 0, 0
-        });
       this->nup_Camera_R3->ValueChanged += gcnew System::EventHandler(this, &c_frm_Camera_Positioning::nup_Camera_R3_ValueChanged);
       // 
       // pb_Camera_R2
@@ -277,10 +269,6 @@ namespace nmsp_frm_camera_positioning
       this->nup_Camera_R2->Name = L"nup_Camera_R2";
       this->nup_Camera_R2->Size = System::Drawing::Size(49, 34);
       this->nup_Camera_R2->TabIndex = 7;
-      this->nup_Camera_R2->Value = System::Decimal(gcnew cli::array< System::Int32 >(4)
-        {
-        3, 0, 0, 0
-        });
       this->nup_Camera_R2->ValueChanged += gcnew System::EventHandler(this, &c_frm_Camera_Positioning::nup_Camera_R2_ValueChanged);
       // 
       // pb_Camera_R1
@@ -301,10 +289,6 @@ namespace nmsp_frm_camera_positioning
       this->nup_Camera_R1->Name = L"nup_Camera_R1";
       this->nup_Camera_R1->Size = System::Drawing::Size(49, 34);
       this->nup_Camera_R1->TabIndex = 5;
-      this->nup_Camera_R1->Value = System::Decimal(gcnew cli::array< System::Int32 >(4)
-        {
-        1, 0, 0, 0
-        });
       this->nup_Camera_R1->ValueChanged += gcnew System::EventHandler(this, &c_frm_Camera_Positioning::nup_Camera_R1_ValueChanged);
       // 
       // label1
@@ -319,11 +303,25 @@ namespace nmsp_frm_camera_positioning
       this->label1->TabIndex = 12;
       this->label1->Text = L"Erste Wurfrichtung  ----->";
       // 
+      // bt_appy
+      // 
+      this->bt_appy->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 14.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+                             static_cast<System::Byte>(0)));
+      this->bt_appy->Location = System::Drawing::Point(1287, 417);
+      this->bt_appy->Margin = System::Windows::Forms::Padding(4);
+      this->bt_appy->Name = L"bt_appy";
+      this->bt_appy->Size = System::Drawing::Size(223, 90);
+      this->bt_appy->TabIndex = 13;
+      this->bt_appy->Text = L"Apply";
+      this->bt_appy->UseVisualStyleBackColor = true;
+      this->bt_appy->Click += gcnew System::EventHandler(this, &c_frm_Camera_Positioning::bt_appy_Click);
+      // 
       // c_frm_Camera_Positioning
       // 
       this->AutoScaleDimensions = System::Drawing::SizeF(8, 16);
       this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
       this->ClientSize = System::Drawing::Size(1543, 746);
+      this->Controls->Add(this->bt_appy);
       this->Controls->Add(this->label1);
       this->Controls->Add(this->groupBox2);
       this->Controls->Add(this->groupBox1);
@@ -332,6 +330,8 @@ namespace nmsp_frm_camera_positioning
       this->Margin = System::Windows::Forms::Padding(4);
       this->Name = L"c_frm_Camera_Positioning";
       this->Text = L"frm_Camera_Positioning";
+      this->FormClosing += gcnew System::Windows::Forms::FormClosingEventHandler(this, &c_frm_Camera_Positioning::c_frm_Camera_Positioning_FormClosing);
+      this->Load += gcnew System::EventHandler(this, &c_frm_Camera_Positioning::c_frm_Camera_Positioning_Load);
       (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->nup_Camera_L1))->EndInit();
       (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->pb_Camera_L1))->EndInit();
       this->groupBox1->ResumeLayout(false);
@@ -359,6 +359,14 @@ namespace nmsp_frm_camera_positioning
     System::Void nup_Camera_R2_ValueChanged(System::Object^  sender, System::EventArgs^  e);
     System::Void nup_Camera_R3_ValueChanged(System::Object^  sender, System::EventArgs^  e);
     System::Void taktgeber_Tick(System::Object^  sender, System::EventArgs^  e);
+    System::Void bt_appy_Click(System::Object^  sender, System::EventArgs^  e);
+
+
+    System::Void          c_frm_Camera_Positioning::FillPicturebox                                     (System::Windows::Forms::PictureBox^ Picturebox, Int32 ColorImageCols, Int32 ColorImageRows, Int32 ColorImageStep, Int32 ColorImageType, System::IntPtr ColorImagePtr);
+    System::Void          c_frm_Camera_Positioning::FillMat2Picturebox                                 (System::Windows::Forms::PictureBox^ Picturebox, cv::Mat &colorImage);
+    System::Void bt_exit_Click(System::Object^  sender, System::EventArgs^  e);
+    System::Void c_frm_Camera_Positioning_Load(System::Object^  sender, System::EventArgs^  e);
+    System::Void c_frm_Camera_Positioning_FormClosing(System::Object^  sender, System::Windows::Forms::FormClosingEventArgs^  e);
 };
 }
 
