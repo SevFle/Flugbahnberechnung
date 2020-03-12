@@ -1,8 +1,20 @@
 ﻿C:\Program Files (x86)\Microsoft Visual Studio\2017\Professional\Common7\IDE\VC\VCTargets\Microsoft.CppBuild.targets(391,5): warning MSB8028: The intermediate directory (x64\Debug\) contains files shared from another project (Flugbahnberechnung.vcxproj, Flugbahntracker_managed.vcxproj).  This can lead to incorrect clean and rebuild behavior.
-  frm_Camera_Positioning.cpp
+  frm_ObjectCalibration.cpp
 c:\users\111162002.edu\documents\projekte\objecttracking\flugbahnberechnung\main.h(78): warning C4677: 'camera_managed': signature of non-private member contains assembly private type 'nmsp_camera_managed::C_camera_managed'
   c:\users\111162002.edu\documents\projekte\objecttracking\flugbahnberechnung\camera_managed.h(12): note: see declaration of 'nmsp_camera_managed::C_camera_managed'
-c:\users\111162002.edu\documents\projekte\objecttracking\flugbahnberechnung\frm_camera_positioning.cpp(143): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+c:\users\111162002.edu\documents\projekte\objecttracking\flugbahnberechnung\frm_objectcalibration.cpp(170): warning C4553: '==': result of expression not used; did you intend '='?
+c:\users\111162002.edu\documents\projekte\objecttracking\flugbahnberechnung\frm_objectcalibration.cpp(178): warning C4553: '==': result of expression not used; did you intend '='?
+c:\users\111162002.edu\documents\projekte\objecttracking\flugbahnberechnung\frm_objectcalibration.cpp(189): warning C4553: '==': result of expression not used; did you intend '='?
+c:\users\111162002.edu\documents\projekte\objecttracking\flugbahnberechnung\frm_objectcalibration.cpp(196): warning C4553: '==': result of expression not used; did you intend '='?
+c:\users\111162002.edu\documents\projekte\objecttracking\flugbahnberechnung\frm_objectcalibration.cpp(208): warning C4553: '==': result of expression not used; did you intend '='?
+c:\users\111162002.edu\documents\projekte\objecttracking\flugbahnberechnung\frm_objectcalibration.cpp(216): warning C4553: '==': result of expression not used; did you intend '='?
+c:\users\111162002.edu\documents\projekte\objecttracking\flugbahnberechnung\frm_objectcalibration.cpp(228): warning C4553: '==': result of expression not used; did you intend '='?
+c:\users\111162002.edu\documents\projekte\objecttracking\flugbahnberechnung\frm_objectcalibration.cpp(236): warning C4553: '==': result of expression not used; did you intend '='?
+c:\users\111162002.edu\documents\projekte\objecttracking\flugbahnberechnung\frm_objectcalibration.cpp(248): warning C4553: '==': result of expression not used; did you intend '='?
+c:\users\111162002.edu\documents\projekte\objecttracking\flugbahnberechnung\frm_objectcalibration.cpp(256): warning C4553: '==': result of expression not used; did you intend '='?
+c:\users\111162002.edu\documents\projekte\objecttracking\flugbahnberechnung\frm_objectcalibration.cpp(267): warning C4553: '==': result of expression not used; did you intend '='?
+c:\users\111162002.edu\documents\projekte\objecttracking\flugbahnberechnung\frm_objectcalibration.cpp(275): warning C4553: '==': result of expression not used; did you intend '='?
+c:\users\111162002.edu\documents\projekte\objecttracking\flugbahnberechnung\frm_objectcalibration.cpp(317): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
 c:\libraries\opencv\4_2_0\install\include\opencv2\core\cuda.inl.hpp(105): warning C4793: 'cv::cuda::GpuMat::GpuMat': function compiled as native:
   	Found an intrinsic not supported in managed code
 c:\libraries\opencv\4_2_0\install\include\opencv2\core\cuda.inl.hpp(395): warning C4793: 'cv::cuda::HostMem::HostMem': function compiled as native:

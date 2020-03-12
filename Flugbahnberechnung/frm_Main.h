@@ -117,6 +117,10 @@ namespace NmSp_frm_Main
                                       System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
       this->nup_camera_count->Location = System::Drawing::Point(15, 355);
       this->nup_camera_count->Margin = System::Windows::Forms::Padding(4);
+      this->nup_camera_count->Maximum = System::Decimal(gcnew cli::array< System::Int32 >(4)
+        {
+        10, 0, 0, 0
+        });
       this->nup_camera_count->Minimum = System::Decimal(gcnew cli::array< System::Int32 >(4)
         {
         1, 0, 0, 0

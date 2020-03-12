@@ -143,6 +143,10 @@ namespace nmsp_frm_camera_positioning
                                    static_cast<System::Byte>(0)));
       this->nup_Camera_L1->Location = System::Drawing::Point(37, 234);
       this->nup_Camera_L1->Margin = System::Windows::Forms::Padding(4);
+      this->nup_Camera_L1->Maximum = System::Decimal(gcnew cli::array< System::Int32 >(4)
+        {
+        50, 0, 0, 0
+        });
       this->nup_Camera_L1->Name = L"nup_Camera_L1";
       this->nup_Camera_L1->Size = System::Drawing::Size(49, 34);
       this->nup_Camera_L1->TabIndex = 5;
@@ -362,11 +366,15 @@ namespace nmsp_frm_camera_positioning
     System::Void bt_appy_Click(System::Object^  sender, System::EventArgs^  e);
 
 
-    System::Void          c_frm_Camera_Positioning::FillPicturebox                                     (System::Windows::Forms::PictureBox^ Picturebox, Int32 ColorImageCols, Int32 ColorImageRows, Int32 ColorImageStep, Int32 ColorImageType, System::IntPtr ColorImagePtr);
-    System::Void          c_frm_Camera_Positioning::FillMat2Picturebox                                 (System::Windows::Forms::PictureBox^ Picturebox, cv::Mat &colorImage);
+    System::Void  FillPicturebox                                     (System::Windows::Forms::PictureBox^ Picturebox, Int32 ColorImageCols, Int32 ColorImageRows, Int32 ColorImageStep, Int32 ColorImageType, System::IntPtr ColorImagePtr);
+    System::Void  FillMat2Picturebox                                 (System::Windows::Forms::PictureBox^ Picturebox, cv::Mat &colorImage);
+
     System::Void bt_exit_Click(System::Object^  sender, System::EventArgs^  e);
     System::Void c_frm_Camera_Positioning_Load(System::Object^  sender, System::EventArgs^  e);
     System::Void c_frm_Camera_Positioning_FormClosing(System::Object^  sender, System::Windows::Forms::FormClosingEventArgs^  e);
+
+    System::Void set_nup_value();
+
 };
 }
 

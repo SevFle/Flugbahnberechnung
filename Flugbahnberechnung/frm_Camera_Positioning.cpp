@@ -119,6 +119,7 @@ System::Void          c_frm_Camera_Positioning::c_frm_Camera_Positioning_Load   
   this->Zaehler                           = 0;
   this->Taktgeber->Interval               = 100;
   this->Taktgeber->Enabled                = true;
+  this->set_nup_value();
   }
 System::Void          c_frm_Camera_Positioning::bt_exit_Click                                       (System::Object^  sender, System::EventArgs^  e)
   {
@@ -143,5 +144,12 @@ System::Void          c_frm_Camera_Positioning::FillMat2Picturebox              
   FillPicturebox                     (Picturebox, colorImage_cols, colorImage_rows, colorImage_step, colorImage_type, colorImage_ptr);
   } // FillMatInToPictureBox
 
-
+System::Void          c_frm_Camera_Positioning::set_nup_value()
+  {
+  Int32 maximum = static_cast<Int32> (this->GlobalObjects->cameras_in_use);
+  this->nup_Camera_L1->Maximum = System::Decimal(gcnew cli::array< System::Int32 >(4)
+    {
+    maximum, 0, 0, 0
+    });
+  }
 
