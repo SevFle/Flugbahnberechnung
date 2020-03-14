@@ -77,12 +77,15 @@ namespace NmSp_frm_ObjectCalibration
       protected:
 
       private: System::Windows::Forms::Label^  lbl_org_pic;
-      private: System::Windows::Forms::Label^  lbl_hsv_filter;
+      private: System::Windows::Forms::Label^  lbl_gray;
+
       private: System::Windows::Forms::PictureBox^  pb_filtered;
+      private: System::Windows::Forms::Label^  lbl_filtered;
 
 
 
-      private: System::Windows::Forms::Label^  lbl_tracked_obj;
+
+
       private: System::Windows::Forms::PictureBox^  pb_tracked;
 
 
@@ -202,6 +205,9 @@ namespace NmSp_frm_ObjectCalibration
     private: System::Windows::Forms::CheckBox^  chkb_opening;
     private: System::Windows::Forms::CheckBox^  chkb_dilate;
     private: System::Windows::Forms::CheckBox^  chkb_erode;
+  private: System::Windows::Forms::Label^  label16;
+  private: System::Windows::Forms::PictureBox^  pb_gray;
+
 
 
 
@@ -218,9 +224,9 @@ namespace NmSp_frm_ObjectCalibration
       this->components = (gcnew System::ComponentModel::Container());
       this->pb_original = (gcnew System::Windows::Forms::PictureBox());
       this->lbl_org_pic = (gcnew System::Windows::Forms::Label());
-      this->lbl_hsv_filter = (gcnew System::Windows::Forms::Label());
+      this->lbl_gray = (gcnew System::Windows::Forms::Label());
       this->pb_filtered = (gcnew System::Windows::Forms::PictureBox());
-      this->lbl_tracked_obj = (gcnew System::Windows::Forms::Label());
+      this->lbl_filtered = (gcnew System::Windows::Forms::Label());
       this->pb_tracked = (gcnew System::Windows::Forms::PictureBox());
       this->gb_farbfilter = (gcnew System::Windows::Forms::GroupBox());
       this->chkb_morph = (gcnew System::Windows::Forms::CheckBox());
@@ -279,6 +285,8 @@ namespace NmSp_frm_ObjectCalibration
       this->trb_saturation_max = (gcnew System::Windows::Forms::TrackBar());
       this->txb_saturation_max = (gcnew System::Windows::Forms::TextBox());
       this->txb_saturation_min = (gcnew System::Windows::Forms::TextBox());
+      this->label16 = (gcnew System::Windows::Forms::Label());
+      this->pb_gray = (gcnew System::Windows::Forms::PictureBox());
       (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->pb_original))->BeginInit();
       (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->pb_filtered))->BeginInit();
       (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->pb_tracked))->BeginInit();
@@ -305,14 +313,14 @@ namespace NmSp_frm_ObjectCalibration
       (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->trb_value_max))->BeginInit();
       (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->trb_saturation_min))->BeginInit();
       (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->trb_saturation_max))->BeginInit();
+      (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->pb_gray))->BeginInit();
       this->SuspendLayout();
       // 
       // pb_original
       // 
-      this->pb_original->Location = System::Drawing::Point(20, 37);
-      this->pb_original->Margin = System::Windows::Forms::Padding(4);
+      this->pb_original->Location = System::Drawing::Point(15, 30);
       this->pb_original->Name = L"pb_original";
-      this->pb_original->Size = System::Drawing::Size(319, 222);
+      this->pb_original->Size = System::Drawing::Size(384, 288);
       this->pb_original->TabIndex = 0;
       this->pb_original->TabStop = false;
       // 
@@ -321,52 +329,47 @@ namespace NmSp_frm_ObjectCalibration
       this->lbl_org_pic->AutoSize = true;
       this->lbl_org_pic->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 11.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
                                  static_cast<System::Byte>(0)));
-      this->lbl_org_pic->Location = System::Drawing::Point(16, 11);
-      this->lbl_org_pic->Margin = System::Windows::Forms::Padding(4, 0, 4, 0);
+      this->lbl_org_pic->Location = System::Drawing::Point(12, 9);
       this->lbl_org_pic->Name = L"lbl_org_pic";
-      this->lbl_org_pic->Size = System::Drawing::Size(105, 24);
+      this->lbl_org_pic->Size = System::Drawing::Size(80, 18);
       this->lbl_org_pic->TabIndex = 2;
       this->lbl_org_pic->Text = L"Originalbild";
       // 
-      // lbl_hsv_filter
+      // lbl_gray
       // 
-      this->lbl_hsv_filter->AutoSize = true;
-      this->lbl_hsv_filter->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 11.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
-                                    static_cast<System::Byte>(0)));
-      this->lbl_hsv_filter->Location = System::Drawing::Point(16, 267);
-      this->lbl_hsv_filter->Margin = System::Windows::Forms::Padding(4, 0, 4, 0);
-      this->lbl_hsv_filter->Name = L"lbl_hsv_filter";
-      this->lbl_hsv_filter->Size = System::Drawing::Size(51, 24);
-      this->lbl_hsv_filter->TabIndex = 5;
-      this->lbl_hsv_filter->Text = L"Filter";
+      this->lbl_gray->AutoSize = true;
+      this->lbl_gray->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 11.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+                              static_cast<System::Byte>(0)));
+      this->lbl_gray->Location = System::Drawing::Point(402, 9);
+      this->lbl_gray->Name = L"lbl_gray";
+      this->lbl_gray->Size = System::Drawing::Size(40, 18);
+      this->lbl_gray->TabIndex = 5;
+      this->lbl_gray->Text = L"Gray";
       // 
       // pb_filtered
       // 
-      this->pb_filtered->Location = System::Drawing::Point(20, 293);
-      this->pb_filtered->Margin = System::Windows::Forms::Padding(4);
+      this->pb_filtered->Location = System::Drawing::Point(795, 30);
       this->pb_filtered->Name = L"pb_filtered";
-      this->pb_filtered->Size = System::Drawing::Size(319, 222);
+      this->pb_filtered->Size = System::Drawing::Size(384, 288);
       this->pb_filtered->TabIndex = 3;
       this->pb_filtered->TabStop = false;
       // 
-      // lbl_tracked_obj
+      // lbl_filtered
       // 
-      this->lbl_tracked_obj->AutoSize = true;
-      this->lbl_tracked_obj->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 11.25F, System::Drawing::FontStyle::Regular,
-                                     System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
-      this->lbl_tracked_obj->Location = System::Drawing::Point(16, 527);
-      this->lbl_tracked_obj->Margin = System::Windows::Forms::Padding(4, 0, 4, 0);
-      this->lbl_tracked_obj->Name = L"lbl_tracked_obj";
-      this->lbl_tracked_obj->Size = System::Drawing::Size(139, 24);
-      this->lbl_tracked_obj->TabIndex = 8;
-      this->lbl_tracked_obj->Text = L"Tracked Object";
+      this->lbl_filtered->AutoSize = true;
+      this->lbl_filtered->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 11.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+                                  static_cast<System::Byte>(0)));
+      this->lbl_filtered->Location = System::Drawing::Point(792, 9);
+      this->lbl_filtered->Name = L"lbl_filtered";
+      this->lbl_filtered->Size = System::Drawing::Size(56, 18);
+      this->lbl_filtered->TabIndex = 8;
+      this->lbl_filtered->Text = L"Filtered";
       // 
       // pb_tracked
       // 
-      this->pb_tracked->Location = System::Drawing::Point(20, 553);
-      this->pb_tracked->Margin = System::Windows::Forms::Padding(4);
+      this->pb_tracked->Location = System::Drawing::Point(1185, 30);
       this->pb_tracked->Name = L"pb_tracked";
-      this->pb_tracked->Size = System::Drawing::Size(319, 222);
+      this->pb_tracked->Size = System::Drawing::Size(384, 288);
       this->pb_tracked->TabIndex = 6;
       this->pb_tracked->TabStop = false;
       // 
@@ -401,11 +404,9 @@ namespace NmSp_frm_ObjectCalibration
       this->gb_farbfilter->Controls->Add(this->label13);
       this->gb_farbfilter->Controls->Add(this->label11);
       this->gb_farbfilter->Controls->Add(this->label10);
-      this->gb_farbfilter->Location = System::Drawing::Point(347, 17);
-      this->gb_farbfilter->Margin = System::Windows::Forms::Padding(4);
+      this->gb_farbfilter->Location = System::Drawing::Point(12, 376);
       this->gb_farbfilter->Name = L"gb_farbfilter";
-      this->gb_farbfilter->Padding = System::Windows::Forms::Padding(4);
-      this->gb_farbfilter->Size = System::Drawing::Size(507, 836);
+      this->gb_farbfilter->Size = System::Drawing::Size(380, 444);
       this->gb_farbfilter->TabIndex = 10;
       this->gb_farbfilter->TabStop = false;
       this->gb_farbfilter->Text = L"Filtering";
@@ -413,9 +414,10 @@ namespace NmSp_frm_ObjectCalibration
       // chkb_morph
       // 
       this->chkb_morph->AutoSize = true;
-      this->chkb_morph->Location = System::Drawing::Point(23, 422);
+      this->chkb_morph->Location = System::Drawing::Point(17, 343);
+      this->chkb_morph->Margin = System::Windows::Forms::Padding(2, 2, 2, 2);
       this->chkb_morph->Name = L"chkb_morph";
-      this->chkb_morph->Size = System::Drawing::Size(18, 17);
+      this->chkb_morph->Size = System::Drawing::Size(15, 14);
       this->chkb_morph->TabIndex = 75;
       this->chkb_morph->UseVisualStyleBackColor = true;
       this->chkb_morph->CheckStateChanged += gcnew System::EventHandler(this, &C_frm_ObjectCalibration::chkb_morph_CheckStateChanged);
@@ -423,9 +425,10 @@ namespace NmSp_frm_ObjectCalibration
       // chkb_bilateral
       // 
       this->chkb_bilateral->AutoSize = true;
-      this->chkb_bilateral->Location = System::Drawing::Point(23, 354);
+      this->chkb_bilateral->Location = System::Drawing::Point(17, 288);
+      this->chkb_bilateral->Margin = System::Windows::Forms::Padding(2, 2, 2, 2);
       this->chkb_bilateral->Name = L"chkb_bilateral";
-      this->chkb_bilateral->Size = System::Drawing::Size(18, 17);
+      this->chkb_bilateral->Size = System::Drawing::Size(15, 14);
       this->chkb_bilateral->TabIndex = 74;
       this->chkb_bilateral->UseVisualStyleBackColor = true;
       this->chkb_bilateral->CheckStateChanged += gcnew System::EventHandler(this, &C_frm_ObjectCalibration::chkb_bilateral_CheckStateChanged);
@@ -433,9 +436,10 @@ namespace NmSp_frm_ObjectCalibration
       // chkb_closing
       // 
       this->chkb_closing->AutoSize = true;
-      this->chkb_closing->Location = System::Drawing::Point(23, 287);
+      this->chkb_closing->Location = System::Drawing::Point(17, 233);
+      this->chkb_closing->Margin = System::Windows::Forms::Padding(2, 2, 2, 2);
       this->chkb_closing->Name = L"chkb_closing";
-      this->chkb_closing->Size = System::Drawing::Size(18, 17);
+      this->chkb_closing->Size = System::Drawing::Size(15, 14);
       this->chkb_closing->TabIndex = 73;
       this->chkb_closing->UseVisualStyleBackColor = true;
       this->chkb_closing->CheckStateChanged += gcnew System::EventHandler(this, &C_frm_ObjectCalibration::chkb_closing_CheckStateChanged);
@@ -443,9 +447,10 @@ namespace NmSp_frm_ObjectCalibration
       // chkb_opening
       // 
       this->chkb_opening->AutoSize = true;
-      this->chkb_opening->Location = System::Drawing::Point(23, 217);
+      this->chkb_opening->Location = System::Drawing::Point(17, 176);
+      this->chkb_opening->Margin = System::Windows::Forms::Padding(2, 2, 2, 2);
       this->chkb_opening->Name = L"chkb_opening";
-      this->chkb_opening->Size = System::Drawing::Size(18, 17);
+      this->chkb_opening->Size = System::Drawing::Size(15, 14);
       this->chkb_opening->TabIndex = 72;
       this->chkb_opening->UseVisualStyleBackColor = true;
       this->chkb_opening->CheckStateChanged += gcnew System::EventHandler(this, &C_frm_ObjectCalibration::chkb_opening_CheckStateChanged);
@@ -453,9 +458,10 @@ namespace NmSp_frm_ObjectCalibration
       // chkb_dilate
       // 
       this->chkb_dilate->AutoSize = true;
-      this->chkb_dilate->Location = System::Drawing::Point(23, 141);
+      this->chkb_dilate->Location = System::Drawing::Point(17, 115);
+      this->chkb_dilate->Margin = System::Windows::Forms::Padding(2, 2, 2, 2);
       this->chkb_dilate->Name = L"chkb_dilate";
-      this->chkb_dilate->Size = System::Drawing::Size(18, 17);
+      this->chkb_dilate->Size = System::Drawing::Size(15, 14);
       this->chkb_dilate->TabIndex = 71;
       this->chkb_dilate->UseVisualStyleBackColor = true;
       this->chkb_dilate->CheckStateChanged += gcnew System::EventHandler(this, &C_frm_ObjectCalibration::chkb_dilate_CheckStateChanged);
@@ -463,9 +469,10 @@ namespace NmSp_frm_ObjectCalibration
       // chkb_erode
       // 
       this->chkb_erode->AutoSize = true;
-      this->chkb_erode->Location = System::Drawing::Point(23, 79);
+      this->chkb_erode->Location = System::Drawing::Point(17, 64);
+      this->chkb_erode->Margin = System::Windows::Forms::Padding(2, 2, 2, 2);
       this->chkb_erode->Name = L"chkb_erode";
-      this->chkb_erode->Size = System::Drawing::Size(18, 17);
+      this->chkb_erode->Size = System::Drawing::Size(15, 14);
       this->chkb_erode->TabIndex = 70;
       this->chkb_erode->UseVisualStyleBackColor = true;
       this->chkb_erode->CheckStateChanged += gcnew System::EventHandler(this, &C_frm_ObjectCalibration::chkb_erode_CheckStateChanged);
@@ -473,10 +480,9 @@ namespace NmSp_frm_ObjectCalibration
       // numUD_morph_kernelsize
       // 
       this->numUD_morph_kernelsize->Enabled = false;
-      this->numUD_morph_kernelsize->Location = System::Drawing::Point(367, 417);
-      this->numUD_morph_kernelsize->Margin = System::Windows::Forms::Padding(4);
+      this->numUD_morph_kernelsize->Location = System::Drawing::Point(275, 339);
       this->numUD_morph_kernelsize->Name = L"numUD_morph_kernelsize";
-      this->numUD_morph_kernelsize->Size = System::Drawing::Size(76, 22);
+      this->numUD_morph_kernelsize->Size = System::Drawing::Size(57, 20);
       this->numUD_morph_kernelsize->TabIndex = 69;
       this->numUD_morph_kernelsize->Value = System::Decimal(gcnew cli::array< System::Int32 >(4)
         {
@@ -486,10 +492,9 @@ namespace NmSp_frm_ObjectCalibration
 // numUD_bilateral_kernelsize
 // 
       this->numUD_bilateral_kernelsize->Enabled = false;
-      this->numUD_bilateral_kernelsize->Location = System::Drawing::Point(367, 353);
-      this->numUD_bilateral_kernelsize->Margin = System::Windows::Forms::Padding(4);
+      this->numUD_bilateral_kernelsize->Location = System::Drawing::Point(275, 287);
       this->numUD_bilateral_kernelsize->Name = L"numUD_bilateral_kernelsize";
-      this->numUD_bilateral_kernelsize->Size = System::Drawing::Size(76, 22);
+      this->numUD_bilateral_kernelsize->Size = System::Drawing::Size(57, 20);
       this->numUD_bilateral_kernelsize->TabIndex = 68;
       this->numUD_bilateral_kernelsize->Value = System::Decimal(gcnew cli::array< System::Int32 >(4)
         {
@@ -498,19 +503,17 @@ namespace NmSp_frm_ObjectCalibration
 // 
 // numericUpDown4
 // 
-      this->numericUpDown4->Location = System::Drawing::Point(335, 748);
-      this->numericUpDown4->Margin = System::Windows::Forms::Padding(4);
+      this->numericUpDown4->Location = System::Drawing::Point(275, 396);
       this->numericUpDown4->Name = L"numericUpDown4";
-      this->numericUpDown4->Size = System::Drawing::Size(76, 22);
+      this->numericUpDown4->Size = System::Drawing::Size(57, 20);
       this->numericUpDown4->TabIndex = 67;
       // 
       // numUD_morph_iterations
       // 
       this->numUD_morph_iterations->Enabled = false;
-      this->numUD_morph_iterations->Location = System::Drawing::Point(221, 417);
-      this->numUD_morph_iterations->Margin = System::Windows::Forms::Padding(4);
+      this->numUD_morph_iterations->Location = System::Drawing::Point(166, 339);
       this->numUD_morph_iterations->Name = L"numUD_morph_iterations";
-      this->numUD_morph_iterations->Size = System::Drawing::Size(76, 22);
+      this->numUD_morph_iterations->Size = System::Drawing::Size(57, 20);
       this->numUD_morph_iterations->TabIndex = 66;
       this->numUD_morph_iterations->Value = System::Decimal(gcnew cli::array< System::Int32 >(4)
         {
@@ -520,10 +523,9 @@ namespace NmSp_frm_ObjectCalibration
 // numUD_bilateral_iterations
 // 
       this->numUD_bilateral_iterations->Enabled = false;
-      this->numUD_bilateral_iterations->Location = System::Drawing::Point(221, 349);
-      this->numUD_bilateral_iterations->Margin = System::Windows::Forms::Padding(4);
+      this->numUD_bilateral_iterations->Location = System::Drawing::Point(166, 284);
       this->numUD_bilateral_iterations->Name = L"numUD_bilateral_iterations";
-      this->numUD_bilateral_iterations->Size = System::Drawing::Size(76, 22);
+      this->numUD_bilateral_iterations->Size = System::Drawing::Size(57, 20);
       this->numUD_bilateral_iterations->TabIndex = 65;
       this->numUD_bilateral_iterations->Value = System::Decimal(gcnew cli::array< System::Int32 >(4)
         {
@@ -532,10 +534,9 @@ namespace NmSp_frm_ObjectCalibration
 // 
 // numUD_gaussian_iterations
 // 
-      this->numUD_gaussian_iterations->Location = System::Drawing::Point(189, 746);
-      this->numUD_gaussian_iterations->Margin = System::Windows::Forms::Padding(4);
+      this->numUD_gaussian_iterations->Location = System::Drawing::Point(166, 394);
       this->numUD_gaussian_iterations->Name = L"numUD_gaussian_iterations";
-      this->numUD_gaussian_iterations->Size = System::Drawing::Size(76, 22);
+      this->numUD_gaussian_iterations->Size = System::Drawing::Size(57, 20);
       this->numUD_gaussian_iterations->TabIndex = 64;
       // 
       // label15
@@ -543,20 +544,18 @@ namespace NmSp_frm_ObjectCalibration
       this->label15->AutoSize = true;
       this->label15->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 11.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
                              static_cast<System::Byte>(0)));
-      this->label15->Location = System::Drawing::Point(48, 417);
-      this->label15->Margin = System::Windows::Forms::Padding(4, 0, 4, 0);
+      this->label15->Location = System::Drawing::Point(36, 339);
       this->label15->Name = L"label15";
-      this->label15->Size = System::Drawing::Size(70, 24);
+      this->label15->Size = System::Drawing::Size(55, 18);
       this->label15->TabIndex = 63;
       this->label15->Text = L"Morph ";
       // 
       // numUD_dilation_kernelsize
       // 
       this->numUD_dilation_kernelsize->Enabled = false;
-      this->numUD_dilation_kernelsize->Location = System::Drawing::Point(367, 142);
-      this->numUD_dilation_kernelsize->Margin = System::Windows::Forms::Padding(4);
+      this->numUD_dilation_kernelsize->Location = System::Drawing::Point(275, 115);
       this->numUD_dilation_kernelsize->Name = L"numUD_dilation_kernelsize";
-      this->numUD_dilation_kernelsize->Size = System::Drawing::Size(76, 22);
+      this->numUD_dilation_kernelsize->Size = System::Drawing::Size(57, 20);
       this->numUD_dilation_kernelsize->TabIndex = 61;
       this->numUD_dilation_kernelsize->Value = System::Decimal(gcnew cli::array< System::Int32 >(4)
         {
@@ -568,10 +567,9 @@ namespace NmSp_frm_ObjectCalibration
       this->lbl_iterations->AutoSize = true;
       this->lbl_iterations->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 11.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
                                     static_cast<System::Byte>(0)));
-      this->lbl_iterations->Location = System::Drawing::Point(217, 34);
-      this->lbl_iterations->Margin = System::Windows::Forms::Padding(4, 0, 4, 0);
+      this->lbl_iterations->Location = System::Drawing::Point(163, 28);
       this->lbl_iterations->Name = L"lbl_iterations";
-      this->lbl_iterations->Size = System::Drawing::Size(84, 24);
+      this->lbl_iterations->Size = System::Drawing::Size(68, 18);
       this->lbl_iterations->TabIndex = 60;
       this->lbl_iterations->Text = L"Iterations";
       // 
@@ -580,20 +578,18 @@ namespace NmSp_frm_ObjectCalibration
       this->lbl_kernel_size->AutoSize = true;
       this->lbl_kernel_size->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 11.25F, System::Drawing::FontStyle::Regular,
                                      System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
-      this->lbl_kernel_size->Location = System::Drawing::Point(363, 34);
-      this->lbl_kernel_size->Margin = System::Windows::Forms::Padding(4, 0, 4, 0);
+      this->lbl_kernel_size->Location = System::Drawing::Point(272, 28);
       this->lbl_kernel_size->Name = L"lbl_kernel_size";
-      this->lbl_kernel_size->Size = System::Drawing::Size(106, 24);
+      this->lbl_kernel_size->Size = System::Drawing::Size(83, 18);
       this->lbl_kernel_size->TabIndex = 58;
       this->lbl_kernel_size->Text = L"Kernel Size";
       // 
       // numUD_dilation_iterations
       // 
       this->numUD_dilation_iterations->Enabled = false;
-      this->numUD_dilation_iterations->Location = System::Drawing::Point(221, 142);
-      this->numUD_dilation_iterations->Margin = System::Windows::Forms::Padding(4);
+      this->numUD_dilation_iterations->Location = System::Drawing::Point(166, 115);
       this->numUD_dilation_iterations->Name = L"numUD_dilation_iterations";
-      this->numUD_dilation_iterations->Size = System::Drawing::Size(76, 22);
+      this->numUD_dilation_iterations->Size = System::Drawing::Size(57, 20);
       this->numUD_dilation_iterations->TabIndex = 57;
       this->numUD_dilation_iterations->Value = System::Decimal(gcnew cli::array< System::Int32 >(4)
         {
@@ -603,10 +599,9 @@ namespace NmSp_frm_ObjectCalibration
 // numUD_closing_kernelsize
 // 
       this->numUD_closing_kernelsize->Enabled = false;
-      this->numUD_closing_kernelsize->Location = System::Drawing::Point(367, 282);
-      this->numUD_closing_kernelsize->Margin = System::Windows::Forms::Padding(4);
+      this->numUD_closing_kernelsize->Location = System::Drawing::Point(275, 229);
       this->numUD_closing_kernelsize->Name = L"numUD_closing_kernelsize";
-      this->numUD_closing_kernelsize->Size = System::Drawing::Size(76, 22);
+      this->numUD_closing_kernelsize->Size = System::Drawing::Size(57, 20);
       this->numUD_closing_kernelsize->TabIndex = 56;
       this->numUD_closing_kernelsize->Value = System::Decimal(gcnew cli::array< System::Int32 >(4)
         {
@@ -616,10 +611,9 @@ namespace NmSp_frm_ObjectCalibration
 // numUD_closing_iterations
 // 
       this->numUD_closing_iterations->Enabled = false;
-      this->numUD_closing_iterations->Location = System::Drawing::Point(221, 280);
-      this->numUD_closing_iterations->Margin = System::Windows::Forms::Padding(4);
+      this->numUD_closing_iterations->Location = System::Drawing::Point(166, 228);
       this->numUD_closing_iterations->Name = L"numUD_closing_iterations";
-      this->numUD_closing_iterations->Size = System::Drawing::Size(76, 22);
+      this->numUD_closing_iterations->Size = System::Drawing::Size(57, 20);
       this->numUD_closing_iterations->TabIndex = 55;
       this->numUD_closing_iterations->Value = System::Decimal(gcnew cli::array< System::Int32 >(4)
         {
@@ -629,10 +623,9 @@ namespace NmSp_frm_ObjectCalibration
 // numUD_opening_kernelsize
 // 
       this->numUD_opening_kernelsize->Enabled = false;
-      this->numUD_opening_kernelsize->Location = System::Drawing::Point(367, 214);
-      this->numUD_opening_kernelsize->Margin = System::Windows::Forms::Padding(4);
+      this->numUD_opening_kernelsize->Location = System::Drawing::Point(275, 174);
       this->numUD_opening_kernelsize->Name = L"numUD_opening_kernelsize";
-      this->numUD_opening_kernelsize->Size = System::Drawing::Size(76, 22);
+      this->numUD_opening_kernelsize->Size = System::Drawing::Size(57, 20);
       this->numUD_opening_kernelsize->TabIndex = 53;
       this->numUD_opening_kernelsize->Value = System::Decimal(gcnew cli::array< System::Int32 >(4)
         {
@@ -642,10 +635,9 @@ namespace NmSp_frm_ObjectCalibration
 // numUD_opening_iterations
 // 
       this->numUD_opening_iterations->Enabled = false;
-      this->numUD_opening_iterations->Location = System::Drawing::Point(221, 214);
-      this->numUD_opening_iterations->Margin = System::Windows::Forms::Padding(4);
+      this->numUD_opening_iterations->Location = System::Drawing::Point(166, 174);
       this->numUD_opening_iterations->Name = L"numUD_opening_iterations";
-      this->numUD_opening_iterations->Size = System::Drawing::Size(76, 22);
+      this->numUD_opening_iterations->Size = System::Drawing::Size(57, 20);
       this->numUD_opening_iterations->TabIndex = 52;
       this->numUD_opening_iterations->Value = System::Decimal(gcnew cli::array< System::Int32 >(4)
         {
@@ -655,10 +647,9 @@ namespace NmSp_frm_ObjectCalibration
 // numUD_erode_iterations
 // 
       this->numUD_erode_iterations->Enabled = false;
-      this->numUD_erode_iterations->Location = System::Drawing::Point(221, 73);
-      this->numUD_erode_iterations->Margin = System::Windows::Forms::Padding(4);
+      this->numUD_erode_iterations->Location = System::Drawing::Point(166, 59);
       this->numUD_erode_iterations->Name = L"numUD_erode_iterations";
-      this->numUD_erode_iterations->Size = System::Drawing::Size(76, 22);
+      this->numUD_erode_iterations->Size = System::Drawing::Size(57, 20);
       this->numUD_erode_iterations->TabIndex = 51;
       this->numUD_erode_iterations->Value = System::Decimal(gcnew cli::array< System::Int32 >(4)
         {
@@ -668,10 +659,9 @@ namespace NmSp_frm_ObjectCalibration
 // numUD_erode_kernelsize
 // 
       this->numUD_erode_kernelsize->Enabled = false;
-      this->numUD_erode_kernelsize->Location = System::Drawing::Point(367, 73);
-      this->numUD_erode_kernelsize->Margin = System::Windows::Forms::Padding(4);
+      this->numUD_erode_kernelsize->Location = System::Drawing::Point(275, 59);
       this->numUD_erode_kernelsize->Name = L"numUD_erode_kernelsize";
-      this->numUD_erode_kernelsize->Size = System::Drawing::Size(76, 22);
+      this->numUD_erode_kernelsize->Size = System::Drawing::Size(57, 20);
       this->numUD_erode_kernelsize->TabIndex = 50;
       this->numUD_erode_kernelsize->Value = System::Decimal(gcnew cli::array< System::Int32 >(4)
         {
@@ -683,10 +673,9 @@ namespace NmSp_frm_ObjectCalibration
       this->lbl_bilateral->AutoSize = true;
       this->lbl_bilateral->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 11.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
                                    static_cast<System::Byte>(0)));
-      this->lbl_bilateral->Location = System::Drawing::Point(48, 349);
-      this->lbl_bilateral->Margin = System::Windows::Forms::Padding(4, 0, 4, 0);
+      this->lbl_bilateral->Location = System::Drawing::Point(36, 284);
       this->lbl_bilateral->Name = L"lbl_bilateral";
-      this->lbl_bilateral->Size = System::Drawing::Size(75, 24);
+      this->lbl_bilateral->Size = System::Drawing::Size(60, 18);
       this->lbl_bilateral->TabIndex = 48;
       this->lbl_bilateral->Text = L"Bilateral";
       // 
@@ -695,10 +684,9 @@ namespace NmSp_frm_ObjectCalibration
       this->label14->AutoSize = true;
       this->label14->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 11.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
                              static_cast<System::Byte>(0)));
-      this->label14->Location = System::Drawing::Point(16, 746);
-      this->label14->Margin = System::Windows::Forms::Padding(4, 0, 4, 0);
+      this->label14->Location = System::Drawing::Point(36, 394);
       this->label14->Name = L"label14";
-      this->label14->Size = System::Drawing::Size(88, 24);
+      this->label14->Size = System::Drawing::Size(71, 18);
       this->label14->TabIndex = 40;
       this->label14->Text = L"Gaussian";
       // 
@@ -707,10 +695,9 @@ namespace NmSp_frm_ObjectCalibration
       this->label12->AutoSize = true;
       this->label12->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 11.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
                              static_cast<System::Byte>(0)));
-      this->label12->Location = System::Drawing::Point(48, 280);
-      this->label12->Margin = System::Windows::Forms::Padding(4, 0, 4, 0);
+      this->label12->Location = System::Drawing::Point(36, 228);
       this->label12->Name = L"label12";
-      this->label12->Size = System::Drawing::Size(73, 24);
+      this->label12->Size = System::Drawing::Size(58, 18);
       this->label12->TabIndex = 36;
       this->label12->Text = L"Closing";
       // 
@@ -719,10 +706,9 @@ namespace NmSp_frm_ObjectCalibration
       this->label13->AutoSize = true;
       this->label13->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 11.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
                              static_cast<System::Byte>(0)));
-      this->label13->Location = System::Drawing::Point(48, 214);
-      this->label13->Margin = System::Windows::Forms::Padding(4, 0, 4, 0);
+      this->label13->Location = System::Drawing::Point(36, 174);
       this->label13->Name = L"label13";
-      this->label13->Size = System::Drawing::Size(84, 24);
+      this->label13->Size = System::Drawing::Size(63, 18);
       this->label13->TabIndex = 34;
       this->label13->Text = L"Opening";
       // 
@@ -731,10 +717,9 @@ namespace NmSp_frm_ObjectCalibration
       this->label11->AutoSize = true;
       this->label11->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 11.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
                              static_cast<System::Byte>(0)));
-      this->label11->Location = System::Drawing::Point(48, 138);
-      this->label11->Margin = System::Windows::Forms::Padding(4, 0, 4, 0);
+      this->label11->Location = System::Drawing::Point(36, 112);
       this->label11->Name = L"label11";
-      this->label11->Size = System::Drawing::Size(71, 24);
+      this->label11->Size = System::Drawing::Size(57, 18);
       this->label11->TabIndex = 32;
       this->label11->Text = L"Dilation";
       // 
@@ -743,10 +728,9 @@ namespace NmSp_frm_ObjectCalibration
       this->label10->AutoSize = true;
       this->label10->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 11.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
                              static_cast<System::Byte>(0)));
-      this->label10->Location = System::Drawing::Point(48, 73);
-      this->label10->Margin = System::Windows::Forms::Padding(4, 0, 4, 0);
+      this->label10->Location = System::Drawing::Point(36, 59);
       this->label10->Name = L"label10";
-      this->label10->Size = System::Drawing::Size(62, 24);
+      this->label10->Size = System::Drawing::Size(48, 18);
       this->label10->TabIndex = 30;
       this->label10->Text = L"Erode";
       // 
@@ -755,10 +739,9 @@ namespace NmSp_frm_ObjectCalibration
       this->label7->AutoSize = true;
       this->label7->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 11.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
                             static_cast<System::Byte>(0)));
-      this->label7->Location = System::Drawing::Point(142, 387);
-      this->label7->Margin = System::Windows::Forms::Padding(4, 0, 4, 0);
+      this->label7->Location = System::Drawing::Point(106, 314);
       this->label7->Name = L"label7";
-      this->label7->Size = System::Drawing::Size(46, 24);
+      this->label7->Size = System::Drawing::Size(36, 18);
       this->label7->TabIndex = 28;
       this->label7->Text = L"max";
       // 
@@ -767,10 +750,9 @@ namespace NmSp_frm_ObjectCalibration
       this->label8->AutoSize = true;
       this->label8->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 11.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
                             static_cast<System::Byte>(0)));
-      this->label8->Location = System::Drawing::Point(142, 325);
-      this->label8->Margin = System::Windows::Forms::Padding(4, 0, 4, 0);
+      this->label8->Location = System::Drawing::Point(106, 264);
       this->label8->Name = L"label8";
-      this->label8->Size = System::Drawing::Size(41, 24);
+      this->label8->Size = System::Drawing::Size(32, 18);
       this->label8->TabIndex = 27;
       this->label8->Text = L"min";
       // 
@@ -779,10 +761,9 @@ namespace NmSp_frm_ObjectCalibration
       this->label9->AutoSize = true;
       this->label9->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 11.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
                             static_cast<System::Byte>(0)));
-      this->label9->Location = System::Drawing::Point(7, 325);
-      this->label9->Margin = System::Windows::Forms::Padding(4, 0, 4, 0);
+      this->label9->Location = System::Drawing::Point(5, 264);
       this->label9->Name = L"label9";
-      this->label9->Size = System::Drawing::Size(59, 24);
+      this->label9->Size = System::Drawing::Size(44, 18);
       this->label9->TabIndex = 25;
       this->label9->Text = L"Value";
       // 
@@ -791,10 +772,9 @@ namespace NmSp_frm_ObjectCalibration
       this->label2->AutoSize = true;
       this->label2->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 11.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
                             static_cast<System::Byte>(0)));
-      this->label2->Location = System::Drawing::Point(142, 242);
-      this->label2->Margin = System::Windows::Forms::Padding(4, 0, 4, 0);
+      this->label2->Location = System::Drawing::Point(106, 197);
       this->label2->Name = L"label2";
-      this->label2->Size = System::Drawing::Size(46, 24);
+      this->label2->Size = System::Drawing::Size(36, 18);
       this->label2->TabIndex = 23;
       this->label2->Text = L"max";
       // 
@@ -803,10 +783,9 @@ namespace NmSp_frm_ObjectCalibration
       this->label5->AutoSize = true;
       this->label5->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 11.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
                             static_cast<System::Byte>(0)));
-      this->label5->Location = System::Drawing::Point(142, 187);
-      this->label5->Margin = System::Windows::Forms::Padding(4, 0, 4, 0);
+      this->label5->Location = System::Drawing::Point(106, 152);
       this->label5->Name = L"label5";
-      this->label5->Size = System::Drawing::Size(41, 24);
+      this->label5->Size = System::Drawing::Size(32, 18);
       this->label5->TabIndex = 22;
       this->label5->Text = L"min";
       // 
@@ -815,10 +794,9 @@ namespace NmSp_frm_ObjectCalibration
       this->label6->AutoSize = true;
       this->label6->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 11.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
                             static_cast<System::Byte>(0)));
-      this->label6->Location = System::Drawing::Point(7, 184);
-      this->label6->Margin = System::Windows::Forms::Padding(4, 0, 4, 0);
+      this->label6->Location = System::Drawing::Point(5, 150);
       this->label6->Name = L"label6";
-      this->label6->Size = System::Drawing::Size(93, 24);
+      this->label6->Size = System::Drawing::Size(75, 18);
       this->label6->TabIndex = 20;
       this->label6->Text = L"Saturation";
       // 
@@ -827,10 +805,9 @@ namespace NmSp_frm_ObjectCalibration
       this->label4->AutoSize = true;
       this->label4->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 11.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
                             static_cast<System::Byte>(0)));
-      this->label4->Location = System::Drawing::Point(142, 102);
-      this->label4->Margin = System::Windows::Forms::Padding(4, 0, 4, 0);
+      this->label4->Location = System::Drawing::Point(106, 83);
       this->label4->Name = L"label4";
-      this->label4->Size = System::Drawing::Size(46, 24);
+      this->label4->Size = System::Drawing::Size(36, 18);
       this->label4->TabIndex = 18;
       this->label4->Text = L"max";
       // 
@@ -839,10 +816,9 @@ namespace NmSp_frm_ObjectCalibration
       this->label3->AutoSize = true;
       this->label3->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 11.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
                             static_cast<System::Byte>(0)));
-      this->label3->Location = System::Drawing::Point(142, 40);
-      this->label3->Margin = System::Windows::Forms::Padding(4, 0, 4, 0);
+      this->label3->Location = System::Drawing::Point(106, 32);
       this->label3->Name = L"label3";
-      this->label3->Size = System::Drawing::Size(41, 24);
+      this->label3->Size = System::Drawing::Size(32, 18);
       this->label3->TabIndex = 17;
       this->label3->Text = L"min";
       // 
@@ -851,10 +827,9 @@ namespace NmSp_frm_ObjectCalibration
       this->label1->AutoSize = true;
       this->label1->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 11.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
                             static_cast<System::Byte>(0)));
-      this->label1->Location = System::Drawing::Point(7, 37);
-      this->label1->Margin = System::Windows::Forms::Padding(4, 0, 4, 0);
+      this->label1->Location = System::Drawing::Point(5, 30);
       this->label1->Name = L"label1";
-      this->label1->Size = System::Drawing::Size(46, 24);
+      this->label1->Size = System::Drawing::Size(35, 18);
       this->label1->TabIndex = 11;
       this->label1->Text = L"Hue";
       // 
@@ -862,10 +837,9 @@ namespace NmSp_frm_ObjectCalibration
       // 
       this->bt_exit->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 14.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
                              static_cast<System::Byte>(0)));
-      this->bt_exit->Location = System::Drawing::Point(1747, 763);
-      this->bt_exit->Margin = System::Windows::Forms::Padding(4);
+      this->bt_exit->Location = System::Drawing::Point(1310, 620);
       this->bt_exit->Name = L"bt_exit";
-      this->bt_exit->Size = System::Drawing::Size(223, 90);
+      this->bt_exit->Size = System::Drawing::Size(167, 73);
       this->bt_exit->TabIndex = 12;
       this->bt_exit->Text = L"Exit";
       this->bt_exit->UseVisualStyleBackColor = true;
@@ -873,10 +847,9 @@ namespace NmSp_frm_ObjectCalibration
       // 
       // txtb_counter
       // 
-      this->txtb_counter->Location = System::Drawing::Point(1747, 860);
-      this->txtb_counter->Margin = System::Windows::Forms::Padding(4);
+      this->txtb_counter->Location = System::Drawing::Point(1310, 699);
       this->txtb_counter->Name = L"txtb_counter";
-      this->txtb_counter->Size = System::Drawing::Size(220, 22);
+      this->txtb_counter->Size = System::Drawing::Size(166, 20);
       this->txtb_counter->TabIndex = 11;
       // 
       // Taktgeber
@@ -887,14 +860,13 @@ namespace NmSp_frm_ObjectCalibration
       // 
       this->numUD_cam_id->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 20.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
                                   static_cast<System::Byte>(0)));
-      this->numUD_cam_id->Location = System::Drawing::Point(1747, 699);
-      this->numUD_cam_id->Margin = System::Windows::Forms::Padding(4);
+      this->numUD_cam_id->Location = System::Drawing::Point(1310, 568);
       this->numUD_cam_id->Maximum = System::Decimal(gcnew cli::array< System::Int32 >(4)
         {
         50, 0, 0, 0
         });
       this->numUD_cam_id->Name = L"numUD_cam_id";
-      this->numUD_cam_id->Size = System::Drawing::Size(104, 46);
+      this->numUD_cam_id->Size = System::Drawing::Size(78, 38);
       this->numUD_cam_id->TabIndex = 13;
       this->numUD_cam_id->ValueChanged += gcnew System::EventHandler(this, &C_frm_ObjectCalibration::numUD_cam_id_ValueChanged);
       // 
@@ -903,41 +875,44 @@ namespace NmSp_frm_ObjectCalibration
       this->label17->AutoSize = true;
       this->label17->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 11.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
                              static_cast<System::Byte>(0)));
-      this->label17->Location = System::Drawing::Point(1743, 659);
-      this->label17->Margin = System::Windows::Forms::Padding(4, 0, 4, 0);
+      this->label17->Location = System::Drawing::Point(1307, 535);
       this->label17->Name = L"label17";
-      this->label17->Size = System::Drawing::Size(98, 24);
+      this->label17->Size = System::Drawing::Size(79, 18);
       this->label17->TabIndex = 59;
       this->label17->Text = L"Camera ID";
       // 
       // trb_hue_min
       // 
-      this->trb_hue_min->Location = System::Drawing::Point(195, 40);
+      this->trb_hue_min->Location = System::Drawing::Point(146, 32);
+      this->trb_hue_min->Margin = System::Windows::Forms::Padding(2, 2, 2, 2);
       this->trb_hue_min->Name = L"trb_hue_min";
-      this->trb_hue_min->Size = System::Drawing::Size(376, 56);
+      this->trb_hue_min->Size = System::Drawing::Size(282, 45);
       this->trb_hue_min->TabIndex = 59;
       this->trb_hue_min->ValueChanged += gcnew System::EventHandler(this, &C_frm_ObjectCalibration::trb_hue_min_ValueChanged);
       // 
       // trb_hue_max
       // 
-      this->trb_hue_max->Location = System::Drawing::Point(195, 102);
+      this->trb_hue_max->Location = System::Drawing::Point(146, 83);
+      this->trb_hue_max->Margin = System::Windows::Forms::Padding(2, 2, 2, 2);
       this->trb_hue_max->Name = L"trb_hue_max";
-      this->trb_hue_max->Size = System::Drawing::Size(376, 56);
+      this->trb_hue_max->Size = System::Drawing::Size(282, 45);
       this->trb_hue_max->TabIndex = 60;
       this->trb_hue_max->ValueChanged += gcnew System::EventHandler(this, &C_frm_ObjectCalibration::trb_hue_max_ValueChanged);
       // 
       // txb_hue_min
       // 
-      this->txb_hue_min->Location = System::Drawing::Point(577, 40);
+      this->txb_hue_min->Location = System::Drawing::Point(433, 32);
+      this->txb_hue_min->Margin = System::Windows::Forms::Padding(2, 2, 2, 2);
       this->txb_hue_min->Name = L"txb_hue_min";
-      this->txb_hue_min->Size = System::Drawing::Size(111, 22);
+      this->txb_hue_min->Size = System::Drawing::Size(84, 20);
       this->txb_hue_min->TabIndex = 66;
       // 
       // txb_hue_max
       // 
-      this->txb_hue_max->Location = System::Drawing::Point(577, 102);
+      this->txb_hue_max->Location = System::Drawing::Point(433, 83);
+      this->txb_hue_max->Margin = System::Windows::Forms::Padding(2, 2, 2, 2);
       this->txb_hue_max->Name = L"txb_hue_max";
-      this->txb_hue_max->Size = System::Drawing::Size(111, 22);
+      this->txb_hue_max->Size = System::Drawing::Size(84, 20);
       this->txb_hue_max->TabIndex = 67;
       // 
       // groupBox1
@@ -963,91 +938,121 @@ namespace NmSp_frm_ObjectCalibration
       this->groupBox1->Controls->Add(this->label8);
       this->groupBox1->Controls->Add(this->label2);
       this->groupBox1->Controls->Add(this->label9);
-      this->groupBox1->Location = System::Drawing::Point(1188, 51);
+      this->groupBox1->Location = System::Drawing::Point(634, 376);
+      this->groupBox1->Margin = System::Windows::Forms::Padding(2, 2, 2, 2);
       this->groupBox1->Name = L"groupBox1";
-      this->groupBox1->Size = System::Drawing::Size(710, 449);
+      this->groupBox1->Padding = System::Windows::Forms::Padding(2, 2, 2, 2);
+      this->groupBox1->Size = System::Drawing::Size(532, 365);
       this->groupBox1->TabIndex = 13;
       this->groupBox1->TabStop = false;
       this->groupBox1->Text = L"HSV-Filter";
       // 
       // trb_value_min
       // 
-      this->trb_value_min->Location = System::Drawing::Point(195, 325);
+      this->trb_value_min->Location = System::Drawing::Point(146, 264);
+      this->trb_value_min->Margin = System::Windows::Forms::Padding(2, 2, 2, 2);
       this->trb_value_min->Name = L"trb_value_min";
-      this->trb_value_min->Size = System::Drawing::Size(376, 56);
+      this->trb_value_min->Size = System::Drawing::Size(282, 45);
       this->trb_value_min->TabIndex = 72;
       this->trb_value_min->ValueChanged += gcnew System::EventHandler(this, &C_frm_ObjectCalibration::trb_value_min_ValueChanged);
       // 
       // trb_value_max
       // 
-      this->trb_value_max->Location = System::Drawing::Point(195, 387);
+      this->trb_value_max->Location = System::Drawing::Point(146, 314);
+      this->trb_value_max->Margin = System::Windows::Forms::Padding(2, 2, 2, 2);
       this->trb_value_max->Name = L"trb_value_max";
-      this->trb_value_max->Size = System::Drawing::Size(376, 56);
+      this->trb_value_max->Size = System::Drawing::Size(282, 45);
       this->trb_value_max->TabIndex = 73;
       this->trb_value_max->ValueChanged += gcnew System::EventHandler(this, &C_frm_ObjectCalibration::trb_value_max_ValueChanged);
       // 
       // txb_value_max
       // 
-      this->txb_value_max->Location = System::Drawing::Point(577, 387);
+      this->txb_value_max->Location = System::Drawing::Point(433, 314);
+      this->txb_value_max->Margin = System::Windows::Forms::Padding(2, 2, 2, 2);
       this->txb_value_max->Name = L"txb_value_max";
-      this->txb_value_max->Size = System::Drawing::Size(111, 22);
+      this->txb_value_max->Size = System::Drawing::Size(84, 20);
       this->txb_value_max->TabIndex = 75;
       // 
       // txb_value_min
       // 
-      this->txb_value_min->Location = System::Drawing::Point(577, 325);
+      this->txb_value_min->Location = System::Drawing::Point(433, 264);
+      this->txb_value_min->Margin = System::Windows::Forms::Padding(2, 2, 2, 2);
       this->txb_value_min->Name = L"txb_value_min";
-      this->txb_value_min->Size = System::Drawing::Size(111, 22);
+      this->txb_value_min->Size = System::Drawing::Size(84, 20);
       this->txb_value_min->TabIndex = 74;
       // 
       // trb_saturation_min
       // 
-      this->trb_saturation_min->Location = System::Drawing::Point(195, 184);
+      this->trb_saturation_min->Location = System::Drawing::Point(146, 150);
+      this->trb_saturation_min->Margin = System::Windows::Forms::Padding(2, 2, 2, 2);
       this->trb_saturation_min->Name = L"trb_saturation_min";
-      this->trb_saturation_min->Size = System::Drawing::Size(376, 56);
+      this->trb_saturation_min->Size = System::Drawing::Size(282, 45);
       this->trb_saturation_min->TabIndex = 68;
       this->trb_saturation_min->ValueChanged += gcnew System::EventHandler(this, &C_frm_ObjectCalibration::trb_saturation_min_ValueChanged);
       // 
       // trb_saturation_max
       // 
-      this->trb_saturation_max->Location = System::Drawing::Point(195, 246);
+      this->trb_saturation_max->Location = System::Drawing::Point(146, 200);
+      this->trb_saturation_max->Margin = System::Windows::Forms::Padding(2, 2, 2, 2);
       this->trb_saturation_max->Name = L"trb_saturation_max";
-      this->trb_saturation_max->Size = System::Drawing::Size(376, 56);
+      this->trb_saturation_max->Size = System::Drawing::Size(282, 45);
       this->trb_saturation_max->TabIndex = 69;
       this->trb_saturation_max->ValueChanged += gcnew System::EventHandler(this, &C_frm_ObjectCalibration::trb_saturation_max_ValueChanged);
       // 
       // txb_saturation_max
       // 
-      this->txb_saturation_max->Location = System::Drawing::Point(577, 246);
+      this->txb_saturation_max->Location = System::Drawing::Point(433, 200);
+      this->txb_saturation_max->Margin = System::Windows::Forms::Padding(2, 2, 2, 2);
       this->txb_saturation_max->Name = L"txb_saturation_max";
-      this->txb_saturation_max->Size = System::Drawing::Size(111, 22);
+      this->txb_saturation_max->Size = System::Drawing::Size(84, 20);
       this->txb_saturation_max->TabIndex = 71;
       // 
       // txb_saturation_min
       // 
-      this->txb_saturation_min->Location = System::Drawing::Point(577, 184);
+      this->txb_saturation_min->Location = System::Drawing::Point(433, 150);
+      this->txb_saturation_min->Margin = System::Windows::Forms::Padding(2, 2, 2, 2);
       this->txb_saturation_min->Name = L"txb_saturation_min";
-      this->txb_saturation_min->Size = System::Drawing::Size(111, 22);
+      this->txb_saturation_min->Size = System::Drawing::Size(84, 20);
       this->txb_saturation_min->TabIndex = 70;
+      // 
+      // label16
+      // 
+      this->label16->AutoSize = true;
+      this->label16->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 11.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+                             static_cast<System::Byte>(0)));
+      this->label16->Location = System::Drawing::Point(1182, 9);
+      this->label16->Name = L"label16";
+      this->label16->Size = System::Drawing::Size(109, 18);
+      this->label16->TabIndex = 61;
+      this->label16->Text = L"Tracked Object";
+      // 
+      // pb_gray
+      // 
+      this->pb_gray->Location = System::Drawing::Point(405, 30);
+      this->pb_gray->Name = L"pb_gray";
+      this->pb_gray->Size = System::Drawing::Size(384, 288);
+      this->pb_gray->TabIndex = 60;
+      this->pb_gray->TabStop = false;
       // 
       // C_frm_ObjectCalibration
       // 
-      this->AutoScaleDimensions = System::Drawing::SizeF(8, 16);
+      this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
       this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
-      this->ClientSize = System::Drawing::Size(1985, 901);
+      this->ClientSize = System::Drawing::Size(1751, 832);
+      this->Controls->Add(this->label16);
+      this->Controls->Add(this->pb_gray);
       this->Controls->Add(this->groupBox1);
       this->Controls->Add(this->bt_exit);
       this->Controls->Add(this->label17);
       this->Controls->Add(this->txtb_counter);
       this->Controls->Add(this->numUD_cam_id);
       this->Controls->Add(this->gb_farbfilter);
-      this->Controls->Add(this->lbl_tracked_obj);
+      this->Controls->Add(this->lbl_filtered);
       this->Controls->Add(this->pb_tracked);
-      this->Controls->Add(this->lbl_hsv_filter);
+      this->Controls->Add(this->lbl_gray);
       this->Controls->Add(this->pb_filtered);
       this->Controls->Add(this->lbl_org_pic);
       this->Controls->Add(this->pb_original);
-      this->Margin = System::Windows::Forms::Padding(4);
       this->Name = L"C_frm_ObjectCalibration";
       this->Text = L"frm_UM_Object_Calibration";
       this->FormClosing += gcnew System::Windows::Forms::FormClosingEventHandler(this, &C_frm_ObjectCalibration::C_frm_ObjectCalibration_FormClosing);
@@ -1080,6 +1085,7 @@ namespace NmSp_frm_ObjectCalibration
       (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->trb_value_max))->EndInit();
       (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->trb_saturation_min))->EndInit();
       (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->trb_saturation_max))->EndInit();
+      (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->pb_gray))->EndInit();
       this->ResumeLayout(false);
       this->PerformLayout();
 
@@ -1110,5 +1116,6 @@ namespace NmSp_frm_ObjectCalibration
     System::Void chkb_closing_CheckStateChanged(System::Object^  sender, System::EventArgs^  e);
     System::Void chkb_bilateral_CheckStateChanged(System::Object^  sender, System::EventArgs^  e);
     System::Void chkb_morph_CheckStateChanged(System::Object^  sender, System::EventArgs^  e);
+
 };
   }//namespace NmSp_frm_ObjectCalibration

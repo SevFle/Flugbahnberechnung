@@ -22,13 +22,18 @@ namespace nmsp_opencv_unmanaged
       cv::cuda::GpuMat                        gpu_src_img;
       cv::cuda::GpuMat                        gpu_dst_img;
       cv::cuda::GpuMat                        gpu_gray;
-
+      cv::cuda::GpuMat                        gpu_hsv;
+      cv::cuda::GpuMat                        gpu_hsv_value;
 
       //For HSV Threshold, equal to cv::InRange
       cv::cuda::GpuMat                        gpu_shsv[3];
       cv::cuda::GpuMat                        gpu_thresc[3];
       cv::cuda::GpuMat                        gpu_temp;
       cv::cuda::GpuMat                        gpu_thres;
+
+      cv::cuda::GpuMat mat_parts[3];
+      cv::cuda::GpuMat mat_parts_low[3];
+      cv::cuda::GpuMat mat_parts_high[3];
 
 
 
@@ -38,6 +43,9 @@ namespace nmsp_opencv_unmanaged
       cv::Mat                                 cpu_src_img;
       cv::Mat                                 cpu_mid_img;
       cv::Mat                                 cpu_dst_img;
+      cv::Mat                                 cpu_4channel;
+      cv::Mat                                 cpu_hsv;
+      cv::Mat                                   cpu_gray;
       cv::Mat                                 cpu_masked_img;
       cv::Mat                                 Mat2Bitmap;
 
@@ -46,6 +54,7 @@ namespace nmsp_opencv_unmanaged
       public:
       int                                     camera_id;
       int                                     capture_api;
+      bool                                    thread_running;
 
       /******************************************** Nicht öffentliche private Anwender-Attribute **************************************************/
       private:
@@ -57,12 +66,12 @@ namespace nmsp_opencv_unmanaged
       /*********************************************************** Öffentliche OpenCV-Variablen  **************************************************/
       #pragma region Öfffentliche OpenCV-Variablen
       public:
-      int                                     hue_min;
-      int                                     hue_max;
-      int                                     saturation_min;
-      int                                     saturation_max;
-      int                                     value_min;
-      int                                     value_max;
+      uchar                                     hue_min;
+      uchar                                     hue_max;
+      uchar                                     saturation_min;
+      uchar                                     saturation_max;
+      uchar                                     value_min;
+      uchar                                     value_max;
       int                                     target_size_width;     //Resizing the image to the wanted width Values
       int                                     target_size_height;     //Resizing the image to the wanted height Values
 
@@ -103,6 +112,7 @@ namespace nmsp_opencv_unmanaged
       bool  morph_active;
 
       cv::Point                               anchor;
+
 
       #pragma endregion
 

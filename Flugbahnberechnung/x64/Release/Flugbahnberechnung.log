@@ -1,19 +1,17 @@
-﻿  App_Main.cpp
-c:\program files (x86)\microsoft visual studio\2017\enterprise\vc\tools\msvc\14.16.27023\include\thread(8): fatal error C1189: #error:  <thread> is not supported when compiling with /clr or /clr:pure.
-  frm_CameraCalibration_Menu.cpp
-c:\program files (x86)\microsoft visual studio\2017\enterprise\vc\tools\msvc\14.16.27023\include\thread(8): fatal error C1189: #error:  <thread> is not supported when compiling with /clr or /clr:pure.
-  frm_CameraCalibration_Single.cpp
-c:\program files (x86)\microsoft visual studio\2017\enterprise\vc\tools\msvc\14.16.27023\include\thread(8): fatal error C1189: #error:  <thread> is not supported when compiling with /clr or /clr:pure.
-  frm_CameraCalibration_Stereo.cpp
-c:\program files (x86)\microsoft visual studio\2017\enterprise\vc\tools\msvc\14.16.27023\include\thread(8): fatal error C1189: #error:  <thread> is not supported when compiling with /clr or /clr:pure.
-  frm_Camera_Positioning.cpp
-  frm_ObjectCalibration.cpp
-c:\program files (x86)\microsoft visual studio\2017\enterprise\vc\tools\msvc\14.16.27023\include\thread(8): fatal error C1189: #error:  <thread> is not supported when compiling with /clr or /clr:pure.
-  Camera_managed.cpp
-c:\program files (x86)\microsoft visual studio\2017\enterprise\vc\tools\msvc\14.16.27023\include\thread(8): fatal error C1189: #error:  <thread> is not supported when compiling with /clr or /clr:pure.
-  frm_Main.cpp
-c:\program files (x86)\microsoft visual studio\2017\enterprise\vc\tools\msvc\14.16.27023\include\thread(8): fatal error C1189: #error:  <thread> is not supported when compiling with /clr or /clr:pure.
-  GlobalObjects.cpp
-  Main.cpp
-c:\program files (x86)\microsoft visual studio\2017\enterprise\vc\tools\msvc\14.16.27023\include\thread(8): fatal error C1189: #error:  <thread> is not supported when compiling with /clr or /clr:pure.
-  Generating Code...
+﻿  frm_ObjectCalibration.cpp
+c:\users\sever\documents\projekte\echtzeit_flugbahnberechnung\flugbahnberechnung\main.h(78): warning C4677: 'camera_managed': signature of non-private member contains assembly private type 'nmsp_camera_managed::C_camera_managed'
+  c:\users\sever\documents\projekte\echtzeit_flugbahnberechnung\flugbahnberechnung\camera_managed.h(12): note: see declaration of 'nmsp_camera_managed::C_camera_managed'
+c:\users\sever\documents\projekte\echtzeit_flugbahnberechnung\flugbahnberechnung\frm_objectcalibration.cpp(317): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\cuda.inl.hpp(105): warning C4793: 'cv::cuda::GpuMat::GpuMat': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\cuda.inl.hpp(395): warning C4793: 'cv::cuda::HostMem::HostMem': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\mat.inl.hpp(530): warning C4793: 'cv::Mat::Mat': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\mat.inl.hpp(850): warning C4793: 'cv::Mat::release': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\mat.inl.hpp(2181): warning C4793: 'cv::SparseMat::addref': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\mat.inl.hpp(3781): warning C4793: 'cv::UMat::addref': function compiled as native:
+  	Found an intrinsic not supported in managed code
+  Flugbahnberechnung.vcxproj -> C:\Users\sever\Documents\Projekte\Echtzeit_Flugbahnberechnung\x64\Release\Flugbahntracker.exe

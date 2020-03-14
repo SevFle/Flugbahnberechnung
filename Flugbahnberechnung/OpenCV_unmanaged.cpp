@@ -39,6 +39,8 @@ gaussian_kernel_size        (0)
   capture_api = cv::CAP_DSHOW;
   this->camera_id = camera_id;
 
+  thread_running = true;
+
   }
 
 /**************************************************************** Destruktor ****************************************************************/
@@ -74,6 +76,8 @@ c_opencv_unmanaged::~c_opencv_unmanaged()
   capture_api = cv::CAP_DSHOW;
   camera_id = 0;
 
+  thread_running = true;
+
   }
 
 /**** Öffentliche Klassenmethoden*************************************************/
@@ -95,12 +99,12 @@ void c_opencv_unmanaged::cpu_img_show                                   (cv::Mat
 
 void c_opencv_unmanaged::camera_thread                                  ()
   {
-  while (true)
+  while (thread_running == true)
     {
     switch (statemachine_state)
       {
         case 0:
-          std::cout<< "State 0 \n\n";
+          std::cout<< "Thread " << this->camera_id << " running." << std::endl;
 
           init(camera_id);
           statemachine_state = 1;
@@ -115,7 +119,6 @@ void c_opencv_unmanaged::camera_thread                                  ()
         case 2:
 
           apply_filter(cpu_src_img, cpu_mid_img);
-          //cpu_masked_img = cpu_mid_img;
           statemachine_state = 3;
 
 
@@ -136,18 +139,20 @@ void c_opencv_unmanaged::cpu_mask_img                                   (cv::Mat
 
 void c_opencv_unmanaged::apply_filter                                   (cv::Mat  &cpu_src, cv::Mat &cpu_dst)
   {
-  cpu_to_4channel_colour          (cpu_src, cpu_mid_img);
-  gpu_src_img.upload              (cpu_mid_img);
-  if (erode_active)   gpu_erode                       (gpu_src_img, gpu_mid_img, bordertype, anchor);
-  if (dilate_active)  gpu_dilate                      (gpu_mid_img, gpu_dst_img, anchor);
-  if(open_active)     gpu_open                        (gpu_dst_img, gpu_mid_img, anchor);
-  if(close_active)    gpu_close                       (gpu_mid_img, gpu_dst_img, anchor);
-  if(gaussian_active) gpu_gaussian_filter             (gpu_dst_img, gpu_mid_img);
-  if(morph_active)    gpu_morph_gradient              (gpu_mid_img, gpu_dst_img);
-  gpu_to_hsv_threshold                                (gpu_dst_img, gpu_mid_img);
+  //cpu_to_4channel_colour          (cpu_src, cpu_4channel);
+  gpu_src_img.upload                                  (cpu_src);
+  gpu_to_hsv_threshold                                (gpu_src_img, gpu_hsv);
+  gpu_hsv.download                                    (cpu_hsv);
+  if (erode_active)   gpu_erode                       (gpu_hsv, gpu_hsv, bordertype, anchor);
+  if (dilate_active)  gpu_dilate                      (gpu_hsv, gpu_hsv, anchor);
+  if(open_active)     gpu_open                        (gpu_hsv, gpu_hsv, anchor);
+  if(close_active)    gpu_close                       (gpu_hsv, gpu_hsv, anchor);
+  if(gaussian_active) gpu_gaussian_filter             (gpu_hsv, gpu_hsv);
+  if(morph_active)    gpu_morph_gradient              (gpu_hsv, gpu_hsv);
 
-  gpu_mid_img.download            (cpu_dst);
-  gpu_thresc[2].download               (cpu_masked_img);
+  gpu_hsv_value.download                  (cpu_gray);
+  gpu_hsv.download                           (cpu_masked_img);
+
 
   }
 
@@ -201,22 +206,46 @@ void c_opencv_unmanaged::operator                                       ()()
 /*************************************************************** Private Klassenmethoden*****************************************************/
 void c_opencv_unmanaged::cpu_to_4channel_colour                         (cv::Mat& cpu_src, cv::Mat& cpu_dst)
   {
-  cv::Mat src4ch;
   cv::cvtColor(cpu_src, cpu_dst, cv::COLOR_BGR2BGRA);
   }
 
 void c_opencv_unmanaged::gpu_to_hsv_threshold                           (cv::cuda::GpuMat& gpu_src, cv::cuda::GpuMat& gpu_dst)
   {
-  
-  cv::cuda::cvtColor      (gpu_src, gpu_temp, cv::COLOR_BGR2HSV);
-  cv::cuda::split         (gpu_temp, gpu_shsv);
 
-  cv::cuda::threshold     (gpu_shsv[0], gpu_thresc[0], hue_min, hue_max, cv::THRESH_BINARY);
-  cv::cuda::threshold     (gpu_shsv[1], gpu_thresc[1], saturation_min, saturation_max, cv::THRESH_BINARY);
-  cv::cuda::threshold     (gpu_shsv[2], gpu_thresc[2], value_min, value_max, cv::THRESH_BINARY);
-  cv::cuda::bitwise_and   (gpu_thresc[0], gpu_thresc[1], gpu_temp);
-  cv::cuda::bitwise_and   (gpu_temp, gpu_thresc[2], gpu_dst);
+  cv::Scalar hsv_low(hue_min, saturation_min, value_min);
+  cv::Scalar hsv_high(hue_max, saturation_max, value_max);
 
+  cv::cuda::split(gpu_src, mat_parts);
+
+//find range between high and low values of H
+  cv::cuda::threshold(mat_parts[0], mat_parts_low[0], hsv_low[0], UCHAR_MAX, cv::THRESH_BINARY);
+  cv::cuda::threshold(mat_parts[0], mat_parts_high[0], hsv_high[0], UCHAR_MAX, cv::THRESH_BINARY_INV);
+  cv::cuda::bitwise_and(mat_parts_high[0], mat_parts_low[0], mat_parts[0]);
+
+  //find range between high and low values of S
+  cv::cuda::threshold(mat_parts[1], mat_parts_low[1], hsv_low[1], UCHAR_MAX, cv::THRESH_BINARY);
+  cv::cuda::threshold(mat_parts[1], mat_parts_high[1], hsv_high[1], UCHAR_MAX, cv::THRESH_BINARY_INV);
+  cv::cuda::bitwise_and(mat_parts_high[1], mat_parts_low[1], mat_parts[1]);
+
+  //find range between high and low values of V
+  cv::cuda::threshold(mat_parts[2], mat_parts_low[2], hsv_low[2], UCHAR_MAX, cv::THRESH_BINARY);
+  cv::cuda::threshold(mat_parts[2], mat_parts_high[2], hsv_high[2], UCHAR_MAX, cv::THRESH_BINARY_INV);
+  cv::cuda::bitwise_and(mat_parts_high[2], mat_parts_low[2], mat_parts[2]);
+
+  gpu_hsv_value = mat_parts[2];
+
+  //bitwise AND all channels.
+  cv::cuda::bitwise_and(mat_parts[0], mat_parts[1], gpu_temp);
+  cv::cuda::bitwise_and(gpu_temp, mat_parts[2], gpu_dst);
+
+  //cv::Mat img_final(final_result);
+  //cv::cuda::cvtColor      (gpu_src, gpu_temp, cv::COLOR_BGR2HSV);
+  //cv::cuda::split         (gpu_temp, gpu_shsv);
+  //cv::cuda::threshold     (gpu_shsv[0], gpu_thresc[0], hue_min, hue_max, cv::THRESH_BINARY);
+  //cv::cuda::threshold     (gpu_shsv[1], gpu_thresc[1], saturation_min, saturation_max, cv::THRESH_BINARY);
+  //cv::cuda::threshold     (gpu_shsv[2], gpu_thresc[2], value_min, value_max, cv::THRESH_BINARY);
+  //cv::cuda::bitwise_and   (gpu_thresc[0], gpu_thresc[1], gpu_temp);
+  //cv::cuda::bitwise_and   (gpu_temp, gpu_thresc[2], gpu_dst);
   }
 
 void c_opencv_unmanaged::gpu_erode                                      (cv::cuda::GpuMat& gpu_src, cv::cuda::GpuMat& gpu_dst, int borderType, cv::Point anchor)  //
