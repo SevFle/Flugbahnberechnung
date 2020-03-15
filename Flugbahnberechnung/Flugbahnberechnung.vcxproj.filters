@@ -51,6 +51,9 @@
     <ClCompile Include="frm_Camera_Positioning.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="CSV_Datei.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="frm_Main.h">
@@ -84,6 +87,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="frm_Camera_Positioning.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CSV_Datei.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
