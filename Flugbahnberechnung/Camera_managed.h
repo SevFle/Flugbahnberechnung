@@ -13,7 +13,7 @@ namespace nmsp_camera_managed
     {
       public:
       /*************************************************************** Konstruktoren *************************************************************/
-      C_camera_managed                                                  (C_GlobalObjects^ GlobalObjects);
+      C_camera_managed                                                  (C_GlobalObjects* GlobalObjects);
       /*************************************************************** Destruktor ****************************************************************/
       ~C_camera_managed                                                 ();
       /**************************************************** Öffentliche Klassenobjekte ********************************************************/
@@ -28,7 +28,7 @@ namespace nmsp_camera_managed
 
       /******************************************** Nicht öffentliche private Anwender-Attribute **************************************************/
       private:
-      C_GlobalObjects^                    GlobalObjects;
+      C_GlobalObjects*                    GlobalObjects;
 
       
       /********************************************************* Öffentliche Klassenmethoden*******************************************************/
