@@ -18,12 +18,20 @@ namespace nmsp_opencv_unmanaged
       cv::Mat                                 cpu_img;
 
       cv::cuda::GpuMat                        gpu_img;
+      cv::cuda::GpuMat                        gpu_img_original;
       cv::cuda::GpuMat                        gpu_mid_img;
       cv::cuda::GpuMat                        gpu_src_img;
       cv::cuda::GpuMat                        gpu_dst_img;
+      cv::cuda::GpuMat                        gpu_thresholded;
+      cv::cuda::GpuMat                        gpu_filtered;
       cv::cuda::GpuMat                        gpu_gray;
-      cv::cuda::GpuMat                        gpu_hsv;
-      cv::cuda::GpuMat                        gpu_hsv_value;
+
+      //HSV-Filtering
+      cv::cuda::GpuMat                        gpu_src2color;
+      cv::cuda::GpuMat                        gpu_color_threshold;
+      cv::cuda::GpuMat                        gpu_bgr_threshold;
+      
+
 
       //For HSV Threshold, equal to cv::InRange
       cv::cuda::GpuMat                        gpu_shsv[3];
@@ -41,8 +49,12 @@ namespace nmsp_opencv_unmanaged
       public:
       cv::VideoCapture                        cap;
       cv::Mat                                 cpu_src_img;
+      cv::Mat                                 cpu_src_img_test;
+
       cv::Mat                                 cpu_mid_img;
       cv::Mat                                 cpu_dst_img;
+      cv::Mat                                 cpu_dst_img_test;
+
       cv::Mat                                 cpu_4channel;
       cv::Mat                                 cpu_hsv;
       cv::Mat                                   cpu_gray;
@@ -132,15 +144,20 @@ namespace nmsp_opencv_unmanaged
       /******************************************************* Private Klassenmethoden***************************************************************/
       private:
       void            gpu_to_hsv_threshold                                (cv::cuda::GpuMat& img, cv::cuda::GpuMat& gpu_dst);
+      void            gpu_inRange                                         (cv::cuda::GpuMat& img, cv::cuda::GpuMat& gpu_dst, cv::Scalar minvalue, cv::Scalar maxvalue);
+
       void            cpu_to_4channel_colour                              (cv::Mat& cpu_src, cv::Mat& cpu_dst);
       void            gpu_erode                                           (cv::cuda::GpuMat& gpu_src, cv::cuda::GpuMat& gpu_dst, int borderType, cv::Point anchor);
       void            gpu_dilate                                          (cv::cuda::GpuMat& gpu_src, cv::cuda::GpuMat& gpu_dst, cv::Point anchor);
-      void            gpu_open                                            (cv::cuda::GpuMat& gpu_src, cv::cuda::GpuMat& gpu_dst, cv::Point anchor);
-      void            gpu_close                                           (cv::cuda::GpuMat& gpu_src, cv::cuda::GpuMat& gpu_dst, cv::Point anchor);
+      void            gpu_open                                            (cv::cuda::GpuMat& gpu_src, cv::Point anchor);
+      void            gpu_close                                           (cv::cuda::GpuMat& gpu_src, cv::Point anchor);
       void            gpu_bilateral_filter                                (cv::cuda::GpuMat& gpu_src, cv::cuda::GpuMat& gpu_dst);
-      void            gpu_gaussian_filter                                 (cv::cuda::GpuMat& gpu_src, cv::cuda::GpuMat& gpu_dst); 
+      void            gpu_gaussian_filter                                 (cv::cuda::GpuMat& gpu_src);
       void            gpu_morph_gradient                                  (cv::cuda::GpuMat& gpu_src, cv::cuda::GpuMat& gpu_dst);
       void            gpu_hsv2grayscale                                   (cv::cuda::GpuMat& gpu_src, cv::cuda::GpuMat& gpu_dst);
+      void            gpu_filter_hsv                                      (cv::cuda::GpuMat& gpu_src, cv::cuda::GpuMat& gpu_dst);
+      void            gpu_filter_bgr                                      (cv::cuda::GpuMat& gpu_src, cv::cuda::GpuMat& gpu_dst);
+      void            gpu_filter_gray                                     (cv::cuda::GpuMat& gpu_src, cv::cuda::GpuMat& gpu_dst);
 
 
 

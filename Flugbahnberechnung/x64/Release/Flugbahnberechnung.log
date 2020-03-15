@@ -1,7 +1,32 @@
-﻿  frm_ObjectCalibration.cpp
+﻿  App_Main.cpp
 c:\users\sever\documents\projekte\echtzeit_flugbahnberechnung\flugbahnberechnung\main.h(78): warning C4677: 'camera_managed': signature of non-private member contains assembly private type 'nmsp_camera_managed::C_camera_managed'
   c:\users\sever\documents\projekte\echtzeit_flugbahnberechnung\flugbahnberechnung\camera_managed.h(12): note: see declaration of 'nmsp_camera_managed::C_camera_managed'
-c:\users\sever\documents\projekte\echtzeit_flugbahnberechnung\flugbahnberechnung\frm_objectcalibration.cpp(317): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+  frm_CameraCalibration_Menu.cpp
+c:\users\sever\documents\projekte\echtzeit_flugbahnberechnung\flugbahnberechnung\main.h(78): warning C4677: 'camera_managed': signature of non-private member contains assembly private type 'nmsp_camera_managed::C_camera_managed'
+  c:\users\sever\documents\projekte\echtzeit_flugbahnberechnung\flugbahnberechnung\camera_managed.h(12): note: see declaration of 'nmsp_camera_managed::C_camera_managed'
+  frm_CameraCalibration_Single.cpp
+c:\users\sever\documents\projekte\echtzeit_flugbahnberechnung\flugbahnberechnung\main.h(78): warning C4677: 'camera_managed': signature of non-private member contains assembly private type 'nmsp_camera_managed::C_camera_managed'
+  c:\users\sever\documents\projekte\echtzeit_flugbahnberechnung\flugbahnberechnung\camera_managed.h(12): note: see declaration of 'nmsp_camera_managed::C_camera_managed'
+  frm_CameraCalibration_Stereo.cpp
+c:\users\sever\documents\projekte\echtzeit_flugbahnberechnung\flugbahnberechnung\main.h(78): warning C4677: 'camera_managed': signature of non-private member contains assembly private type 'nmsp_camera_managed::C_camera_managed'
+  c:\users\sever\documents\projekte\echtzeit_flugbahnberechnung\flugbahnberechnung\camera_managed.h(12): note: see declaration of 'nmsp_camera_managed::C_camera_managed'
+  frm_Camera_Positioning.cpp
+c:\users\sever\documents\projekte\echtzeit_flugbahnberechnung\flugbahnberechnung\main.h(78): warning C4677: 'camera_managed': signature of non-private member contains assembly private type 'nmsp_camera_managed::C_camera_managed'
+  c:\users\sever\documents\projekte\echtzeit_flugbahnberechnung\flugbahnberechnung\camera_managed.h(12): note: see declaration of 'nmsp_camera_managed::C_camera_managed'
+c:\users\sever\documents\projekte\echtzeit_flugbahnberechnung\flugbahnberechnung\frm_camera_positioning.cpp(140): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+  frm_ObjectCalibration.cpp
+c:\users\sever\documents\projekte\echtzeit_flugbahnberechnung\flugbahnberechnung\main.h(78): warning C4677: 'camera_managed': signature of non-private member contains assembly private type 'nmsp_camera_managed::C_camera_managed'
+  c:\users\sever\documents\projekte\echtzeit_flugbahnberechnung\flugbahnberechnung\camera_managed.h(12): note: see declaration of 'nmsp_camera_managed::C_camera_managed'
+c:\users\sever\documents\projekte\echtzeit_flugbahnberechnung\flugbahnberechnung\frm_objectcalibration.cpp(318): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+  Camera_managed.cpp
+  frm_Main.cpp
+c:\users\sever\documents\projekte\echtzeit_flugbahnberechnung\flugbahnberechnung\main.h(78): warning C4677: 'camera_managed': signature of non-private member contains assembly private type 'nmsp_camera_managed::C_camera_managed'
+  c:\users\sever\documents\projekte\echtzeit_flugbahnberechnung\flugbahnberechnung\camera_managed.h(12): note: see declaration of 'nmsp_camera_managed::C_camera_managed'
+  GlobalObjects.cpp
+  Main.cpp
+c:\users\sever\documents\projekte\echtzeit_flugbahnberechnung\flugbahnberechnung\main.h(78): warning C4677: 'camera_managed': signature of non-private member contains assembly private type 'nmsp_camera_managed::C_camera_managed'
+  c:\users\sever\documents\projekte\echtzeit_flugbahnberechnung\flugbahnberechnung\camera_managed.h(12): note: see declaration of 'nmsp_camera_managed::C_camera_managed'
+  Generating Code...
 c:\libraries\opencv\4_2_0\install\include\opencv2\core\cuda.inl.hpp(105): warning C4793: 'cv::cuda::GpuMat::GpuMat': function compiled as native:
   	Found an intrinsic not supported in managed code
 c:\libraries\opencv\4_2_0\install\include\opencv2\core\cuda.inl.hpp(395): warning C4793: 'cv::cuda::HostMem::HostMem': function compiled as native:
@@ -14,4 +39,104 @@ c:\libraries\opencv\4_2_0\install\include\opencv2\core\mat.inl.hpp(2181): warnin
   	Found an intrinsic not supported in managed code
 c:\libraries\opencv\4_2_0\install\include\opencv2\core\mat.inl.hpp(3781): warning C4793: 'cv::UMat::addref': function compiled as native:
   	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\cuda.inl.hpp(105): warning C4793: 'cv::cuda::GpuMat::GpuMat': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\cuda.inl.hpp(395): warning C4793: 'cv::cuda::HostMem::HostMem': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\mat.inl.hpp(530): warning C4793: 'cv::Mat::Mat': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\mat.inl.hpp(850): warning C4793: 'cv::Mat::release': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\mat.inl.hpp(2181): warning C4793: 'cv::SparseMat::addref': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\mat.inl.hpp(3781): warning C4793: 'cv::UMat::addref': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\cuda.inl.hpp(105): warning C4793: 'cv::cuda::GpuMat::GpuMat': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\cuda.inl.hpp(395): warning C4793: 'cv::cuda::HostMem::HostMem': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\mat.inl.hpp(530): warning C4793: 'cv::Mat::Mat': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\mat.inl.hpp(850): warning C4793: 'cv::Mat::release': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\mat.inl.hpp(2181): warning C4793: 'cv::SparseMat::addref': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\mat.inl.hpp(3781): warning C4793: 'cv::UMat::addref': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\cuda.inl.hpp(105): warning C4793: 'cv::cuda::GpuMat::GpuMat': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\cuda.inl.hpp(395): warning C4793: 'cv::cuda::HostMem::HostMem': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\mat.inl.hpp(530): warning C4793: 'cv::Mat::Mat': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\mat.inl.hpp(850): warning C4793: 'cv::Mat::release': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\mat.inl.hpp(2181): warning C4793: 'cv::SparseMat::addref': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\mat.inl.hpp(3781): warning C4793: 'cv::UMat::addref': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\cuda.inl.hpp(105): warning C4793: 'cv::cuda::GpuMat::GpuMat': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\cuda.inl.hpp(395): warning C4793: 'cv::cuda::HostMem::HostMem': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\mat.inl.hpp(530): warning C4793: 'cv::Mat::Mat': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\mat.inl.hpp(850): warning C4793: 'cv::Mat::release': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\mat.inl.hpp(2181): warning C4793: 'cv::SparseMat::addref': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\mat.inl.hpp(3781): warning C4793: 'cv::UMat::addref': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\cuda.inl.hpp(105): warning C4793: 'cv::cuda::GpuMat::GpuMat': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\cuda.inl.hpp(395): warning C4793: 'cv::cuda::HostMem::HostMem': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\mat.inl.hpp(530): warning C4793: 'cv::Mat::Mat': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\mat.inl.hpp(850): warning C4793: 'cv::Mat::release': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\mat.inl.hpp(2181): warning C4793: 'cv::SparseMat::addref': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\mat.inl.hpp(3781): warning C4793: 'cv::UMat::addref': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\cuda.inl.hpp(105): warning C4793: 'cv::cuda::GpuMat::GpuMat': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\cuda.inl.hpp(395): warning C4793: 'cv::cuda::HostMem::HostMem': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\mat.inl.hpp(530): warning C4793: 'cv::Mat::Mat': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\mat.inl.hpp(850): warning C4793: 'cv::Mat::release': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\mat.inl.hpp(2181): warning C4793: 'cv::SparseMat::addref': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\mat.inl.hpp(3781): warning C4793: 'cv::UMat::addref': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\cuda.inl.hpp(105): warning C4793: 'cv::cuda::GpuMat::GpuMat': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\cuda.inl.hpp(395): warning C4793: 'cv::cuda::HostMem::HostMem': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\mat.inl.hpp(530): warning C4793: 'cv::Mat::Mat': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\mat.inl.hpp(850): warning C4793: 'cv::Mat::release': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\mat.inl.hpp(2181): warning C4793: 'cv::SparseMat::addref': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\mat.inl.hpp(3781): warning C4793: 'cv::UMat::addref': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\cuda.inl.hpp(105): warning C4793: 'cv::cuda::GpuMat::GpuMat': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\cuda.inl.hpp(395): warning C4793: 'cv::cuda::HostMem::HostMem': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\mat.inl.hpp(530): warning C4793: 'cv::Mat::Mat': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\mat.inl.hpp(850): warning C4793: 'cv::Mat::release': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\mat.inl.hpp(2181): warning C4793: 'cv::SparseMat::addref': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\mat.inl.hpp(3781): warning C4793: 'cv::UMat::addref': function compiled as native:
+  	Found an intrinsic not supported in managed code
+  Camera_unmanaged.cpp
+  opencv_unmanaged.cpp
+  Generating Code...
+  .NETFramework,Version=v4.7.AssemblyAttributes.cpp
   Flugbahnberechnung.vcxproj -> C:\Users\sever\Documents\Projekte\Echtzeit_Flugbahnberechnung\x64\Release\Flugbahntracker.exe

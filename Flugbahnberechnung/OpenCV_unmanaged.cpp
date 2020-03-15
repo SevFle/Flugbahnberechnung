@@ -117,8 +117,9 @@ void c_opencv_unmanaged::camera_thread                                  ()
 
 
         case 2:
-
+          cpu_src_img_test = cpu_src_img;
           apply_filter(cpu_src_img, cpu_mid_img);
+          cpu_mask_img(cpu_src_img_test, cpu_dst_img_test);
           statemachine_state = 3;
 
 
@@ -134,24 +135,23 @@ void c_opencv_unmanaged::camera_thread                                  ()
 
 void c_opencv_unmanaged::cpu_mask_img                                   (cv::Mat& hsv_cpu_src, cv::Mat& cpu_masked_dst)
   {
-  cv::inRange(hsv_cpu_src, cv::Scalar(this->hue_min, this->saturation_min, this->value_min), cv::Scalar(this->hue_max, this->saturation_max, this->value_max), cpu_masked_dst);
+  cv::cvtColor(cpu_src_img_test, cpu_mid_img, cv::COLOR_BGR2HSV);
+  cv::inRange(cpu_mid_img, cv::Scalar(this->hue_min, this->saturation_min, this->value_min), cv::Scalar(this->hue_max, this->saturation_max, this->value_max), cpu_masked_dst);
   }
 
 void c_opencv_unmanaged::apply_filter                                   (cv::Mat  &cpu_src, cv::Mat &cpu_dst)
   {
   //cpu_to_4channel_colour          (cpu_src, cpu_4channel);
   gpu_src_img.upload                                  (cpu_src);
-  gpu_to_hsv_threshold                                (gpu_src_img, gpu_hsv);
-  gpu_hsv.download                                    (cpu_hsv);
-  if (erode_active)   gpu_erode                       (gpu_hsv, gpu_hsv, bordertype, anchor);
-  if (dilate_active)  gpu_dilate                      (gpu_hsv, gpu_hsv, anchor);
-  if(open_active)     gpu_open                        (gpu_hsv, gpu_hsv, anchor);
-  if(close_active)    gpu_close                       (gpu_hsv, gpu_hsv, anchor);
-  if(gaussian_active) gpu_gaussian_filter             (gpu_hsv, gpu_hsv);
-  if(morph_active)    gpu_morph_gradient              (gpu_hsv, gpu_hsv);
+  gpu_filter_hsv(gpu_src_img, gpu_thresholded);
+  if (erode_active)   gpu_erode                       (gpu_thresholded, gpu_thresholded, bordertype, anchor);
+  if (dilate_active)  gpu_dilate                      (gpu_thresholded, gpu_thresholded, anchor);
+  if(open_active)     gpu_open                        (gpu_thresholded, anchor);
+  if(close_active)    gpu_close                       (gpu_thresholded, anchor);
+  if(gaussian_active) gpu_gaussian_filter             (gpu_thresholded);
+  if(morph_active)    gpu_morph_gradient              (gpu_thresholded, gpu_thresholded);
 
-  gpu_hsv_value.download                  (cpu_gray);
-  gpu_hsv.download                           (cpu_masked_img);
+  gpu_thresholded.download                  (cpu_masked_img);
 
 
   }
@@ -204,6 +204,11 @@ void c_opencv_unmanaged::operator                                       ()()
   }
 
 /*************************************************************** Private Klassenmethoden*****************************************************/
+void            gpu_inRange                                         (cv::cuda::GpuMat& img, cv::cuda::GpuMat& gpu_dst, cv::Scalar minvalue, cv::Scalar maxvalue)
+{
+ // cv::inRange()
+}
+
 void c_opencv_unmanaged::cpu_to_4channel_colour                         (cv::Mat& cpu_src, cv::Mat& cpu_dst)
   {
   cv::cvtColor(cpu_src, cpu_dst, cv::COLOR_BGR2BGRA);
@@ -232,8 +237,7 @@ void c_opencv_unmanaged::gpu_to_hsv_threshold                           (cv::cud
   cv::cuda::threshold(mat_parts[2], mat_parts_high[2], hsv_high[2], UCHAR_MAX, cv::THRESH_BINARY_INV);
   cv::cuda::bitwise_and(mat_parts_high[2], mat_parts_low[2], mat_parts[2]);
 
-  gpu_hsv_value = mat_parts[2];
-
+ 
   //bitwise AND all channels.
   cv::cuda::bitwise_and(mat_parts[0], mat_parts[1], gpu_temp);
   cv::cuda::bitwise_and(gpu_temp, mat_parts[2], gpu_dst);
@@ -271,20 +275,20 @@ void c_opencv_unmanaged::gpu_dilate                                     (cv::cud
 
   }
 
-void c_opencv_unmanaged::gpu_open                                       (cv::cuda::GpuMat& gpu_src, cv::cuda::GpuMat& gpu_dst, cv::Point anchor)
+void c_opencv_unmanaged::gpu_open                                       (cv::cuda::GpuMat& gpu_src, cv::Point anchor)
   {
   cv::Mat                     opening_structuring_element  =  cv::getStructuringElement           (cv::MORPH_ELLIPSE, cv::Size (2*opening_kernel_size, 2*opening_kernel_size));
   cv::Ptr<cv::cuda::Filter>   opening                      =  cv::cuda::createMorphologyFilter    (cv::MORPH_OPEN, gpu_src.type(), opening_structuring_element, anchor, opening_iterations);
-                              opening->apply                                                      (gpu_src, gpu_dst);
+                              opening->apply                                                      (gpu_src, gpu_src);
 
   }
 
-void c_opencv_unmanaged::gpu_close                                      (cv::cuda::GpuMat& gpu_src, cv::cuda::GpuMat& gpu_dst, cv::Point anchor)
+void c_opencv_unmanaged::gpu_close                                      (cv::cuda::GpuMat& gpu_src, cv::Point anchor)
   {
   cv::Mat                     closing_structuring_element  =cv::getStructuringElement (cv::MORPH_ELLIPSE, cv::Size (2*closing_kernel_size, 2*closing_kernel_size));
 
   cv::Ptr<cv::cuda::Filter> closing = cv::cuda::createMorphologyFilter(cv::MORPH_CLOSE, gpu_src.type(), closing_structuring_element, anchor, closing_iterations);
-  closing->apply(gpu_src, gpu_dst);
+  closing->apply(gpu_src, gpu_src);
 
   }
 
@@ -293,10 +297,10 @@ void c_opencv_unmanaged::gpu_bilateral_filter                           (cv::cud
   cv::cuda::bilateralFilter(gpu_src, gpu_dst, bilateral_kernel_size, bilateral_sigma_color, bilateral_sigma_spatial, cv::BORDER_DEFAULT);
   }
 
-void c_opencv_unmanaged::gpu_gaussian_filter                            (cv::cuda::GpuMat& gpu_src, cv::cuda::GpuMat& gpu_dst)
+void c_opencv_unmanaged::gpu_gaussian_filter                            (cv::cuda::GpuMat& gpu_src)
   {
   cv::Ptr<cv::cuda::Filter> gauss = cv::cuda::createGaussianFilter(gpu_src.type(), -1, cv::Size(gaussian_kernel_size, gaussian_kernel_size), gaussian_sigma, gaussian_sigma, cv::BORDER_DEFAULT);
-  gauss->apply(gpu_src, gpu_dst);
+  gauss->apply(gpu_src, gpu_src);
   }
 
 void c_opencv_unmanaged::gpu_hsv2grayscale                              (cv::cuda::GpuMat& gpu_src, cv::cuda::GpuMat& gpu_dst)
@@ -305,6 +309,58 @@ void c_opencv_unmanaged::gpu_hsv2grayscale                              (cv::cud
 
   }
 
+void c_opencv_unmanaged::gpu_filter_hsv                                 (cv::cuda::GpuMat& gpu_src, cv::cuda::GpuMat& gpu_dst)
+{
+  cv::cuda::cvtColor(gpu_src, gpu_src2color, cv::COLOR_BGR2HSV);
+
+  gpu_gaussian_filter(gpu_src2color);
+
+  gpu_to_hsv_threshold(gpu_src2color, gpu_color_threshold);
+
+  gpu_open(gpu_color_threshold, anchor);
+
+  gpu_close(gpu_color_threshold, anchor);
+
+  cv::cuda::cvtColor(gpu_color_threshold, gpu_bgr_threshold, cv::COLOR_GRAY2BGR);
+
+  cv::cuda::bitwise_and(gpu_src, gpu_bgr_threshold, gpu_dst);
+}
+
+void c_opencv_unmanaged::gpu_filter_bgr                                          (cv::cuda::GpuMat& gpu_src, cv::cuda::GpuMat& gpu_dst)
+{
+  gpu_src.copyTo(gpu_src2color);
+
+  gpu_gaussian_filter(gpu_src2color);
+
+  gpu_to_hsv_threshold(gpu_src2color, gpu_color_threshold);
+
+  gpu_open(gpu_color_threshold, anchor);
+
+  gpu_close(gpu_color_threshold, anchor);
+
+  cv::cuda::cvtColor(gpu_color_threshold, gpu_bgr_threshold, cv::COLOR_GRAY2BGR);
+
+  cv::cuda::bitwise_and(gpu_src, gpu_bgr_threshold, gpu_dst);
+
+}
+void c_opencv_unmanaged::gpu_filter_gray                                         (cv::cuda::GpuMat& gpu_src, cv::cuda::GpuMat& gpu_dst)
+{
+  cv::cuda::cvtColor(gpu_src, gpu_src2color, cv::COLOR_BGR2HSV);
+
+  gpu_gaussian_filter(gpu_src2color);
+
+  gpu_to_hsv_threshold(gpu_src2color, gpu_color_threshold);
+
+  gpu_open(gpu_color_threshold, anchor);
+
+  gpu_close(gpu_color_threshold, anchor);
+
+  cv::cuda::cvtColor(gpu_color_threshold, gpu_bgr_threshold, cv::COLOR_GRAY2BGR);
+
+  cv::cuda::bitwise_and(gpu_src, gpu_bgr_threshold, gpu_dst);
+
+
+}
 
 
 

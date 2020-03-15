@@ -85,6 +85,7 @@ System::Void				C_frm_ObjectCalibration::Taktgeber_Tick			        (System::Objec
   FillMat2Picturebox(pb_original, Main->camera_managed->camera_unmanaged->camera_vector_unsorted[camera_id_in_use]->cpu_src_img);
   FillMat2Picturebox(pb_gray, Main->camera_managed->camera_unmanaged->camera_vector_unsorted[camera_id_in_use]->cpu_gray);
   FillMat2Picturebox(pb_filtered, Main->camera_managed->camera_unmanaged->camera_vector_unsorted[camera_id_in_use]->cpu_masked_img);
+  FillMat2Picturebox(pb_tracked, Main->camera_managed->camera_unmanaged->camera_vector_unsorted[camera_id_in_use]->cpu_dst_img_test);
   }
 
 System::Void        C_frm_ObjectCalibration::bt_Start_Click             (System::Object^ sender, System::EventArgs^ e)
@@ -149,14 +150,14 @@ System::Void C_frm_ObjectCalibration::trb_saturation_max_ValueChanged   (System:
  }
 System::Void C_frm_ObjectCalibration::trb_value_min_ValueChanged        (System::Object^  sender, System::EventArgs^  e)
  {
-  if (this->trb_value_min->Value > this->trb_value_max->Value) this->trb_value_min->Value = this->trb_saturation_max->Value-1;
+  if (this->trb_value_min->Value > this->trb_value_max->Value) this->trb_value_min->Value = this->trb_value_max->Value-1;
   Main->camera_managed->camera_unmanaged->camera_vector_unsorted[camera_id_in_use]->value_min = static_cast<uchar> (trb_value_min->Value);
   txb_value_min->Text = System::String::Format("{0:0}", trb_value_min->Value);
 
  }
 System::Void C_frm_ObjectCalibration::trb_value_max_ValueChanged        (System::Object^  sender, System::EventArgs^  e)
  {
-  if (this->trb_value_min->Value > this->trb_value_max->Value) this->trb_value_min->Value = this->trb_saturation_max->Value+1;
+  if (this->trb_value_min->Value > this->trb_value_max->Value) this->trb_value_min->Value = this->trb_value_max->Value+1;
   Main->camera_managed->camera_unmanaged->camera_vector_unsorted[camera_id_in_use]->value_max = static_cast<uchar> (trb_value_max->Value);
   txb_value_max->Text = System::String::Format("{0:0}", trb_value_max->Value);
 
