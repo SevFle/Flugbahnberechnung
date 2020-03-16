@@ -4,7 +4,7 @@
 
 using namespace NmSp_Main;
 
-C_Main::C_Main              (C_GlobalObjects^ GlobalObjects)
+C_Main::C_Main              (C_GlobalObjects* GlobalObjects)
   {
   this->GlobalObjects = GlobalObjects;
   this->camera_managed  = gcnew C_camera_managed(GlobalObjects);

@@ -7,7 +7,7 @@
 using namespace nmsp_GlobalObjects;
 using namespace nmsp_camera_managed;
 /*************************************************************** Konstruktoren **************************************************************/
-C_camera_managed::C_camera_managed                            (C_GlobalObjects^ GlobalObjects)
+C_camera_managed::C_camera_managed                            (C_GlobalObjects* GlobalObjects)
   {
   this->GlobalObjects = GlobalObjects;
   this->camera_unmanaged = new c_camera_unmanaged             (GlobalObjects->cameras_in_use);

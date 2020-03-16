@@ -25,7 +25,7 @@ int main (void)
   Application::EnableVisualStyles                ();
   Application::SetCompatibleTextRenderingDefault (false);
 
-  C_GlobalObjects^  GlobalObjects = gcnew C_GlobalObjects ();
+  C_GlobalObjects*  GlobalObjects = new C_GlobalObjects ();
   C_Main^           Main          = gcnew C_Main          (GlobalObjects);
 
   Application::Run                                                 (Main->frm_Main);

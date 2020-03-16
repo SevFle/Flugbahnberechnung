@@ -3,7 +3,7 @@
 using namespace NmSp_CamerCalibration_Menu;
 
 
-C_frm_CameraCalibration_Menu::C_frm_CameraCalibration_Menu      (C_GlobalObjects^ GlobalObjects, C_Main^  Main)
+C_frm_CameraCalibration_Menu::C_frm_CameraCalibration_Menu      (C_GlobalObjects* GlobalObjects, C_Main^  Main)
   {
   InitializeComponent                                           ();
   this->GlobalObjects = GlobalObjects;

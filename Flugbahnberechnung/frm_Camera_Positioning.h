@@ -15,13 +15,13 @@ namespace nmsp_frm_camera_positioning
 	public ref class c_frm_Camera_Positioning : public System::Windows::Forms::Form
 	{
 	public:
-  c_frm_Camera_Positioning(C_GlobalObjects^ GlobalObjects, C_Main^  Main);
+  c_frm_Camera_Positioning(C_GlobalObjects* GlobalObjects, C_Main^  Main);
 	protected:
   ~c_frm_Camera_Positioning();
 
 
     private:
-    C_GlobalObjects^    GlobalObjects;
+    C_GlobalObjects*    GlobalObjects;
     C_Main^             Main;
 
     UInt32              Zaehler;

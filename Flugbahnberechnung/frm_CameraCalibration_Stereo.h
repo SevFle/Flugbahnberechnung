@@ -14,12 +14,12 @@ namespace NmSp_frm_CameraCalibration_Stereo
 	public ref class C_frm_CameraCalibration_Stereo : public System::Windows::Forms::Form
 	  {
 	  public:
-    C_frm_CameraCalibration_Stereo(C_GlobalObjects^ GlobalObjects, C_Main^  Main);
+    C_frm_CameraCalibration_Stereo(C_GlobalObjects* GlobalObjects, C_Main^  Main);
 	  protected:
     ~C_frm_CameraCalibration_Stereo();
 
 	  private:
-    C_GlobalObjects^      GlobalObjects;
+    C_GlobalObjects*      GlobalObjects;
     C_Main^               Main;
 
     UInt32      Zaehler;

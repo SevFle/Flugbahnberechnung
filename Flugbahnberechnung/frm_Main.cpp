@@ -3,7 +3,7 @@
 
 using namespace NmSp_frm_Main;
 /*************************************************************** Konstruktoren **************************************************************/
-C_frm_Main::C_frm_Main                                                  (C_GlobalObjects^ GlobalObjects, C_Main^  Main)
+C_frm_Main::C_frm_Main                                                  (C_GlobalObjects* GlobalObjects, C_Main^  Main)
   {
   InitializeComponent();
   this->GlobalObjects     = GlobalObjects;
@@ -86,6 +86,7 @@ System::Void        C_frm_Main::bt_apply_cameras_Click                  (System:
     bt_ObjectCalibration->Enabled = true;
     bt_CameraCalibration->Enabled = true;
     bt_camera_positioning->Enabled = true;
+    nup_camera_count->Enabled = false;
     }
   }
 

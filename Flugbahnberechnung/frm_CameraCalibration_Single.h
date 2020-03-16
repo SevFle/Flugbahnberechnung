@@ -10,13 +10,13 @@ namespace NmSp_CamerCalibration_Single
 	public ref class C_frm_CameraCalibration_Single : public System::Windows::Forms::Form
 	{
 	  public:
-    C_frm_CameraCalibration_Single(C_GlobalObjects^ GlobalObjects, C_Main^  Main);
+    C_frm_CameraCalibration_Single(C_GlobalObjects* GlobalObjects, C_Main^  Main);
 
 	  protected:
     ~C_frm_CameraCalibration_Single();
 
 	  private:
-    C_GlobalObjects^      GlobalObjects;
+    C_GlobalObjects*      GlobalObjects;
     C_Main^               Main;
 
     UInt32      Zaehler;

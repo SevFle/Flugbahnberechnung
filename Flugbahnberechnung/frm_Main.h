@@ -11,14 +11,14 @@ namespace NmSp_frm_Main
 	  {
 	  public:
     /*************************************************************** Konstruktoren **************************************************************/
-    C_frm_Main(C_GlobalObjects^ GlobalObjects, C_Main^  Main);
+    C_frm_Main(C_GlobalObjects* GlobalObjects, C_Main^  Main);
 
 	  protected:
     /**************************************************************** Destruktor ****************************************************************/
     ~C_frm_Main();
     /******************************************** Nicht öffentliche private Klassenobjekte **************************************************/
     private:
-    C_GlobalObjects^    GlobalObjects;
+    C_GlobalObjects*    GlobalObjects;
     C_Main^             Main;
 
     UInt32              Zaehler;

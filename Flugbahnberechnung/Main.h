@@ -61,12 +61,12 @@ namespace NmSp_frm_CameraCalibration_Stereo
   public ref class C_Main
     {
       public:
-      C_Main              (C_GlobalObjects^ GlobalObjects);
+      C_Main              (C_GlobalObjects* GlobalObjects);
 
       ~C_Main             ();
 
       private:
-      C_GlobalObjects^     GlobalObjects;
+      C_GlobalObjects*     GlobalObjects;
 
       public:
       C_frm_Main^                       frm_Main;

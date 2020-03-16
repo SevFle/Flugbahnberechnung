@@ -92,9 +92,13 @@
     <ClInclude Include="CSV_Datei.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="inRange.cuh">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram.cd" />
+    <None Include="inRange.cu" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="frm_Main.resx">

@@ -4,7 +4,7 @@
 
 using namespace NmSp_CamerCalibration_Single;
 
-C_frm_CameraCalibration_Single::C_frm_CameraCalibration_Single(C_GlobalObjects^ GlobalObjects, C_Main^  Main)
+C_frm_CameraCalibration_Single::C_frm_CameraCalibration_Single(C_GlobalObjects* GlobalObjects, C_Main^  Main)
   {
   InitializeComponent();
   this->GlobalObjects = GlobalObjects;

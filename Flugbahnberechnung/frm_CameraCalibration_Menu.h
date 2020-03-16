@@ -17,13 +17,13 @@ namespace NmSp_CamerCalibration_Menu
 	public ref class C_frm_CameraCalibration_Menu : public System::Windows::Forms::Form
 	  {
 	  public:
-    C_frm_CameraCalibration_Menu(C_GlobalObjects^ GlobalObjects, C_Main^  Main);
+    C_frm_CameraCalibration_Menu(C_GlobalObjects* GlobalObjects, C_Main^  Main);
 
 	  protected:
     ~C_frm_CameraCalibration_Menu();
 
     private:
-    C_GlobalObjects^      GlobalObjects;
+    C_GlobalObjects*      GlobalObjects;
     C_Main^               Main;
 
     UInt32      Zaehler;

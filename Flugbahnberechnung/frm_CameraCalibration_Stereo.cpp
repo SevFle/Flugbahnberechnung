@@ -3,7 +3,7 @@
 using namespace NmSp_frm_CameraCalibration_Stereo;
 
 
-C_frm_CameraCalibration_Stereo::C_frm_CameraCalibration_Stereo(C_GlobalObjects^ GlobalObjects, C_Main^  Main)
+C_frm_CameraCalibration_Stereo::C_frm_CameraCalibration_Stereo(C_GlobalObjects* GlobalObjects, C_Main^  Main)
   {
   InitializeComponent();
   }

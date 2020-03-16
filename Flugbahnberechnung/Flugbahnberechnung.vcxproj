@@ -62,6 +62,7 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\CUDA 10.1.props" />
   </ImportGroup>
   <ImportGroup Label="Shared">
   </ImportGroup>
@@ -84,15 +85,15 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>C:\Program Files %28x86%29\IntelSWTools\compilers_and_libraries_2019.5.281\windows\tbb\include;C:\libraries\opencv\4_2_0\install\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Program Files %28x86%29\IntelSWTools\compilers_and_libraries_2019.5.281\windows\tbb\lib\intel64_win\vc14;C:\libraries\opencv\4_2_0\install\x64\vc15\lib;$(LibraryPath)</LibraryPath>
+    <LibraryPath>C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.1\lib\x64;C:\Program Files %28x86%29\IntelSWTools\compilers_and_libraries_2019.5.281\windows\tbb\lib\intel64_win\vc14;C:\libraries\opencv\4_2_0\install\x64\vc15\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>C:\Program Files %28x86%29\IntelSWTools\compilers_and_libraries_2019.5.281\windows\tbb\include;C:\libraries\opencv\4_2_0\install\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Program Files %28x86%29\IntelSWTools\compilers_and_libraries_2019.5.281\windows\tbb\lib\intel64_win\vc14;C:\libraries\opencv\4_2_0\install\x64\vc15\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.1\include;C:\Program Files %28x86%29\IntelSWTools\compilers_and_libraries_2019.5.281\windows\tbb\include;C:\libraries\opencv\4_2_0\install\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.1\lib\x64;C:\Program Files %28x86%29\IntelSWTools\compilers_and_libraries_2019.5.281\windows\tbb\lib\intel64_win\vc14;C:\libraries\opencv\4_2_0\install\x64\vc15\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -111,7 +112,7 @@
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>tbb_debug.lib;opencv_world420d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>tbb_debug.lib;opencv_world420d.lib;cuda.lib;cudart.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -129,7 +130,7 @@
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>tbb.lib;opencv_world420.lib</AdditionalDependencies>
+      <AdditionalDependencies>tbb.lib;opencv_world420.lib;cuda.lib;cudart.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -181,6 +182,7 @@
       <FileType>CppForm</FileType>
     </ClInclude>
     <ClInclude Include="GlobalObjects.h" />
+    <ClInclude Include="inRange.cuh" />
     <ClInclude Include="Main.h" />
     <ClInclude Include="Camera_managed.h" />
     <ClInclude Include="Camera_unmanaged.h" />
@@ -188,6 +190,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram.cd" />
+    <None Include="inRange.cu" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="frm_CameraCalibration_Menu.resx">
@@ -208,5 +211,6 @@
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\CUDA 10.1.targets" />
   </ImportGroup>
 </Project>

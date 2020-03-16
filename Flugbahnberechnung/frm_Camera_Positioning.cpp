@@ -3,7 +3,7 @@
 using namespace nmsp_frm_camera_positioning;
 using namespace nmsp_camera_unmanaged;
 
- c_frm_Camera_Positioning::c_frm_Camera_Positioning                                                 (C_GlobalObjects^ GlobalObjects, C_Main^  Main)
+ c_frm_Camera_Positioning::c_frm_Camera_Positioning                                                 (C_GlobalObjects* GlobalObjects, C_Main^  Main)
    {
    InitializeComponent();
    this->GlobalObjects     = GlobalObjects;

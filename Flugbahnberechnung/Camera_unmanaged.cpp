@@ -49,14 +49,7 @@ void c_camera_unmanaged::create_camera_vectors                          (int cam
     std::cout << "Created " << i+1 << " Camera Objects with according pointers"<< std::endl;
     current_camera_id = i;
     camera_thread   = new std::thread(&c_camera_unmanaged::start_camera_thread, this);
-    std::cout << "Started Camera Thread: " << i+1 << std::endl;
     }
-
-  for (int i = 0; i< cameras_in_use; i++) //Zweite For-Schleife nötig, da sich verändernde Vektoren alle Pointer invalid rendern
-    {
-    //camera_vector_referrences[i]= reinterpret_cast<int**>(&camera_vector_unsorted[i]);
-    }
-
 }
 
 void c_camera_unmanaged::move_camera_vector2temp                             (int camera_current_id, int camera_desired_id)

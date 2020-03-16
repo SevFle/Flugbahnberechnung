@@ -4,7 +4,7 @@
 
 using namespace NmSp_frm_ObjectCalibration;
 /*************************************************************** Konstruktoren **************************************************************/
-C_frm_ObjectCalibration::C_frm_ObjectCalibration                        (C_GlobalObjects^ GlobalObjects, C_Main^  Main)
+C_frm_ObjectCalibration::C_frm_ObjectCalibration                        (C_GlobalObjects* GlobalObjects, C_Main^  Main)
   {
     InitializeComponent                                          ();
     this->GlobalObjects           = GlobalObjects;
@@ -13,10 +13,10 @@ C_frm_ObjectCalibration::C_frm_ObjectCalibration                        (C_Globa
     camera_id_in_use = 0;
 
     trb_hue_min->Minimum  = 0;
-    trb_hue_min->Maximum  = 179;
+    trb_hue_min->Maximum  = 255;
 
     trb_hue_max->Minimum  = 0;
-    trb_hue_max->Maximum  = 179;
+    trb_hue_max->Maximum  = 255;
 
     trb_saturation_min->Minimum =0;
     trb_saturation_min->Maximum = 255;
@@ -82,10 +82,16 @@ System::Void				C_frm_ObjectCalibration::bt_exit_Click			        (System::Object
 System::Void				C_frm_ObjectCalibration::Taktgeber_Tick			        (System::Object^ sender, System::EventArgs^ e)
   {
   this->txtb_counter->Text = System::String::Format("{0:0}", this->Zaehler++);
-  FillMat2Picturebox(pb_original, Main->camera_managed->camera_unmanaged->camera_vector_unsorted[camera_id_in_use]->cpu_src_img);
-  FillMat2Picturebox(pb_gray, Main->camera_managed->camera_unmanaged->camera_vector_unsorted[camera_id_in_use]->cpu_gray);
-  FillMat2Picturebox(pb_filtered, Main->camera_managed->camera_unmanaged->camera_vector_unsorted[camera_id_in_use]->cpu_masked_img);
-  FillMat2Picturebox(pb_tracked, Main->camera_managed->camera_unmanaged->camera_vector_unsorted[camera_id_in_use]->cpu_dst_img_test);
+
+  //Initial Wait um das abgreifen nicht vorhandener Bilder zu verhindern
+  if (Zaehler > TimerWait+10 )
+    {
+    FillMat2Picturebox(pb_original, Main->camera_managed->camera_unmanaged->camera_vector_unsorted[camera_id_in_use]->cpu_src_img);
+    //FillMat2Picturebox(pb_gray, Main->camera_managed->camera_unmanaged->camera_vector_unsorted[camera_id_in_use]->cpu_gray);
+    FillMat2Picturebox(pb_filtered, Main->camera_managed->camera_unmanaged->camera_vector_unsorted[camera_id_in_use]->cpu_masked_img);
+    FillMat2Picturebox(pb_tracked, Main->camera_managed->camera_unmanaged->camera_vector_unsorted[camera_id_in_use]->cpu_dst_img_test);
+
+    }
   }
 
 System::Void        C_frm_ObjectCalibration::bt_Start_Click             (System::Object^ sender, System::EventArgs^ e)
@@ -101,6 +107,10 @@ System::Void        C_frm_ObjectCalibration::bt_Stop_Click              (System:
 System::Void C_frm_ObjectCalibration::C_frm_ObjectCalibration_FormClosing(System::Object^  sender, System::Windows::Forms::FormClosingEventArgs^  e)
   {
   this->Taktgeber->Enabled                = false;
+  for (int i = 0; i<0; i++)
+    {
+    Main->camera_managed->camera_unmanaged->camera_vector_unsorted[i]->filtering_active = false;
+    }
 
   }
 System::Void C_frm_ObjectCalibration::C_frm_ObjectCalibration_Load(System::Object^  sender, System::EventArgs^  e)
@@ -110,18 +120,31 @@ System::Void C_frm_ObjectCalibration::C_frm_ObjectCalibration_Load(System::Objec
   this->Taktgeber->Enabled                = true;
   numUD_cam_id->Maximum                   = GlobalObjects->cameras_in_use;
   trb_hue_min->Value                      = 0;
-  trb_hue_max->Value                      = 179;
+  trb_hue_max->Value                      = 255;
   trb_saturation_min->Value               = 0;
   trb_saturation_max->Value               = 255;
   trb_value_min->Value                    = 0;
   trb_value_max->Value                    = 255;
+
+  
+ Main->camera_managed->camera_unmanaged->camera_vector_unsorted[0]->filtering_active = true;
+
 
   }
 
 #pragma region ValueChanged_Events
 System::Void C_frm_ObjectCalibration::numUD_cam_id_ValueChanged         (System::Object^  sender, System::EventArgs^  e)
   {
+  TimerWait = Zaehler;
+  Main->camera_managed->camera_unmanaged->camera_vector_unsorted[static_cast<int> (numUD_cam_id->Value)]->filtering_active = true;
   camera_id_in_use = static_cast<int> (numUD_cam_id->Value);
+  Main->camera_managed->camera_unmanaged->camera_vector_unsorted[camera_id_in_use]->hue_min         = static_cast<uchar> (trb_hue_min         ->Value);
+  Main->camera_managed->camera_unmanaged->camera_vector_unsorted[camera_id_in_use]->hue_max         = static_cast<uchar> (trb_hue_max         ->Value);
+  Main->camera_managed->camera_unmanaged->camera_vector_unsorted[camera_id_in_use]->saturation_min  = static_cast<uchar> (trb_saturation_min  ->Value);
+  Main->camera_managed->camera_unmanaged->camera_vector_unsorted[camera_id_in_use]->saturation_max  = static_cast<uchar> (trb_saturation_max  ->Value);
+  Main->camera_managed->camera_unmanaged->camera_vector_unsorted[camera_id_in_use]->value_min       = static_cast<uchar> (trb_value_min       ->Value);
+  Main->camera_managed->camera_unmanaged->camera_vector_unsorted[camera_id_in_use]->value_max       = static_cast<uchar> (trb_value_max       ->Value);
+
   }
 System::Void C_frm_ObjectCalibration::trb_hue_min_ValueChanged          (System::Object^  sender, System::EventArgs^  e)
   {
