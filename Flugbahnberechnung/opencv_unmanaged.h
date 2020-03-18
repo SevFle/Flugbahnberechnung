@@ -130,7 +130,7 @@ namespace nmsp_opencv_unmanaged
       float                                   bilateral_sigma_spatial;
 
       std::vector<std::vector<cv::Point>> contours;
-
+      std::vector<cv::Vec4i> hirarchie;
 
       bool  erode_active;
       bool  dilate_active;
