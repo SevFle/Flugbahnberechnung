@@ -356,8 +356,11 @@ void c_opencv_unmanaged::gpu_filter_gray                                (cv::cud
 
 void c_opencv_unmanaged::find_contours                                  (cv::Mat& thresholded_source_image, cv::Mat& contoured_image)
   {
-  cv::findContours(thresholded_source_image, contours, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);
-  cv::drawContours(contoured_image, contours, 1, (255, 0, 0), 1, cv::LINE_AA);
+  cv::Mat contoure_img;
+  cpu_filtered.copyTo(contoure_img);
+  cv::findContours(thresholded_source_image, contours, hirarchie, cv::RETR_TREE, cv::CHAIN_APPROX_NONE, cv::Point(0,0));
+  cv::drawContours(contoure_img, contours,0, (0, 255, 0), 10, cv::LINE_AA, hirarchie);
+  contoure_img.copyTo(contoured_image);
   }
 
 
