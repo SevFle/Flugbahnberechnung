@@ -63,6 +63,9 @@ namespace nmsp_opencv_unmanaged
       cv::Mat                                 cpu_dst_img_test;
 
       cv::Mat                                 cpu_masked_img;
+      cv::Mat                                 cpu_filtered;
+      cv::Mat                                 cpu_contoured;
+
 
       std::vector<nmsp_opencv_unmanaged::c_opencv_unmanaged*>          camera_vector;
       /**************************************************** Öffentliche Anwender-Attribute ********************************************************/
@@ -74,6 +77,7 @@ namespace nmsp_opencv_unmanaged
       bool                                    filtering_hsv_active;
       bool                                    filtering_bgr_active;
       bool                                    filtering_gray_active;
+      bool                                    contours_active;
 
 
       /******************************************** Nicht öffentliche private Anwender-Attribute **************************************************/
@@ -125,6 +129,8 @@ namespace nmsp_opencv_unmanaged
       float                                   bilateral_sigma_color;
       float                                   bilateral_sigma_spatial;
 
+      std::vector<std::vector<cv::Point>> contours;
+
 
       bool  erode_active;
       bool  dilate_active;
@@ -168,7 +174,7 @@ namespace nmsp_opencv_unmanaged
       void            gpu_filter_bgr                                      (cv::cuda::GpuMat& gpu_src, cv::cuda::GpuMat& gpu_dst);
       void            gpu_filter_gray                                     (cv::cuda::GpuMat& gpu_src, cv::cuda::GpuMat& gpu_dst);
 
-      void            find_contours                                       (cv::Mat& thresholded_source_image, cv::Mat& contoured_image )
+      void            find_contours                                       (cv::Mat& thresholded_source_image, cv::Mat& contoured_image);
 
 
 

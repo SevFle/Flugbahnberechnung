@@ -1135,9 +1135,9 @@ namespace NmSp_frm_ObjectCalibration
       this->label16->Location = System::Drawing::Point(1576, 11);
       this->label16->Margin = System::Windows::Forms::Padding(4, 0, 4, 0);
       this->label16->Name = L"label16";
-      this->label16->Size = System::Drawing::Size(129, 24);
+      this->label16->Size = System::Drawing::Size(99, 24);
       this->label16->TabIndex = 61;
-      this->label16->Text = L"CPU_InRange";
+      this->label16->Text = L"Contoured";
       // 
       // pb_gray
       // 

@@ -6,7 +6,7 @@ using namespace nmsp_opencv_unmanaged;
 /*************************************************************** Konstruktoren **************************************************************/
 c_opencv_unmanaged::c_opencv_unmanaged                                  (int camera_id) :
 anchor                      (-1,-1),
-gaussian_kernel_size        (0)
+ gaussian_kernel_size        (0)
   {
 
   hue_min                     = 0;
@@ -47,6 +47,9 @@ gaussian_kernel_size        (0)
   filtering_hsv_active        = true;
   filtering_bgr_active        = false;
   filtering_gray_active       = false;
+
+  contours_active             = false;
+
 
   gpu_src2color.create(480, 640, CV_8UC1);
   gpu_color_threshold.create(480, 640, CV_8UC1);
@@ -144,7 +147,9 @@ void c_opencv_unmanaged::camera_thread                                  ()
           if (filtering_active == true)
             {
             apply_filter(cpu_src_img, cpu_masked_img);
-            
+            contours_active = true;
+            gpu_filtered.download(cpu_filtered);
+            find_contours(cpu_filtered, cpu_contoured);
             }
           statemachine_state = 3;
 
@@ -309,7 +314,7 @@ void c_opencv_unmanaged::gpu_filter_hsv                                 (cv::cud
 
   gpu_close                 (gpu_temp, gpu_filtered, anchor);
 
-  cv::cuda::cvtColor        (gpu_temp, gpu_bgr_threshold, cv::COLOR_GRAY2BGR);
+  cv::cuda::cvtColor        (gpu_filtered, gpu_bgr_threshold, cv::COLOR_GRAY2BGR);
 
   cv::cuda::bitwise_and     (gpu_src_img, gpu_bgr_threshold, gpu_dst);
 }
@@ -349,7 +354,11 @@ void c_opencv_unmanaged::gpu_filter_gray                                (cv::cud
 
 }
 
-
+void c_opencv_unmanaged::find_contours                                  (cv::Mat& thresholded_source_image, cv::Mat& contoured_image)
+  {
+  cv::findContours(thresholded_source_image, contours, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);
+  cv::drawContours(contoured_image, contours, 1, (255, 0, 0), 1, cv::LINE_AA);
+  }
 
 
 

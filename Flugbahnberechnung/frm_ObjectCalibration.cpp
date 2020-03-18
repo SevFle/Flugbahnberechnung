@@ -87,9 +87,9 @@ System::Void				C_frm_ObjectCalibration::Taktgeber_Tick			        (System::Objec
   if (Zaehler > TimerWait+8 )
     {
     FillMat2Picturebox(pb_original, Main->camera_managed->camera_unmanaged->camera_vector_unsorted[camera_id_in_use]->cpu_src_img);
-    //FillMat2Picturebox(pb_gray, Main->camera_managed->camera_unmanaged->camera_vector_unsorted[camera_id_in_use]->cpu_gray);
+    FillMat2Picturebox(pb_gray, Main->camera_managed->camera_unmanaged->camera_vector_unsorted[camera_id_in_use]->cpu_filtered);
     FillMat2Picturebox(pb_filtered, Main->camera_managed->camera_unmanaged->camera_vector_unsorted[camera_id_in_use]->cpu_masked_img);
-    FillMat2Picturebox(pb_tracked, Main->camera_managed->camera_unmanaged->camera_vector_unsorted[camera_id_in_use]->cpu_dst_img_test);
+    FillMat2Picturebox(pb_tracked, Main->camera_managed->camera_unmanaged->camera_vector_unsorted[camera_id_in_use]->cpu_contoured);
 
     }
   }
