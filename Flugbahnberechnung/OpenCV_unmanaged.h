@@ -168,6 +168,8 @@ namespace nmsp_opencv_unmanaged
       void            gpu_filter_bgr                                      (cv::cuda::GpuMat& gpu_src, cv::cuda::GpuMat& gpu_dst);
       void            gpu_filter_gray                                     (cv::cuda::GpuMat& gpu_src, cv::cuda::GpuMat& gpu_dst);
 
+      void            find_contours                                       (cv::Mat& thresholded_source_image, cv::Mat& contoured_image )
+
 
 
 
