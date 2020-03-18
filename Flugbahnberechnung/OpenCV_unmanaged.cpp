@@ -10,11 +10,11 @@ gaussian_kernel_size        (0)
   {
 
   hue_min                     = 0;
-  hue_max                     = 0;
+  hue_max                     = 179;
   saturation_min              = 0;
-  saturation_max              = 0;
+  saturation_max              = 255;
   value_min                   = 0;
-  value_max                   = 0;
+  value_max                   = 255;
 
   target_size_height          = 0;
   target_size_width           = 0;
@@ -47,6 +47,10 @@ gaussian_kernel_size        (0)
   filtering_hsv_active        = true;
   filtering_bgr_active        = false;
   filtering_gray_active       = false;
+
+  gpu_src2color.create(480, 640, CV_8UC1);
+  gpu_color_threshold.create(480, 640, CV_8UC1);
+
 
 
   }
@@ -140,8 +144,7 @@ void c_opencv_unmanaged::camera_thread                                  ()
           if (filtering_active == true)
             {
             apply_filter(cpu_src_img, cpu_masked_img);
-            cpu_src_img.copyTo(cpu_src_img_test);
-            cpu_mask_img(cpu_src_img_test, cpu_dst_img_test);
+            
             }
           statemachine_state = 3;
 
@@ -298,22 +301,15 @@ void c_opencv_unmanaged::gpu_filter_hsv                                 (cv::cud
 
   gpu_gaussian_filter       (gpu_src2color, gpu_filtered);
 
-  gpu_filtered.download     (cpu_gpu_temp);
-
-  cv::inRange(cpu_gpu_temp, cv::Scalar(this->hue_min, this->saturation_min, this->value_min), cv::Scalar(this->hue_max, this->saturation_max, this->value_max), cpu_gpu_temp2);
-
-  gpu_color_threshold.upload       (cpu_gpu_temp2);
-
   //gpu_to_hsv_threshold      (gpu_filtered, gpu_color_threshold);
 
-  //inRange_gpu               (gpu_filtered, cv::Scalar(this->hue_min, this->saturation_min, this->value_min), cv::Scalar(this->hue_max, this->saturation_max, this->value_max), gpu_color_threshold);
+  cudaKernel::inRange_gpu   (gpu_filtered, cv::Scalar(this->hue_min, this->saturation_min, this->value_min), cv::Scalar(this->hue_max, this->saturation_max, this->value_max), gpu_color_threshold);
 
   gpu_open                  (gpu_color_threshold, gpu_temp, anchor);
 
-
   gpu_close                 (gpu_temp, gpu_filtered, anchor);
 
-  cv::cuda::cvtColor        (gpu_filtered, gpu_bgr_threshold, cv::COLOR_GRAY2BGR);
+  cv::cuda::cvtColor        (gpu_temp, gpu_bgr_threshold, cv::COLOR_GRAY2BGR);
 
   cv::cuda::bitwise_and     (gpu_src_img, gpu_bgr_threshold, gpu_dst);
 }

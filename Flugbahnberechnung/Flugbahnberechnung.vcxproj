@@ -182,7 +182,7 @@
       <FileType>CppForm</FileType>
     </ClInclude>
     <ClInclude Include="GlobalObjects.h" />
-    <ClInclude Include="inRange.cuh" />
+    <CudaCompile Include="inRange.cuh" />
     <ClInclude Include="Main.h" />
     <ClInclude Include="Camera_managed.h" />
     <ClInclude Include="Camera_unmanaged.h" />
@@ -190,7 +190,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram.cd" />
-    <None Include="inRange.cu" />
+    <CudaCompile Include="inRange.cu">
+      <FileType>Document</FileType>
+    </CudaCompile>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="frm_CameraCalibration_Menu.resx">

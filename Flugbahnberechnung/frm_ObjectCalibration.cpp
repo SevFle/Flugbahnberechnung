@@ -13,10 +13,10 @@ C_frm_ObjectCalibration::C_frm_ObjectCalibration                        (C_Globa
     camera_id_in_use = 0;
 
     trb_hue_min->Minimum  = 0;
-    trb_hue_min->Maximum  = 255;
+    trb_hue_min->Maximum  = 179;
 
     trb_hue_max->Minimum  = 0;
-    trb_hue_max->Maximum  = 255;
+    trb_hue_max->Maximum  = 179;
 
     trb_saturation_min->Minimum =0;
     trb_saturation_min->Maximum = 255;
@@ -40,8 +40,8 @@ C_frm_ObjectCalibration::C_frm_ObjectCalibration                        (C_Globa
     numUD_opening_iterations->Minimum = 0;
     numUD_opening_iterations->Maximum = 10;
 
-    numUD_bilateral_iterations->Minimum = 0;
-    numUD_bilateral_iterations->Maximum = 10;
+    numUD_bilateral_color->Minimum = 0;
+    numUD_bilateral_color->Maximum = 10;
 
     numUD_morph_iterations->Minimum = 1;
     numUD_morph_iterations->Maximum = 10;
@@ -84,7 +84,7 @@ System::Void				C_frm_ObjectCalibration::Taktgeber_Tick			        (System::Objec
   this->txtb_counter->Text = System::String::Format("{0:0}", this->Zaehler++);
 
   //Initial Wait um das abgreifen nicht vorhandener Bilder zu verhindern
-  if (Zaehler > TimerWait+10 )
+  if (Zaehler > TimerWait+8 )
     {
     FillMat2Picturebox(pb_original, Main->camera_managed->camera_unmanaged->camera_vector_unsorted[camera_id_in_use]->cpu_src_img);
     //FillMat2Picturebox(pb_gray, Main->camera_managed->camera_unmanaged->camera_vector_unsorted[camera_id_in_use]->cpu_gray);
@@ -94,17 +94,7 @@ System::Void				C_frm_ObjectCalibration::Taktgeber_Tick			        (System::Objec
     }
   }
 
-System::Void        C_frm_ObjectCalibration::bt_Start_Click             (System::Object^ sender, System::EventArgs^ e)
-  {
-  }
-
-System::Void        C_frm_ObjectCalibration::bt_Stop_Click              (System::Object^ sender, System::EventArgs^ e)
-  {
-  this->Main->camera_managed->camera_unmanaged->stop_statemachine = true;
-  }
-
-
-System::Void C_frm_ObjectCalibration::C_frm_ObjectCalibration_FormClosing(System::Object^  sender, System::Windows::Forms::FormClosingEventArgs^  e)
+System::Void        C_frm_ObjectCalibration::C_frm_ObjectCalibration_FormClosing(System::Object^  sender, System::Windows::Forms::FormClosingEventArgs^  e)
   {
   this->Taktgeber->Enabled                = false;
   for (int i = 0; i<0; i++)
@@ -113,14 +103,14 @@ System::Void C_frm_ObjectCalibration::C_frm_ObjectCalibration_FormClosing(System
     }
 
   }
-System::Void C_frm_ObjectCalibration::C_frm_ObjectCalibration_Load(System::Object^  sender, System::EventArgs^  e)
+System::Void        C_frm_ObjectCalibration::C_frm_ObjectCalibration_Load(System::Object^  sender, System::EventArgs^  e)
   {
   this->Zaehler                           = 0;
   this->Taktgeber->Interval               = 100;
   this->Taktgeber->Enabled                = true;
   numUD_cam_id->Maximum                   = GlobalObjects->cameras_in_use;
   trb_hue_min->Value                      = 0;
-  trb_hue_max->Value                      = 255;
+  trb_hue_max->Value                      = 179;
   trb_saturation_min->Value               = 0;
   trb_saturation_max->Value               = 255;
   trb_value_min->Value                    = 0;
@@ -133,7 +123,7 @@ System::Void C_frm_ObjectCalibration::C_frm_ObjectCalibration_Load(System::Objec
   }
 
 #pragma region ValueChanged_Events
-System::Void C_frm_ObjectCalibration::numUD_cam_id_ValueChanged         (System::Object^  sender, System::EventArgs^  e)
+System::Void        C_frm_ObjectCalibration::numUD_cam_id_ValueChanged         (System::Object^  sender, System::EventArgs^  e)
   {
   TimerWait = Zaehler;
   Main->camera_managed->camera_unmanaged->camera_vector_unsorted[static_cast<int> (numUD_cam_id->Value)]->filtering_active = true;
@@ -146,39 +136,39 @@ System::Void C_frm_ObjectCalibration::numUD_cam_id_ValueChanged         (System:
   Main->camera_managed->camera_unmanaged->camera_vector_unsorted[camera_id_in_use]->value_max       = static_cast<uchar> (trb_value_max       ->Value);
 
   }
-System::Void C_frm_ObjectCalibration::trb_hue_min_ValueChanged          (System::Object^  sender, System::EventArgs^  e)
+System::Void        C_frm_ObjectCalibration::trb_hue_min_ValueChanged          (System::Object^  sender, System::EventArgs^  e)
   {
   if (this->trb_hue_min->Value > this->trb_hue_max->Value) this->trb_hue_min->Value = this->trb_hue_max->Value-1;
   Main->camera_managed->camera_unmanaged->camera_vector_unsorted[camera_id_in_use]->hue_min =static_cast<uchar> (trb_hue_min->Value);
   txb_hue_min->Text = System::String::Format("{0:0}", trb_hue_min->Value);
   }
-System::Void C_frm_ObjectCalibration::trb_hue_max_ValueChanged          (System::Object^  sender, System::EventArgs^  e)
+System::Void        C_frm_ObjectCalibration::trb_hue_max_ValueChanged          (System::Object^  sender, System::EventArgs^  e)
  {
   if (this->trb_hue_min->Value > this->trb_hue_max->Value) this->trb_hue_min->Value = this->trb_hue_max->Value+1;
   Main->camera_managed->camera_unmanaged->camera_vector_unsorted[camera_id_in_use]->hue_max = static_cast<uchar> (trb_hue_max->Value);
  txb_hue_max->Text = System::String::Format("{0:0}", trb_hue_max->Value);
  }
-System::Void C_frm_ObjectCalibration::trb_saturation_min_ValueChanged   (System::Object^  sender, System::EventArgs^  e)
+System::Void        C_frm_ObjectCalibration::trb_saturation_min_ValueChanged   (System::Object^  sender, System::EventArgs^  e)
  {
   if (this->trb_saturation_min->Value > this->trb_saturation_max->Value) this->trb_saturation_min->Value = this->trb_saturation_max->Value-1;
   Main->camera_managed->camera_unmanaged->camera_vector_unsorted[camera_id_in_use]->saturation_min = static_cast<uchar> (trb_saturation_min->Value);
  txb_saturation_min->Text = System::String::Format("{0:0}", trb_saturation_min->Value);
  }
-System::Void C_frm_ObjectCalibration::trb_saturation_max_ValueChanged   (System::Object^  sender, System::EventArgs^  e)
+System::Void        C_frm_ObjectCalibration::trb_saturation_max_ValueChanged   (System::Object^  sender, System::EventArgs^  e)
  {
   if (this->trb_saturation_min->Value > this->trb_saturation_max->Value) this->trb_saturation_min->Value = this->trb_saturation_max->Value+1;
   Main->camera_managed->camera_unmanaged->camera_vector_unsorted[camera_id_in_use]->saturation_max = static_cast<uchar> (trb_saturation_max->Value);
   txb_saturation_max->Text = System::String::Format("{0:0}", trb_saturation_max->Value);
 
  }
-System::Void C_frm_ObjectCalibration::trb_value_min_ValueChanged        (System::Object^  sender, System::EventArgs^  e)
+System::Void        C_frm_ObjectCalibration::trb_value_min_ValueChanged        (System::Object^  sender, System::EventArgs^  e)
  {
   if (this->trb_value_min->Value > this->trb_value_max->Value) this->trb_value_min->Value = this->trb_value_max->Value-1;
   Main->camera_managed->camera_unmanaged->camera_vector_unsorted[camera_id_in_use]->value_min = static_cast<uchar> (trb_value_min->Value);
   txb_value_min->Text = System::String::Format("{0:0}", trb_value_min->Value);
 
  }
-System::Void C_frm_ObjectCalibration::trb_value_max_ValueChanged        (System::Object^  sender, System::EventArgs^  e)
+System::Void        C_frm_ObjectCalibration::trb_value_max_ValueChanged        (System::Object^  sender, System::EventArgs^  e)
  {
   if (this->trb_value_min->Value > this->trb_value_max->Value) this->trb_value_min->Value = this->trb_value_max->Value+1;
   Main->camera_managed->camera_unmanaged->camera_vector_unsorted[camera_id_in_use]->value_max = static_cast<uchar> (trb_value_max->Value);
@@ -186,8 +176,69 @@ System::Void C_frm_ObjectCalibration::trb_value_max_ValueChanged        (System:
 
  }
 
+System::Void        C_frm_ObjectCalibration::numUD_opening_iterations_ValueChanged(System::Object^  sender, System::EventArgs^  e)
+  {
+  Main->camera_managed->camera_unmanaged->camera_vector_unsorted[camera_id_in_use]->opening_iterations = static_cast<int>(this->numUD_opening_iterations->Value);
+  }
+System::Void        C_frm_ObjectCalibration::numUD_opening_kernelsize_ValueChanged(System::Object^  sender, System::EventArgs^  e)
+  {
+  Main->camera_managed->camera_unmanaged->camera_vector_unsorted[camera_id_in_use]->opening_kernel_size = static_cast<int>(this->numUD_opening_kernelsize->Value);
+  }
+System::Void        C_frm_ObjectCalibration::numUD_closing_iterations_ValueChanged(System::Object^  sender, System::EventArgs^  e)
+  {
+  Main->camera_managed->camera_unmanaged->camera_vector_unsorted[camera_id_in_use]->closing_iterations = static_cast<int>(this->numUD_closing_iterations->Value);
+  }
+System::Void        C_frm_ObjectCalibration::numUD_closing_kernelsize_ValueChanged(System::Object^  sender, System::EventArgs^  e)
+  {
+  Main->camera_managed->camera_unmanaged->camera_vector_unsorted[camera_id_in_use]->closing_kernel_size = static_cast<int>(this->numUD_closing_kernelsize->Value);
+  }
+System::Void        C_frm_ObjectCalibration::numUD_gaussian_kernel_size_ValueChanged(System::Object^  sender, System::EventArgs^  e)
+  {
+  Main->camera_managed->camera_unmanaged->camera_vector_unsorted[camera_id_in_use]->gaussian_kernel_size = static_cast<int>(this->numUD_gaussian_kernel_size->Value);
+  }
+System::Void        C_frm_ObjectCalibration::numUD_gaussian_sigma_ValueChanged(System::Object^  sender, System::EventArgs^  e)
+  {
+   Main->camera_managed->camera_unmanaged->camera_vector_unsorted[camera_id_in_use]->gaussian_sigma = static_cast<int>(this->numUD_gaussian_sigma->Value);
+   }
+System::Void        C_frm_ObjectCalibration::numUD_erode_iterations_ValueChanged(System::Object^  sender, System::EventArgs^  e)
+  {
+  Main->camera_managed->camera_unmanaged->camera_vector_unsorted[camera_id_in_use]->erosion_iterations = static_cast<int>(this->numUD_erode_iterations->Value);
+  }
+System::Void        C_frm_ObjectCalibration::numUD_erode_kernelsize_ValueChanged(System::Object^  sender, System::EventArgs^  e)
+  {
+  Main->camera_managed->camera_unmanaged->camera_vector_unsorted[camera_id_in_use]->erosion_kernel_size = static_cast<int>(this->numUD_erode_kernelsize->Value);
+  }
+System::Void        C_frm_ObjectCalibration::numUD_dilation_iterations_ValueChanged(System::Object^  sender, System::EventArgs^  e)
+  {
+  Main->camera_managed->camera_unmanaged->camera_vector_unsorted[camera_id_in_use]->dilation_iterations = static_cast<int>(this->numUD_dilation_iterations->Value);
+  }
+System::Void        C_frm_ObjectCalibration::numUD_dilation_kernelsize_ValueChanged(System::Object^  sender, System::EventArgs^  e)
+  {
+  Main->camera_managed->camera_unmanaged->camera_vector_unsorted[camera_id_in_use]->dilation_kernel_size = static_cast<int>(this->numUD_dilation_kernelsize->Value);
+  }
+System::Void        C_frm_ObjectCalibration::numUD_bilateral_spatial_ValueChanged(System::Object^  sender, System::EventArgs^  e)
+  {
+  Main->camera_managed->camera_unmanaged->camera_vector_unsorted[camera_id_in_use]->bilateral_sigma_spatial = static_cast<float>(this->numUD_bilateral_spatial->Value);
+  }
+System::Void        C_frm_ObjectCalibration::numUD_bilateral_kernelsize_ValueChanged(System::Object^  sender, System::EventArgs^  e)
+  {
+  Main->camera_managed->camera_unmanaged->camera_vector_unsorted[camera_id_in_use]->bilateral_kernel_size = static_cast<int>(this->numUD_bilateral_kernelsize->Value);
+  }
+System::Void        C_frm_ObjectCalibration::numUD_bilateral_color_ValueChanged(System::Object^  sender, System::EventArgs^  e)
+  {
+  Main->camera_managed->camera_unmanaged->camera_vector_unsorted[camera_id_in_use]->bilateral_sigma_color = static_cast<float>(this->numUD_bilateral_color->Value);
+  }
+System::Void        C_frm_ObjectCalibration::numUD_morph_iterations_ValueChanged(System::Object^  sender, System::EventArgs^  e)
+  {
+  Main->camera_managed->camera_unmanaged->camera_vector_unsorted[camera_id_in_use]->morph_iterations = static_cast<int>(this->numUD_morph_iterations->Value);
+  }
+System::Void        C_frm_ObjectCalibration::numUD_morph_kernelsize_ValueChanged(System::Object^  sender, System::EventArgs^  e)
+  {
+  Main->camera_managed->camera_unmanaged->camera_vector_unsorted[camera_id_in_use]->morph_kernel_size = static_cast<int>(this->numUD_morph_kernelsize->Value);
+  }
 
-System::Void C_frm_ObjectCalibration::chkb_erode_CheckStateChanged      (System::Object^  sender, System::EventArgs^  e)
+
+System::Void        C_frm_ObjectCalibration::chkb_erode_CheckStateChanged      (System::Object^  sender, System::EventArgs^  e)
  {
   if (erode_active == false)
     {
@@ -206,7 +257,7 @@ System::Void C_frm_ObjectCalibration::chkb_erode_CheckStateChanged      (System:
     }
 
  }
-System::Void C_frm_ObjectCalibration::chkb_dilate_CheckStateChanged     (System::Object^  sender, System::EventArgs^  e)
+System::Void        C_frm_ObjectCalibration::chkb_dilate_CheckStateChanged     (System::Object^  sender, System::EventArgs^  e)
  {
   if (dilate_active == false)
     {
@@ -225,53 +276,14 @@ System::Void C_frm_ObjectCalibration::chkb_dilate_CheckStateChanged     (System:
     }
 
  }
-System::Void C_frm_ObjectCalibration::chkb_opening_CheckStateChanged    (System::Object^  sender, System::EventArgs^  e)
- {
-  if (open_active == false)
-    {
-    open_active = true;
-    Main->camera_managed->camera_unmanaged->camera_vector_unsorted[camera_id_in_use]->open_active = true;
-    numUD_opening_iterations->Enabled = true;
-    numUD_opening_kernelsize->Enabled = true;
-
-    }
-  else if (open_active == true)
-    {
-    open_active = false;
-    Main->camera_managed->camera_unmanaged->camera_vector_unsorted[camera_id_in_use]->open_active = false;
-    numUD_opening_iterations->Enabled = false;
-    numUD_opening_kernelsize->Enabled = false;
-
-    }
-
- }
-System::Void C_frm_ObjectCalibration::chkb_closing_CheckStateChanged    (System::Object^  sender, System::EventArgs^  e)
- {
-  if (close_active == false)
-    {
-    close_active = true;
-    Main->camera_managed->camera_unmanaged->camera_vector_unsorted[camera_id_in_use]->close_active = true;
-    numUD_closing_iterations->Enabled = true;
-    numUD_closing_kernelsize->Enabled = true;
-
-    }
-  else if (close_active == true)
-    {
-    close_active = false;
-    Main->camera_managed->camera_unmanaged->camera_vector_unsorted[camera_id_in_use]->close_active = false;
-    numUD_closing_iterations->Enabled = false;
-    numUD_closing_kernelsize->Enabled = false;
-
-    }
-
- }
-System::Void C_frm_ObjectCalibration::chkb_bilateral_CheckStateChanged  (System::Object^  sender, System::EventArgs^  e)
+System::Void        C_frm_ObjectCalibration::chkb_bilateral_CheckStateChanged  (System::Object^  sender, System::EventArgs^  e)
  {
   if (gaussian_active == false)
     {
     gaussian_active = true;
     Main->camera_managed->camera_unmanaged->camera_vector_unsorted[camera_id_in_use]->gaussian_active = true;
-    numUD_bilateral_iterations->Enabled = true;
+    numUD_bilateral_color->Enabled = true;
+    numUD_bilateral_spatial->Enabled = true;
     numUD_bilateral_kernelsize->Enabled = true;
 
     }
@@ -279,12 +291,13 @@ System::Void C_frm_ObjectCalibration::chkb_bilateral_CheckStateChanged  (System:
     {
     gaussian_active = false;
     Main->camera_managed->camera_unmanaged->camera_vector_unsorted[camera_id_in_use]->gaussian_active = false;
-    numUD_bilateral_iterations->Enabled = false;
+    numUD_bilateral_color->Enabled = false;
+    numUD_bilateral_spatial->Enabled = false;
     numUD_bilateral_kernelsize->Enabled = false;
     }
 
  }
-System::Void C_frm_ObjectCalibration::chkb_morph_CheckStateChanged      (System::Object^  sender, System::EventArgs^  e)
+System::Void        C_frm_ObjectCalibration::chkb_morph_CheckStateChanged      (System::Object^  sender, System::EventArgs^  e)
  {
   if (morph_active == false)
     {

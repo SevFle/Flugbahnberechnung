@@ -18,16 +18,20 @@ __global__ void inRange_kernel(const cv::cuda::PtrStepSz<uchar3> src, cv::cuda::
     dst(y, x) = 0;
   }
 
-void inRange_gpu(cv::cuda::GpuMat &src, cv::Scalar &lowerb, cv::Scalar &upperb,
-                 cv::cuda::GpuMat &dst)
+namespace cudaKernel
   {
-  const int m = 32;
-  int numRows = src.rows, numCols = src.cols;
-  if (numRows == 0 || numCols == 0) return;
-  // Attention! Cols Vs. Rows are reversed
-  const dim3 gridSize(ceil((float)numCols / m), ceil((float)numRows / m), 1);
-  const dim3 blockSize(m, m, 1);
+  void inRange_gpu(cv::cuda::GpuMat &src, cv::Scalar &lowerb, cv::Scalar &upperb,
+                   cv::cuda::GpuMat &dst)
+    {
+    const int m = 32;
+    int numRows = src.rows, numCols = src.cols;
+    if (numRows == 0 || numCols == 0) return;
+    // Attention! Cols Vs. Rows are reversed
+    const dim3 gridSize(ceil((float)numCols / m), ceil((float)numRows / m), 1);
+    const dim3 blockSize(m, m, 1);
 
-  inRange_kernel<<<gridSize, blockSize>>>(src, dst, lowerb[0], upperb[0], lowerb[1], upperb[1],
-                                          lowerb[2], upperb[2]);
+    inRange_kernel<<<gridSize, blockSize>>>(src, dst, lowerb[0], upperb[0], lowerb[1], upperb[1],
+                                            lowerb[2], upperb[2]);
+    }
   }
+
