@@ -8,10 +8,13 @@ using namespace nmsp_camera_unmanaged;
    InitializeComponent();
    this->GlobalObjects     = GlobalObjects;
    this->Main              = Main;
+   TimerWait  = 0;
    }
 
  c_frm_Camera_Positioning::~c_frm_Camera_Positioning                                                ()
    {
+   TimerWait  = 0;
+
    this->Main              = nullptr;
    this->GlobalObjects     = nullptr;
    if (components)
@@ -20,36 +23,13 @@ using namespace nmsp_camera_unmanaged;
      }
    }
 
-System::Void          c_frm_Camera_Positioning::nup_Camera_L1_ValueChanged                          (System::Object^  sender, System::EventArgs^  e)
-  {
-
-  }
-System::Void          c_frm_Camera_Positioning::nup_Camera_L2_ValueChanged                          (System::Object^  sender, System::EventArgs^  e)
-  {
-
-  }
-System::Void          c_frm_Camera_Positioning::nup_Camera_L3_ValueChanged                          (System::Object^  sender, System::EventArgs^  e)
-  {
-
-  }
-System::Void          c_frm_Camera_Positioning::nup_Camera_R1_ValueChanged                          (System::Object^  sender, System::EventArgs^  e)
-  {
-
-  }
-System::Void          c_frm_Camera_Positioning::nup_Camera_R2_ValueChanged                          (System::Object^  sender, System::EventArgs^  e)
-  {
-
-  }
-System::Void          c_frm_Camera_Positioning::nup_Camera_R3_ValueChanged                          (System::Object^  sender, System::EventArgs^  e)
-  {
-
-  }
 System::Void          c_frm_Camera_Positioning::taktgeber_Tick                                      (System::Object^  sender, System::EventArgs^  e)
   {
   this->txtb_counter->Text								= System::String::Format("{0:0}", this->Zaehler++);
-
-  switch (GlobalObjects->cameras_in_use-1)
+  if (Zaehler > TimerWait+15)
     {
+    switch (GlobalObjects->cameras_in_use-1)
+      {
       case 0:   //Nur zu Testzwecken für die Laptopverwendung
         FillMat2Picturebox(pb_Camera_L1, Main->camera_managed->camera_unmanaged->camera_vector_unsorted[static_cast<int> (nup_Camera_L1->Value)]->cpu_src_img);
         break;
@@ -74,12 +54,13 @@ System::Void          c_frm_Camera_Positioning::taktgeber_Tick                  
         FillMat2Picturebox(pb_Camera_L3, Main->camera_managed->camera_unmanaged->camera_vector_unsorted[static_cast<int> (nup_Camera_L3->Value)]->cpu_src_img);
         FillMat2Picturebox(pb_Camera_R3, Main->camera_managed->camera_unmanaged->camera_vector_unsorted[static_cast<int> (nup_Camera_R3->Value)]->cpu_src_img);
         break;
+        }
     }
-
 
   }
 System::Void          c_frm_Camera_Positioning::bt_appy_Click                                       (System::Object^  sender, System::EventArgs^  e)
   {
+  this->Taktgeber->Enabled=true;
   switch (GlobalObjects->cameras_in_use-1)
     {
       case 0:   //Nur zu Testzwecken für die Laptopverwendung
@@ -107,8 +88,9 @@ System::Void          c_frm_Camera_Positioning::bt_appy_Click                   
         Main->camera_managed->camera_unmanaged->move_camera_vector2temp(5, static_cast<int> (nup_Camera_R3->Value));
         break;
     }
-  Main->camera_managed->camera_unmanaged->move_camera_temp2vector();
-
+  Main->camera_managed->camera_unmanaged->move_camera_temp2vector(this->GlobalObjects->cameras_in_use);
+  TimerWait = Zaehler + 5;
+  this->Taktgeber->Enabled=false;
   }
 System::Void          c_frm_Camera_Positioning::c_frm_Camera_Positioning_FormClosing                (System::Object^  sender, System::Windows::Forms::FormClosingEventArgs^  e)
   {

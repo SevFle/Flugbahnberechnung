@@ -37,26 +37,23 @@ namespace nmsp_camera_unmanaged
 
       bool                                                      stop_statemachine;
       std::vector<nmsp_opencv_unmanaged::c_opencv_unmanaged*>               camera_vector_unsorted;
-      //std::vector<int**>               camera_vector_referrences;
+      std::vector<nmsp_opencv_unmanaged::c_opencv_unmanaged*>               camera_vector_temp;
+
 
 
 
 
       /******************************************** Nicht öffentliche private Anwender-Attribute **************************************************/
       private:
-      std::vector<nmsp_opencv_unmanaged::c_opencv_unmanaged*>               camera_vector_temp;
 
       int                                                                  current_camera_id;
 
     
       /********************************************************* Öffentliche Klassenmethoden*******************************************************/
       public:
-      //void      state_machine_per_object_exe                ();
-      //void      state_machine_per_vector_exe                ();
       void      state_machine_object_calibration            ();
-      //void      camera_thread                               (int camera_id);
       void        move_camera_vector2temp                   (int camera_current_id, int camera_desired_id);
-      void        move_camera_temp2vector                   ();
+      void        move_camera_temp2vector                   (int cameras_in_use);
 
       void      create_camera_vectors                       (int cameras_in_use);
 

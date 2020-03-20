@@ -49,20 +49,22 @@ void c_camera_unmanaged::create_camera_vectors                          (int cam
     std::cout << "Created " << i+1 << " Camera Objects with according pointers"<< std::endl;
     current_camera_id = i;
     camera_thread   = new std::thread(&c_camera_unmanaged::start_camera_thread, this);
+    camera_vector_temp.resize(cameras_in_use);
     }
 }
 
 void c_camera_unmanaged::move_camera_vector2temp                             (int camera_current_id, int camera_desired_id)
   {
-
+  std::vector<nmsp_opencv_unmanaged::c_opencv_unmanaged*>::iterator iterator = camera_vector_temp.begin();
   // Wo ist die feste Position der Kamera? -> Camera_Current_ID
   // Wo ist die Position der Kamera im unsorted Vector? ->Camera_desired_id
   // Zeige die fest installierte Position des Vektors "Referrences" auf die Adresse im Unsortierten Vektor
-  camera_vector_temp[camera_current_id] = std::move(camera_vector_unsorted[camera_desired_id]);
+  //camera_vector_temp[camera_current_id] = std::move(camera_vector_unsorted[camera_desired_id]);
+  camera_vector_temp.insert(camera_vector_temp.begin()+camera_desired_id, camera_vector_unsorted[camera_current_id]);
   std::cout << " Moved Pointer for Camera " << camera_current_id << " to Position " << camera_desired_id << " in temporary Vector" << std::endl;
   }
 
-void c_camera_unmanaged::move_camera_temp2vector                             ()
+void c_camera_unmanaged::move_camera_temp2vector                             (int cameras_in_use)
   {
   for (int i = 0; i < cameras_in_use; i++)
     {
