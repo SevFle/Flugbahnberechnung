@@ -16,58 +16,50 @@ namespace nmsp_opencv_unmanaged
       ~c_opencv_unmanaged                     ();
       /******************************************** Nicht öffentliche private Anwender-Attribute **************************************************/
       private:
-      cv::cuda::GpuMat                        gpu_src_img;
-      cv::cuda::GpuMat                        gpu_hsv_src_img;
+      cv::cuda::GpuMat*                        gpu_src_img;
+    //  cv::cuda::GpuMat                        gpu_hsv_src_img;
 
-      cv::cuda::GpuMat                        gpu_mid_img;
-      cv::cuda::GpuMat                        gpu_dst_img;
-      cv::cuda::GpuMat                        gpu_thresholded;
-      cv::cuda::GpuMat                        gpu_filtered;
-      cv::cuda::GpuMat                        gpu_gray;
-      cv::cuda::GpuMat                        gpu_hsv;
+      //cv::cuda::GpuMat*                        gpu_mid_img;
+      //cv::cuda::GpuMat*                        gpu_dst_img;
+      cv::cuda::GpuMat*                        gpu_thresholded;
+      cv::cuda::GpuMat*                        gpu_filtered;
+      cv::cuda::GpuMat*                        gpu_gray;
+      //cv::cuda::GpuMat*                        gpu_hsv;
 
       //HSV-Filtering
-      cv::cuda::GpuMat                        gpu_src2color;
-      cv::cuda::GpuMat                        gpu_color_threshold;
-      cv::cuda::GpuMat                        gpu_bgr_threshold;
-
-      cv::cuda::GpuMat  gpu_shsv[3];
-      cv::cuda::GpuMat  gpu_thresc[3];
+      cv::cuda::GpuMat*                        gpu_src2color;
+      cv::cuda::GpuMat*                        gpu_color_threshold;
+      cv::cuda::GpuMat*                        gpu_bgr_threshold;
 
       //GPU InRange Method Objects
-      cv::cuda::GpuMat                        gpu_temp;
-  //all the parts to keep low and high thresholds
-      cv::cuda::GpuMat mat_parts[3];
-      cv::cuda::GpuMat mat_parts_low[3];
-      cv::cuda::GpuMat mat_parts_high[3];
-
+      cv::cuda::GpuMat*                        gpu_temp;
 
 
       /**************************************************** Öffentliche Klassenobjekte ********************************************************/
       public:
-      cv::VideoCapture                        cap;
-      cv::Mat                                 cpu_temp;
-      cv::Mat                                 cpu_temp2;
-      cv::Mat                                 cpu_temp3;
+      cv::VideoCapture*                        cap;
+      cv::Mat*                                 cpu_temp;
+      //cv::Mat*                                 cpu_temp2;
+      cv::Mat*                                 cpu_temp3;
 
-      cv::Mat                                 cpu_gpu_temp;
-      cv::Mat                                 cpu_gpu_temp2;
-
-
-      cv::Mat                                 cpu_hsv;
-      cv::Mat                                 cpu_src_img;
-      cv::Mat                                 cpu_src_img_test;
-
-      cv::Mat                                 cpu_mid_img;
-      cv::Mat                                 cpu_dst_img;
-      cv::Mat                                 cpu_dst_img_test;
-
-      cv::Mat                                 cpu_masked_img;
-      cv::Mat                                 cpu_filtered;
-      cv::Mat                                 cpu_contoured;
+      //cv::Mat*                                 cpu_gpu_temp;
+      //cv::Mat*                                cpu_gpu_temp2;
 
 
-      std::vector<nmsp_opencv_unmanaged::c_opencv_unmanaged*>          camera_vector;
+      //cv::Mat*                                 cpu_hsv;
+      cv::Mat*                                 cpu_src_img;
+      //cv::Mat*                                 cpu_src_img_test;
+
+      cv::Mat*                                 cpu_mid_img;
+      //cv::Mat*                                 cpu_dst_img;
+      //cv::Mat*                                 cpu_dst_img_test;
+
+      cv::Mat*                                 cpu_masked_img;
+      cv::Mat*                                 cpu_filtered;
+      cv::Mat*                                 cpu_contoured;
+
+
+      //std::vector<nmsp_opencv_unmanaged::c_opencv_unmanaged*>          camera_vector;
       /**************************************************** Öffentliche Anwender-Attribute ********************************************************/
       public:
       int                                     camera_id;
@@ -148,33 +140,33 @@ namespace nmsp_opencv_unmanaged
 
       /********************************************************* Öffentliche Klassenmethoden*******************************************************/
       public:
-      void            apply_filter                                        (cv::Mat  &cpu_src, cv::Mat &cpu_dst);
-      void            cpu_mask_img                                        (cv::Mat& hsv_cpu_src, cv::Mat& cpu_masked_dst);
+      void            apply_filter                                        (cv::Mat  *cpu_src, cv::Mat *cpu_dst);
+      void            cpu_mask_img                                        (cv::Mat* hsv_cpu_src, cv::Mat* cpu_masked_dst);
 
       void            camera_thread                                       ();
 
       /******************************************************* Private Klassenmethoden***************************************************************/
       private:
       void            init                                                (int camera_id);
-      void            cpu_grab_frame                                      (cv::Mat& cpu_dst_img);
+      void            cpu_grab_frame                                      (cv::Mat* cpu_dst_img);
 
-      void            gpu_to_hsv_threshold                                (cv::cuda::GpuMat& gpu_src, cv::cuda::GpuMat& gpu_dst);
-      void            gpu_inRange                                         (cv::cuda::GpuMat& gpu_src, cv::cuda::GpuMat& gpu_dst, cv::Scalar minvalue, cv::Scalar maxvalue);
+      void            gpu_to_hsv_threshold                                (cv::cuda::GpuMat* gpu_src, cv::cuda::GpuMat* gpu_dst);
+      void            gpu_inRange                                         (cv::cuda::GpuMat* gpu_src, cv::cuda::GpuMat* gpu_dst, cv::Scalar minvalue, cv::Scalar maxvalue);
 
-      void            gpu_erode                                           (cv::cuda::GpuMat& gpu_src, cv::cuda::GpuMat& gpu_dst, int borderType, cv::Point anchor);
-      void            gpu_dilate                                          (cv::cuda::GpuMat& gpu_src, cv::cuda::GpuMat& gpu_dst, cv::Point anchor);
-      void            gpu_open                                            (cv::cuda::GpuMat& gpu_src, cv::cuda::GpuMat& gpu_dst, cv::Point anchor);
-      void            gpu_close                                           (cv::cuda::GpuMat& gpu_src,cv::cuda::GpuMat& gpu_dst, cv::Point anchor);
+      void            gpu_erode                                           (cv::cuda::GpuMat* gpu_src, cv::cuda::GpuMat* gpu_dst, int borderType, cv::Point anchor);
+      void            gpu_dilate                                          (cv::cuda::GpuMat* gpu_src, cv::cuda::GpuMat* gpu_dst, cv::Point anchor);
+      void            gpu_open                                            (cv::cuda::GpuMat* gpu_src, cv::cuda::GpuMat* gpu_dst, cv::Point anchor);
+      void            gpu_close                                           (cv::cuda::GpuMat* gpu_src,cv::cuda::GpuMat* gpu_dst, cv::Point anchor);
 
-      void            gpu_bilateral_filter                                (cv::cuda::GpuMat& gpu_src, cv::cuda::GpuMat& gpu_dst);
-      void            gpu_gaussian_filter                                 (cv::cuda::GpuMat& gpu_src, cv::cuda::GpuMat& gpu_dst);
-      void            gpu_morph_gradient                                  (cv::cuda::GpuMat& gpu_src, cv::cuda::GpuMat& gpu_dst);
+      void            gpu_bilateral_filter                                (cv::cuda::GpuMat* gpu_src, cv::cuda::GpuMat* gpu_dst);
+      void            gpu_gaussian_filter                                 (cv::cuda::GpuMat* gpu_src, cv::cuda::GpuMat* gpu_dst);
+      void            gpu_morph_gradient                                  (cv::cuda::GpuMat* gpu_src, cv::cuda::GpuMat* gpu_dst);
 
-      void            gpu_filter_hsv                                      (cv::cuda::GpuMat& gpu_src, cv::cuda::GpuMat& gpu_dst);
-      void            gpu_filter_bgr                                      (cv::cuda::GpuMat& gpu_src, cv::cuda::GpuMat& gpu_dst);
-      void            gpu_filter_gray                                     (cv::cuda::GpuMat& gpu_src, cv::cuda::GpuMat& gpu_dst);
+      void            gpu_filter_hsv                                      (cv::cuda::GpuMat* gpu_src, cv::cuda::GpuMat* gpu_dst);
+      void            gpu_filter_bgr                                      (cv::cuda::GpuMat* gpu_src, cv::cuda::GpuMat* gpu_dst);
+      void            gpu_filter_gray                                     (cv::cuda::GpuMat* gpu_src, cv::cuda::GpuMat* gpu_dst);
 
-      void            find_contours                                       (cv::Mat& thresholded_source_image, cv::Mat& contoured_image);
+      void            find_contours                                       (cv::Mat* thresholded_source_image, cv::Mat* contoured_image);
 
 
 
