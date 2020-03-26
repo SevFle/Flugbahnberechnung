@@ -31,28 +31,28 @@ System::Void          c_frm_Camera_Positioning::taktgeber_Tick                  
     switch (GlobalObjects->cameras_in_use-1)
       {
       case 0:   //Nur zu Testzwecken für die Laptopverwendung
-        FillMat2Picturebox(pb_Camera_L1, Main->camera_managed->camera_unmanaged->camera_vector_unsorted[static_cast<int> (nup_Camera_L1->Value)]->cpu_src_img);
+        FillMat2Picturebox(pb_Camera_L1, Main->camera_managed->camera_unmanaged->camera_vector[static_cast<int> (nup_Camera_L1->Value)]->cpu_src_img);
         break;
 
       case 1:
-        FillMat2Picturebox(pb_Camera_L1, Main->camera_managed->camera_unmanaged->camera_vector_unsorted[static_cast<int> (nup_Camera_L1->Value)]->cpu_src_img);
-        FillMat2Picturebox(pb_Camera_R1, Main->camera_managed->camera_unmanaged->camera_vector_unsorted[static_cast<int> (nup_Camera_R1->Value)]->cpu_src_img);
+        FillMat2Picturebox(pb_Camera_L1, Main->camera_managed->camera_unmanaged->camera_vector[static_cast<int> (nup_Camera_L1->Value)]->cpu_src_img);
+        FillMat2Picturebox(pb_Camera_R1, Main->camera_managed->camera_unmanaged->camera_vector[static_cast<int> (nup_Camera_R1->Value)]->cpu_src_img);
         break;
 
       case 3:
-        FillMat2Picturebox(pb_Camera_L1, Main->camera_managed->camera_unmanaged->camera_vector_unsorted[static_cast<int> (nup_Camera_L1->Value)]->cpu_src_img);
-        FillMat2Picturebox(pb_Camera_R1, Main->camera_managed->camera_unmanaged->camera_vector_unsorted[static_cast<int> (nup_Camera_R1->Value)]->cpu_src_img);
-        FillMat2Picturebox(pb_Camera_L2, Main->camera_managed->camera_unmanaged->camera_vector_unsorted[static_cast<int> (nup_Camera_L2->Value)]->cpu_src_img);
-        FillMat2Picturebox(pb_Camera_R2, Main->camera_managed->camera_unmanaged->camera_vector_unsorted[static_cast<int> (nup_Camera_R2->Value)]->cpu_src_img);
+        FillMat2Picturebox(pb_Camera_L1, Main->camera_managed->camera_unmanaged->camera_vector[static_cast<int> (nup_Camera_L1->Value)]->cpu_src_img);
+        FillMat2Picturebox(pb_Camera_R1, Main->camera_managed->camera_unmanaged->camera_vector[static_cast<int> (nup_Camera_R1->Value)]->cpu_src_img);
+        FillMat2Picturebox(pb_Camera_L2, Main->camera_managed->camera_unmanaged->camera_vector[static_cast<int> (nup_Camera_L2->Value)]->cpu_src_img);
+        FillMat2Picturebox(pb_Camera_R2, Main->camera_managed->camera_unmanaged->camera_vector[static_cast<int> (nup_Camera_R2->Value)]->cpu_src_img);
         break;
 
       case 5:
-        FillMat2Picturebox(pb_Camera_L1, Main->camera_managed->camera_unmanaged->camera_vector_unsorted[static_cast<int> (nup_Camera_L1->Value)]->cpu_src_img);
-        FillMat2Picturebox(pb_Camera_R1, Main->camera_managed->camera_unmanaged->camera_vector_unsorted[static_cast<int> (nup_Camera_R1->Value)]->cpu_src_img);
-        FillMat2Picturebox(pb_Camera_L2, Main->camera_managed->camera_unmanaged->camera_vector_unsorted[static_cast<int> (nup_Camera_L2->Value)]->cpu_src_img);
-        FillMat2Picturebox(pb_Camera_R2, Main->camera_managed->camera_unmanaged->camera_vector_unsorted[static_cast<int> (nup_Camera_R2->Value)]->cpu_src_img);
-        FillMat2Picturebox(pb_Camera_L3, Main->camera_managed->camera_unmanaged->camera_vector_unsorted[static_cast<int> (nup_Camera_L3->Value)]->cpu_src_img);
-        FillMat2Picturebox(pb_Camera_R3, Main->camera_managed->camera_unmanaged->camera_vector_unsorted[static_cast<int> (nup_Camera_R3->Value)]->cpu_src_img);
+        FillMat2Picturebox(pb_Camera_L1, Main->camera_managed->camera_unmanaged->camera_vector[static_cast<int> (nup_Camera_L1->Value)]->cpu_src_img);
+        FillMat2Picturebox(pb_Camera_R1, Main->camera_managed->camera_unmanaged->camera_vector[static_cast<int> (nup_Camera_R1->Value)]->cpu_src_img);
+        FillMat2Picturebox(pb_Camera_L2, Main->camera_managed->camera_unmanaged->camera_vector[static_cast<int> (nup_Camera_L2->Value)]->cpu_src_img);
+        FillMat2Picturebox(pb_Camera_R2, Main->camera_managed->camera_unmanaged->camera_vector[static_cast<int> (nup_Camera_R2->Value)]->cpu_src_img);
+        FillMat2Picturebox(pb_Camera_L3, Main->camera_managed->camera_unmanaged->camera_vector[static_cast<int> (nup_Camera_L3->Value)]->cpu_src_img);
+        FillMat2Picturebox(pb_Camera_R3, Main->camera_managed->camera_unmanaged->camera_vector[static_cast<int> (nup_Camera_R3->Value)]->cpu_src_img);
         break;
         }
     }
@@ -60,7 +60,7 @@ System::Void          c_frm_Camera_Positioning::taktgeber_Tick                  
   }
 System::Void          c_frm_Camera_Positioning::bt_appy_Click                                       (System::Object^  sender, System::EventArgs^  e)
   {
-  this->Taktgeber->Enabled=true;
+  this->Taktgeber->Enabled=false;
   switch (GlobalObjects->cameras_in_use-1)
     {
       case 0:   //Nur zu Testzwecken für die Laptopverwendung
@@ -90,7 +90,7 @@ System::Void          c_frm_Camera_Positioning::bt_appy_Click                   
     }
   Main->camera_managed->camera_unmanaged->move_camera_temp2vector(this->GlobalObjects->cameras_in_use);
   TimerWait = Zaehler + 5;
-  this->Taktgeber->Enabled=false;
+  this->Taktgeber->Enabled=true;
   }
 System::Void          c_frm_Camera_Positioning::c_frm_Camera_Positioning_FormClosing                (System::Object^  sender, System::Windows::Forms::FormClosingEventArgs^  e)
   {
@@ -115,13 +115,13 @@ System::Void          c_frm_Camera_Positioning::FillPicturebox                  
             graphics->DrawImage           (%bitmap, rect);
             delete (graphics);
   }
-System::Void          c_frm_Camera_Positioning::FillMat2Picturebox                                  (System::Windows::Forms::PictureBox^ Picturebox, cv::Mat &colorImage)
+System::Void          c_frm_Camera_Positioning::FillMat2Picturebox                                  (System::Windows::Forms::PictureBox^ Picturebox, cv::Mat *colorImage)
   {
-  Int32                              colorImage_cols   =   colorImage.cols;
-  Int32                              colorImage_rows   =   colorImage.rows;
-  Int32                              colorImage_step   =   colorImage.step;
-  Int32                              colorImage_type   =   colorImage.type();
-  System::IntPtr                     colorImage_ptr  (colorImage.ptr());
+  Int32                              colorImage_cols   =   colorImage->cols;
+  Int32                              colorImage_rows   =   colorImage->rows;
+  Int32                              colorImage_step   =   colorImage->step;
+  Int32                              colorImage_type   =   colorImage->type();
+  System::IntPtr                     colorImage_ptr  (colorImage->ptr());
 
   FillPicturebox                     (Picturebox, colorImage_cols, colorImage_rows, colorImage_step, colorImage_type, colorImage_ptr);
   } // FillMatInToPictureBox

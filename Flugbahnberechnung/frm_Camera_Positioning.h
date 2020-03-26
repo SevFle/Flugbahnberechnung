@@ -359,7 +359,7 @@ namespace nmsp_frm_camera_positioning
 
 
     System::Void  FillPicturebox                                     (System::Windows::Forms::PictureBox^ Picturebox, Int32 ColorImageCols, Int32 ColorImageRows, Int32 ColorImageStep, Int32 ColorImageType, System::IntPtr ColorImagePtr);
-    System::Void  FillMat2Picturebox                                 (System::Windows::Forms::PictureBox^ Picturebox, cv::Mat &colorImage);
+    System::Void  FillMat2Picturebox                                 (System::Windows::Forms::PictureBox^ Picturebox, cv::Mat *colorImage);
 
     System::Void bt_exit_Click(System::Object^  sender, System::EventArgs^  e);
     System::Void c_frm_Camera_Positioning_Load(System::Object^  sender, System::EventArgs^  e);

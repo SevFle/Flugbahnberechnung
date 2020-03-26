@@ -16,7 +16,7 @@ C_frm_Main::~C_frm_Main                                                 ()
   //Stop Camera Thread
   //for (int i = 0; i< GlobalObjects->cameras_in_use; i++)
   //{
-  //  Main->camera_managed->camera_unmanaged->camera_vector_unsorted[i]->thread_running = false;
+  //  Main->camera_managed->camera_unmanaged->camera_vector[i]->thread_running = false;
   //}
   this->Zaehler           = 0;
   this->Main              = nullptr;
