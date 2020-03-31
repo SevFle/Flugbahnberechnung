@@ -2,7 +2,7 @@
 
 #include <opencv2/opencv.hpp>
 #include <opencv2/highgui.hpp>
-#include "inRange.cuh"
+#include "CudaKernels.cuh"
 
 
 namespace nmsp_opencv_unmanaged
@@ -17,21 +17,13 @@ namespace nmsp_opencv_unmanaged
       /******************************************** Nicht öffentliche private Anwender-Attribute **************************************************/
       private:
       cv::cuda::GpuMat*                        gpu_src_img;
-    //  cv::cuda::GpuMat                        gpu_hsv_src_img;
-
-      //cv::cuda::GpuMat*                        gpu_mid_img;
-      //cv::cuda::GpuMat*                        gpu_dst_img;
       cv::cuda::GpuMat*                        gpu_thresholded;
       cv::cuda::GpuMat*                        gpu_filtered;
       cv::cuda::GpuMat*                        gpu_gray;
-      //cv::cuda::GpuMat*                        gpu_hsv;
-
       //HSV-Filtering
       cv::cuda::GpuMat*                        gpu_src2color;
       cv::cuda::GpuMat*                        gpu_color_threshold;
       cv::cuda::GpuMat*                        gpu_bgr_threshold;
-
-      //GPU InRange Method Objects
       cv::cuda::GpuMat*                        gpu_temp;
 
 
@@ -39,24 +31,14 @@ namespace nmsp_opencv_unmanaged
       public:
       cv::VideoCapture*                        cap;
       cv::Mat*                                 cpu_temp;
-      //cv::Mat*                                 cpu_temp2;
       cv::Mat*                                 cpu_temp3;
-
-      //cv::Mat*                                 cpu_gpu_temp;
-      //cv::Mat*                                cpu_gpu_temp2;
-
-
-      //cv::Mat*                                 cpu_hsv;
       cv::Mat*                                 cpu_src_img;
-      //cv::Mat*                                 cpu_src_img_test;
-
       cv::Mat*                                 cpu_mid_img;
-      //cv::Mat*                                 cpu_dst_img;
-      //cv::Mat*                                 cpu_dst_img_test;
-
       cv::Mat*                                 cpu_masked_img;
       cv::Mat*                                 cpu_filtered;
       cv::Mat*                                 cpu_contoured;
+      cv::Mat*                                 contoure_img;
+
 
 
       //std::vector<nmsp_opencv_unmanaged::c_opencv_unmanaged*>          camera_vector;
@@ -108,6 +90,7 @@ namespace nmsp_opencv_unmanaged
       int                                     morph_kernel_size;
       int                                     gaussian_kernel_size;
       int                                     ksize;
+      int                                     objekt_anzahl;
 
       int                                     bordertype;
 
@@ -116,13 +99,15 @@ namespace nmsp_opencv_unmanaged
       int                                     numcornersVer;
 
       double                                  gaussian_sigma;
+      double                                  Vec_Object[3];
+      double                                  max_Moment_m00;
 
 
       float                                   bilateral_sigma_color;
       float                                   bilateral_sigma_spatial;
 
       std::vector<std::vector<cv::Point>> contours;
-      std::vector<cv::Vec4i> hirarchie;
+      std::vector<cv::Vec4i> hirarchy;
 
       bool  erode_active;
       bool  dilate_active;
@@ -130,6 +115,8 @@ namespace nmsp_opencv_unmanaged
       bool  close_active;
       bool  gaussian_active;
       bool  morph_active;
+
+      bool contour_found;
 
 
 
@@ -166,7 +153,7 @@ namespace nmsp_opencv_unmanaged
       void            gpu_filter_bgr                                      (cv::cuda::GpuMat* gpu_src, cv::cuda::GpuMat* gpu_dst);
       void            gpu_filter_gray                                     (cv::cuda::GpuMat* gpu_src, cv::cuda::GpuMat* gpu_dst);
 
-      void            find_contours                                       (cv::Mat* thresholded_source_image, cv::Mat* contoured_image);
+      void            find_contours                                       (cv::Mat* thresholded_source_image, cv::Mat* dst_contoured_image);
 
 
 
