@@ -45,7 +45,9 @@ System::Void        C_frm_Main::bt_CameraCalibration_Click              (System:
 
 System::Void        C_frm_Main::bt_exit_Click                           (System::Object ^ sender, System::EventArgs ^ e)
   {
+  this->Main->camera_managed->camera_unmanaged->close_cameras(static_cast<int>(nup_camera_count->Value));
   this->Close();
+
   }
 
 System::Void        C_frm_Main::C_frm_Main_Load                         (System::Object ^ sender, System::EventArgs ^ e)
@@ -80,13 +82,20 @@ System::Void        C_frm_Main::bt_apply_cameras_Click                  (System:
   //  }
   //else
     {
-    GlobalObjects->cameras_in_use           = static_cast<int>(nup_camera_count->Value)
-;
-    Main->camera_managed->camera_unmanaged->create_camera_vectors(static_cast<int>(nup_camera_count->Value));
-    bt_ObjectCalibration->Enabled = true;
-    bt_CameraCalibration->Enabled = true;
-    bt_camera_positioning->Enabled = true;
-    nup_camera_count->Enabled = false;
+    GlobalObjects->cameras_in_use           = static_cast<int>                                     (nup_camera_count->Value);
+    Main->camera_managed->camera_unmanaged->create_camera_vectors                 (static_cast<int>(nup_camera_count->Value));
+    Main->camera_managed->camera_unmanaged->load_camera_positioning               ();
+
+    for(int i = 0; i < static_cast<int>(nup_camera_count->Value)-1; i++)
+      {
+      Main->camera_managed->camera_unmanaged->load_camera_settings                  (i);
+      }
+
+    bt_ObjectCalibration->Enabled           = true;
+    bt_CameraCalibration->Enabled           = true;
+    bt_camera_positioning->Enabled          = true;
+    nup_camera_count->Enabled               = false;
+    bt_apply_cameras->Enabled               = false;
     }
   }
 

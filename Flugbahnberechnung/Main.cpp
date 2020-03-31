@@ -2,7 +2,7 @@
 
 #include "Main.h"
 
-using namespace NmSp_Main;
+using namespace nmsp_Main;
 
 C_Main::C_Main              (C_GlobalObjects* GlobalObjects)
   {
@@ -23,10 +23,12 @@ C_Main::C_Main              (C_GlobalObjects* GlobalObjects)
 
 C_Main::~C_Main()
   {
+  delete (this->frm_Camera_Positioning);
   delete (this->frm_CameraCalibration_Stereo);
   delete (this->frm_CameraCalibration_Single);
   delete (this->frm_CameraCalibration_Menu);
   delete (this->frm_Main);
+  delete (this->camera_managed);
   this->GlobalObjects = nullptr;
   }
 

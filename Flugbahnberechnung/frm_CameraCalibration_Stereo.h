@@ -1,7 +1,7 @@
 #pragma once
 #include "Main.h"
 
-using namespace NmSp_Main;
+using namespace nmsp_Main;
 
 namespace NmSp_frm_CameraCalibration_Stereo 
   {

@@ -1,5 +1,6 @@
 #pragma once
 #include "CSV_Datei.h"
+#include <vector>
 
 using namespace UM_CSV_Datei;
 /*********************************************************** Definition Namespace **************************************************************/
@@ -15,6 +16,9 @@ namespace nmsp_GlobalObjects
 
       int cameras_in_use;
       int camera_id;
+
+      std::vector<int> *camera_order;
+
     }; //ref class C_GlobalObjects
 
   }

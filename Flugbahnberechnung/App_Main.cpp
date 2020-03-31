@@ -15,7 +15,7 @@
 
 /************************************************************** using namespaces **************************************************************/
 using namespace nmsp_GlobalObjects;
-using namespace NmSp_Main;
+using namespace nmsp_Main;
 using namespace System;
 using namespace System::Windows::Forms;
 

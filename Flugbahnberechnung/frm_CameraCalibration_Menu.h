@@ -2,7 +2,7 @@
 
 #include "Main.h"
 
-using namespace NmSp_Main;
+using namespace nmsp_Main;
 
 
 namespace NmSp_CamerCalibration_Menu 

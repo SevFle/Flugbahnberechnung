@@ -48,7 +48,7 @@ namespace NmSp_frm_CameraCalibration_Stereo
   #pragma endregion
 
 /*********************************************************** Definition Namespace **************************************************************/
-  namespace NmSp_Main
+  namespace nmsp_Main
   {
     using namespace System;
     using namespace System::ComponentModel;
@@ -79,7 +79,7 @@ namespace NmSp_frm_CameraCalibration_Stereo
 
     };//ref class C_Main
 
-  }//namespace NmSp_Main
+  }//namespace nmsp_Main
 
 
 #include "frm_Main.h"

@@ -25,7 +25,7 @@
     <Keyword>ManagedCProj</Keyword>
     <RootNamespace>Flugbahnberechnung</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
-    <ProjectName>Flugbahntracker</ProjectName>
+    <ProjectName>ObjectTracking</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -182,7 +182,7 @@
       <FileType>CppForm</FileType>
     </ClInclude>
     <ClInclude Include="GlobalObjects.h" />
-    <CudaCompile Include="inRange.cuh" />
+    <CudaCompile Include="CudaKernels.cuh" />
     <ClInclude Include="Main.h" />
     <ClInclude Include="Camera_managed.h" />
     <ClInclude Include="Camera_unmanaged.h" />
@@ -190,7 +190,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram.cd" />
-    <CudaCompile Include="inRange.cu">
+    <CudaCompile Include="CudaKernels.cu">
       <FileType>Document</FileType>
     </CudaCompile>
   </ItemGroup>

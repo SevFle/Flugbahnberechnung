@@ -8,6 +8,7 @@ using namespace nmsp_camera_unmanaged;
    InitializeComponent();
    this->GlobalObjects     = GlobalObjects;
    this->Main              = Main;
+   this->cameras_in_use    = GlobalObjects->cameras_in_use;
    TimerWait  = 0;
    }
 
@@ -28,25 +29,25 @@ System::Void          c_frm_Camera_Positioning::taktgeber_Tick                  
   this->txtb_counter->Text								= System::String::Format("{0:0}", this->Zaehler++);
   if (Zaehler > TimerWait+15)
     {
-    switch (GlobalObjects->cameras_in_use-1)
+    switch (this->cameras_in_use)
       {
-      case 0:   //Nur zu Testzwecken für die Laptopverwendung
+      case 1:   //Nur zu Testzwecken für die Laptopverwendung
         FillMat2Picturebox(pb_Camera_L1, Main->camera_managed->camera_unmanaged->camera_vector[static_cast<int> (nup_Camera_L1->Value)]->cpu_src_img);
         break;
 
-      case 1:
+      case 2:
         FillMat2Picturebox(pb_Camera_L1, Main->camera_managed->camera_unmanaged->camera_vector[static_cast<int> (nup_Camera_L1->Value)]->cpu_src_img);
         FillMat2Picturebox(pb_Camera_R1, Main->camera_managed->camera_unmanaged->camera_vector[static_cast<int> (nup_Camera_R1->Value)]->cpu_src_img);
         break;
 
-      case 3:
+      case 4:
         FillMat2Picturebox(pb_Camera_L1, Main->camera_managed->camera_unmanaged->camera_vector[static_cast<int> (nup_Camera_L1->Value)]->cpu_src_img);
         FillMat2Picturebox(pb_Camera_R1, Main->camera_managed->camera_unmanaged->camera_vector[static_cast<int> (nup_Camera_R1->Value)]->cpu_src_img);
         FillMat2Picturebox(pb_Camera_L2, Main->camera_managed->camera_unmanaged->camera_vector[static_cast<int> (nup_Camera_L2->Value)]->cpu_src_img);
         FillMat2Picturebox(pb_Camera_R2, Main->camera_managed->camera_unmanaged->camera_vector[static_cast<int> (nup_Camera_R2->Value)]->cpu_src_img);
         break;
 
-      case 5:
+      case 6:
         FillMat2Picturebox(pb_Camera_L1, Main->camera_managed->camera_unmanaged->camera_vector[static_cast<int> (nup_Camera_L1->Value)]->cpu_src_img);
         FillMat2Picturebox(pb_Camera_R1, Main->camera_managed->camera_unmanaged->camera_vector[static_cast<int> (nup_Camera_R1->Value)]->cpu_src_img);
         FillMat2Picturebox(pb_Camera_L2, Main->camera_managed->camera_unmanaged->camera_vector[static_cast<int> (nup_Camera_L2->Value)]->cpu_src_img);
@@ -58,37 +59,81 @@ System::Void          c_frm_Camera_Positioning::taktgeber_Tick                  
     }
 
   }
-System::Void          c_frm_Camera_Positioning::bt_appy_Click                                       (System::Object^  sender, System::EventArgs^  e)
+System::Void          c_frm_Camera_Positioning::bt_apply_Click                                      (System::Object^  sender, System::EventArgs^  e)
   {
   this->Taktgeber->Enabled=false;
-  switch (GlobalObjects->cameras_in_use-1)
+  std::vector<int> camera_list;
+
+  switch (this->cameras_in_use)                              
     {
-      case 0:   //Nur zu Testzwecken für die Laptopverwendung
+      case 1:   //Nur zu Testzwecken für die Laptopverwendung
         Main->camera_managed->camera_unmanaged->move_camera_vector2temp(0, static_cast<int> (nup_Camera_L1->Value));
+
+        camera_list.push_back(static_cast<int> (nup_Camera_L1->Value));
+
+        nup_Camera_L1->Value = 0;
+
         break;
 
-      case 1:
+      case 2:
         Main->camera_managed->camera_unmanaged->move_camera_vector2temp(0, static_cast<int> (nup_Camera_L1->Value));
         Main->camera_managed->camera_unmanaged->move_camera_vector2temp(1, static_cast<int> (nup_Camera_R1->Value));
+
+        camera_list.push_back(static_cast<int> (nup_Camera_L1->Value));
+        camera_list.push_back(static_cast<int> (nup_Camera_R1->Value));
+
+        nup_Camera_L1->Value = 0;
+        nup_Camera_R1->Value = 1;
+
         break;
 
-      case 3:
+      case 4:
         Main->camera_managed->camera_unmanaged->move_camera_vector2temp(0, static_cast<int> (nup_Camera_L1->Value));
         Main->camera_managed->camera_unmanaged->move_camera_vector2temp(1, static_cast<int> (nup_Camera_R1->Value));
         Main->camera_managed->camera_unmanaged->move_camera_vector2temp(2, static_cast<int> (nup_Camera_L2->Value));
         Main->camera_managed->camera_unmanaged->move_camera_vector2temp(3, static_cast<int> (nup_Camera_R2->Value));
+
+        camera_list.push_back(static_cast<int> (nup_Camera_L1->Value));
+        camera_list.push_back(static_cast<int> (nup_Camera_R1->Value));
+        camera_list.push_back(static_cast<int> (nup_Camera_L2->Value));
+        camera_list.push_back(static_cast<int> (nup_Camera_R2->Value));
+
+        nup_Camera_L1->Value = 0;
+        nup_Camera_R1->Value = 1;
+        nup_Camera_L2->Value = 2;
+        nup_Camera_R2->Value = 3;
+
         break;
 
-      case 5:
+      case 6:
         Main->camera_managed->camera_unmanaged->move_camera_vector2temp(0, static_cast<int> (nup_Camera_L1->Value));
         Main->camera_managed->camera_unmanaged->move_camera_vector2temp(1, static_cast<int> (nup_Camera_R1->Value));
         Main->camera_managed->camera_unmanaged->move_camera_vector2temp(2, static_cast<int> (nup_Camera_L2->Value));
         Main->camera_managed->camera_unmanaged->move_camera_vector2temp(3, static_cast<int> (nup_Camera_R2->Value));
         Main->camera_managed->camera_unmanaged->move_camera_vector2temp(4, static_cast<int> (nup_Camera_L3->Value));
         Main->camera_managed->camera_unmanaged->move_camera_vector2temp(5, static_cast<int> (nup_Camera_R3->Value));
+
+        camera_list.push_back(static_cast<int> (nup_Camera_L1->Value));
+        camera_list.push_back(static_cast<int> (nup_Camera_R1->Value));
+        camera_list.push_back(static_cast<int> (nup_Camera_L2->Value));
+        camera_list.push_back(static_cast<int> (nup_Camera_R2->Value));
+        camera_list.push_back(static_cast<int> (nup_Camera_L3->Value));
+        camera_list.push_back(static_cast<int> (nup_Camera_R3->Value));
+
+        nup_Camera_L1->Value = 0;
+        nup_Camera_R1->Value = 1;
+        nup_Camera_L2->Value = 2;
+        nup_Camera_R2->Value = 3;
+        nup_Camera_L3->Value = 4;
+        nup_Camera_R3->Value = 5;
+
         break;
     }
+
   Main->camera_managed->camera_unmanaged->move_camera_temp2vector(this->GlobalObjects->cameras_in_use);
+  Main->camera_managed->camera_unmanaged->save_camera_positioning(camera_list);
+
+
   TimerWait = Zaehler + 5;
   this->Taktgeber->Enabled=true;
   }
@@ -101,7 +146,8 @@ System::Void          c_frm_Camera_Positioning::c_frm_Camera_Positioning_Load   
   this->Zaehler                           = 0;
   this->Taktgeber->Interval               = 100;
   this->Taktgeber->Enabled                = true;
-  this->set_nup_value();
+  this->cameras_in_use                    = GlobalObjects->cameras_in_use;
+  this->set_numUD_value(*GlobalObjects->camera_order);
   }
 System::Void          c_frm_Camera_Positioning::bt_exit_Click                                       (System::Object^  sender, System::EventArgs^  e)
   {
@@ -126,12 +172,79 @@ System::Void          c_frm_Camera_Positioning::FillMat2Picturebox              
   FillPicturebox                     (Picturebox, colorImage_cols, colorImage_rows, colorImage_step, colorImage_type, colorImage_ptr);
   } // FillMatInToPictureBox
 
-System::Void          c_frm_Camera_Positioning::set_nup_value()
+System::Void          c_frm_Camera_Positioning::set_numUD_value                                     ()
   {
-  Int32 maximum = static_cast<Int32> (this->GlobalObjects->cameras_in_use);
-  this->nup_Camera_L1->Maximum = System::Decimal(gcnew cli::array< System::Int32 >(4)
-    {
-    maximum, 0, 0, 0
-    });
-  }
+  Int32 maximum = static_cast<Int32> (cameras_in_use);
+  this->nup_Camera_L1->Value = maximum;
+  this->nup_Camera_R1->Value = maximum;
+  this->nup_Camera_L2->Value = maximum;
+  this->nup_Camera_R2->Value = maximum;
+  this->nup_Camera_L3->Value = maximum;
+  this->nup_Camera_R3->Value = maximum;
 
+  switch (this->cameras_in_use)
+    {
+      case 1:   //Nur zu Testzwecken für die Laptopverwendung
+        this->nup_Camera_L1->Value = 0;
+        break;
+
+      case 2:
+        this->nup_Camera_L1->Value = 0;
+        this->nup_Camera_R1->Value = 1;
+        break;
+
+      case 4:
+        this->nup_Camera_L1->Value = 0;
+        this->nup_Camera_R1->Value = 1;
+        this->nup_Camera_L2->Value = 2;
+        this->nup_Camera_R2->Value = 3;
+        break;
+
+      case 6:
+        this->nup_Camera_L1->Value = 0;
+        this->nup_Camera_R1->Value = 1;
+        this->nup_Camera_L2->Value = 2;
+        this->nup_Camera_R2->Value = 3;
+        this->nup_Camera_L3->Value = 4;
+        this->nup_Camera_R3->Value = 5;
+        break;
+    }
+  }
+System::Void          c_frm_Camera_Positioning::set_numUD_value                                     (std::vector<int> camera_list)
+  {
+  Int32 maximum = static_cast<Int32> (cameras_in_use);
+  this->nup_Camera_L1->Value = maximum;
+  this->nup_Camera_R1->Value = maximum;
+  this->nup_Camera_L2->Value = maximum;
+  this->nup_Camera_R2->Value = maximum;
+  this->nup_Camera_L3->Value = maximum;
+  this->nup_Camera_R3->Value = maximum;
+
+  switch (this->cameras_in_use)
+    {
+      case 1:   //Nur zu Testzwecken für die Laptopverwendung
+        this->nup_Camera_L1->Value = camera_list[0];
+        break;
+
+      case 2:
+        this->nup_Camera_L1->Value = camera_list[0];
+        this->nup_Camera_R1->Value = camera_list[1];
+        break;
+
+      case 4:
+        this->nup_Camera_L1->Value = camera_list[0];
+        this->nup_Camera_R1->Value = camera_list[1];
+        this->nup_Camera_L2->Value = camera_list[2];
+        this->nup_Camera_R2->Value = camera_list[3];
+        break;
+
+      case 6:
+        this->nup_Camera_L1->Value = camera_list[0];
+        this->nup_Camera_R1->Value = camera_list[1];
+        this->nup_Camera_L2->Value = camera_list[2];
+        this->nup_Camera_R2->Value = camera_list[3];
+        this->nup_Camera_L3->Value = camera_list[4];
+        this->nup_Camera_R3->Value = camera_list[5];
+        break;
+    }
+  }

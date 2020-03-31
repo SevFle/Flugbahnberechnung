@@ -87,9 +87,9 @@ System::Void				C_frm_ObjectCalibration::Taktgeber_Tick			        (System::Objec
   if (Zaehler > TimerWait+8 )
     {
     FillMat2Picturebox(pb_original, *Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->cpu_src_img);
-    FillMat2Picturebox(pb_gray, *Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->cpu_filtered);
+    FillMat2Picturebox(pb_gray,     *Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->cpu_filtered);
     FillMat2Picturebox(pb_filtered, *Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->cpu_masked_img);
-    FillMat2Picturebox(pb_tracked, *Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->cpu_contoured);
+    FillMat2Picturebox(pb_tracked,  *Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->cpu_contoured);
 
     }
   }
@@ -103,6 +103,7 @@ System::Void        C_frm_ObjectCalibration::C_frm_ObjectCalibration_FormClosing
     }
 
   }
+
 System::Void        C_frm_ObjectCalibration::C_frm_ObjectCalibration_Load(System::Object^  sender, System::EventArgs^  e)
   {
   this->Zaehler                           = 0;
@@ -117,7 +118,7 @@ System::Void        C_frm_ObjectCalibration::C_frm_ObjectCalibration_Load(System
   trb_value_max->Value                    = 255;
 
   
- Main->camera_managed->camera_unmanaged->camera_vector[0]->filtering_active = true;
+  Main->camera_managed->camera_unmanaged->camera_vector[0]->filtering_active = true;
 
 
   }
@@ -357,5 +358,8 @@ System::Void          C_frm_ObjectCalibration::FillMat2Picturebox               
 
   FillPicturebox                     (Picturebox, colorImage_cols, colorImage_rows, colorImage_step, colorImage_type, colorImage_ptr);
   } // FillMatInToPictureBox
-
+System::Void          C_frm_ObjectCalibration::bt_apply_Click                                      (System::Object^  sender, System::EventArgs^  e)
+  {
+  Main->camera_managed->camera_unmanaged->save_camera_settings(static_cast<int>(numUD_cam_id->Value));
+  }
 
