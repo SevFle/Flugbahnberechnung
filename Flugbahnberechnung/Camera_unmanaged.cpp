@@ -13,13 +13,24 @@ c_camera_unmanaged::c_camera_unmanaged                                  (int cam
   this->cameras_in_use        = cameras_in_use;
   stop_statemachine           = false;
   this->GlobalObjects         = GlobalObjects;
+
+  calibrationSquareDimension  = 0.0f; //Meter
+  ChessboardDimensions        = cv::Size(0,0);
+  load_positioning            = false;
+
   }
 /**************************************************************** Destruktor ****************************************************************/
 c_camera_unmanaged::~c_camera_unmanaged                                 ()
   {
-  GlobalObjects = nullptr;
-  stop_statemachine = false;
-  cameras_in_use  = 0;
+  load_positioning            = false;
+
+  ChessboardDimensions        = cv::Size(0, 0);
+  calibrationSquareDimension  = 0.0f; //Meter
+
+
+  GlobalObjects               = nullptr;
+  stop_statemachine           = false;
+  cameras_in_use              = 0;
   }
 
 /*************************************************** Nicht öffentliche private Methoden *****************************************************/
@@ -34,7 +45,7 @@ void c_camera_unmanaged::save_camera_settings                           (int cam
   {
   string  Dateiname;
   string  Dateityp;
-  Dateiname   = "Camera_setting"+to_string(camera_id)+".csv";
+  Dateiname   = "../Parameter/Camera_setting"+to_string(camera_id)+".csv";
   Dateityp    = "Value of the individual setting";
 
 
@@ -102,7 +113,7 @@ void c_camera_unmanaged::load_camera_settings                           (int cam
   float   bilateral_sigma_color;
   float   bilateral_sigma_spatial;
 
-  Dateiname   = "Camera_setting"+to_string(camera_id)+".csv";
+  Dateiname   = "../Parameter/Camera_setting"+to_string(camera_id)+".csv";
   Dateityp    = "Value of the individual setting";
 
   GlobalObjects->csv_parameter_datei->Oeffnen(Dateiname, Enum_CSV_Access::Read);
@@ -184,7 +195,7 @@ void c_camera_unmanaged::save_camera_positioning                        (std::ve
   {
   string  Dateiname;
   string  Dateityp;
-  Dateiname   = "Camera_Positioning.csv";
+  Dateiname   = "../Parameter/Camera_Positioning.csv";
   Dateityp    = "Correct Camera position in vector corresponding to their ID";
 
   GlobalObjects->csv_parameter_datei->Oeffnen(Dateiname, Enum_CSV_Access::Write);
@@ -196,6 +207,7 @@ void c_camera_unmanaged::save_camera_positioning                        (std::ve
   for (int i = 0; i < GlobalObjects->cameras_in_use; i++)
     {
     GlobalObjects->csv_parameter_datei->Schreiben("Cameravector[" + to_string(i) +"]", to_string(camera_list[i]), "[1]");
+    std::cout << "Saving Camera " << i << " to position " << camera_list[i];
     }
 
 
@@ -209,7 +221,7 @@ void c_camera_unmanaged::load_camera_positioning                        ()
   int id;
   int Camera_count;
 
-  Dateiname   = "Camera_Positioning.csv";
+  Dateiname   = "../Parameter/Camera_Positioning.csv";
 
   GlobalObjects->csv_parameter_datei->Oeffnen(Dateiname, Enum_CSV_Access::Read);
   if(GlobalObjects->csv_parameter_datei->IsOpen())
@@ -219,16 +231,15 @@ void c_camera_unmanaged::load_camera_positioning                        ()
     GlobalObjects->csv_parameter_datei->Lesen(Camera_count);
     if(GlobalObjects->cameras_in_use == Camera_count)
       {
-
-      for (int i = 0; i < GlobalObjects->cameras_in_use; i++)
+      for (int i = 0; i < Camera_count; i++)
         {
         GlobalObjects->csv_parameter_datei->Lesen(id);
         GlobalObjects->camera_order->push_back(id);
-        move_camera_vector2temp(i, id);
+        move_camera_vector2temp(id, i);
         }
 
-      move_camera_temp2vector(GlobalObjects->cameras_in_use);
-
+      move_camera_temp2vector(Camera_count);
+      load_positioning = true;
       }
 
     }
@@ -274,3 +285,135 @@ void c_camera_unmanaged::move_camera_temp2vector                        (int cam
     }
   }
 
+//void c_camera_unmanaged::calibrate_single_camera                                            (void)
+//  {
+//  // Deklaration benötigter Variablen
+//  Mat                     Originalbild;
+//  Mat                     Grau_Bild;
+//  vector<Point2f>         Corners;
+//  Size                    Board_Sz         = Size (this->numCornersWidth, this->numCornersHeight);
+//  Mat                     intrinsic          (Mat_<double>(3, 3));
+//  Mat                     distCoeffs;
+//  vector<Point3f>         Obj;
+//  vector<vector<Point3f>> Object_Points;
+//  vector<vector<Point2f>> Image_Points;
+//  vector<Mat>             Rvecs;
+//  vector<Mat>             Tvecs;
+//  vector<Mat>             TCP_Orientation;
+//  vector<Mat>             TCP_Position;
+//  Mat                     R_TCP2Cam;
+//  Mat                     T_TCP2Cam;
+//  vector<Mat>             Rvecs_Rodrigues;
+//
+//  this->Photo_ID = 0;
+//
+//  // Füllen des "Obj"-Vektors mit 3D-Koordinaten der Schachbrett-Ecken. Die Koordinaten werden manuell vorgegeben und ergeben sich über Länge
+//  // und Breite der Schachbrett-Rechtecke über die gesamte Länge und Breite des Schachbrettes. Das Schachbrett-Rechteck hat eine Größe von
+//  // 24.23mm x 24.23mm. Damit ergeben sich die Koordinaten (x, y, z) wie folgt: (0, 0, 0), (24.23, 0, 0), (48.46, 0, 0), .... z ist immer null,
+//  // da die Rechtecke auf einer Ebene liegen und der Koordinatensystemursprung (Welt) auf dem Schachbrett liegt.
+//  for (int i = 0; i < this->numCornersHeight; i++)
+//    {
+//    for (int j = 0; j < this->numCornersWidth; j++)
+//      {
+//      Obj.push_back (Point3f((float)j * this->SquareSize, (float)i * this->SquareSize, 0.0f));
+//      }
+//    }
+//
+//  // Abarbeiten aller gespeicherten Bilder
+//  while (this->Photo_ID < this->numBoards)
+//    {
+//    // Laden des Bildes mit der angegebenen Photo_ID
+//    Originalbild = imread ("../../../Bilder/Camera_Single_Calibration_" + std::to_string(this->Camera_ID) + "_Snapshot_" + std::to_string(this->Photo_ID) + ".png", 1);
+//
+//    // Umwandeln des geladenen Bildes in ein Grauwertbild und abspeichern dieses in einem anderen Bild-Array
+//    cvtColor (Originalbild, Grau_Bild, COLOR_BGR2GRAY);
+//
+//    // Das geladenene Originalbild nach Schachbrett-Ecken absuchen. Die Anzahl der inneren Ecken über Länge und Breite wird über "Board_Sz" vorgegeben und
+//    // die gefundenen Ecken werden in "Corners" abgespeichert. Es wird eine adaptive Schwellwertbildung genutzt und das Bild wird nach Rechtecken
+//    // gefiltert. "Found" wird nur true, wenn alle Ecken gefunden wurden. Die Ecken-Koordinaten aus "Corners" sind 2D-Koordinaten der Bildebene.
+//    bool Found = findChessboardCorners (Originalbild, Board_Sz, Corners, CALIB_CB_ADAPTIVE_THRESH | CALIB_CB_FILTER_QUADS);
+//
+//    if (Found) // Falls Rechtecke gefunden wurden
+//      {
+//      // Mit Hilfe der gefundenen Ecken in "Corners" werden im Graustufenbild nun die Ecken-Standorte verfeinert. Mit den beiden "Size"-Angaben
+//      // wird die Größe der abzusuchenden Bereiche in jedem Iterationsschritt angegeben. Der erste Wert legt die Fenstergröße auf (2*5+1) x (2*5+1) = 11x11
+//      // fest, der zweite Wert legt die Mindestgröße fest, wobei die Werte -1 angeben, dass es keine "Totzone" gibt. Mit "TermCriteria" werden die
+//      // Ausstiegbedingungen für den Iterationsvorgang angegeben. "EPS" legt eine gewünschte Genauigkeit bzw. Parameteränderung von 0.1 fest. "MAX_ITER"
+//      // legt die Anzahl der maximalen Iterationen von 30 fest. Die Ausstiegsbedingung ist eine ODER-Bedingung.
+//      cornerSubPix         (Grau_Bild, Corners, Size(5, 5), Size(-1, -1), TermCriteria(TermCriteria::EPS | TermCriteria::MAX_ITER, 30, 0.1));
+//
+//      // Mit dieser Funktion werden die gefundenen Ecken aus "Corners" im Graustufenbild eingezeichnet. Ist "Found" true, wurde das Schachbrett und die
+//      // Ecken erkannt und diese werden markiert und mit Linien verbunden. Ist "Found" false, werden nur die gefundenen Ecken mit einem roten Kreis markiert.
+//      drawChessboardCorners(Grau_Bild, Board_Sz, Corners, Found);
+//
+//      // Die gefundenen Ecken-Koordinaten (2D, ohne z-Koordinate) im Vektor "Image-Points" abspeichern.
+//      Image_Points.push_back  (Corners);
+//
+//      // Alle manuell vorgegebenen Ecken-Koordinaten aus "Obj" in Vektor "Object_Points" ablegen.
+//      Object_Points.push_back (Obj);
+//
+//      // Die entsprechende Roboterpose zum aktuellen Bild in einem Vektor abspeichern. Dieser Vektor wird für
+//      // die Eye-In-Hand-Kalibrierung benötigt.
+//      Mat Mat_Orientation (Mat_<double>(3, 3));
+//      Mat Mat_Position    (Mat_<double>(3, 1));
+//
+//      // Zuweisung der übermittelten Roboter-TCP-Positionen
+//      for (int i = 0; i < 3; i++)
+//        {
+//        Mat_Position.ptr<double>(i)[0] = this->TCP_Poses->at(this->Photo_ID).ptr<double>(i)[3];
+//        }
+//
+//      // Zuweisung der übermittelten Roboter-TCP-Orientierungen
+//      for (int i = 0; i < 3; i++)
+//        {
+//        for (int j = 0; j < 3; j++)
+//          {
+//          Mat_Orientation.ptr<double>(i)[j] = this->TCP_Poses->at(this->Photo_ID).ptr<double>(i)[j];
+//          }
+//        }
+//
+//      // Ablegen aller Roboter-TCP-Orientierungen und -Positionen in Vektoren
+//      TCP_Orientation.push_back(Mat_Orientation);
+//      TCP_Position.push_back   (Mat_Position);
+//      }
+//
+//    // Grauwertbild mit eingezeichneten Ecken abspeichern.
+//    imwrite ("../../../Bilder/Camera_Single_Calibration_" + std::to_string(this->Camera_ID) + "_Gray_DrawCorners_" + std::to_string(this->Photo_ID) + ".png", Grau_Bild);
+//
+//    // Photo-ID für nächsten Durchlauf erhöhen.
+//    this->Photo_ID++;
+//    }
+//
+//  // Mit den gefundenen Ecken in 2D-Koordinaten und den vorgegebenen 3D-Koordinaten werden die intrinsischen Parameter (Camera-Matrix) und
+//  // die Koeffizienten der Verzerrung berechnet. Rvecs und Tvecs erhalten dabei die Orientierung und die Position der Transformationsmatrix
+//  // zwischen Kamerakoordinatensystem und Schachbrettkoordinatensystem.
+//  calibrateCamera(Object_Points, Image_Points, Originalbild.size(), intrinsic, distCoeffs, Rvecs, Tvecs);
+//  *this->Intrinsic  = intrinsic;
+//  *this->DistCoeffs = distCoeffs;
+//
+//  // Durchführen der HandEye-Kalibrierung zur Berechnung der Kamerapose relativ zum TCP-Koordinatensystem.
+//  // Für die Funktion "calibrateHandEye" müssen die Orientierungen zwischen Kamera und Schachbrett als 3x3-Matrix
+//  // vorliegen. Die Ausgabe aus der Kamerakalibrierung übergibt jedoch einen 3x1 Vektor (Rotation um eine Beliebige
+//  // Achse mit einem beliebigen Drehwinkel). Die Funktion "Rodrigues" wandelt den 3x1-Vektor in eine 3x3-Matrix um
+//  // (Rodrigues-Frank-Formeln). Die umgewandelten Vektoren werden als Matrix in einem Vektor abgelegt.
+//  for (int i = 0; i < (int)Rvecs.size(); i++)
+//    {
+//    Mat Rvec_Rodrigues (Mat_<double>(3, 3));
+//    Rodrigues(Rvecs.at(i), Rvec_Rodrigues);
+//    Rvecs_Rodrigues.push_back(Rvec_Rodrigues);
+//    }
+//
+//  // Die Funktion "calibrateHandEye" berechnet die Transformationspose zwischen TCP / Gripper und der Kamera (T_g_c).
+//  // Die ersten beiden Parameter sind jeweils die Orientierung und die Position des TCP bezogen auf das Roboter-Basis-
+//  // Koordinatensystem und zwar bezogen auf jedes aufgenommene Foto. Die Roboterpose wird also jedes mal bei Foto-
+//  // aufnahme während der Kalibrierung in einem Vektor abgespeichert. Diese Pose wird dann in Orientierung und Position
+//  // getrennt ("TCP_Orientation" und "TCP_Position", for-Schleife oben). Die Parameter Rvecs_Rodrigues und Tvecs
+//  // erhalten dabei die Orientierung und die Position der Transformationsmatrix zwischen Kamerakoordinatensystem
+//  // und Schachbrettkoordinatensystem. Die Parameter "R_Cam2TCP" und "T_Cam2TCP" sind nun die Orientierung und Position der
+//  // Transformationsmatrix (die Lösung der Gleichungssysteme) zwischen TCP und Kamera. Mit dem letzten Parameter kann die
+//  // Berechnungmethode bestimmt werden.
+//  calibrateHandEye(TCP_Orientation, TCP_Position, Rvecs_Rodrigues, Tvecs, R_TCP2Cam, T_TCP2Cam, cv::CALIB_HAND_EYE_ANDREFF);
+//
+//  *this->Translation_TCP2Cam = T_TCP2Cam;
+//  *this->Orientation_TCP2Cam = R_TCP2Cam;
+//  }

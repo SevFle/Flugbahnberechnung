@@ -40,8 +40,17 @@ namespace nmsp_camera_unmanaged
       int**                                                     camera_referrence;
 
       bool                                                      stop_statemachine;
-      std::vector<nmsp_opencv_unmanaged::c_opencv_unmanaged*>               camera_vector;
-      std::vector<nmsp_opencv_unmanaged::c_opencv_unmanaged*>               camera_vector_temp;
+      bool                                                      load_positioning;
+
+      std::vector<nmsp_opencv_unmanaged::c_opencv_unmanaged*>   camera_vector;
+      std::vector<nmsp_opencv_unmanaged::c_opencv_unmanaged*>   camera_vector_temp;
+
+      /*** Variablen zur Kamerakalibrierung ********************************************************/
+
+      float calibrationSquareDimension; //Meter
+      cv::Size  ChessboardDimensions;
+
+
 
 
 
@@ -68,7 +77,8 @@ namespace nmsp_camera_unmanaged
 
       void save_camera_settings                             (int camera_id);
       void load_camera_settings                             (int camera_id);
-                                
+
+      void calibrate_single_camera                          ();
 
 
     /******************************************************* Private Klassenmethoden***************************************************************/

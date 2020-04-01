@@ -62,6 +62,7 @@ System::Void          c_frm_Camera_Positioning::taktgeber_Tick                  
 System::Void          c_frm_Camera_Positioning::bt_apply_Click                                      (System::Object^  sender, System::EventArgs^  e)
   {
   this->Taktgeber->Enabled=false;
+  bt_apply->Enabled = false;
   std::vector<int> camera_list;
 
   switch (this->cameras_in_use)                              
@@ -147,7 +148,7 @@ System::Void          c_frm_Camera_Positioning::c_frm_Camera_Positioning_Load   
   this->Taktgeber->Interval               = 100;
   this->Taktgeber->Enabled                = true;
   this->cameras_in_use                    = GlobalObjects->cameras_in_use;
-  this->set_numUD_value(*GlobalObjects->camera_order);
+  if (Main->camera_managed->camera_unmanaged->load_positioning)       this->set_numUD_value(*GlobalObjects->camera_order);
   }
 System::Void          c_frm_Camera_Positioning::bt_exit_Click                                       (System::Object^  sender, System::EventArgs^  e)
   {
@@ -213,12 +214,12 @@ System::Void          c_frm_Camera_Positioning::set_numUD_value                 
 System::Void          c_frm_Camera_Positioning::set_numUD_value                                     (std::vector<int> camera_list)
   {
   Int32 maximum = static_cast<Int32> (cameras_in_use);
-  this->nup_Camera_L1->Value = maximum;
-  this->nup_Camera_R1->Value = maximum;
-  this->nup_Camera_L2->Value = maximum;
-  this->nup_Camera_R2->Value = maximum;
-  this->nup_Camera_L3->Value = maximum;
-  this->nup_Camera_R3->Value = maximum;
+  this->nup_Camera_L1->Maximum = maximum;
+  this->nup_Camera_R1->Maximum = maximum;
+  this->nup_Camera_L2->Maximum = maximum;
+  this->nup_Camera_R2->Maximum = maximum;
+  this->nup_Camera_L3->Maximum = maximum;
+  this->nup_Camera_R3->Maximum = maximum;
 
   switch (this->cameras_in_use)
     {
@@ -247,4 +248,36 @@ System::Void          c_frm_Camera_Positioning::set_numUD_value                 
         this->nup_Camera_R3->Value = camera_list[5];
         break;
     }
+  }
+
+System::Void  c_frm_Camera_Positioning::nup_Camera_L1_ValueChanged(System::Object^  sender, System::EventArgs^  e)
+        {
+  if (nup_Camera_L1->Value> cameras_in_use) nup_Camera_L1->Value =static_cast<int>  (nup_Camera_L1->Value) - 1;
+  bt_apply->Enabled = true;
+
+        }
+System::Void  c_frm_Camera_Positioning::nup_Camera_L2_ValueChanged(System::Object^  sender, System::EventArgs^  e)
+      {
+  if (nup_Camera_L2->Value> cameras_in_use) nup_Camera_L2->Value =static_cast<int>  (nup_Camera_L2->Value) - 1;
+  bt_apply->Enabled = true;
+  }
+System::Void  c_frm_Camera_Positioning::nup_Camera_L3_ValueChanged(System::Object^  sender, System::EventArgs^  e)
+      {
+  if (nup_Camera_L3->Value> cameras_in_use) nup_Camera_L3->Value =static_cast<int>  (nup_Camera_L3->Value) - 1;
+  bt_apply->Enabled = true;
+  }
+System::Void  c_frm_Camera_Positioning::nup_Camera_R1_ValueChanged(System::Object^  sender, System::EventArgs^  e)
+      {
+  if (nup_Camera_R1->Value> cameras_in_use) nup_Camera_R1->Value =static_cast<int>  (nup_Camera_R1->Value) - 1;
+  bt_apply->Enabled = true;
+  }
+System::Void  c_frm_Camera_Positioning::nup_Camera_R2_ValueChanged(System::Object^  sender, System::EventArgs^  e)
+      {
+  if (nup_Camera_R2->Value> cameras_in_use) nup_Camera_R2->Value =static_cast<int>  (nup_Camera_R2->Value) - 1;
+  bt_apply->Enabled = true;
+  }
+System::Void  c_frm_Camera_Positioning::nup_Camera_R3_ValueChanged(System::Object^  sender, System::EventArgs^  e)
+      {
+  if (nup_Camera_R3->Value> cameras_in_use) nup_Camera_R3->Value =static_cast<int>  (nup_Camera_R3->Value) - 1;
+  bt_apply->Enabled = true;
   }

@@ -1,3 +1,3 @@
 ﻿  Camera_unmanaged.cpp
-  App_Main.obj : MSIL-Modulgefunden; inkrementelles Verknüpfen wird für MSIL deaktiviert; vollständiger Link wird durchgeführt
-  Flugbahnberechnung.vcxproj -> D:\Projekte\VisualStudio\Flugbahnberechnung\Flugbahnberechnung\x64\Debug\ObjectTracking.exe
+  App_Main.obj : MSIL module encountered; incremental linking is disabled for MSIL; performing full link
+  Flugbahnberechnung.vcxproj -> C:\Users\111162002.EDU\Documents\Projekte\ObjectTracking\x64\Debug\ObjectTracking.exe

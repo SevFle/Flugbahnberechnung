@@ -69,6 +69,7 @@ anchor                      (-1,-1),
 
 
 
+
   this->cap                   = new cv::VideoCapture;
 
   }
