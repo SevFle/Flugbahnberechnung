@@ -29,7 +29,8 @@ namespace nmsp_camera_unmanaged
       public:
       //c_opencv_unmanaged*                                   opencv_unmananged;
 
-      std::thread*                                               camera_thread;
+      std::thread*                                              camera_thread;
+
 
       /**************************************************** Öffentliche Anwender-Attribute ********************************************************/
       public:
@@ -47,8 +48,15 @@ namespace nmsp_camera_unmanaged
 
       /*** Variablen zur Kamerakalibrierung ********************************************************/
 
-      float calibrationSquareDimension; //Meter
-      cv::Size  ChessboardDimensions;
+      public:
+      int                           numCornersWidth;
+      int                           numCornersHeight;
+      float                         SquareSize;
+      int                           numBoards_imgs;
+
+      private:
+      int                           Photo_ID;
+
 
 
 
@@ -78,7 +86,9 @@ namespace nmsp_camera_unmanaged
       void save_camera_settings                             (int camera_id);
       void load_camera_settings                             (int camera_id);
 
-      void calibrate_single_camera                          ();
+      void calibrate_single_camera                          (int camera_id);
+      void save_picture                                     (int camera_id, int photo_id);
+
 
 
     /******************************************************* Private Klassenmethoden***************************************************************/

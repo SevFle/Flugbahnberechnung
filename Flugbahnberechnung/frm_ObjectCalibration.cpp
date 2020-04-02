@@ -62,13 +62,15 @@ C_frm_ObjectCalibration::C_frm_ObjectCalibration                        (C_Globa
     numUD_morph_kernelsize->Minimum = 1;
     numUD_morph_kernelsize->Maximum = 10;
 
-
+    TimerWait = 0;
 
 
   }
 /**************************************************************** Destruktor ****************************************************************/
 C_frm_ObjectCalibration::~C_frm_ObjectCalibration                       ()
   {
+  TimerWait = 0;
+
     this->Main                    = nullptr;
     this->GlobalObjects           = nullptr;
 
@@ -90,7 +92,6 @@ System::Void				C_frm_ObjectCalibration::Taktgeber_Tick			        (System::Objec
     FillMat2Picturebox(pb_gray,     *Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->cpu_filtered);
     FillMat2Picturebox(pb_filtered, *Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->cpu_masked_img);
     FillMat2Picturebox(pb_tracked,  *Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->cpu_contoured);
-
     }
   }
 
@@ -109,6 +110,7 @@ System::Void        C_frm_ObjectCalibration::C_frm_ObjectCalibration_Load(System
   this->Zaehler                           = 0;
   this->Taktgeber->Interval               = 100;
   this->Taktgeber->Enabled                = true;
+  TimerWait                               = 7;
   numUD_cam_id->Maximum                   = GlobalObjects->cameras_in_use;
   trb_hue_min->Value                      = 0;
   trb_hue_max->Value                      = 179;
@@ -117,7 +119,7 @@ System::Void        C_frm_ObjectCalibration::C_frm_ObjectCalibration_Load(System
   trb_value_min->Value                    = 0;
   trb_value_max->Value                    = 255;
 
-  
+  Main->camera_managed->camera_unmanaged->camera_vector[0]->idle = false;
   Main->camera_managed->camera_unmanaged->camera_vector[0]->filtering_active = true;
 
 
@@ -127,14 +129,41 @@ System::Void        C_frm_ObjectCalibration::C_frm_ObjectCalibration_Load(System
 System::Void        C_frm_ObjectCalibration::numUD_cam_id_ValueChanged         (System::Object^  sender, System::EventArgs^  e)
   {
   TimerWait = Zaehler;
-  Main->camera_managed->camera_unmanaged->camera_vector[static_cast<int> (numUD_cam_id->Value)]->filtering_active = true;
-  camera_id_in_use = static_cast<int> (numUD_cam_id->Value);
-  Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->hue_min         = static_cast<uchar> (trb_hue_min         ->Value);
-  Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->hue_max         = static_cast<uchar> (trb_hue_max         ->Value);
-  Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->saturation_min  = static_cast<uchar> (trb_saturation_min  ->Value);
-  Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->saturation_max  = static_cast<uchar> (trb_saturation_max  ->Value);
-  Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->value_min       = static_cast<uchar> (trb_value_min       ->Value);
-  Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->value_max       = static_cast<uchar> (trb_value_max       ->Value);
+  this->Main->camera_managed->camera_unmanaged->camera_vector[static_cast<int> (numUD_cam_id->Value)]->idle = false;
+  this->Main->camera_managed->camera_unmanaged->camera_vector[static_cast<int> (numUD_cam_id->Value)]->filtering_active = true;
+  this->camera_id_in_use = static_cast<int> (numUD_cam_id->Value);
+  //Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->hue_min         = static_cast<uchar> (trb_hue_min         ->Value);
+  //Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->hue_max         = static_cast<uchar> (trb_hue_max->Value);
+  //Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->saturation_min  = static_cast<uchar> (trb_saturation_min->Value);
+  //Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->saturation_max  = static_cast<uchar> (trb_saturation_max->Value);
+  //Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->value_min       = static_cast<uchar> (trb_value_min->Value);
+  //Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->value_max       = static_cast<uchar> (trb_value_max->Value);
+
+
+  this->trb_hue_min->Value                  =  static_cast<int> (Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->hue_min);
+  this->trb_hue_max->Value                  =  static_cast<int> (Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->hue_max);
+  this->trb_saturation_min->Value           =  static_cast<int> (Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->saturation_min);
+  this->trb_saturation_max->Value           =  static_cast<int> (Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->saturation_max);
+  this->trb_value_min->Value                =  static_cast<int> (Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->value_min);
+  this->trb_value_max->Value                =  static_cast<int> (Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->value_max);
+
+  this->numUD_erode_iterations->Value       = Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->erosion_iterations;
+  this->numUD_closing_iterations->Value     = Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->closing_iterations;
+  this->numUD_opening_iterations->Value     = Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->opening_iterations;
+  this->numUD_dilation_iterations->Value    = Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->dilation_iterations;
+
+  this->numUD_erode_kernelsize->Value       = Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->erosion_kernel_size;
+  this->numUD_closing_kernelsize->Value     = Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->closing_kernel_size;
+  this->numUD_opening_kernelsize->Value     = Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->opening_kernel_size;
+  this->numUD_dilation_kernelsize->Value    = Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->dilation_kernel_size;
+
+  this->numUD_gaussian_kernel_size->Value   = Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->gaussian_kernel_size;
+  this->numUD_gaussian_sigma->Value         = static_cast<System::Decimal>(Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->gaussian_sigma);
+
+  this->numUD_bilateral_color->Value        = static_cast<System::Decimal>(Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->bilateral_sigma_color);
+  this->numUD_bilateral_spatial->Value      = static_cast<System::Decimal>(Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->bilateral_sigma_spatial);
+  this->numUD_bilateral_kernelsize->Value   = Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->bilateral_kernel_size;
+
 
   }
 System::Void        C_frm_ObjectCalibration::trb_hue_min_ValueChanged          (System::Object^  sender, System::EventArgs^  e)
@@ -199,8 +228,8 @@ System::Void        C_frm_ObjectCalibration::numUD_gaussian_kernel_size_ValueCha
   }
 System::Void        C_frm_ObjectCalibration::numUD_gaussian_sigma_ValueChanged(System::Object^  sender, System::EventArgs^  e)
   {
-   Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->gaussian_sigma = static_cast<int>(this->numUD_gaussian_sigma->Value);
-   }
+  Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->gaussian_sigma = static_cast<double>(this->numUD_gaussian_sigma->Value);
+  }
 System::Void        C_frm_ObjectCalibration::numUD_erode_iterations_ValueChanged(System::Object^  sender, System::EventArgs^  e)
   {
   Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->erosion_iterations = static_cast<int>(this->numUD_erode_iterations->Value);
@@ -361,5 +390,13 @@ System::Void          C_frm_ObjectCalibration::FillMat2Picturebox               
 System::Void          C_frm_ObjectCalibration::bt_apply_Click                                      (System::Object^  sender, System::EventArgs^  e)
   {
   Main->camera_managed->camera_unmanaged->save_camera_settings(static_cast<int>(numUD_cam_id->Value));
+  }
+
+System::Void          C_frm_ObjectCalibration::bt_apply_all_Click                                  (System::Object^  sender, System::EventArgs^  e)
+  {
+  for (int i = 0; i<GlobalObjects->cameras_in_use; i++)
+    {
+    Main->camera_managed->camera_unmanaged->save_camera_settings(i);
+    }
   }
 

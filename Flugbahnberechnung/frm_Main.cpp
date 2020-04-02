@@ -70,6 +70,10 @@ System::Void        C_frm_Main::Taktgeber_Tick                          (System:
 System::Void        C_frm_Main::bt_camera_positioning_MouseClick        (System::Object^  sender, System::Windows::Forms::MouseEventArgs^  e)
   {
   this->Taktgeber->Enabled								= false;
+  for (int i = 0; i < static_cast<int>(nup_camera_count->Value)-1; i++)
+    {
+    Main->camera_managed->camera_unmanaged->camera_vector[i]->idle = false;
+    }
   this->Main->frm_Camera_Positioning->ShowDialog();
   this->Taktgeber->Enabled								= true;
   }
@@ -83,6 +87,7 @@ System::Void        C_frm_Main::bt_apply_cameras_Click                  (System:
   else
     {
     GlobalObjects->cameras_in_use           = static_cast<int>                                     (nup_camera_count->Value);
+
     Main->camera_managed->camera_unmanaged->create_camera_vectors                 (static_cast<int>(nup_camera_count->Value));
     Main->camera_managed->camera_unmanaged->load_camera_positioning               ();
 
@@ -90,7 +95,7 @@ System::Void        C_frm_Main::bt_apply_cameras_Click                  (System:
       {
       Main->camera_managed->camera_unmanaged->load_camera_settings                  (i);
       }
-
+    Main->camera_managed->camera_unmanaged->camera_vector[0]->idle = true;
     bt_ObjectCalibration->Enabled           = true;
     bt_CameraCalibration->Enabled           = true;
     bt_camera_positioning->Enabled          = true;

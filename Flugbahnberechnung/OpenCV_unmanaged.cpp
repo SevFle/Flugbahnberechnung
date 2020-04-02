@@ -49,6 +49,8 @@ anchor                      (-1,-1),
 
   contours_active             = false;
 
+  idle                        = false;
+
   this->gpu_src_img           = new cv::cuda::GpuMat();
   this->gpu_thresholded       = new cv::cuda::GpuMat();
   this->gpu_filtered          = new cv::cuda::GpuMat();
@@ -67,6 +69,8 @@ anchor                      (-1,-1),
   this->cpu_contoured         = new cv::Mat();
   this->contoure_img          = new cv::Mat();
 
+  this->DistCoeffs            = new cv::Mat(cv::Mat_<double>(1,5));
+  this->Intrinsic             = new cv::Mat(cv::Mat_<double>(3,3));
 
 
 
@@ -108,6 +112,9 @@ c_opencv_unmanaged::~c_opencv_unmanaged()
   camera_id = 0;
 
   thread_running = true;
+
+  idle                        = false;
+
 
   delete (gpu_src_img);
   delete(gpu_thresholded);
@@ -176,13 +183,15 @@ void c_opencv_unmanaged::camera_thread                                  ()
           init(camera_id);
           statemachine_state = 1;
 
-
         case 1:
+          if (idle) statemachine_state = 1;
+
+        case 2:
           cpu_grab_frame(cpu_src_img);
-          statemachine_state = 2;
+          statemachine_state = 3;
 
 
-        case 2:  //Image Processing
+        case 3:  //Image Processing
           if (filtering_active == true)
             {
             apply_filter(cpu_src_img, cpu_masked_img);
@@ -190,10 +199,10 @@ void c_opencv_unmanaged::camera_thread                                  ()
             gpu_filtered->download(*cpu_filtered);
             find_contours(cpu_filtered, cpu_contoured);
             }
-          statemachine_state = 3;
+          statemachine_state = 4;
 
 
-        case 3:
+        case 4:
           if (cv::waitKey(33)>=0)
             break;
 

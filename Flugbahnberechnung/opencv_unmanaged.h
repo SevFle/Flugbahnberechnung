@@ -38,6 +38,8 @@ namespace nmsp_opencv_unmanaged
       cv::Mat*                                 cpu_filtered;
       cv::Mat*                                 cpu_contoured;
       cv::Mat*                                 contoure_img;
+      cv::Mat*                                 DistCoeffs;
+      cv::Mat*                                 Intrinsic;
 
 
 
@@ -99,6 +101,7 @@ namespace nmsp_opencv_unmanaged
       int                                     numcornersVer;
 
       double                                  gaussian_sigma;
+
       double                                  Vec_Object[3];
       double                                  max_Moment_m00;
 
@@ -116,7 +119,8 @@ namespace nmsp_opencv_unmanaged
       bool  gaussian_active;
       bool  morph_active;
 
-      bool contour_found;
+      bool  contour_found;
+      bool  idle;
 
 
 

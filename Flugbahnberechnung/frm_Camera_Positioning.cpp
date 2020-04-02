@@ -250,33 +250,33 @@ System::Void          c_frm_Camera_Positioning::set_numUD_value                 
     }
   }
 
-System::Void  c_frm_Camera_Positioning::nup_Camera_L1_ValueChanged(System::Object^  sender, System::EventArgs^  e)
+System::Void          c_frm_Camera_Positioning::nup_Camera_L1_ValueChanged                          (System::Object^  sender, System::EventArgs^  e)
         {
   if (nup_Camera_L1->Value> cameras_in_use) nup_Camera_L1->Value =static_cast<int>  (nup_Camera_L1->Value) - 1;
   bt_apply->Enabled = true;
 
         }
-System::Void  c_frm_Camera_Positioning::nup_Camera_L2_ValueChanged(System::Object^  sender, System::EventArgs^  e)
+System::Void          c_frm_Camera_Positioning::nup_Camera_L2_ValueChanged                          (System::Object^  sender, System::EventArgs^  e)
       {
   if (nup_Camera_L2->Value> cameras_in_use) nup_Camera_L2->Value =static_cast<int>  (nup_Camera_L2->Value) - 1;
   bt_apply->Enabled = true;
   }
-System::Void  c_frm_Camera_Positioning::nup_Camera_L3_ValueChanged(System::Object^  sender, System::EventArgs^  e)
+System::Void          c_frm_Camera_Positioning::nup_Camera_L3_ValueChanged                          (System::Object^  sender, System::EventArgs^  e)
       {
   if (nup_Camera_L3->Value> cameras_in_use) nup_Camera_L3->Value =static_cast<int>  (nup_Camera_L3->Value) - 1;
   bt_apply->Enabled = true;
   }
-System::Void  c_frm_Camera_Positioning::nup_Camera_R1_ValueChanged(System::Object^  sender, System::EventArgs^  e)
+System::Void          c_frm_Camera_Positioning::nup_Camera_R1_ValueChanged                          (System::Object^  sender, System::EventArgs^  e)
       {
   if (nup_Camera_R1->Value> cameras_in_use) nup_Camera_R1->Value =static_cast<int>  (nup_Camera_R1->Value) - 1;
   bt_apply->Enabled = true;
   }
-System::Void  c_frm_Camera_Positioning::nup_Camera_R2_ValueChanged(System::Object^  sender, System::EventArgs^  e)
+System::Void          c_frm_Camera_Positioning::nup_Camera_R2_ValueChanged                          (System::Object^  sender, System::EventArgs^  e)
       {
   if (nup_Camera_R2->Value> cameras_in_use) nup_Camera_R2->Value =static_cast<int>  (nup_Camera_R2->Value) - 1;
   bt_apply->Enabled = true;
   }
-System::Void  c_frm_Camera_Positioning::nup_Camera_R3_ValueChanged(System::Object^  sender, System::EventArgs^  e)
+System::Void          c_frm_Camera_Positioning::nup_Camera_R3_ValueChanged                          (System::Object^  sender, System::EventArgs^  e)
       {
   if (nup_Camera_R3->Value> cameras_in_use) nup_Camera_R3->Value =static_cast<int>  (nup_Camera_R3->Value) - 1;
   bt_apply->Enabled = true;
