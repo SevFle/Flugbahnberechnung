@@ -2,6 +2,7 @@
 
 #include <opencv2/opencv.hpp>
 #include <opencv2/highgui.hpp>
+#include <ipp.h>
 #include "CudaKernels.cuh"
 
 
@@ -61,7 +62,7 @@ namespace nmsp_opencv_unmanaged
       int                                     statemachine_state;
       int                                     capture_api;
 
-
+      
 
       /*********************************************************** Öffentliche OpenCV-Variablen  **************************************************/
       #pragma region Öfffentliche OpenCV-Variablen
@@ -135,6 +136,9 @@ namespace nmsp_opencv_unmanaged
       void            cpu_mask_img                                        (cv::Mat* hsv_cpu_src, cv::Mat* cpu_masked_dst);
 
       void            camera_thread                                       ();
+      void            set_calibration_parameter                           (double  (&DistCoeffs)[1][5], double              (&Intrinsic)[3][3]);
+      void            get_calibration_parameter                           (double  (&DistCoeffs)[1][5], double              (&Intrinsic)[3][3]);
+      void            set_aspect_ratio                                    (int Height, int width);
 
       /******************************************************* Private Klassenmethoden***************************************************************/
       private:
