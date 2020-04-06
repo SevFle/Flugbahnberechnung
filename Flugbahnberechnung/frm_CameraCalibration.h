@@ -63,7 +63,8 @@ namespace NmSp_CamerCalibration_Single
     private: System::Windows::Forms::TextBox^  tb_single_edge_length;
 
     private: System::Windows::Forms::Label^  label5;
-    private: System::Windows::Forms::TextBox^  tb_single_corner_count_L;
+    private: System::Windows::Forms::TextBox^  tb_single_corner_count_B;
+
     private: System::Windows::Forms::TextBox^  tb_single_corner_count_H;
     private: System::Windows::Forms::GroupBox^  grB_single;
     private: System::Windows::Forms::GroupBox^  grb_stereo;
@@ -120,7 +121,7 @@ namespace NmSp_CamerCalibration_Single
       this->label4 = (gcnew System::Windows::Forms::Label());
       this->tb_single_edge_length = (gcnew System::Windows::Forms::TextBox());
       this->label5 = (gcnew System::Windows::Forms::Label());
-      this->tb_single_corner_count_L = (gcnew System::Windows::Forms::TextBox());
+      this->tb_single_corner_count_B = (gcnew System::Windows::Forms::TextBox());
       this->tb_single_corner_count_H = (gcnew System::Windows::Forms::TextBox());
       this->grB_single = (gcnew System::Windows::Forms::GroupBox());
       this->rb_single_calibration = (gcnew System::Windows::Forms::RadioButton());
@@ -309,16 +310,16 @@ namespace NmSp_CamerCalibration_Single
       this->label5->AutoSize = true;
       this->label5->Location = System::Drawing::Point(11, 205);
       this->label5->Name = L"label5";
-      this->label5->Size = System::Drawing::Size(171, 17);
+      this->label5->Size = System::Drawing::Size(172, 17);
       this->label5->TabIndex = 20;
-      this->label5->Text = L"Anzahl der Kanten (L x H)";
+      this->label5->Text = L"Anzahl der Kanten (B x H)";
       // 
-      // tb_single_corner_count_L
+      // tb_single_corner_count_B
       // 
-      this->tb_single_corner_count_L->Location = System::Drawing::Point(14, 225);
-      this->tb_single_corner_count_L->Name = L"tb_single_corner_count_L";
-      this->tb_single_corner_count_L->Size = System::Drawing::Size(126, 22);
-      this->tb_single_corner_count_L->TabIndex = 19;
+      this->tb_single_corner_count_B->Location = System::Drawing::Point(14, 225);
+      this->tb_single_corner_count_B->Name = L"tb_single_corner_count_B";
+      this->tb_single_corner_count_B->Size = System::Drawing::Size(126, 22);
+      this->tb_single_corner_count_B->TabIndex = 19;
       // 
       // tb_single_corner_count_H
       // 
@@ -332,7 +333,7 @@ namespace NmSp_CamerCalibration_Single
       this->grB_single->Controls->Add(this->rb_single_calibration);
       this->grB_single->Controls->Add(this->tb_single_corner_count_H);
       this->grB_single->Controls->Add(this->label5);
-      this->grB_single->Controls->Add(this->tb_single_corner_count_L);
+      this->grB_single->Controls->Add(this->tb_single_corner_count_B);
       this->grB_single->Controls->Add(this->label4);
       this->grB_single->Controls->Add(this->tb_single_edge_length);
       this->grB_single->Controls->Add(this->label3);
@@ -347,6 +348,7 @@ namespace NmSp_CamerCalibration_Single
       // rb_single_calibration
       // 
       this->rb_single_calibration->AutoSize = true;
+      this->rb_single_calibration->Checked = true;
       this->rb_single_calibration->Location = System::Drawing::Point(16, 37);
       this->rb_single_calibration->Name = L"rb_single_calibration";
       this->rb_single_calibration->Size = System::Drawing::Size(59, 21);
@@ -540,5 +542,7 @@ namespace NmSp_CamerCalibration_Single
       System::Void      bt_start_Click                                      (System::Object^  sender, System::EventArgs^  e);
 
       System::Void      nup_camera_id_ValueChanged                          (System::Object^  sender, System::EventArgs^  e);
+
+      System::Void      Camera_calibration_condition                        ();
 };
 }

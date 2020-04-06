@@ -180,19 +180,79 @@ void c_camera_unmanaged::load_camera_settings                           (int cam
     }
   }
 
-void c_camera_unmanaged::save_camera_calibration                        ()
+void c_camera_unmanaged::save_camera_calibration                        (int camera_id)
   {
-  for (int i = 0; i< cameras_in_use; i++)
-    {
+  string  Dateiname;
+  string  Dateityp;
+  int     numBoards;
+  double  DistCoeffs[1][5];
+  double  Intrinsic[3][3];
+  numBoards = this->numBoards_imgs;
 
-    }
+  Dateiname   = "../Parameter/Camera_Calibration_Parameter_CameraID_" + to_string(camera_id) + ".csv";
+  Dateityp    = "Intrinisic and distortion parameters of camera-single-calibration";
+
+  this->GlobalObjects->csv_parameter_datei->Oeffnen(Dateiname, Enum_CSV_Access::Write);
+
+  this->GlobalObjects->csv_parameter_datei->Schreiben("Dateityp", Dateityp, "[1]");
+  this->GlobalObjects->csv_parameter_datei->Schreiben("Anzahl Boards", numBoards, "[1]");
+  this->GlobalObjects->csv_parameter_datei->Schreiben("Distortion k1", DistCoeffs[0][0], "[1]");
+  this->GlobalObjects->csv_parameter_datei->Schreiben("Distortion k2", DistCoeffs[0][1], "[1]");
+  this->GlobalObjects->csv_parameter_datei->Schreiben("Distortion p1", DistCoeffs[0][2], "[1]");
+  this->GlobalObjects->csv_parameter_datei->Schreiben("Distortion p2", DistCoeffs[0][3], "[1]");
+  this->GlobalObjects->csv_parameter_datei->Schreiben("Distortion k3", DistCoeffs[0][4], "[1]");
+  this->GlobalObjects->csv_parameter_datei->Schreiben("Intrinsic fx", Intrinsic[0][0], "[Px]");
+  this->GlobalObjects->csv_parameter_datei->Schreiben("Intrinsic 01", Intrinsic[0][1], "[Px]");
+  this->GlobalObjects->csv_parameter_datei->Schreiben("Intrinsic cx", Intrinsic[0][2], "[Px]");
+  this->GlobalObjects->csv_parameter_datei->Schreiben("Intrinsic 10", Intrinsic[1][0], "[Px]");
+  this->GlobalObjects->csv_parameter_datei->Schreiben("Intrinsic fy", Intrinsic[1][1], "[Px]");
+  this->GlobalObjects->csv_parameter_datei->Schreiben("Intrinsic cy", Intrinsic[1][2], "[Px]");
+  this->GlobalObjects->csv_parameter_datei->Schreiben("Intrinsic 20", Intrinsic[2][0], "[Px]");
+  this->GlobalObjects->csv_parameter_datei->Schreiben("Intrinsic 21", Intrinsic[2][1], "[Px]");
+  this->GlobalObjects->csv_parameter_datei->Schreiben("Intrinsic 22", Intrinsic[2][2], "[Px]");
+
+  this->GlobalObjects->csv_parameter_datei->Schliessen();
+
   }
-void c_camera_unmanaged::load_camera_calibration                        ()
+void c_camera_unmanaged::load_camera_calibration                        (int camera_id)
   {
-  for (int i = 0; i< cameras_in_use; i++)
+  string  Dateiname;
+  string  Dateityp;
+  int     numBoards;
+  double  DistCoeffs[1][5];
+  double  Intrinsic[3][3];
+
+  Dateiname   = "../Parameter/Camera_Calibration_Parameter_CameraID_" + to_string(camera_id) + ".csv";
+  Dateityp    = "Intrinisic and distortion parameters of camera-single-calibration";
+
+  this->GlobalObjects->csv_parameter_datei->Oeffnen(Dateiname, Enum_CSV_Access::Read);
+
+  if (this->GlobalObjects->csv_parameter_datei->IsOpen())
     {
+    this->GlobalObjects->csv_parameter_datei->Lesen(Dateityp);
+    this->GlobalObjects->csv_parameter_datei->Lesen(numBoards);
+    this->GlobalObjects->csv_parameter_datei->Lesen(DistCoeffs[0][0]);
+    this->GlobalObjects->csv_parameter_datei->Lesen(DistCoeffs[0][1]);
+    this->GlobalObjects->csv_parameter_datei->Lesen(DistCoeffs[0][2]);
+    this->GlobalObjects->csv_parameter_datei->Lesen(DistCoeffs[0][3]);
+    this->GlobalObjects->csv_parameter_datei->Lesen(DistCoeffs[0][4]);
+    this->GlobalObjects->csv_parameter_datei->Lesen(Intrinsic[0][0]);
+    this->GlobalObjects->csv_parameter_datei->Lesen(Intrinsic[0][1]);
+    this->GlobalObjects->csv_parameter_datei->Lesen(Intrinsic[0][2]);
+    this->GlobalObjects->csv_parameter_datei->Lesen(Intrinsic[1][0]);
+    this->GlobalObjects->csv_parameter_datei->Lesen(Intrinsic[1][1]);
+    this->GlobalObjects->csv_parameter_datei->Lesen(Intrinsic[1][2]);
+    this->GlobalObjects->csv_parameter_datei->Lesen(Intrinsic[2][0]);
+    this->GlobalObjects->csv_parameter_datei->Lesen(Intrinsic[2][1]);
+    this->GlobalObjects->csv_parameter_datei->Lesen(Intrinsic[2][2]);
+
+    this->GlobalObjects->csv_parameter_datei->Schliessen();
 
     }
+
+  this->camera_vector[camera_id]->set_calibration_parameter(DistCoeffs, Intrinsic);
+
+
   }
 
 void c_camera_unmanaged::save_camera_positioning                        (std::vector<int> camera_list)
@@ -254,6 +314,7 @@ void c_camera_unmanaged::create_camera_vectors                          (int cam
   for (int i = 0; i < cameras_in_use; i++)
     {
     nmsp_opencv_unmanaged::c_opencv_unmanaged *opencv_unmanaged = new nmsp_opencv_unmanaged::c_opencv_unmanaged (i);
+    opencv_unmanaged->idle  = true;
     camera_vector.push_back                          (opencv_unmanaged);
     //camera_vector_referrences.push_back                       (camera_referrence);
     std::cout << "Created " << i+1 << " Camera Objects with according pointers"<< std::endl;
@@ -381,7 +442,7 @@ void c_camera_unmanaged::calibrate_single_camera                        (int cam
       }
 
     // Grauwertbild mit eingezeichneten Ecken abspeichern.
-    imwrite ("../../../Bilder/Camera_Single_Calibration_" + std::to_string(camera_id) + "_Gray_DrawCorners_" + std::to_string(this->Photo_ID) + ".png", Grau_Bild);
+    imwrite ("../Parameter/Bilder/Camera_Single_Calibration_" + std::to_string(camera_id) + "_Gray_DrawCorners_" + std::to_string(this->Photo_ID) + ".png", Grau_Bild);
 
     // Photo-ID für nächsten Durchlauf erhöhen.
     this->Photo_ID++;
@@ -393,6 +454,7 @@ void c_camera_unmanaged::calibrate_single_camera                        (int cam
   calibrateCamera(Object_Points, Image_Points, Originalbild.size(), intrinsic, distCoeffs, Rvecs, Tvecs);
   *camera_vector[camera_id]->Intrinsic  = intrinsic;
   *camera_vector[camera_id]->DistCoeffs = distCoeffs;
+  this->save_camera_calibration(camera_id);
 
   //// Durchführen der HandEye-Kalibrierung zur Berechnung der Kamerapose relativ zum TCP-Koordinatensystem.
   //// Für die Funktion "calibrateHandEye" müssen die Orientierungen zwischen Kamera und Schachbrett als 3x3-Matrix
@@ -419,6 +481,7 @@ void c_camera_unmanaged::calibrate_single_camera                        (int cam
 
   //*this->Translation_TCP2Cam = T_TCP2Cam;
   //*this->Orientation_TCP2Cam = R_TCP2Cam;
+
   }
 
 void c_camera_unmanaged::save_picture                                   (int camera_id, int photo_id)

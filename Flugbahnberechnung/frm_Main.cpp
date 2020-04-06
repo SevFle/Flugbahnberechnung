@@ -39,13 +39,14 @@ System::Void        C_frm_Main::bt_ObjectCalibration_Click              (System:
 System::Void        C_frm_Main::bt_CameraCalibration_Click              (System::Object ^ sender, System::EventArgs ^ e)
   {
   this->Taktgeber->Enabled								= false;
+  this->Main->camera_managed->camera_unmanaged->camera_vector[0];
   this->Main->frm_CameraCalibration_Single->ShowDialog();
   this->Taktgeber->Enabled								= true;
   }
 
 System::Void        C_frm_Main::bt_exit_Click                           (System::Object ^ sender, System::EventArgs ^ e)
   {
-  this->Main->camera_managed->camera_unmanaged->close_cameras(static_cast<int>(nup_camera_count->Value));
+  if(this->bt_apply_cameras->Enabled) this->Main->camera_managed->camera_unmanaged->close_cameras(static_cast<int>(nup_camera_count->Value));
   this->Close();
 
   }
@@ -95,7 +96,6 @@ System::Void        C_frm_Main::bt_apply_cameras_Click                  (System:
       {
       Main->camera_managed->camera_unmanaged->load_camera_settings                  (i);
       }
-    Main->camera_managed->camera_unmanaged->camera_vector[0]->idle = true;
     bt_ObjectCalibration->Enabled           = true;
     bt_CameraCalibration->Enabled           = true;
     bt_camera_positioning->Enabled          = true;

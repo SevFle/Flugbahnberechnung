@@ -16,7 +16,7 @@ C_frm_CameraCalibration_Single::C_frm_CameraCalibration_Single(C_GlobalObjects* 
   this->photo_count     = 0;
   this->photo_id        =0;
   this->intervall       = 0;
-  this->photocount_user_input = 0;
+  this->photocount_user_input = 3;
 
   }
 C_frm_CameraCalibration_Single::~C_frm_CameraCalibration_Single()
@@ -36,6 +36,7 @@ System::Void          C_frm_CameraCalibration_Single::C_frm_CameraCalibration_Si
   this->Taktgeber->Enabled                = true;
   this->cameras_in_use                    = GlobalObjects->cameras_in_use;
   this->current_camera_id                 = 0;
+  //Main->camera_managed->camera_unmanaged->camera_vector[0]->set_aspect_ratio(1080, 1920);
   }
 
 
@@ -53,7 +54,7 @@ System::Void          C_frm_CameraCalibration_Single::rb_stereo_calibration_Clic
   }
 
 
-System::Void          C_frm_CameraCalibration_Single::Taktgeber_Tick(System::Object^  sender, System::EventArgs^  e)
+System::Void          C_frm_CameraCalibration_Single::Taktgeber_Tick      (System::Object^  sender, System::EventArgs^  e)
   {
   this->txtb_counter->Text								= System::String::Format("{0:0}", this->Zaehler++);
 
@@ -61,14 +62,15 @@ System::Void          C_frm_CameraCalibration_Single::Taktgeber_Tick(System::Obj
     {
     FillMat2Picturebox    (pb_live_camera_picture, Main->camera_managed->camera_unmanaged->camera_vector[current_camera_id]->cpu_src_img);
 
-    if (calibration_running && Zaehler >= intervall && photo_count < photocount_user_input)
+    if (calibration_running && Zaehler >= intervall)
       {
       this->intervall = Zaehler + photo_interval;
 
       switch (this->method)
         {
           case 0:
-            this->Main->camera_managed->camera_unmanaged->save_picture(current_camera_id, photo_id);
+           //this->Main->camera_managed->camera_unmanaged->save_picture(current_camera_id, photo_id);
+            this->tb_picture_count->Text								= System::String::Format("{0:0}", this->photo_id);
             photo_id++;
             break;
 
@@ -76,13 +78,16 @@ System::Void          C_frm_CameraCalibration_Single::Taktgeber_Tick(System::Obj
           case 1:
 
             break;
-
         }
-      }
+      }       
     }
-  if (photo_count >= photocount_user_input) calibration_running = false;
+  if (photo_id >= photocount_user_input)
+    {
+    Camera_calibration_condition();
+    }
   }
-System::Void          C_frm_CameraCalibration_Single::bt_exit_Click(System::Object^  sender, System::EventArgs^  e)
+
+System::Void          C_frm_CameraCalibration_Single::bt_exit_Click       (System::Object^  sender, System::EventArgs^  e)
   {
   this->Taktgeber->Enabled = false;
   this->Close();
@@ -93,28 +98,7 @@ System::Void          C_frm_CameraCalibration_Single::bt_take_picture_Click(Syst
   }
 System::Void          C_frm_CameraCalibration_Single::bt_start_Click(System::Object^  sender, System::EventArgs^  e)
   {
-  if (!calibration_running)
-    {
-    photo_id                  =   0;
-    photo_interval            =  Int16::TryParse(tb_photo_interval->Text)*10;
-    photocount_user_input     =   Convert::ToInt16(tb_picture_count->Text);
-    Main->camera_managed->camera_unmanaged->SquareSize = static_cast<float> (Convert::ToDouble(this->tb_single_edge_length->Text))*10;
-
-    grB_single->Enabled       =   false;
-    grb_stereo->Enabled       =   false;
-    this->bt_start->Text      =   "Beenden";
-    this->calibration_running =   true;
-
-    }
-  else
-    {
-    calibration_running       =   false;
-    grB_single->Enabled       =   true;
-    grb_stereo->Enabled       =   true;
-    this->bt_start->Text      =   "Start";
-
-    Main->camera_managed->camera_unmanaged->calibrate_single_camera(current_camera_id);
-    }
+  Camera_calibration_condition();
   }
 
 System::Void          C_frm_CameraCalibration_Single::FillPicturebox                                      (System::Windows::Forms::PictureBox^ Picturebox, Int32 ColorImageCols, Int32 ColorImageRows, Int32 ColorImageStep, Int32 ColorImageType, System::IntPtr ColorImagePtr)
@@ -140,4 +124,36 @@ System::Void          C_frm_CameraCalibration_Single::nup_camera_id_ValueChanged
   Timerwait = Zaehler + 8;
   if (nup_camera_id->Value> cameras_in_use) nup_camera_id->Value  =  static_cast<int>  (nup_camera_id->Value) - 1;
   this->current_camera_id                                         =  static_cast<int>  (nup_camera_id->Value);
+  //Main->camera_managed->camera_unmanaged->camera_vector[current_camera_id]->set_aspect_ratio(1080, 1920);
+  Main->camera_managed->camera_unmanaged->camera_vector[current_camera_id]->idle = false;
   }
+
+System::Void          C_frm_CameraCalibration_Single::Camera_calibration_condition                        ()
+{
+  if (!calibration_running)
+    {
+    photo_id                  =   0;
+    photo_interval            =   int::Parse(tb_photo_interval->Text)*10;
+    photocount_user_input     =   int::Parse(tb_single_imgs_to_take->Text);
+
+    grB_single->Enabled       =   false;
+    grb_stereo->Enabled       =   false;
+    this->bt_start->Text      =   "Beenden";
+    this->calibration_running =   true;
+
+    }
+  else
+    {
+    calibration_running       =   false;
+    grB_single->Enabled       =   true;
+    grb_stereo->Enabled       =   true;
+    this->bt_start->Text      =   "Start";
+    this->Main->camera_managed->camera_unmanaged->SquareSize = static_cast<float> (double::Parse(this->tb_single_edge_length->Text));
+    this->Main->camera_managed->camera_unmanaged->numBoards_imgs = this->photo_id;
+    this->Main->camera_managed->camera_unmanaged->numCornersHeight = int::Parse(this->tb_single_corner_count_H->Text);
+    this->Main->camera_managed->camera_unmanaged->numCornersWidth = int::Parse(this->tb_single_corner_count_B->Text);
+    //Main->camera_managed->camera_unmanaged->calibrate_single_camera(current_camera_id);
+    photo_id                  =   0;
+
+    }
+}

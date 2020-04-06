@@ -184,12 +184,18 @@ void c_opencv_unmanaged::camera_thread                                  ()
           statemachine_state = 1;
 
         case 1:
-          if (idle) statemachine_state = 1;
-
+          //if (idle)
+          //  {
+          //  statemachine_state = 1;
+          //  }
+          //else
+          //  {
+            statemachine_state  = 2;
+          //  }
+          break;
         case 2:
           cpu_grab_frame(cpu_src_img);
           statemachine_state = 3;
-
 
         case 3:  //Image Processing
           if (filtering_active == true)
@@ -201,13 +207,11 @@ void c_opencv_unmanaged::camera_thread                                  ()
             }
           statemachine_state = 4;
 
-
         case 4:
-          if (cv::waitKey(33)>=0)
+          if (cv::waitKey(1)>=0)
             break;
 
           statemachine_state = 1;
-
       }
     }
   }
@@ -218,7 +222,9 @@ void c_opencv_unmanaged::init                                           (int cam
   cap->set(cv::CAP_PROP_FRAME_HEIGHT, 600);
   cap->set(cv::CAP_PROP_FRAME_WIDTH, 800);
   cap->set(cv::CAP_PROP_FPS, 60);
+  cap->set(cv::CAP_PROP_BUFFERSIZE, 3);
   cap->open(camera_id, capture_api);
+  Qelap
 
   //Redifinition der zwei GpuMat Arrays für die Verwendung in der Cuda-InRange Funktion. 
   gpu_src2color->create(480, 640, CV_8UC1);
@@ -456,7 +462,51 @@ void c_opencv_unmanaged::find_contours                                  (cv::Mat
     }
   }
 
+void c_opencv_unmanaged::get_calibration_parameter                             (double  (&DistCoeffs)[1][5], double              (&Intrinsic)[3][3])
+  {
+  for (int i = 0; i < 1; i++)
+    {
+    for (int j = 0; j < 5; j++)
+      {
+      DistCoeffs[i][j] = this->DistCoeffs->at<double>(i, j);
+      }
+    }
 
+  for (int i = 0; i < 3; i++)
+    {
+    for (int j = 0; j < 3; j++)
+      {
+      Intrinsic[i][j] = this->Intrinsic->at<double>(i, j);
+      }
+    }
+  }
+
+
+void c_opencv_unmanaged::set_calibration_parameter                            (double  (&DistCoeffs)[1][5], double              (&Intrinsic)[3][3])
+  {
+  for (int i = 0; i < 1; i++)
+    {
+    for (int j = 0; j < 5; j++)
+      {
+      this->DistCoeffs->at<double>(i, j) = DistCoeffs[i][j];
+      }
+    }
+
+  for (int i = 0; i < 3; i++)
+    {
+    for (int j = 0; j < 3; j++)
+      {
+      this->Intrinsic->at<double>(i, j) = Intrinsic[i][j];
+      }
+    }
+  }
+
+
+void  c_opencv_unmanaged::set_aspect_ratio                                    (int Height, int width)
+{
+  cap->set(cv::CAP_PROP_FRAME_HEIGHT, Height);
+  cap->set(cv::CAP_PROP_FRAME_WIDTH, width);
+}
 
 
 
