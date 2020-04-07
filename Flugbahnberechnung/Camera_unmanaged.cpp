@@ -299,7 +299,7 @@ void c_camera_unmanaged::load_camera_positioning                        ()
         {
         GlobalObjects->csv_parameter_datei->Lesen(id);
         GlobalObjects->camera_order->push_back(id);
-        move_camera_vector2temp(id, i);
+        move_camera_vector2temp(i, id);
         }
 
       move_camera_temp2vector(Camera_count);
@@ -309,21 +309,33 @@ void c_camera_unmanaged::load_camera_positioning                        ()
     }
   }
 
-void c_camera_unmanaged::create_camera_vectors                          (int cameras_in_use)
+void c_camera_unmanaged::init_camera_vectors                          (int cameras_in_use)
 {
-  for (int i = 0; i < cameras_in_use; i++)
+  //Create a camera object and start its according thread. The amount of objects equals the amount of cameras in use 
+  for                                                       (int i = 0; i < cameras_in_use; i++)
     {
     nmsp_opencv_unmanaged::c_opencv_unmanaged *opencv_unmanaged = new nmsp_opencv_unmanaged::c_opencv_unmanaged (i);
-    opencv_unmanaged->idle  = true;
-    camera_vector.push_back                          (opencv_unmanaged);
-    //camera_vector_referrences.push_back                       (camera_referrence);
+    opencv_unmanaged->idle                                      = true;
+    camera_vector.push_back                                 (opencv_unmanaged);
+
     std::cout << "Created " << i+1 << " Camera Objects with according pointers"<< std::endl;
-    current_camera_id = i;
-    camera_thread   = new std::thread(&c_camera_unmanaged::start_camera_thread, this);
-    camera_vector_temp.resize(cameras_in_use);
-    //delete (opencv_unmanaged);
+
+
+    current_camera_id                                           = i;
+    camera_thread   = new std::thread                       (&c_camera_unmanaged::start_camera_thread, this);
+    camera_vector_temp.resize                               (cameras_in_use);
     }
-}
+
+  //Reorder recently created Cameras
+  this->load_camera_positioning                             ();
+
+  //Load Settings and Calibration for each camera created earlier
+  for                                                       (int i = 0; i < cameras_in_use; i++)
+    {
+    this->load_camera_calibration                           (i);
+    this->load_camera_settings                              (i);
+    }
+  }
 void c_camera_unmanaged::close_cameras                                  (int cameras_in_use)
   {
   for (int i = 0; i < cameras_in_use; i++)

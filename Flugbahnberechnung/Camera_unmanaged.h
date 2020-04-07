@@ -80,7 +80,7 @@ namespace nmsp_camera_unmanaged
       void load_camera_calibration                          (int camera_id);
       void save_camera_positioning                          (std::vector<int> camera_list);
       void load_camera_positioning                          ();
-      void create_camera_vectors                            (int cameras_in_use);
+      void init_camera_vectors                              (int cameras_in_use);
       void close_cameras                                    (int cameras_in_use);
 
       void save_camera_settings                             (int camera_id);

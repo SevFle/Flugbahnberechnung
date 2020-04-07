@@ -20,9 +20,6 @@ namespace nmsp_camera_managed
       public:
       c_camera_unmanaged*                 camera_unmanaged;
 
-
-      //System::Drawing::Bitmap           Bitmap;
-
       /**************************************************** Öffentliche Anwender-Attribute ********************************************************/
 
 
@@ -33,10 +30,8 @@ namespace nmsp_camera_managed
       
       /********************************************************* Öffentliche Klassenmethoden*******************************************************/
       public:
-      //System::Void      Mat2Bitmap_unfiltered                                    (int camera_id, cv::Mat &Mat2Bit_Img);
-
   
-      /******************************************************* Private Klassenmethoden***************************************************************/
+      /******************************************************** Private Klassenmethoden***************************************************************/
 
     };
   }

@@ -83,7 +83,7 @@ namespace NmSp_frm_CameraCalibration_Stereo
 
 
 #include "frm_Main.h"
-#include "frm_CameraCalibration.h"
-#include "frm_ObjectCalibration.h"
+#include "frm_Camera_Calibration.h"
+#include "frm_Object_Calibration.h"
 #include "frm_Camera_Positioning.h"
 

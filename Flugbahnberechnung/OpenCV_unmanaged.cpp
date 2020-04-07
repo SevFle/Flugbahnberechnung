@@ -79,7 +79,7 @@ anchor                      (-1,-1),
   }
 
 /**************************************************************** Destruktor ****************************************************************/
-c_opencv_unmanaged::~c_opencv_unmanaged()
+c_opencv_unmanaged::~c_opencv_unmanaged                                 ()
   {
   hue_min                     = 0;
   hue_max                     = 0;
@@ -141,7 +141,7 @@ c_opencv_unmanaged::~c_opencv_unmanaged()
 
 /************************************************************* Öffentliche Klassenmethoden*************************************************/
 
-void c_opencv_unmanaged::apply_filter                                   (cv::Mat* cpu_src, cv::Mat* cpu_dst)
+void c_opencv_unmanaged::apply_filter                                   (cv::Mat* cpu_src,                            cv::Mat*          cpu_dst)
   {
   if (filtering_hsv_active == true)
     {
@@ -161,8 +161,7 @@ void c_opencv_unmanaged::apply_filter                                   (cv::Mat
 
   gpu_thresholded->download                                (*cpu_dst);
   }
-
-void c_opencv_unmanaged::cpu_mask_img                                   (cv::Mat* hsv_cpu_src, cv::Mat* cpu_masked_dst)
+void c_opencv_unmanaged::cpu_mask_img                                   (cv::Mat* hsv_cpu_src,                        cv::Mat*          cpu_masked_dst)
   {
   cv::cvtColor(*hsv_cpu_src, *cpu_mid_img, cv::COLOR_BGR2HSV);
   cv::inRange(*cpu_mid_img, cv::Scalar(this->hue_min, this->saturation_min, this->value_min), cv::Scalar(this->hue_max, this->saturation_max, this->value_max), *cpu_temp);
@@ -170,7 +169,6 @@ void c_opencv_unmanaged::cpu_mask_img                                   (cv::Mat
   cv::bitwise_and(*hsv_cpu_src, *cpu_temp3, *cpu_masked_dst);
 
   }
-
 void c_opencv_unmanaged::camera_thread                                  ()
   {
   while (thread_running == true)
@@ -215,61 +213,104 @@ void c_opencv_unmanaged::camera_thread                                  ()
       }
     }
   }
+
+/********************************************************Get and Set methods for Cameras************************/
+void c_opencv_unmanaged::get_calibration_parameter                      (double             (&DistCoeffs)[1][5],      double            (&Intrinsic)[3][3])
+  {
+  for (int i = 0; i < 1; i++)
+    {
+    for (int j = 0; j < 5; j++)
+      {
+      DistCoeffs[i][j] = this->DistCoeffs->at<double>(i, j);
+      }
+    }
+
+  for (int i = 0; i < 3; i++)
+    {
+    for (int j = 0; j < 3; j++)
+      {
+      Intrinsic[i][j] = this->Intrinsic->at<double>(i, j);
+      }
+    }
+  }
+void c_opencv_unmanaged::set_calibration_parameter                      (double             (&DistCoeffs)[1][5],      double            (&Intrinsic)[3][3])
+  {
+  for (int i = 0; i < 1; i++)
+    {
+    for (int j = 0; j < 5; j++)
+      {
+      this->DistCoeffs->at<double>(i, j) = DistCoeffs[i][j];
+      }
+    }
+
+  for (int i = 0; i < 3; i++)
+    {
+    for (int j = 0; j < 3; j++)
+      {
+      this->Intrinsic->at<double>(i, j) = Intrinsic[i][j];
+      }
+    }
+  }
+void c_opencv_unmanaged::set_aspect_ratio                               (int                Height,                   int               width)
+  {
+  cap->set                        (cv::CAP_PROP_FRAME_HEIGHT, Height);
+  cap->set                        (cv::CAP_PROP_FRAME_WIDTH, width);
+  }
+
 /*************************************************************** Private Klassenmethoden*****************************************************/
 
-void c_opencv_unmanaged::init                                           (int camera_id)
+void c_opencv_unmanaged::init                                           (int                camera_id)
   {
-  cap->set(cv::CAP_PROP_FRAME_HEIGHT, 600);
-  cap->set(cv::CAP_PROP_FRAME_WIDTH, 800);
-  cap->set(cv::CAP_PROP_FPS, 60);
-  cap->set(cv::CAP_PROP_BUFFERSIZE, 3);
-  cap->open(camera_id, capture_api);
-  Qelap
+  cap->set                        (cv::CAP_PROP_FRAME_HEIGHT, 600);
+  cap->set                        (cv::CAP_PROP_FRAME_WIDTH, 800);
+  cap->set                        (cv::CAP_PROP_FPS, 30);
+  cap->set                        (cv::CAP_PROP_BUFFERSIZE, 3);
+  cap->open                       (camera_id, capture_api);
 
   //Redifinition der zwei GpuMat Arrays für die Verwendung in der Cuda-InRange Funktion. 
-  gpu_src2color->create(480, 640, CV_8UC1);
-  gpu_color_threshold->create(480, 640, CV_8UC1);
+  gpu_src2color->create           (480, 640, CV_8UC1);
+  gpu_color_threshold->create     (480, 640, CV_8UC1);
   }
-void c_opencv_unmanaged::cpu_grab_frame                                 (cv::Mat* cpu_dst_img)
+void c_opencv_unmanaged::cpu_grab_frame                                 (cv::Mat*           cpu_dst_img)
   {
   cap->read(*cpu_dst_img);
   }
 
-void c_opencv_unmanaged::gpu_erode                                      (cv::cuda::GpuMat* gpu_src, cv::cuda::GpuMat* gpu_dst, int borderType, cv::Point anchor)  //
+void c_opencv_unmanaged::gpu_erode                                      (cv::cuda::GpuMat*  gpu_src,                  cv::cuda::GpuMat* gpu_dst, int borderType, cv::Point anchor)  //
   {
   cv::Mat                     erode_structuring_element   =  cv::getStructuringElement            (cv::MORPH_ELLIPSE, cv::Size (2*erosion_kernel_size, 2*erosion_kernel_size));
   cv::Ptr<cv::cuda::Filter>   erode                       =  cv::cuda::createMorphologyFilter     (cv::MORPH_ERODE, gpu_src->type(), erode_structuring_element, anchor, erosion_iterations);
                               erode->apply                                                        (*gpu_src, *gpu_dst);
   }
-void c_opencv_unmanaged::gpu_dilate                                     (cv::cuda::GpuMat* gpu_src, cv::cuda::GpuMat* gpu_dst, cv::Point anchor)   //
+void c_opencv_unmanaged::gpu_dilate                                     (cv::cuda::GpuMat*  gpu_src,                  cv::cuda::GpuMat* gpu_dst, cv::Point anchor)   //
   {
   cv::Mat                     dilate_structuring_element  = cv::getStructuringElement             (cv::MORPH_ELLIPSE, cv::Size (2*dilation_kernel_size, 2*dilation_kernel_size));
   cv::Ptr<cv::cuda::Filter>   dilate                      = cv::cuda::createMorphologyFilter      (cv::MORPH_DILATE, gpu_src->type(), dilate_structuring_element, anchor, dilation_iterations);
                               dilate->apply                                                       (*gpu_src, *gpu_dst);
   }
-void c_opencv_unmanaged::gpu_open                                       (cv::cuda::GpuMat* gpu_src, cv::cuda::GpuMat* gpu_dst, cv::Point anchor)
+void c_opencv_unmanaged::gpu_open                                       (cv::cuda::GpuMat*  gpu_src,                  cv::cuda::GpuMat* gpu_dst, cv::Point anchor)
   {
   cv::Mat                     opening_structuring_element  =  cv::getStructuringElement           (cv::MORPH_ELLIPSE, cv::Size (2*opening_kernel_size, 2*opening_kernel_size));
   cv::Ptr<cv::cuda::Filter>   opening                      =  cv::cuda::createMorphologyFilter    (cv::MORPH_OPEN, gpu_src->type(), opening_structuring_element, anchor, opening_iterations);
                               opening->apply                                                      (*gpu_src, *gpu_dst);
   }
-void c_opencv_unmanaged::gpu_close                                      (cv::cuda::GpuMat* gpu_src, cv::cuda::GpuMat* gpu_dst, cv::Point anchor)
+void c_opencv_unmanaged::gpu_close                                      (cv::cuda::GpuMat*  gpu_src,                  cv::cuda::GpuMat* gpu_dst, cv::Point anchor)
   {
   cv::Mat                     closing_structuring_element  =  cv::getStructuringElement           (cv::MORPH_ELLIPSE, cv::Size (2*closing_kernel_size, 2*closing_kernel_size));
   cv::Ptr<cv::cuda::Filter>   closing                      =  cv::cuda::createMorphologyFilter    (cv::MORPH_CLOSE, gpu_src->type(), closing_structuring_element, anchor, closing_iterations);
   closing->apply(*gpu_src, *gpu_dst);
   }
 
-void c_opencv_unmanaged::gpu_bilateral_filter                           (cv::cuda::GpuMat* gpu_src, cv::cuda::GpuMat* gpu_dst)
+void c_opencv_unmanaged::gpu_bilateral_filter                           (cv::cuda::GpuMat*  gpu_src,                  cv::cuda::GpuMat* gpu_dst)
   {
   cv::cuda::bilateralFilter                                                                       (*gpu_src, *gpu_dst, bilateral_kernel_size, bilateral_sigma_color, bilateral_sigma_spatial, cv::BORDER_DEFAULT);
   }
-void c_opencv_unmanaged::gpu_gaussian_filter                            (cv::cuda::GpuMat* gpu_src, cv::cuda::GpuMat* gpu_dst)
+void c_opencv_unmanaged::gpu_gaussian_filter                            (cv::cuda::GpuMat*  gpu_src,                  cv::cuda::GpuMat* gpu_dst)
   {
   cv::Ptr<cv::cuda::Filter>   gauss                       = cv::cuda::createGaussianFilter        (gpu_src->type(), -1, cv::Size(gaussian_kernel_size, gaussian_kernel_size), gaussian_sigma, gaussian_sigma, cv::BORDER_DEFAULT);
   gauss->apply(*gpu_src, *gpu_dst);
   }
-void c_opencv_unmanaged::gpu_morph_gradient                             (cv::cuda::GpuMat* gpu_src, cv::cuda::GpuMat* gpu_dst)
+void c_opencv_unmanaged::gpu_morph_gradient                             (cv::cuda::GpuMat*  gpu_src,                  cv::cuda::GpuMat* gpu_dst)
   {
   cv::Mat                     morph_structuring_element   =  cv::getStructuringElement            (cv::MORPH_ELLIPSE, cv::Size (2*morph_kernel_size, 2*morph_kernel_size));
   cv::Ptr<cv::cuda::Filter>   morph                       =  cv::cuda::createMorphologyFilter     (cv::MORPH_GRADIENT, gpu_src->type(), morph_structuring_element, anchor, morph_iterations);
@@ -278,15 +319,15 @@ void c_opencv_unmanaged::gpu_morph_gradient                             (cv::cud
   }
 
 
-void c_opencv_unmanaged::gpu_filter_hsv                                 (cv::cuda::GpuMat* gpu_src, cv::cuda::GpuMat* gpu_dst)
+void c_opencv_unmanaged::gpu_filter_hsv                                 (cv::cuda::GpuMat*  gpu_src,                  cv::cuda::GpuMat* gpu_dst)
 {
 
   cv::cuda::cvtColor        (*gpu_src, *gpu_src2color, cv::COLOR_BGR2HSV);
 
   gpu_gaussian_filter       (gpu_src2color, gpu_filtered);
 
-  cudaKernel::inRange_gpu(*gpu_filtered, cv::Scalar(this->hue_min, this->saturation_min, this->value_min),
-                          cv::Scalar(this->hue_max, this->saturation_max, this->value_max), *gpu_color_threshold);
+  cudaKernel::inRange_gpu   (*gpu_filtered, cv::Scalar(this->hue_min, this->saturation_min, this->value_min),
+                             cv::Scalar(this->hue_max, this->saturation_max, this->value_max), *gpu_color_threshold);
 
   gpu_open                  (gpu_color_threshold, gpu_temp, anchor);
 
@@ -296,7 +337,7 @@ void c_opencv_unmanaged::gpu_filter_hsv                                 (cv::cud
 
   cv::cuda::bitwise_and     (*gpu_src_img, *gpu_bgr_threshold, *gpu_dst);
 }
-void c_opencv_unmanaged::gpu_filter_bgr                                 (cv::cuda::GpuMat* gpu_src, cv::cuda::GpuMat* gpu_dst)
+void c_opencv_unmanaged::gpu_filter_bgr                                 (cv::cuda::GpuMat*  gpu_src,                  cv::cuda::GpuMat* gpu_dst)
 {
   //gpu_src.copyTo(gpu_src2color);
 
@@ -313,7 +354,7 @@ void c_opencv_unmanaged::gpu_filter_bgr                                 (cv::cud
   //cv::cuda::bitwise_and(gpu_src, gpu_bgr_threshold, gpu_dst);
 
 }
-void c_opencv_unmanaged::gpu_filter_gray                                (cv::cuda::GpuMat* gpu_src, cv::cuda::GpuMat* gpu_dst)
+void c_opencv_unmanaged::gpu_filter_gray                                (cv::cuda::GpuMat*  gpu_src,                  cv::cuda::GpuMat* gpu_dst)
 {
   //cv::cuda::cvtColor(gpu_src, gpu_src2color, cv::COLOR_BGR2HSV);
 
@@ -331,7 +372,7 @@ void c_opencv_unmanaged::gpu_filter_gray                                (cv::cud
 
 
 }
-void c_opencv_unmanaged::find_contours                                  (cv::Mat* thresholded_source_image, cv::Mat* dst_contoured_image)
+void c_opencv_unmanaged::find_contours                                  (cv::Mat*           thresholded_source_image, cv::Mat*          dst_contoured_image)
   {
   //OpenCV Hirarchy: https://docs.opencv.org/3.4/d9/d8b/tutorial_py_contours_hierarchy.html
   cv::findContours(*thresholded_source_image, contours, hirarchy, cv::RETR_TREE, cv::CHAIN_APPROX_NONE, cv::Point(0, 0));
@@ -462,51 +503,6 @@ void c_opencv_unmanaged::find_contours                                  (cv::Mat
     }
   }
 
-void c_opencv_unmanaged::get_calibration_parameter                             (double  (&DistCoeffs)[1][5], double              (&Intrinsic)[3][3])
-  {
-  for (int i = 0; i < 1; i++)
-    {
-    for (int j = 0; j < 5; j++)
-      {
-      DistCoeffs[i][j] = this->DistCoeffs->at<double>(i, j);
-      }
-    }
-
-  for (int i = 0; i < 3; i++)
-    {
-    for (int j = 0; j < 3; j++)
-      {
-      Intrinsic[i][j] = this->Intrinsic->at<double>(i, j);
-      }
-    }
-  }
-
-
-void c_opencv_unmanaged::set_calibration_parameter                            (double  (&DistCoeffs)[1][5], double              (&Intrinsic)[3][3])
-  {
-  for (int i = 0; i < 1; i++)
-    {
-    for (int j = 0; j < 5; j++)
-      {
-      this->DistCoeffs->at<double>(i, j) = DistCoeffs[i][j];
-      }
-    }
-
-  for (int i = 0; i < 3; i++)
-    {
-    for (int j = 0; j < 3; j++)
-      {
-      this->Intrinsic->at<double>(i, j) = Intrinsic[i][j];
-      }
-    }
-  }
-
-
-void  c_opencv_unmanaged::set_aspect_ratio                                    (int Height, int width)
-{
-  cap->set(cv::CAP_PROP_FRAME_HEIGHT, Height);
-  cap->set(cv::CAP_PROP_FRAME_WIDTH, width);
-}
 
 
 

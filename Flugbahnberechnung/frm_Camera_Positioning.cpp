@@ -9,15 +9,16 @@ using namespace nmsp_camera_unmanaged;
    this->GlobalObjects     = GlobalObjects;
    this->Main              = Main;
    this->cameras_in_use    = GlobalObjects->cameras_in_use;
-   TimerWait  = 0;
+   this->TimerWait  = 0;
    }
 
  c_frm_Camera_Positioning::~c_frm_Camera_Positioning                                                ()
    {
-   TimerWait  = 0;
+   this->TimerWait  = 0;
 
    this->Main              = nullptr;
    this->GlobalObjects     = nullptr;
+
    if (components)
      {
      delete components;
@@ -61,8 +62,9 @@ System::Void          c_frm_Camera_Positioning::taktgeber_Tick                  
   }
 System::Void          c_frm_Camera_Positioning::bt_apply_Click                                      (System::Object^  sender, System::EventArgs^  e)
   {
-  this->Taktgeber->Enabled=false;
-  bt_apply->Enabled = false;
+  this->Taktgeber->Enabled  = false;
+  this->bt_apply->Enabled   = false;
+
   std::vector<int> camera_list;
 
   switch (this->cameras_in_use)                              
@@ -150,10 +152,12 @@ System::Void          c_frm_Camera_Positioning::c_frm_Camera_Positioning_Load   
   this->cameras_in_use                    = GlobalObjects->cameras_in_use;
   if (Main->camera_managed->camera_unmanaged->load_positioning)       this->set_numUD_value(*GlobalObjects->camera_order);
   }
+
 System::Void          c_frm_Camera_Positioning::bt_exit_Click                                       (System::Object^  sender, System::EventArgs^  e)
   {
   this->Close();
   }
+
 System::Void          c_frm_Camera_Positioning::FillPicturebox                                      (System::Windows::Forms::PictureBox^ Picturebox, Int32 ColorImageCols, Int32 ColorImageRows, Int32 ColorImageStep, Int32 ColorImageType, System::IntPtr ColorImagePtr)
   {
             System::Drawing::Graphics^    graphics = Picturebox->CreateGraphics();
@@ -162,6 +166,7 @@ System::Void          c_frm_Camera_Positioning::FillPicturebox                  
             graphics->DrawImage           (%bitmap, rect);
             delete (graphics);
   }
+
 System::Void          c_frm_Camera_Positioning::FillMat2Picturebox                                  (System::Windows::Forms::PictureBox^ Picturebox, cv::Mat *colorImage)
   {
   Int32                              colorImage_cols   =   colorImage->cols;
@@ -210,7 +215,7 @@ System::Void          c_frm_Camera_Positioning::set_numUD_value                 
         this->nup_Camera_R3->Value = 5;
         break;
     }
-  }
+  }//set_numUD_value
 System::Void          c_frm_Camera_Positioning::set_numUD_value                                     (std::vector<int> camera_list)
   {
   Int32 maximum = static_cast<Int32> (cameras_in_use);
@@ -248,7 +253,7 @@ System::Void          c_frm_Camera_Positioning::set_numUD_value                 
         this->nup_Camera_R3->Value = camera_list[5];
         break;
     }
-  }
+  }//set_numUD_value
 
 System::Void          c_frm_Camera_Positioning::nup_Camera_L1_ValueChanged                          (System::Object^  sender, System::EventArgs^  e)
         {

@@ -27,9 +27,6 @@
     <ClCompile Include="GlobalObjects.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="frm_ObjectCalibration.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Camera_managed.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -45,7 +42,10 @@
     <ClCompile Include="CSV_Datei.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="frm_CameraCalibration.cpp">
+    <ClCompile Include="frm_Camera_Calibration.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="frm_Object_Calibration.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -57,9 +57,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GlobalObjects.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="frm_ObjectCalibration.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Camera_managed.h">
@@ -77,7 +74,10 @@
     <ClInclude Include="CSV_Datei.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="frm_CameraCalibration.h">
+    <ClInclude Include="frm_Camera_Calibration.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="frm_Object_Calibration.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -88,16 +88,13 @@
     <EmbeddedResource Include="frm_Main.resx">
       <Filter>Resource Files</Filter>
     </EmbeddedResource>
-    <EmbeddedResource Include="frm_CameraCalibration_Menu.resx">
-      <Filter>Resource Files</Filter>
-    </EmbeddedResource>
-    <EmbeddedResource Include="frm_ObjectCalibration.resx">
-      <Filter>Resource Files</Filter>
-    </EmbeddedResource>
     <EmbeddedResource Include="frm_Camera_Positioning.resx">
       <Filter>Resource Files</Filter>
     </EmbeddedResource>
-    <EmbeddedResource Include="frm_CameraCalibration.resx">
+    <EmbeddedResource Include="frm_Camera_Calibration.resx">
+      <Filter>Resource Files</Filter>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frm_Object_Calibration.resx">
       <Filter>Resource Files</Filter>
     </EmbeddedResource>
   </ItemGroup>

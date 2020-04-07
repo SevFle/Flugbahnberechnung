@@ -89,8 +89,8 @@ System::Void        C_frm_Main::bt_apply_cameras_Click                  (System:
     {
     GlobalObjects->cameras_in_use           = static_cast<int>                                     (nup_camera_count->Value);
 
-    Main->camera_managed->camera_unmanaged->create_camera_vectors                 (static_cast<int>(nup_camera_count->Value));
-    Main->camera_managed->camera_unmanaged->load_camera_positioning               ();
+    Main->camera_managed->camera_unmanaged->init_camera_vectors                 (static_cast<int>(nup_camera_count->Value));
+
 
     for(int i = 0; i < static_cast<int>(nup_camera_count->Value)-1; i++)
       {
@@ -103,4 +103,6 @@ System::Void        C_frm_Main::bt_apply_cameras_Click                  (System:
     bt_apply_cameras->Enabled               = false;
     }
   }
+
+
 
