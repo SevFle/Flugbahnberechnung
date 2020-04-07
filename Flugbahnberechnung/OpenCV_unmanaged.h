@@ -2,7 +2,7 @@
 
 #include <opencv2/opencv.hpp>
 #include <opencv2/highgui.hpp>
-#include <ipp.h>
+//#include <ipp.h>
 #include "CudaKernels.cuh"
 
 
@@ -21,6 +21,8 @@ namespace nmsp_opencv_unmanaged
       cv::cuda::GpuMat*                        gpu_thresholded;
       cv::cuda::GpuMat*                        gpu_filtered;
       cv::cuda::GpuMat*                        gpu_gray;
+
+
       //HSV-Filtering
       cv::cuda::GpuMat*                        gpu_src2color;
       cv::cuda::GpuMat*                        gpu_color_threshold;
