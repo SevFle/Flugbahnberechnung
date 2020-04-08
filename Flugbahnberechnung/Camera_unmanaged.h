@@ -4,6 +4,7 @@
 
 #include "opencv_unmanaged.h"
 #include "GlobalObjects.h"
+#include <bitset>
 
 namespace std
   {

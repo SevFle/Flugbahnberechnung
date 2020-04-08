@@ -32,6 +32,7 @@ C_frm_Main::~C_frm_Main                                                 ()
 System::Void        C_frm_Main::bt_ObjectCalibration_Click              (System::Object ^ sender, System::EventArgs ^ e)
   {
   this->Taktgeber->Enabled								= false;
+  this->Main->camera_managed->camera_unmanaged->camera_vector[0]->idle = false;
   this->Main->frm_ObjectCalibration->ShowDialog();
   this->Taktgeber->Enabled								= true;
   }
@@ -39,7 +40,7 @@ System::Void        C_frm_Main::bt_ObjectCalibration_Click              (System:
 System::Void        C_frm_Main::bt_CameraCalibration_Click              (System::Object ^ sender, System::EventArgs ^ e)
   {
   this->Taktgeber->Enabled								= false;
-  this->Main->camera_managed->camera_unmanaged->camera_vector[0];
+  this->Main->camera_managed->camera_unmanaged->camera_vector[0]->idle = false;
   this->Main->frm_CameraCalibration_Single->ShowDialog();
   this->Taktgeber->Enabled								= true;
   }

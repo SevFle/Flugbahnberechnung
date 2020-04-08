@@ -202,7 +202,7 @@ void c_opencv_unmanaged::camera_thread                                  ()
         case 3:  //Image Processing
           if (filtering_active == true)
             {
-            this->apply_filter(cpu_undistorted, cpu_masked_img);
+            this->apply_filter(cpu_src_img, cpu_masked_img);
             this->contours_active = true;
             this->gpu_filtered->download(*cpu_filtered);
             this->find_contours(cpu_filtered, cpu_contoured);
@@ -227,8 +227,8 @@ void c_opencv_unmanaged::get_calibration_parameter                      (double 
     {
     for (int j = 0; j < 5; j++)
       {
-      temp = this->DistCoeffs->at<double>(i, j);
-      temp.replace(temp.begin(), temp.end(), );
+      //temp = this->DistCoeffs->at<double>(i, j);
+      //temp.replace(temp.begin(), temp.end(), );
       DistCoeffs[i][j] = this->DistCoeffs->at<double>(i, j);
       }
     }

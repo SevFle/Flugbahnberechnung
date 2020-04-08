@@ -32,14 +32,12 @@
 *.app
 
 
-C:\Users\sever\Documents\Projekte\Echtzeit_Flugbahnberechnung\Debug
-C:\Users\sever\Documents\Projekte\Echtzeit_Flugbahnberechnung\x64
-C:\Users\sever\Documents\Projekte\Echtzeit_Flugbahnberechnung\.vs
+x64/
+_ReSharper.Caches/
+Parameter/Bilder/
 
-C:\Users\sever\Documents\Projekte\Echtzeit_Flugbahnberechnung\Flugbahnberechnung\Debug
-C:\Users\sever\Documents\Projekte\Echtzeit_Flugbahnberechnung\Flugbahnberechnung\Release
-C:\Users\sever\Documents\Projekte\Echtzeit_Flugbahnberechnung\Flugbahnberechnung\x64\
-/.vs
-/_ReSharper.Caches
-/Flugbahnberechnung/My Advisor Results - Flugbahnberechnung
-/CudaKernels
+.vs/
+_ReSharper.Caches/
+Flugbahnberechnung/x64/
+Flugbahnberechnung/Debug/
+

@@ -7,6 +7,7 @@
 /****************************************************************** Namespaces***************************************************************/
 using namespace nmsp_camera_unmanaged;
 using namespace nmsp_GlobalObjects;
+
 /*************************************************************** Konstruktoren **************************************************************/
 c_camera_unmanaged::c_camera_unmanaged                                  (int cameras_in_use, C_GlobalObjects* GlobalObjects)
   {
@@ -186,12 +187,13 @@ void c_camera_unmanaged::save_camera_calibration                        (int cam
   string  Dateiname;
   string  Dateityp;
   int     numBoards;
+
   double  DistCoeffs[1][5];
   double  Intrinsic[3][3];
   numBoards = this->numBoards_imgs;
 
   this->camera_vector[camera_id]->get_calibration_parameter(DistCoeffs, Intrinsic);
-
+  
   Dateiname   = "../Parameter/Camera_Calibration_Parameter_CameraID_" + to_string(camera_id) + ".csv";
   Dateityp    = "Intrinisic and distortion parameters of camera-single-calibration";
 
