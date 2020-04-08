@@ -40,7 +40,7 @@ namespace nmsp_opencv_unmanaged
       cv::Mat*                                 cpu_masked_img;
       cv::Mat*                                 cpu_filtered;
       cv::Mat*                                 cpu_contoured;
-      cv::Mat*                                 contoure_img;
+      cv::Mat*                                 cpu_undistorted;
       cv::Mat*                                 DistCoeffs;
       cv::Mat*                                 Intrinsic;
 
@@ -57,6 +57,7 @@ namespace nmsp_opencv_unmanaged
       bool                                    filtering_bgr_active;
       bool                                    filtering_gray_active;
       bool                                    contours_active;
+      bool                                    undistord_active;
 
 
       /******************************************** Nicht öffentliche private Anwender-Attribute **************************************************/
@@ -134,18 +135,18 @@ namespace nmsp_opencv_unmanaged
 
       /********************************************************* Öffentliche Klassenmethoden*******************************************************/
       public:
-      void            apply_filter                                        (cv::Mat  *cpu_src, cv::Mat *cpu_dst);
-      void            cpu_mask_img                                        (cv::Mat* hsv_cpu_src, cv::Mat* cpu_masked_dst);
+      void            apply_filter                                        (cv::Mat*         cpu_src, cv::Mat *cpu_dst);
+      void            cpu_mask_img                                        (cv::Mat*         hsv_cpu_src, cv::Mat* cpu_masked_dst);
 
       void            camera_thread                                       ();
-      void            set_calibration_parameter                           (double  (&DistCoeffs)[1][5], double              (&Intrinsic)[3][3]);
-      void            get_calibration_parameter                           (double  (&DistCoeffs)[1][5], double              (&Intrinsic)[3][3]);
-      void            set_aspect_ratio                                    (int Height, int width);
-
+      void            set_calibration_parameter                           (double           (&DistCoeffs)[1][5], double              (&Intrinsic)[3][3]);
+      void            get_calibration_parameter                           (double           (&DistCoeffs)[1][5], double              (&Intrinsic)[3][3]);
+      void            set_aspect_ratio                                    (int              Height,   int width);
+      void            set_framerate                                       (int              framerate);
       /******************************************************* Private Klassenmethoden***************************************************************/
       private:
-      void            init                                                (int camera_id);
-      void            cpu_grab_frame                                      (cv::Mat* cpu_dst_img);
+      void            init                                                (int              camera_id);
+      void            cpu_grab_frame                                      (cv::Mat*         cpu_dst_img);
 
       void            gpu_to_hsv_threshold                                (cv::cuda::GpuMat* gpu_src, cv::cuda::GpuMat* gpu_dst);
       void            gpu_inRange                                         (cv::cuda::GpuMat* gpu_src, cv::cuda::GpuMat* gpu_dst, cv::Scalar minvalue, cv::Scalar maxvalue);
@@ -163,7 +164,9 @@ namespace nmsp_opencv_unmanaged
       void            gpu_filter_bgr                                      (cv::cuda::GpuMat* gpu_src, cv::cuda::GpuMat* gpu_dst);
       void            gpu_filter_gray                                     (cv::cuda::GpuMat* gpu_src, cv::cuda::GpuMat* gpu_dst);
 
-      void            find_contours                                       (cv::Mat* thresholded_source_image, cv::Mat* dst_contoured_image);
+      void            find_contours                                       (cv::Mat* thresholded_source_image, cv::Mat* dst_contoured_image); 
+      void            undistord_img                                       (cv::Mat* cpu_src, cv::Mat* cpu_dst);
+
 
 
 
