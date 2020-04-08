@@ -2,6 +2,7 @@
 
 #include "Main.h"
 
+
 using namespace nmsp_Main;
 
 namespace NmSp_CamerCalibration_Single 
@@ -16,8 +17,11 @@ namespace NmSp_CamerCalibration_Single
     ~C_frm_CameraCalibration_Single();
 
 	  private:
-    C_GlobalObjects*      GlobalObjects;
-    C_Main^               Main;
+    C_GlobalObjects*        GlobalObjects;
+    C_Main^                 Main;
+
+
+
 
     UInt32      Zaehler;
 
@@ -92,6 +96,8 @@ namespace NmSp_CamerCalibration_Single
 
     private: System::Windows::Forms::Label^  label9;
     private: System::Windows::Forms::Label^  label10;
+    private: System::Windows::Forms::Label^  lbl_calibration_running;
+    private: System::Windows::Forms::Button^  bt_take_photo;
 
     private: System::ComponentModel::IContainer^  components;
 
@@ -138,6 +144,8 @@ namespace NmSp_CamerCalibration_Single
       this->tb_photo_interval = (gcnew System::Windows::Forms::TextBox());
       this->label9 = (gcnew System::Windows::Forms::Label());
       this->label10 = (gcnew System::Windows::Forms::Label());
+      this->lbl_calibration_running = (gcnew System::Windows::Forms::Label());
+      this->bt_take_photo = (gcnew System::Windows::Forms::Button());
       (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->nup_camera_id))->BeginInit();
       (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->pb_live_camera_picture))->BeginInit();
       (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->pb_taken_picture_1))->BeginInit();
@@ -489,11 +497,40 @@ namespace NmSp_CamerCalibration_Single
       this->label10->TabIndex = 25;
       this->label10->Text = L"[s]";
       // 
+      // lbl_calibration_running
+      // 
+      this->lbl_calibration_running->AutoSize = true;
+      this->lbl_calibration_running->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 16.2F, System::Drawing::FontStyle::Regular,
+                                             System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
+      this->lbl_calibration_running->ForeColor = System::Drawing::Color::Red;
+      this->lbl_calibration_running->Location = System::Drawing::Point(567, 428);
+      this->lbl_calibration_running->Name = L"lbl_calibration_running";
+      this->lbl_calibration_running->Size = System::Drawing::Size(424, 32);
+      this->lbl_calibration_running->TabIndex = 26;
+      this->lbl_calibration_running->Text = L"Kalibrierung läuft im Hintergrund";
+      this->lbl_calibration_running->Visible = false;
+      // 
+      // bt_take_photo
+      // 
+      this->bt_take_photo->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 14.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+                                   static_cast<System::Byte>(0)));
+      this->bt_take_photo->Location = System::Drawing::Point(618, 904);
+      this->bt_take_photo->Margin = System::Windows::Forms::Padding(4);
+      this->bt_take_photo->Name = L"bt_take_photo";
+      this->bt_take_photo->Size = System::Drawing::Size(223, 90);
+      this->bt_take_photo->TabIndex = 27;
+      this->bt_take_photo->Text = L"Foto";
+      this->bt_take_photo->UseVisualStyleBackColor = true;
+      this->bt_take_photo->Visible = false;
+      this->bt_take_photo->Click += gcnew System::EventHandler(this, &C_frm_CameraCalibration_Single::bt_take_photo_Click);
+      // 
       // C_frm_CameraCalibration_Single
       // 
       this->AutoScaleDimensions = System::Drawing::SizeF(8, 16);
       this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
       this->ClientSize = System::Drawing::Size(1373, 1007);
+      this->Controls->Add(this->bt_take_photo);
+      this->Controls->Add(this->lbl_calibration_running);
       this->Controls->Add(this->label10);
       this->Controls->Add(this->label9);
       this->Controls->Add(this->tb_photo_interval);
@@ -544,5 +581,7 @@ namespace NmSp_CamerCalibration_Single
       System::Void      nup_camera_id_ValueChanged                          (System::Object^  sender, System::EventArgs^  e);
 
       System::Void      Camera_calibration_condition                        ();
+      System::Void      camera_calibration_thread                           ();
+      System::Void      bt_take_photo_Click                                 (System::Object^  sender, System::EventArgs^  e);
 };
 }

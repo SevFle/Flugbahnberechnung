@@ -51,6 +51,8 @@ anchor                      (-1,-1),
 
   idle                        = false;
 
+  undistord_active            = false;
+
   this->gpu_src_img           = new cv::cuda::GpuMat();
   this->gpu_thresholded       = new cv::cuda::GpuMat();
   this->gpu_filtered          = new cv::cuda::GpuMat();
@@ -67,7 +69,7 @@ anchor                      (-1,-1),
   this->cpu_masked_img        = new cv::Mat();
   this->cpu_filtered          = new cv::Mat();
   this->cpu_contoured         = new cv::Mat();
-  this->contoure_img          = new cv::Mat();
+  this->cpu_undistorted       = new cv::Mat();
 
   this->DistCoeffs            = new cv::Mat(cv::Mat_<double>(1,5));
   this->Intrinsic             = new cv::Mat(cv::Mat_<double>(3,3));
@@ -179,7 +181,7 @@ void c_opencv_unmanaged::camera_thread                                  ()
           std::cout<< "Thread " << this->camera_id +1 << " running." << std::endl<< std::endl<< std::endl;
 
           init(camera_id);
-          statemachine_state = 1;
+          statemachine_state = 2;
 
         case 1:
           //if (idle)
@@ -188,20 +190,22 @@ void c_opencv_unmanaged::camera_thread                                  ()
           //  }
           //else
           //  {
+          //std::this_thread::sleep_for(std::chrono::milliseconds(200));
             statemachine_state  = 2;
           //  }
           break;
         case 2:
-          cpu_grab_frame(cpu_src_img);
-          statemachine_state = 3;
+          this->cpu_grab_frame(cpu_src_img);
+          // this->undistord_img(this->cpu_src_img, this->cpu_undistorted);
+          this->statemachine_state = 3;
 
         case 3:  //Image Processing
           if (filtering_active == true)
             {
-            apply_filter(cpu_src_img, cpu_masked_img);
-            contours_active = true;
-            gpu_filtered->download(*cpu_filtered);
-            find_contours(cpu_filtered, cpu_contoured);
+            this->apply_filter(cpu_undistorted, cpu_masked_img);
+            this->contours_active = true;
+            this->gpu_filtered->download(*cpu_filtered);
+            this->find_contours(cpu_filtered, cpu_contoured);
             }
           statemachine_state = 4;
 
@@ -217,10 +221,14 @@ void c_opencv_unmanaged::camera_thread                                  ()
 /********************************************************Get and Set methods for Cameras************************/
 void c_opencv_unmanaged::get_calibration_parameter                      (double             (&DistCoeffs)[1][5],      double            (&Intrinsic)[3][3])
   {
+  std::string temp;
+
   for (int i = 0; i < 1; i++)
     {
     for (int j = 0; j < 5; j++)
       {
+      temp = this->DistCoeffs->at<double>(i, j);
+      temp.replace(temp.begin(), temp.end(), );
       DistCoeffs[i][j] = this->DistCoeffs->at<double>(i, j);
       }
     }
@@ -233,6 +241,7 @@ void c_opencv_unmanaged::get_calibration_parameter                      (double 
       }
     }
   }
+
 void c_opencv_unmanaged::set_calibration_parameter                      (double             (&DistCoeffs)[1][5],      double            (&Intrinsic)[3][3])
   {
   for (int i = 0; i < 1; i++)
@@ -255,6 +264,10 @@ void c_opencv_unmanaged::set_aspect_ratio                               (int    
   {
   cap->set                        (cv::CAP_PROP_FRAME_HEIGHT, Height);
   cap->set                        (cv::CAP_PROP_FRAME_WIDTH, width);
+  }
+void c_opencv_unmanaged::set_framerate                                  (int                framerate)
+  {
+  this->cap->set                  (cv::CAP_PROP_FPS, framerate);
   }
 
 /*************************************************************** Private Klassenmethoden*****************************************************/
@@ -372,7 +385,7 @@ void c_opencv_unmanaged::gpu_filter_gray                                (cv::cud
 
 
 }
-void c_opencv_unmanaged::find_contours                                  (cv::Mat*           thresholded_source_image, cv::Mat*          dst_contoured_image)
+void c_opencv_unmanaged::find_contours                                        (cv::Mat*           thresholded_source_image, cv::Mat*          dst_contoured_image)
   {
   //OpenCV Hirarchy: https://docs.opencv.org/3.4/d9/d8b/tutorial_py_contours_hierarchy.html
   cv::findContours(*thresholded_source_image, contours, hirarchy, cv::RETR_TREE, cv::CHAIN_APPROX_NONE, cv::Point(0, 0));
@@ -503,7 +516,10 @@ void c_opencv_unmanaged::find_contours                                  (cv::Mat
     }
   }
 
-
+void  c_opencv_unmanaged::undistord_img                                       (cv::Mat* cpu_src, cv::Mat* cpu_dst)
+  {
+  cv::undistort(*cpu_src, *cpu_dst, *this->Intrinsic, *this->DistCoeffs);
+  }
 
 
 

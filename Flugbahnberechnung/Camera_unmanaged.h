@@ -51,11 +51,11 @@ namespace nmsp_camera_unmanaged
       public:
       float                           numCornersWidth;
       float                           numCornersHeight;
-      float                         SquareSize;
-      int                           numBoards_imgs;
+      float                           SquareSize;
+      int                             numBoards_imgs;
 
       private:
-      int                           Photo_ID;
+      int                             Photo_ID;
 
 
 
@@ -86,7 +86,7 @@ namespace nmsp_camera_unmanaged
       void save_camera_settings                             (int camera_id);
       void load_camera_settings                             (int camera_id);
 
-      void calibrate_single_camera                          (int camera_id);
+      void calibrate_single_camera                          (int current_camera_id);
       void save_picture                                     (int camera_id, int photo_id);
 
 

@@ -178,6 +178,7 @@ void c_camera_unmanaged::load_camera_settings                           (int cam
 
 
     }
+  std::cout << "Loaded Settings for Camera " << camera_id <<"." <<endl;
   }
 
 void c_camera_unmanaged::save_camera_calibration                        (int camera_id)
@@ -188,6 +189,8 @@ void c_camera_unmanaged::save_camera_calibration                        (int cam
   double  DistCoeffs[1][5];
   double  Intrinsic[3][3];
   numBoards = this->numBoards_imgs;
+
+  this->camera_vector[camera_id]->get_calibration_parameter(DistCoeffs, Intrinsic);
 
   Dateiname   = "../Parameter/Camera_Calibration_Parameter_CameraID_" + to_string(camera_id) + ".csv";
   Dateityp    = "Intrinisic and distortion parameters of camera-single-calibration";
@@ -210,6 +213,23 @@ void c_camera_unmanaged::save_camera_calibration                        (int cam
   this->GlobalObjects->csv_parameter_datei->Schreiben("Intrinsic 20", Intrinsic[2][0], "[Px]");
   this->GlobalObjects->csv_parameter_datei->Schreiben("Intrinsic 21", Intrinsic[2][1], "[Px]");
   this->GlobalObjects->csv_parameter_datei->Schreiben("Intrinsic 22", Intrinsic[2][2], "[Px]");
+
+  std::cout <<"Camera " <<  camera_id << " Saved Distortion k1 " << to_string(DistCoeffs[0][0]) << endl;
+  std::cout <<"Camera " <<  camera_id << " Saved Distortion k2 " << to_string(DistCoeffs[0][1]) << endl;
+  std::cout <<"Camera " <<  camera_id << " Saved Distortion p1 " << to_string(DistCoeffs[0][2]) << endl;
+  std::cout <<"Camera " <<  camera_id << " Saved Distortion p2 " << to_string(DistCoeffs[0][3]) << endl;
+  std::cout <<"Camera " <<  camera_id << " Saved Distortion k3 " << to_string(DistCoeffs[0][4]) << endl;
+
+  std::cout <<"Camera " <<  camera_id << " Saved Intrinsic fx " << to_string(Intrinsic[0][0]) << endl;
+  std::cout <<"Camera " <<  camera_id << " Saved Intrinsic 01 " << to_string(Intrinsic[0][1]) << endl;
+  std::cout <<"Camera " <<  camera_id << " Saved Intrinsic cx " << to_string(Intrinsic[0][2]) << endl;
+  std::cout <<"Camera " <<  camera_id << " Saved Intrinsic 10 " << to_string(Intrinsic[1][0]) << endl;
+  std::cout <<"Camera " <<  camera_id << " Saved Intrinsic fy " << to_string(Intrinsic[1][1]) << endl;
+  std::cout <<"Camera " <<  camera_id << " Saved Intrinsic cy " << to_string(Intrinsic[1][2]) << endl;
+  std::cout <<"Camera " <<  camera_id << " Saved Intrinsic 20 " << to_string(Intrinsic[2][0]) << endl;
+  std::cout <<"Camera " <<  camera_id << " Saved Intrinsic 21 " << to_string(Intrinsic[2][1]) << endl;
+  std::cout <<"Camera " <<  camera_id << " Saved Intrinsic 22 " << to_string(Intrinsic[2][2]) << endl;
+
 
   this->GlobalObjects->csv_parameter_datei->Schliessen();
 
@@ -252,6 +272,7 @@ void c_camera_unmanaged::load_camera_calibration                        (int cam
 
   this->camera_vector[camera_id]->set_calibration_parameter(DistCoeffs, Intrinsic);
 
+  std::cout << "Loaded Calibration for Camera " << camera_id <<"." <<endl;
 
   }
 
@@ -307,9 +328,11 @@ void c_camera_unmanaged::load_camera_positioning                        ()
       }
 
     }
+  std::cout << "Loaded Positioning."  <<endl;
+
   }
 
-void c_camera_unmanaged::init_camera_vectors                          (int cameras_in_use)
+void c_camera_unmanaged::init_camera_vectors                            (int cameras_in_use)
 {
   //Create a camera object and start its according thread. The amount of objects equals the amount of cameras in use 
   for                                                       (int i = 0; i < cameras_in_use; i++)
@@ -362,7 +385,7 @@ void c_camera_unmanaged::move_camera_temp2vector                        (int cam
     }
   }
 
-void c_camera_unmanaged::calibrate_single_camera                        (int camera_id)
+void c_camera_unmanaged::calibrate_single_camera                        (int current_camera_id)
   {
   // Deklaration benötigter Variablen
   cv::Mat                     Originalbild;
@@ -399,6 +422,7 @@ void c_camera_unmanaged::calibrate_single_camera                        (int cam
   // Abarbeiten aller gespeicherten Bilder
   while (this->Photo_ID < this->numBoards_imgs)
     {
+    std::cout << "Processing image " << Photo_ID << " out of " << numBoards_imgs << " images." << endl;
     // Laden des Bildes mit der angegebenen Photo_ID
     Originalbild = cv::imread ("../Parameter/Bilder/Camera_Single_Calibration_" + std::to_string(camera_id) + "_Snapshot_" + std::to_string(this->Photo_ID) + ".png", 1);
 
@@ -463,9 +487,14 @@ void c_camera_unmanaged::calibrate_single_camera                        (int cam
   // Mit den gefundenen Ecken in 2D-Koordinaten und den vorgegebenen 3D-Koordinaten werden die intrinsischen Parameter (Camera-Matrix) und
   // die Koeffizienten der Verzerrung berechnet. Rvecs und Tvecs erhalten dabei die Orientierung und die Position der Transformationsmatrix
   // zwischen Kamerakoordinatensystem und Schachbrettkoordinatensystem.
-  calibrateCamera(Object_Points, Image_Points, Originalbild.size(), intrinsic, distCoeffs, Rvecs, Tvecs);
+  std::cout << endl << "Calculating Intrinsic and DistCoeffs. This may take a while, please wait." << endl;
+  cv::calibrateCamera(Object_Points, Image_Points, Originalbild.size(), intrinsic, distCoeffs, Rvecs, Tvecs);
+
+  std::cout << "Calculation finished. Saving data." << endl << endl;
+
   *camera_vector[camera_id]->Intrinsic  = intrinsic;
   *camera_vector[camera_id]->DistCoeffs = distCoeffs;
+
   this->save_camera_calibration(camera_id);
 
   //// Durchführen der HandEye-Kalibrierung zur Berechnung der Kamerapose relativ zum TCP-Koordinatensystem.

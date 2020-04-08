@@ -87,15 +87,10 @@ System::Void        C_frm_Main::bt_apply_cameras_Click                  (System:
     }
   else
     {
-    GlobalObjects->cameras_in_use           = static_cast<int>                                     (nup_camera_count->Value);
+    GlobalObjects->cameras_in_use           = static_cast<int>                                      (nup_camera_count->Value);
 
-    Main->camera_managed->camera_unmanaged->init_camera_vectors                 (static_cast<int>(nup_camera_count->Value));
+    Main->camera_managed->camera_unmanaged->init_camera_vectors                 (static_cast<int>   (nup_camera_count->Value));
 
-
-    for(int i = 0; i < static_cast<int>(nup_camera_count->Value)-1; i++)
-      {
-      Main->camera_managed->camera_unmanaged->load_camera_settings                  (i);
-      }
     bt_ObjectCalibration->Enabled           = true;
     bt_CameraCalibration->Enabled           = true;
     bt_camera_positioning->Enabled          = true;
