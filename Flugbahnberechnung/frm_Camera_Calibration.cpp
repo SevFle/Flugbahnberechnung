@@ -73,22 +73,6 @@ System::Void          C_frm_CameraCalibration_Single::Taktgeber_Tick      (Syste
   if (Zaehler > this->Timerwait)
     {
     FillMat2Picturebox    (pb_live_camera_picture, Main->camera_managed->camera_unmanaged->camera_vector[current_camera_id]->cpu_src_img);
-
-    //if (calibration_running && Zaehler >= intervall)
-    //  {
-    //  this->intervall = Zaehler + photo_interval;
-
-    //  switch (this->method)
-    //    {
-    //      case 0:
-    //        break;
-
-
-    //      case 1:
-
-    //        break;
-    //    }
-    //  }       
     }
   if (photo_id >= photocount_user_input)
     {
@@ -100,10 +84,6 @@ System::Void          C_frm_CameraCalibration_Single::bt_exit_Click       (Syste
   {
   this->Taktgeber->Enabled = false;
   this->Close();
-  }
-System::Void          C_frm_CameraCalibration_Single::bt_take_picture_Click(System::Object^  sender, System::EventArgs^  e)
-  {
-
   }
 System::Void          C_frm_CameraCalibration_Single::bt_start_Click(System::Object^  sender, System::EventArgs^  e)
   {
@@ -143,8 +123,9 @@ System::Void          C_frm_CameraCalibration_Single::Camera_calibration_conditi
   {
   if (!calibration_running)
     {
-    this->Main->camera_managed->camera_unmanaged->camera_vector[current_camera_id]->set_framerate(3);
-    this->Main->camera_managed->camera_unmanaged->camera_vector[current_camera_id]->set_aspect_ratio(1080, 1920);
+    this->Main->camera_managed->camera_unmanaged->camera_vector[current_camera_id]->cap->set(cv::CAP_PROP_XI_AEAG, false);
+    //this->Main->camera_managed->camera_unmanaged->camera_vector[current_camera_id]->set_framerate(3);
+    //this->Main->camera_managed->camera_unmanaged->camera_vector[current_camera_id]->set_aspect_ratio(1080, 1920);
     photo_id                  =   0;
     photo_interval            =   int::Parse(tb_photo_interval->Text)*10;
     photocount_user_input     =   int::Parse(tb_single_imgs_to_take->Text);
@@ -170,7 +151,9 @@ System::Void          C_frm_CameraCalibration_Single::Camera_calibration_conditi
     this->Main->camera_managed->camera_unmanaged->numCornersHeight  = int::Parse          (this->tb_single_corner_count_H->Text);
     this->Main->camera_managed->camera_unmanaged->numCornersWidth   = int::Parse          (this->tb_single_corner_count_B->Text);
     this->Main->camera_managed->camera_unmanaged->camera_id         = this->current_camera_id;
-    this->lbl_calibration_running->Visible = true;
+    this->lbl_calibration_running->Visible                          = true;
+
+    //Starte Hintergrund Thread zur Verarbeitung der aufgenommenen Bilder
     Thread ^calibrate = gcnew Thread(gcnew ThreadStart(this, &C_frm_CameraCalibration_Single::camera_calibration_thread));
     calibrate->Start();
     photo_id                  =   0;

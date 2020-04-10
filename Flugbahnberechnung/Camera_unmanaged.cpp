@@ -48,10 +48,8 @@ void c_camera_unmanaged::start_camera_thread                            ()
 
 void c_camera_unmanaged::save_camera_settings                           (int camera_id)
   {
-  string  Dateiname;
-  string  Dateityp;
-  Dateiname   = "../Parameter/Camera_setting"+to_string(camera_id)+".csv";
-  Dateityp    = "Value of the individual setting";
+  string  Dateiname   = "../Parameter/Camera_setting"+to_string(camera_id)+".csv";
+  string  Dateityp    = "Value of the individual setting";
 
 
   GlobalObjects->csv_parameter_datei->Oeffnen  (Dateiname, Enum_CSV_Access::Write);
@@ -90,8 +88,8 @@ void c_camera_unmanaged::save_camera_settings                           (int cam
   }
 void c_camera_unmanaged::load_camera_settings                           (int camera_id)
   {
-  string  Dateiname;
-  string  Dateityp;
+  string  Dateiname = "../Parameter/Camera_setting"+to_string(camera_id)+".csv";
+  string  Dateityp  = "Value of the individual setting";
   uchar   hue_min;
   uchar   hue_max;
   uchar   saturation_min;
@@ -118,8 +116,6 @@ void c_camera_unmanaged::load_camera_settings                           (int cam
   float   bilateral_sigma_color;
   float   bilateral_sigma_spatial;
 
-  Dateiname   = "../Parameter/Camera_setting"+to_string(camera_id)+".csv";
-  Dateityp    = "Value of the individual setting";
 
   GlobalObjects->csv_parameter_datei->Oeffnen(Dateiname, Enum_CSV_Access::Read);
 
@@ -184,19 +180,15 @@ void c_camera_unmanaged::load_camera_settings                           (int cam
 
 void c_camera_unmanaged::save_camera_calibration                        (int camera_id)
   {
-  string  Dateiname;
-  string  Dateityp;
-  int     numBoards;
+  string  Dateiname = "../Parameter/Camera_Calibration_Parameter_CameraID_" + to_string(camera_id) + ".csv";
+  string  Dateityp  = "Intrinisic and distortion parameters of camera-single-calibration";
+  int     numBoards = this->numBoards_imgs;
 
   double  DistCoeffs[1][5];
   double  Intrinsic[3][3];
-  numBoards = this->numBoards_imgs;
 
   this->camera_vector[camera_id]->get_calibration_parameter(DistCoeffs, Intrinsic);
   
-  Dateiname   = "../Parameter/Camera_Calibration_Parameter_CameraID_" + to_string(camera_id) + ".csv";
-  Dateityp    = "Intrinisic and distortion parameters of camera-single-calibration";
-
   this->GlobalObjects->csv_parameter_datei->Oeffnen(Dateiname, Enum_CSV_Access::Write);
 
   this->GlobalObjects->csv_parameter_datei->Schreiben("Dateityp", Dateityp, "[1]");
@@ -238,14 +230,11 @@ void c_camera_unmanaged::save_camera_calibration                        (int cam
   }
 void c_camera_unmanaged::load_camera_calibration                        (int camera_id)
   {
-  string  Dateiname;
-  string  Dateityp;
+  string  Dateiname = "../Parameter/Camera_Calibration_Parameter_CameraID_" + to_string(camera_id) + ".csv";
+  string  Dateityp   = "Intrinisic and distortion parameters of camera-single-calibration";
   int     numBoards;
   double  DistCoeffs[1][5];
   double  Intrinsic[3][3];
-
-  Dateiname   = "../Parameter/Camera_Calibration_Parameter_CameraID_" + to_string(camera_id) + ".csv";
-  Dateityp    = "Intrinisic and distortion parameters of camera-single-calibration";
 
   this->GlobalObjects->csv_parameter_datei->Oeffnen(Dateiname, Enum_CSV_Access::Read);
 
@@ -271,6 +260,25 @@ void c_camera_unmanaged::load_camera_calibration                        (int cam
     this->GlobalObjects->csv_parameter_datei->Schliessen();
 
     }
+  else
+  {
+    numBoards        = 50;
+    DistCoeffs[0][0] = -0.656914;
+    DistCoeffs[0][1] =  5.485999;
+    DistCoeffs[0][2] =  0.003751;
+    DistCoeffs[0][3] = -0.001599;
+    DistCoeffs[0][4] = -43.638060;
+    Intrinsic[0][0]  =  1269.896200;
+    Intrinsic[0][1]  =  0.000000;
+    Intrinsic[0][2]  =  312.539027;
+    Intrinsic[1][0]  =  0.000000;
+    Intrinsic[1][1]  =  1267.687173;
+    Intrinsic[1][2]  =  204.760897;
+    Intrinsic[1][0]  =  0.000000;
+    Intrinsic[2][1]  =  0.000000;
+    Intrinsic[2][2]  =  1.000000;
+
+  }
 
   this->camera_vector[camera_id]->set_calibration_parameter(DistCoeffs, Intrinsic);
 
@@ -278,12 +286,10 @@ void c_camera_unmanaged::load_camera_calibration                        (int cam
 
   }
 
-void c_camera_unmanaged::save_camera_positioning                        (std::vector<int> camera_list)
-  {
-  string  Dateiname;
-  string  Dateityp;
-  Dateiname   = "../Parameter/Camera_Positioning.csv";
-  Dateityp    = "Correct Camera position in vector corresponding to their ID";
+void c_camera_unmanaged::save_camera_positioning                        (std::vector<int> camera_list) const
+{
+  string  Dateiname = "../Parameter/Camera_Positioning.csv";
+  string  Dateityp; = "Correct Camera position in vector corresponding to their ID";
 
   GlobalObjects->csv_parameter_datei->Oeffnen(Dateiname, Enum_CSV_Access::Write);
 
@@ -303,12 +309,10 @@ void c_camera_unmanaged::save_camera_positioning                        (std::ve
   }
 void c_camera_unmanaged::load_camera_positioning                        ()
   {
-  string  Dateiname;
+  string  Dateiname = "../Parameter/Camera_Positioning.csv";
   string  Dateityp;
   int id;
   int Camera_count;
-
-  Dateiname   = "../Parameter/Camera_Positioning.csv";
 
   GlobalObjects->csv_parameter_datei->Oeffnen(Dateiname, Enum_CSV_Access::Read);
   if(GlobalObjects->csv_parameter_datei->IsOpen())
@@ -339,7 +343,7 @@ void c_camera_unmanaged::init_camera_vectors                            (int cam
   //Create a camera object and start its according thread. The amount of objects equals the amount of cameras in use 
   for                                                       (int i = 0; i < cameras_in_use; i++)
     {
-    nmsp_opencv_unmanaged::c_opencv_unmanaged *opencv_unmanaged = new nmsp_opencv_unmanaged::c_opencv_unmanaged (i);
+    auto *opencv_unmanaged = new nmsp_opencv_unmanaged::c_opencv_unmanaged (i);
     opencv_unmanaged->idle                                      = true;
     camera_vector.push_back                                 (opencv_unmanaged);
 
@@ -403,9 +407,6 @@ void c_camera_unmanaged::calibrate_single_camera                        (int cur
   vector<cv::Mat>             Tvecs;
   vector<cv::Mat>             TCP_Orientation;
   vector<cv::Mat>             TCP_Position;
-  cv::Mat                     R_TCP2Cam;
-  cv::Mat                     T_TCP2Cam;
-  vector<cv::Mat>             Rvecs_Rodrigues;
 
   this->Photo_ID = 0;
 

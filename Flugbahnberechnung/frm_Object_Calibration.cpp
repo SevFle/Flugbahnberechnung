@@ -7,60 +7,60 @@ using namespace NmSp_frm_ObjectCalibration;
 C_frm_ObjectCalibration::C_frm_ObjectCalibration                        (C_GlobalObjects* GlobalObjects, C_Main^  Main)
   {
     InitializeComponent                                          ();
-    this->GlobalObjects           = GlobalObjects;
-    this->Main                    = Main;
+    this->GlobalObjects                       = GlobalObjects;
+    this->Main                                = Main;
 
     camera_id_in_use = 0;
 
-    trb_hue_min->Minimum  = 0;
-    trb_hue_min->Maximum  = 179;
+    trb_hue_min->Minimum                      = 0;
+    trb_hue_min->Maximum                      = 179;
 
-    trb_hue_max->Minimum  = 0;
-    trb_hue_max->Maximum  = 179;
+    trb_hue_max->Minimum                      = 0;
+    trb_hue_max->Maximum                      = 179;
 
-    trb_saturation_min->Minimum =0;
-    trb_saturation_min->Maximum = 255;
+    trb_saturation_min->Minimum               = 0;
+    trb_saturation_min->Maximum               = 255;
 
-    trb_saturation_max->Minimum =0;
-    trb_saturation_max->Maximum = 255;
+    trb_saturation_max->Minimum               = 0;
+    trb_saturation_max->Maximum               = 255;
 
-    trb_value_min->Minimum = 0;
-    trb_value_min->Maximum = 255;
+    trb_value_min->Minimum                    = 0;
+    trb_value_min->Maximum                    = 255;
 
-    trb_value_max->Minimum = 0;
-    trb_value_max->Maximum = 255;
-
-
-    numUD_erode_iterations->Minimum = 0;
-    numUD_erode_iterations->Maximum = 10;
-
-    numUD_dilation_iterations->Minimum = 0;
-    numUD_dilation_iterations->Maximum = 10;
-
-    numUD_opening_iterations->Minimum = 0;
-    numUD_opening_iterations->Maximum = 10;
-
-    numUD_bilateral_color->Minimum = 0;
-    numUD_bilateral_color->Maximum = 10;
-
-    numUD_morph_iterations->Minimum = 1;
-    numUD_morph_iterations->Maximum = 10;
+    trb_value_max->Minimum                    = 0;
+    trb_value_max->Maximum                    = 255;
 
 
-    numUD_erode_kernelsize->Minimum = 1;
-    numUD_erode_kernelsize->Maximum = 10;
+    numUD_erode_iterations->Minimum           = 0;
+    numUD_erode_iterations->Maximum           = 10;
 
-    numUD_dilation_kernelsize->Minimum = 1;
-    numUD_dilation_kernelsize->Maximum = 10;
+    numUD_dilation_iterations->Minimum        = 0;
+    numUD_dilation_iterations->Maximum        = 10;
 
-    numUD_opening_kernelsize->Minimum = 1;
-    numUD_opening_kernelsize->Maximum = 10;
+    numUD_opening_iterations->Minimum         = 0;
+    numUD_opening_iterations->Maximum         = 10;
 
-    numUD_bilateral_kernelsize->Minimum = 1;
-    numUD_bilateral_kernelsize->Maximum = 10;
+    numUD_bilateral_color->Minimum            = 0;
+    numUD_bilateral_color->Maximum            = 10;
 
-    numUD_morph_kernelsize->Minimum = 1;
-    numUD_morph_kernelsize->Maximum = 10;
+    numUD_morph_iterations->Minimum           = 1;
+    numUD_morph_iterations->Maximum           = 10;
+
+
+    numUD_erode_kernelsize->Minimum           = 1;
+    numUD_erode_kernelsize->Maximum           = 10;
+
+    numUD_dilation_kernelsize->Minimum        = 1;
+    numUD_dilation_kernelsize->Maximum        = 10;
+
+    numUD_opening_kernelsize->Minimum         = 1;
+    numUD_opening_kernelsize->Maximum         = 10;
+
+    numUD_bilateral_kernelsize->Minimum       = 1;
+    numUD_bilateral_kernelsize->Maximum       = 10;
+
+    numUD_morph_kernelsize->Minimum           = 1;
+    numUD_morph_kernelsize->Maximum           = 10;
 
     TimerWait = 0;
 
@@ -293,37 +293,36 @@ System::Void        C_frm_ObjectCalibration::chkb_dilate_CheckStateChanged     (
     {
     dilate_active = true;
     Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->dilate_active = true;
-    numUD_dilation_iterations->Enabled = true;
-    numUD_dilation_kernelsize->Enabled = true;
+    numUD_dilation_iterations->Enabled                     = true;
+    numUD_dilation_kernelsize->Enabled                     = true;
     }
   else if (dilate_active == true)
     {
     dilate_active = false;
     Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->dilate_active = false;
-    numUD_dilation_iterations->Enabled = false;
-    numUD_dilation_kernelsize->Enabled = false;
+    numUD_dilation_iterations->Enabled                    = false;
+    numUD_dilation_kernelsize->Enabled                    = false;
 
     }
 
  }
+
+//////// STUFF TO DO//////////////////////////////////////////////////////
+///
 System::Void        C_frm_ObjectCalibration::chkb_bilateral_CheckStateChanged  (System::Object^  sender, System::EventArgs^  e)
  {
-  if (gaussian_active == false)
+  if (bilateral_active == false)
     {
-    gaussian_active = true;
-    Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->gaussian_active = true;
-    numUD_bilateral_color->Enabled = true;
-    numUD_bilateral_spatial->Enabled = true;
-    numUD_bilateral_kernelsize->Enabled = true;
+    numUD_bilateral_color->     Enabled                   = true;
+    numUD_bilateral_spatial->   Enabled                   = true;
+    numUD_bilateral_kernelsize->Enabled                   = true;
 
     }
-  else if(gaussian_active == true)
+  else if(bilateral_active == true)
     {
-    gaussian_active = false;
-    Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->gaussian_active = false;
-    numUD_bilateral_color->Enabled = false;
-    numUD_bilateral_spatial->Enabled = false;
-    numUD_bilateral_kernelsize->Enabled = false;
+    numUD_bilateral_color->     Enabled                   = false;
+    numUD_bilateral_spatial->   Enabled                   = false;
+    numUD_bilateral_kernelsize->Enabled                   = false;
     }
 
  }
@@ -331,18 +330,18 @@ System::Void        C_frm_ObjectCalibration::chkb_morph_CheckStateChanged      (
  {
   if (morph_active == false)
     {
-    morph_active = true;
+    morph_active                                          = true;
     Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->morph_active = true;
-    numUD_morph_iterations->Enabled = true;
-    numUD_morph_kernelsize->Enabled = true;
+    numUD_morph_iterations->Enabled                       = true;
+    numUD_morph_kernelsize->Enabled                       = true;
 
     }
   else if (morph_active == true)
     {
     morph_active = false;
     Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->morph_active = false;
-    numUD_morph_iterations->Enabled = false;
-    numUD_morph_kernelsize->Enabled = false;
+    numUD_morph_iterations->Enabled                       = false;
+    numUD_morph_kernelsize->Enabled                       = false;
 
     }
   }
@@ -354,19 +353,19 @@ System::Void          C_frm_ObjectCalibration::FillPicturebox                   
     {
       case CV_8UC3: // non-grayscale images are correctly displayed here
         {
-        System::Drawing::Graphics^    graphics = Picturebox->CreateGraphics();
-        System::Drawing::Bitmap       bitmap   (ColorImageCols, ColorImageRows, ColorImageStep, System::Drawing::Imaging::PixelFormat::Format24bppRgb, ColorImagePtr);
-        System::Drawing::RectangleF   rect (0, 0, (float)Picturebox->Width, (float)Picturebox->Height);
-        graphics->DrawImage           (%bitmap, rect);
+        System::Drawing::Graphics^    graphics            = Picturebox->CreateGraphics();
+        System::Drawing::Bitmap       bitmap              (ColorImageCols, ColorImageRows, ColorImageStep, System::Drawing::Imaging::PixelFormat::Format24bppRgb, ColorImagePtr);
+        System::Drawing::RectangleF   rect                (0, 0, (float)Picturebox->Width, (float)Picturebox->Height);
+        graphics->DrawImage                               (%bitmap, rect);
         delete (graphics);
         }
         break;
       case CV_8UC1: // grayscale images are incorrectly displayed here 
         {
-        System::Drawing::Graphics^    graphics = Picturebox->CreateGraphics();
-        System::Drawing::Bitmap       bitmap   (ColorImageCols, ColorImageRows, (int)ColorImageStep, System::Drawing::Imaging::PixelFormat::Format8bppIndexed, ColorImagePtr);
-        System::Drawing::RectangleF   rect (0, 0, (float)Picturebox->Width, (float)Picturebox->Height);
-        graphics->DrawImage           (%bitmap, rect);
+        System::Drawing::Graphics^   graphics             = Picturebox->CreateGraphics    ();
+        System::Drawing::Bitmap      bitmap               (ColorImageCols, ColorImageRows, (int)ColorImageStep, System::Drawing::Imaging::PixelFormat::Format8bppIndexed, ColorImagePtr);
+        System::Drawing::RectangleF  rect                 (0, 0, (float)Picturebox->Width, (float)Picturebox->Height);
+        graphics->DrawImage                               (%bitmap, rect);
         delete (graphics);
         }
         break;
@@ -379,24 +378,24 @@ System::Void          C_frm_ObjectCalibration::FillPicturebox                   
   }
 System::Void          C_frm_ObjectCalibration::FillMat2Picturebox                                  (System::Windows::Forms::PictureBox^ Picturebox, cv::Mat &colorImage)
   {
-  Int32                              colorImage_cols   =   colorImage.cols;
-  Int32                              colorImage_rows   =   colorImage.rows;
-  Int32                              colorImage_step   =   colorImage.step;
-  Int32                              colorImage_type   =   colorImage.type();
-  System::IntPtr                     colorImage_ptr  (colorImage.ptr());
+  Int32                              colorImage_cols      =   colorImage.cols;
+  Int32                              colorImage_rows      =   colorImage.rows;
+  Int32                              colorImage_step      =   colorImage.step;
+  Int32                              colorImage_type      =   colorImage.type  ();
+  System::IntPtr                     colorImage_ptr       (colorImage.ptr());
 
   FillPicturebox                     (Picturebox, colorImage_cols, colorImage_rows, colorImage_step, colorImage_type, colorImage_ptr);
   } // FillMatInToPictureBox
 System::Void          C_frm_ObjectCalibration::bt_apply_Click                                      (System::Object^  sender, System::EventArgs^  e)
   {
-  Main->camera_managed->camera_unmanaged->save_camera_settings(static_cast<int>(numUD_cam_id->Value));
+  Main->camera_managed->camera_unmanaged->save_camera_settings          (static_cast<int>(numUD_cam_id->Value));
   }
 
 System::Void          C_frm_ObjectCalibration::bt_apply_all_Click                                  (System::Object^  sender, System::EventArgs^  e)
   {
-  for (int i = 0; i<GlobalObjects->cameras_in_use; i++)
+  for (int i = 0;     i<GlobalObjects->cameras_in_use;      i++)
     {
-    Main->camera_managed->camera_unmanaged->save_camera_settings(i);
+    Main->camera_managed->camera_unmanaged->save_camera_settings        (i);
     }
   }
 

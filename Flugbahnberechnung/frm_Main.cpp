@@ -82,11 +82,11 @@ System::Void        C_frm_Main::bt_camera_positioning_MouseClick        (System:
 
 System::Void        C_frm_Main::bt_apply_cameras_Click                  (System::Object^  sender, System::EventArgs^  e)
   {
-  if (static_cast<int>(nup_camera_count->Value) % 2 != 0)
-    {
-    MessageBox::Show("Es muss eine gerade Anzahl an Kameras verwendet werden", "Fehler", MessageBoxButtons::OK, MessageBoxIcon::Error);
-    }
-  else
+  //if (static_cast<int>(nup_camera_count->Value) % 2 != 0)
+  //  {
+  //  MessageBox::Show("Es muss eine gerade Anzahl an Kameras verwendet werden", "Fehler", MessageBoxButtons::OK, MessageBoxIcon::Error);
+  //  }
+  //else
     {
     GlobalObjects->cameras_in_use           = static_cast<int>                                      (nup_camera_count->Value);
 

@@ -31,10 +31,12 @@
 *.out
 *.app
 
+Parameter/Bilder/
+
 
 x64/
 _ReSharper.Caches/
-Parameter/Bilder/
+
 
 .vs/
 _ReSharper.Caches/

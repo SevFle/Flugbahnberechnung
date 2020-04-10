@@ -50,8 +50,8 @@ namespace nmsp_camera_unmanaged
       /*** Variablen zur Kamerakalibrierung ********************************************************/
 
       public:
-      float                           numCornersWidth;
-      float                           numCornersHeight;
+      int                           numCornersWidth;
+      int                           numCornersHeight;
       float                           SquareSize;
       int                             numBoards_imgs;
 
@@ -79,7 +79,7 @@ namespace nmsp_camera_unmanaged
 
       void save_camera_calibration                          (int camera_id);
       void load_camera_calibration                          (int camera_id);
-      void save_camera_positioning                          (std::vector<int> camera_list);
+      void save_camera_positioning                          (std::vector<int> camera_list) const;
       void load_camera_positioning                          ();
       void init_camera_vectors                              (int cameras_in_use);
       void close_cameras                                    (int cameras_in_use);

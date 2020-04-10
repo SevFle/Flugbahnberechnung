@@ -69,7 +69,7 @@ namespace NmSp_frm_ObjectCalibration
     bool  dilate_active;
     bool  open_active;
     bool  close_active;
-    bool  gaussian_active;
+    bool  bilateral_active;
     bool  morph_active;
 
 
