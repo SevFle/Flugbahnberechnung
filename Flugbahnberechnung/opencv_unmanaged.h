@@ -28,11 +28,17 @@ namespace nmsp_opencv_unmanaged
       cv::cuda::GpuMat*                        gpu_bgr_threshold;
       cv::cuda::GpuMat*                        gpu_temp;
 
+      //Maps for undistorting
+      cv::cuda::GpuMat*                         gpu_map1;
+      cv::cuda::GpuMat*                         gpu_map2;
+
+
 
       /**************************************************** Öffentliche Klassenobjekte ********************************************************/
       public:
       cv::VideoCapture*                        cap;
       cv::Mat*                                 cpu_src_img;
+      cv::Mat*                                 cpu_temp;
       cv::Mat*                                 cpu_masked_img;
       cv::Mat*                                 cpu_filtered;
       cv::Mat*                                 cpu_contoured;
@@ -40,8 +46,6 @@ namespace nmsp_opencv_unmanaged
 
       cv::Mat*                                 DistCoeffs;
       cv::Mat*                                 Intrinsic;
-      cv::Mat*                                 map1;
-      cv::Mat*                                 map2;
 
 
       /**************************************************** Öffentliche Anwender-Attribute ********************************************************/
@@ -61,8 +65,50 @@ namespace nmsp_opencv_unmanaged
       private:
       int                                     statemachine_state;
       int                                     capture_api;
+      /******************************Find_Contours**********************************************/
+      int                                     objekt_anzahl;
+      int                                     KonturIndex;
+      int                                     Objekt_Anzahl;
 
-      
+      double                                  Vec_Object[3];
+      double                                  max_Moment_m00;
+      double                                  Ist_x;
+      double                                  Ist_y;
+      double                                  Soll_x;
+      double                                  Soll_y;
+      double                                  Delta_x;
+      double                                  Delta_y;
+      double                                  Moment_0_Ordnung;
+      double                                  Moment_1_Ordnung_x;
+      double                                  Moment_1_Ordnung_y;
+      double                                  Schwerpunkt_x;
+      double                                  Schwerpunkt_y;
+      double                                  Mittelpunkt_x;
+      double                                  Mittelpunkt_y;
+      double                                  x_Kamera_KS;
+      double                                  y_Kamera_KS;
+      double                                  cx;
+      double                                  cy;
+      double                                  fx;
+      double                                  fy;
+      double                                  f;
+      double                                  Vec_Object_Abs;
+
+      bool                                    contour_found;
+      float                                   Radius;
+
+      std::vector<std::vector<cv::Point>>*     contours;
+      std::vector<cv::Vec4i>*                  hirarchy;
+
+
+      cv::Moments*                            Image_Moments;
+      cv::Point2f*                            Center;
+      std::string*                            S_x;
+      std::string*                            S_y;
+      std::string*                            Delta_x_str;
+      std::string*                            Delta_y_str;
+
+
 
       /*********************************************************** Öffentliche OpenCV-Variablen  **************************************************/
       #pragma region Öfffentliche OpenCV-Variablen
