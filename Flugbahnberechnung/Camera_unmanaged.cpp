@@ -84,7 +84,11 @@ void c_camera_unmanaged::save_camera_settings                           (int cam
 
     GlobalObjects->csv_parameter_datei->Schreiben("bilateral_sigma_color", to_string(camera_vector[camera_id]->bilateral_sigma_color), "[1]");
     GlobalObjects->csv_parameter_datei->Schreiben("bilateral_sigma_spatial", to_string(camera_vector[camera_id]->bilateral_sigma_spatial), "[1]");
+
+
     }
+  this->GlobalObjects->csv_parameter_datei->Schliessen();
+
   }
 void c_camera_unmanaged::load_camera_settings                           (int camera_id)
   {

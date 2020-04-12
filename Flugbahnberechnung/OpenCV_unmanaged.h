@@ -97,16 +97,16 @@ namespace nmsp_opencv_unmanaged
       bool                                    contour_found;
       float                                   Radius;
 
-      std::vector<std::vector<cv::Point>>*     contours;
-      std::vector<cv::Vec4i>*                  hirarchy;
+      std::vector<std::vector<cv::Point>>     contours;
+      std::vector<cv::Vec4i>                  hirarchy;
 
 
-      cv::Moments*                            Image_Moments;
-      cv::Point2f*                            Center;
-      std::string*                            S_x;
-      std::string*                            S_y;
-      std::string*                            Delta_x_str;
-      std::string*                            Delta_y_str;
+      cv::Moments                            Image_Moments;
+      cv::Point2f                            Center;
+      std::string                            S_x;
+      std::string                            S_y;
+      std::string                            Delta_x_str;
+      std::string                            Delta_y_str;
 
 
 

@@ -1,23 +1,28 @@
-﻿  opencv_unmanaged.cpp
-d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\flugbahnberechnung\opencv_unmanaged.cpp(474): warning C4267: "=": Konvertierung von "size_t" nach "int", Datenverlust möglich
-c:\libraries\opencv\4_2_0\install\include\opencv2\core\traits.hpp(386): error C2039: "type": Ist kein Element von "cv::DataType<T>"
-          with
-          [
-              T=std::vector<cv::Point,std::allocator<cv::Point>>
-          ]
-  c:\libraries\opencv\4_2_0\install\include\opencv2\core\traits.hpp(386): note: Siehe Deklaration von "cv::DataType<T>"
-          with
-          [
-              T=std::vector<cv::Point,std::allocator<cv::Point>>
-          ]
-  c:\libraries\opencv\4_2_0\install\include\opencv2\core\mat.inl.hpp(603): note: Siehe Verweis auf die Klasse Vorlage-Instanziierung "cv::traits::Type<_Tp>", die kompiliert wird.
-          with
-          [
-              _Tp=std::vector<cv::Point,std::allocator<cv::Point>>
-          ]
-  d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\flugbahnberechnung\opencv_unmanaged.cpp(481): note: Siehe Verweis auf die Instanziierung der gerade kompilierten Funktions-Vorlage "cv::Mat::Mat<std::vector<cv::Point,std::allocator<_Ty>>>(const std::vector<std::vector<_Ty,std::allocator<_Ty>>,std::allocator<std::vector<_Ty,std::allocator<_Ty>>>> &,bool)".
-          with
-          [
-              _Ty=cv::Point
-          ]
-c:\libraries\opencv\4_2_0\install\include\opencv2\core\traits.hpp(386): error C2065: "type": nichtdeklarierter Bezeichner
+﻿  Camera_unmanaged.cpp
+  App_Main.obj : MSIL-Modulgefunden; inkrementelles Verknüpfen wird für MSIL deaktiviert; vollständiger Link wird durchgeführt
+Main.obj : warning LNK4248: Nicht aufgel÷stes Typeref-Token (0100000F) f³r "NmSp_CamerCalibration_Menu.C_frm_CameraCalibration_Menu". Das Image kann m÷glicherweise nicht ausgef³hrt werden.
+frm_Main.obj : warning LNK4248: Nicht aufgel÷stes Typeref-Token (0100000F) f³r "NmSp_CamerCalibration_Menu.C_frm_CameraCalibration_Menu". Das Image kann m÷glicherweise nicht ausgef³hrt werden.
+frm_Object_Calibration.obj : warning LNK4248: Nicht aufgel÷stes Typeref-Token (0100000F) f³r "NmSp_CamerCalibration_Menu.C_frm_CameraCalibration_Menu". Das Image kann m÷glicherweise nicht ausgef³hrt werden.
+frm_Camera_Positioning.obj : warning LNK4248: Nicht aufgel÷stes Typeref-Token (0100000F) f³r "NmSp_CamerCalibration_Menu.C_frm_CameraCalibration_Menu". Das Image kann m÷glicherweise nicht ausgef³hrt werden.
+frm_Camera_Calibration.obj : warning LNK4248: Nicht aufgel÷stes Typeref-Token (0100000F) f³r "NmSp_CamerCalibration_Menu.C_frm_CameraCalibration_Menu". Das Image kann m÷glicherweise nicht ausgef³hrt werden.
+App_Main.obj : warning LNK4248: Nicht aufgel÷stes Typeref-Token (0100000F) f³r "NmSp_CamerCalibration_Menu.C_frm_CameraCalibration_Menu". Das Image kann m÷glicherweise nicht ausgef³hrt werden.
+Main.obj : warning LNK4248: Nicht aufgel÷stes Typeref-Token (01000010) f³r "NmSp_frm_CameraCalibration_Stereo.C_frm_CameraCalibration_Stereo". Das Image kann m÷glicherweise nicht ausgef³hrt werden.
+frm_Main.obj : warning LNK4248: Nicht aufgel÷stes Typeref-Token (01000010) f³r "NmSp_frm_CameraCalibration_Stereo.C_frm_CameraCalibration_Stereo". Das Image kann m÷glicherweise nicht ausgef³hrt werden.
+frm_Object_Calibration.obj : warning LNK4248: Nicht aufgel÷stes Typeref-Token (01000010) f³r "NmSp_frm_CameraCalibration_Stereo.C_frm_CameraCalibration_Stereo". Das Image kann m÷glicherweise nicht ausgef³hrt werden.
+frm_Camera_Positioning.obj : warning LNK4248: Nicht aufgel÷stes Typeref-Token (01000010) f³r "NmSp_frm_CameraCalibration_Stereo.C_frm_CameraCalibration_Stereo". Das Image kann m÷glicherweise nicht ausgef³hrt werden.
+frm_Camera_Calibration.obj : warning LNK4248: Nicht aufgel÷stes Typeref-Token (01000010) f³r "NmSp_frm_CameraCalibration_Stereo.C_frm_CameraCalibration_Stereo". Das Image kann m÷glicherweise nicht ausgef³hrt werden.
+App_Main.obj : warning LNK4248: Nicht aufgel÷stes Typeref-Token (01000010) f³r "NmSp_frm_CameraCalibration_Stereo.C_frm_CameraCalibration_Stereo". Das Image kann m÷glicherweise nicht ausgef³hrt werden.
+  Flugbahnberechnung.vcxproj -> D:\Projekte\VisualStudio\Flugbahnberechnung\Flugbahnberechnung\x64\Debug\ObjectTracking.exe
+C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\Common7\IDE\VC\VCTargets\Microsoft.MetaGen.targets(52,5): warning MSB4018: Unerwarteter Fehler bei der METAGEN-Aufgabe.
+C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\Common7\IDE\VC\VCTargets\Microsoft.MetaGen.targets(52,5): warning MSB4018: System.TypeLoadException: Der Typ "NmSp_CamerCalibration_Menu.C_frm_CameraCalibration_Menu" in der Assembly "ObjectTracking, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" konnte aufgrund eines Werttypenkonflikts nicht geladen werden.
+C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\Common7\IDE\VC\VCTargets\Microsoft.MetaGen.targets(52,5): warning MSB4018:    bei System.Signature.GetSignature(Void* pCorSig, Int32 cCorSig, RuntimeFieldHandleInternal fieldHandle, IRuntimeMethodInfo methodHandle, RuntimeType declaringType)
+C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\Common7\IDE\VC\VCTargets\Microsoft.MetaGen.targets(52,5): warning MSB4018:    bei System.Signature..ctor(IRuntimeFieldInfo fieldHandle, RuntimeType declaringType)
+C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\Common7\IDE\VC\VCTargets\Microsoft.MetaGen.targets(52,5): warning MSB4018:    bei System.Reflection.RtFieldInfo.GetRequiredCustomModifiers()
+C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\Common7\IDE\VC\VCTargets\Microsoft.MetaGen.targets(52,5): warning MSB4018:    bei Microsoft.Build.CPPTasks.MetaDumper.DumpFields(Type aType)
+C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\Common7\IDE\VC\VCTargets\Microsoft.MetaGen.targets(52,5): warning MSB4018:    bei Microsoft.Build.CPPTasks.MetaDumper.DumpType(Type aType)
+C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\Common7\IDE\VC\VCTargets\Microsoft.MetaGen.targets(52,5): warning MSB4018:    bei Microsoft.Build.CPPTasks.MetaDumper.GenerateAssemblyMeta(String theModule, String refSearchPath)
+C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\Common7\IDE\VC\VCTargets\Microsoft.MetaGen.targets(52,5): warning MSB4018:    bei Microsoft.Build.CPPTasks.MetaDumper.GenerateAssemblyMeta(String theModule, String refSearchPath)
+C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\Common7\IDE\VC\VCTargets\Microsoft.MetaGen.targets(52,5): warning MSB4018:    bei Microsoft.Build.CPPTasks.AsmMeta.CreateMeta(String assemblyFileName, String searchPath, String metaFileName)
+C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\Common7\IDE\VC\VCTargets\Microsoft.MetaGen.targets(52,5): warning MSB4018:    bei Microsoft.Build.CPPTasks.METAGEN.Execute()
+C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\Common7\IDE\VC\VCTargets\Microsoft.MetaGen.targets(52,5): warning MSB4018:    bei Microsoft.Build.BackEnd.TaskExecutionHost.Microsoft.Build.BackEnd.ITaskExecutionHost.Execute()
+C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\Common7\IDE\VC\VCTargets\Microsoft.MetaGen.targets(52,5): warning MSB4018:    bei Microsoft.Build.BackEnd.TaskBuilder.<ExecuteInstantiatedTask>d__26.MoveNext()
