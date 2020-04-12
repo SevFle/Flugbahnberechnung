@@ -110,7 +110,7 @@ System::Void        C_frm_ObjectCalibration::C_frm_ObjectCalibration_Load(System
   this->Zaehler                           = 0;
   this->Taktgeber->Interval               = 100;
   this->Taktgeber->Enabled                = true;
-  TimerWait                               = 7;
+  TimerWait                               = 15;
   numUD_cam_id->Maximum                   = GlobalObjects->cameras_in_use;
   trb_hue_min->Value                      = 0;
   trb_hue_max->Value                      = 179;
@@ -118,6 +118,8 @@ System::Void        C_frm_ObjectCalibration::C_frm_ObjectCalibration_Load(System
   trb_saturation_max->Value               = 255;
   trb_value_min->Value                    = 0;
   trb_value_max->Value                    = 255;
+
+  std::cout << to_string (Main->camera_managed->camera_unmanaged->camera_vector[0]->cpu_src_img->type());
 
   Main->camera_managed->camera_unmanaged->camera_vector[0]->idle = false;
   Main->camera_managed->camera_unmanaged->camera_vector[0]->filtering_active = true;

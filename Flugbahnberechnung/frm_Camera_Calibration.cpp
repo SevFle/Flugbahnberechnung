@@ -72,7 +72,7 @@ System::Void          C_frm_CameraCalibration_Single::Taktgeber_Tick      (Syste
 
   if (Zaehler > this->Timerwait)
     {
-    FillMat2Picturebox    (pb_live_camera_picture, Main->camera_managed->camera_unmanaged->camera_vector[current_camera_id]->cpu_src_img);
+    FillMat2Picturebox    (pb_live_camera_picture, Main->camera_managed->camera_unmanaged->camera_vector[current_camera_id]->cpu_undistorted);
     }
   if (photo_id >= photocount_user_input)
     {

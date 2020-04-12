@@ -263,17 +263,17 @@ void c_camera_unmanaged::load_camera_calibration                        (int cam
   else
   {
     numBoards        = 50;
-    DistCoeffs[0][0] = -0.656914;
-    DistCoeffs[0][1] =  5.485999;
-    DistCoeffs[0][2] =  0.003751;
-    DistCoeffs[0][3] = -0.001599;
-    DistCoeffs[0][4] = -43.638060;
-    Intrinsic[0][0]  =  1269.896200;
+    DistCoeffs[0][0] = -0.422409;
+    DistCoeffs[0][1] =  -0.102515;
+    DistCoeffs[0][2] =  -0.005320;
+    DistCoeffs[0][3] = 0.001334;
+    DistCoeffs[0][4] = 2.581073;
+    Intrinsic[0][0]  =  946.734995;
     Intrinsic[0][1]  =  0.000000;
-    Intrinsic[0][2]  =  312.539027;
+    Intrinsic[0][2]  =  279.097216;
     Intrinsic[1][0]  =  0.000000;
-    Intrinsic[1][1]  =  1267.687173;
-    Intrinsic[1][2]  =  204.760897;
+    Intrinsic[1][1]  =  948.766038;
+    Intrinsic[1][2]  =  254.572998;
     Intrinsic[1][0]  =  0.000000;
     Intrinsic[2][1]  =  0.000000;
     Intrinsic[2][2]  =  1.000000;
