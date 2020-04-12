@@ -37,9 +37,11 @@ namespace nmsp_opencv_unmanaged
       cv::Mat*                                 cpu_filtered;
       cv::Mat*                                 cpu_contoured;
       cv::Mat*                                 cpu_undistorted;
+
       cv::Mat*                                 DistCoeffs;
       cv::Mat*                                 Intrinsic;
-
+      cv::Mat*                                 map1;
+      cv::Mat*                                 map2;
 
 
       /**************************************************** Öffentliche Anwender-Attribute ********************************************************/
@@ -138,7 +140,8 @@ namespace nmsp_opencv_unmanaged
       void            gpu_filter_bgr                                      (cv::cuda::GpuMat* gpu_src, cv::cuda::GpuMat* gpu_dst);
       void            gpu_filter_gray                                     (cv::cuda::GpuMat* gpu_src, cv::cuda::GpuMat* gpu_dst);
 
-      void            find_contours                                       (cv::Mat* thresholded_source_image, cv::Mat* dst_contoured_image); 
+      void            find_contours                                       (cv::Mat* thresholded_source_image, cv::Mat* dst_contoured_image);
+
       void            undistord_img                                       (cv::Mat* cpu_src, cv::Mat* cpu_dst);
 
 

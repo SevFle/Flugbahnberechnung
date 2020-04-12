@@ -575,7 +575,6 @@ namespace NmSp_CamerCalibration_Single
       System::Void      FillPicturebox                                      (System::Windows::Forms::PictureBox^ Picturebox, Int32 ColorImageCols, Int32 ColorImageRows, Int32 ColorImageStep, Int32 ColorImageType, System::IntPtr ColorImagePtr);
       System::Void      FillMat2Picturebox                                  (System::Windows::Forms::PictureBox^ Picturebox, cv::Mat *colorImage);
 
-      System::Void      bt_take_picture_Click                               (System::Object^  sender, System::EventArgs^  e);
       System::Void      bt_start_Click                                      (System::Object^  sender, System::EventArgs^  e);
 
       System::Void      nup_camera_id_ValueChanged                          (System::Object^  sender, System::EventArgs^  e);

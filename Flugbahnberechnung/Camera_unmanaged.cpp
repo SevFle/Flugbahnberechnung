@@ -289,7 +289,7 @@ void c_camera_unmanaged::load_camera_calibration                        (int cam
 void c_camera_unmanaged::save_camera_positioning                        (std::vector<int> camera_list) const
 {
   string  Dateiname = "../Parameter/Camera_Positioning.csv";
-  string  Dateityp; = "Correct Camera position in vector corresponding to their ID";
+  string  Dateityp = "Correct Camera position in vector corresponding to their ID";
 
   GlobalObjects->csv_parameter_datei->Oeffnen(Dateiname, Enum_CSV_Access::Write);
 

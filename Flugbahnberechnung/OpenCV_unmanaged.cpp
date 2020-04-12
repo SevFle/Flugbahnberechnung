@@ -244,6 +244,7 @@ void c_opencv_unmanaged::init                                           (int    
   //Redifinition der zwei GpuMat Arrays für die Verwendung in der Cuda-InRange Funktion. 
   gpu_src2color->create           (480, 640, CV_8UC1);
   gpu_color_threshold->create     (480, 640, CV_8UC1);
+  cv::initUndistortRectifyMap(*Intrinsic, *DistCoeffs, cv::Mat(), cv::Mat(), cv::Size(3, 3), CV_32FC1, *map1, *map2);
   }
 void c_opencv_unmanaged::cpu_grab_frame                                 (cv::Mat*           cpu_dst_img)
   {
@@ -256,16 +257,16 @@ void c_opencv_unmanaged::apply_filter                                   (cv::Mat
     gpu_src_img->upload                                     (*cpu_src);
     gpu_filter_hsv                                          (gpu_src_img, gpu_thresholded);
     }
-  if (filtering_bgr_active == true)
-    {
-    gpu_src_img->upload                                     (*cpu_src);
-    gpu_filter_bgr                                          (gpu_src_img, gpu_thresholded);
-    }
-  if (filtering_gray_active == true)
-    {
-    gpu_src_img->upload                                     (*cpu_src);
-    gpu_filter_gray                                         (gpu_src_img, gpu_thresholded);
-    }
+  //if (filtering_bgr_active == true)
+  //  {
+  //  gpu_src_img->upload                                     (*cpu_src);
+  //  gpu_filter_bgr                                          (gpu_src_img, gpu_thresholded);
+  //  }
+  //if (filtering_gray_active == true)
+  //  {
+  //  gpu_src_img->upload                                     (*cpu_src);
+  //  gpu_filter_gray                                         (gpu_src_img, gpu_thresholded);
+  //  }
 
   gpu_thresholded->download                                 (*cpu_dst);
   }

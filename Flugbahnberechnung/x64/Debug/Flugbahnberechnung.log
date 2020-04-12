@@ -1,5 +1,5 @@
 ﻿  opencv_unmanaged.cpp
-c:\users\sever\documents\projekte\echtzeit_flugbahnberechnung\flugbahnberechnung\opencv_unmanaged.cpp(405): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+c:\users\sever\documents\projekte\echtzeit_flugbahnberechnung\flugbahnberechnung\opencv_unmanaged.cpp(362): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
   App_Main.obj : MSIL module encountered; incremental linking is disabled for MSIL; performing full link
 Main.obj : warning LNK4248: unresolved typeref token (0100000F) for 'NmSp_CamerCalibration_Menu.C_frm_CameraCalibration_Menu'; image may not run
 frm_Main.obj : warning LNK4248: unresolved typeref token (0100000F) for 'NmSp_CamerCalibration_Menu.C_frm_CameraCalibration_Menu'; image may not run
