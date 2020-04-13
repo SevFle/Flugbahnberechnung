@@ -119,6 +119,8 @@ System::Void        C_frm_ObjectCalibration::C_frm_ObjectCalibration_Load(System
   trb_value_min->Value                    = 0;
   trb_value_max->Value                    = 255;
 
+  //this->GetCameraSettings(0);
+
   std::cout << to_string (Main->camera_managed->camera_unmanaged->camera_vector[0]->cpu_src_img->type());
 
   Main->camera_managed->camera_unmanaged->camera_vector[0]->idle = false;
@@ -134,37 +136,8 @@ System::Void        C_frm_ObjectCalibration::numUD_cam_id_ValueChanged         (
   this->Main->camera_managed->camera_unmanaged->camera_vector[static_cast<int> (numUD_cam_id->Value)]->idle = false;
   this->Main->camera_managed->camera_unmanaged->camera_vector[static_cast<int> (numUD_cam_id->Value)]->filtering_active = true;
   this->camera_id_in_use = static_cast<int> (numUD_cam_id->Value);
-  //Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->hue_min         = static_cast<uchar> (trb_hue_min         ->Value);
-  //Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->hue_max         = static_cast<uchar> (trb_hue_max->Value);
-  //Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->saturation_min  = static_cast<uchar> (trb_saturation_min->Value);
-  //Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->saturation_max  = static_cast<uchar> (trb_saturation_max->Value);
-  //Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->value_min       = static_cast<uchar> (trb_value_min->Value);
-  //Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->value_max       = static_cast<uchar> (trb_value_max->Value);
+  //this->GetCameraSettings(camera_id_in_use);
 
-
-  this->trb_hue_min->Value                  =  static_cast<int> (Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->hue_min);
-  this->trb_hue_max->Value                  =  static_cast<int> (Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->hue_max);
-  this->trb_saturation_min->Value           =  static_cast<int> (Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->saturation_min);
-  this->trb_saturation_max->Value           =  static_cast<int> (Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->saturation_max);
-  this->trb_value_min->Value                =  static_cast<int> (Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->value_min);
-  this->trb_value_max->Value                =  static_cast<int> (Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->value_max);
-
-  this->numUD_erode_iterations->Value       = Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->erosion_iterations;
-  this->numUD_closing_iterations->Value     = Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->closing_iterations;
-  this->numUD_opening_iterations->Value     = Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->opening_iterations;
-  this->numUD_dilation_iterations->Value    = Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->dilation_iterations;
-
-  this->numUD_erode_kernelsize->Value       = Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->erosion_kernel_size;
-  this->numUD_closing_kernelsize->Value     = Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->closing_kernel_size;
-  this->numUD_opening_kernelsize->Value     = Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->opening_kernel_size;
-  this->numUD_dilation_kernelsize->Value    = Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->dilation_kernel_size;
-
-  this->numUD_gaussian_kernel_size->Value   = Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->gaussian_kernel_size;
-  this->numUD_gaussian_sigma->Value         = static_cast<System::Decimal>(Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->gaussian_sigma);
-
-  this->numUD_bilateral_color->Value        = static_cast<System::Decimal>(Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->bilateral_sigma_color);
-  this->numUD_bilateral_spatial->Value      = static_cast<System::Decimal>(Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->bilateral_sigma_spatial);
-  this->numUD_bilateral_kernelsize->Value   = Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->bilateral_kernel_size;
 
 
   }
@@ -400,4 +373,44 @@ System::Void          C_frm_ObjectCalibration::bt_apply_all_Click               
     Main->camera_managed->camera_unmanaged->save_camera_settings        (i);
     }
   }
+
+//System::Void        C_frm_ObjectCalibration::GetCameraSettings()
+//  {
+//
+////  //this->trb_hue_min->Value                    = this->Main->camera_managed->camera_unmanaged->camera_vector[camera_id]->hue_min;
+////  //this->trb_hue_max->Value                    = this->Main->camera_managed->camera_unmanaged->camera_vector[camera_id]->hue_max;
+////
+////  //this->trb_saturation_min->Value             = this->Main->camera_managed->camera_unmanaged->camera_vector[camera_id]->saturation_min;
+////  //this->trb_saturation_max->Value             = this->Main->camera_managed->camera_unmanaged->camera_vector[camera_id]->saturation_max;
+////
+////  //this->trb_value_min->Value                  = this->Main->camera_managed->camera_unmanaged->camera_vector[camera_id]->value_min;
+////  //this->trb_value_max->Value                  = this->Main->camera_managed->camera_unmanaged->camera_vector[camera_id]->value_max;
+////
+////  //this->numUD_opening_iterations->Value       = static_cast<Decimal>(this->Main->camera_managed->camera_unmanaged->camera_vector[camera_id]->opening_iterations);
+////  //this->numUD_opening_kernelsize->Value       = static_cast<Decimal>(this->Main->camera_managed->camera_unmanaged->camera_vector[camera_id]->opening_kernel_size);
+////
+////  //this->numUD_closing_iterations->Value       = static_cast<Decimal>(this->Main->camera_managed->camera_unmanaged->camera_vector[camera_id]->closing_iterations);
+////  //this->numUD_closing_kernelsize->Value       = static_cast<Decimal>(this->Main->camera_managed->camera_unmanaged->camera_vector[camera_id]->closing_kernel_size);
+////
+////  //this->chkb_erode->Checked                   = this->Main->camera_managed->camera_unmanaged->camera_vector[camera_id]->erode_active;
+////  //this->numUD_erode_iterations->Value         = static_cast<Decimal>(this->Main->camera_managed->camera_unmanaged->camera_vector[camera_id]->erosion_iterations);
+////  //this->numUD_erode_kernelsize->Value         = static_cast<Decimal>(this->Main->camera_managed->camera_unmanaged->camera_vector[camera_id]->erosion_kernel_size);
+////
+////  //this->chkb_dilate->Checked                  = this->Main->camera_managed->camera_unmanaged->camera_vector[camera_id]->dilate_active;
+////  //this->numUD_dilation_iterations->Value      = static_cast<Decimal>(this->Main->camera_managed->camera_unmanaged->camera_vector[camera_id]->dilation_iterations);
+////  //this->numUD_dilation_kernelsize->Value      = static_cast<Decimal>(this->Main->camera_managed->camera_unmanaged->camera_vector[camera_id]->dilation_kernel_size);
+////
+////  //this->chkb_morph->Checked                   = this->Main->camera_managed->camera_unmanaged->camera_vector[camera_id]->morph_active;
+////  //this->numUD_morph_iterations->Value         = static_cast<Decimal>(this->Main->camera_managed->camera_unmanaged->camera_vector[camera_id]->morph_iterations);
+////  //this->numUD_morph_kernelsize->Value         = static_cast<Decimal>(this->Main->camera_managed->camera_unmanaged->camera_vector[camera_id]->morph_kernel_size);
+////
+////  //this->numUD_gaussian_sigma->Value           =  static_cast<Decimal>(Main->camera_managed->camera_unmanaged->camera_vector[camera_id]->gaussian_sigma);
+////  //this->numUD_gaussian_kernel_size->Value     =  static_cast<Decimal>(this->Main->camera_managed->camera_unmanaged->camera_vector[camera_id]->gaussian_kernel_size);
+////
+////  //this->chkb_bilateral->Checked               = this->Main->camera_managed->camera_unmanaged->camera_vector[camera_id]->bilateral_active;
+////  //this->numUD_bilateral_kernelsize->Value     = static_cast<Decimal>(this->Main->camera_managed->camera_unmanaged->camera_vector[camera_id]->bilateral_kernel_size);
+////  //this->numUD_bilateral_spatial->Value        = static_cast<Decimal>(this->Main->camera_managed->camera_unmanaged->camera_vector[camera_id]->bilateral_sigma_spatial);
+////  //this->numUD_bilateral_color->Value          = static_cast<Decimal>(this->Main->camera_managed->camera_unmanaged->camera_vector[camera_id]->bilateral_sigma_color);
+////
+//  }
 

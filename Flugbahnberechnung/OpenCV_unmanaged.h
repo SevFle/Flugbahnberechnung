@@ -97,8 +97,8 @@ namespace nmsp_opencv_unmanaged
       bool                                    contour_found;
       float                                   Radius;
 
-      std::vector<std::vector<cv::Point>>     contours;
-      std::vector<cv::Vec4i>                  hirarchy;
+      //std::vector<std::vector<cv::Point>>     contours;
+      //std::vector<cv::Vec4i>                  hirarchy;
 
 
       cv::Moments                            Image_Moments;
@@ -146,6 +146,7 @@ namespace nmsp_opencv_unmanaged
       bool                                    dilate_active;
       bool                                    gaussian_active;
       bool                                    morph_active;
+      bool                                    bilateral_active;
 
       bool                                    idle;
 
@@ -162,6 +163,7 @@ namespace nmsp_opencv_unmanaged
 
       void            set_calibration_parameter                           (double           (&DistCoeffs)[1][5], double  (&Intrinsic)[3][3]);
       void            get_calibration_parameter                           (double           (&DistCoeffs)[1][5], double  (&Intrinsic)[3][3]) const;
+      void            get_camera_settings                                 ();
       void            set_aspect_ratio                                    (int              Height,   int width);
       void            set_framerate                                       (int              framerate);
 

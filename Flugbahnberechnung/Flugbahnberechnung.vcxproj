@@ -182,7 +182,6 @@
     <ClInclude Include="opencv_unmanaged.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="ClassDiagram.cd" />
     <CudaCompile Include="CudaKernels.cu">
       <FileType>Document</FileType>
     </CudaCompile>

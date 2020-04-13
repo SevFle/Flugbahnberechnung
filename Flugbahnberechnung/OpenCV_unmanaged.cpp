@@ -249,7 +249,7 @@ void c_opencv_unmanaged::camera_thread                                  ()
             this->apply_filter(cpu_undistorted, cpu_masked_img);
             this->contours_active = true;
             this->gpu_filtered->download(*cpu_filtered);
-            this->find_contours(cpu_filtered, cpu_contoured);
+            this->find_contours(cpu_masked_img, cpu_contoured);
             }
           statemachine_state = 4;
 
@@ -284,6 +284,7 @@ void c_opencv_unmanaged::get_calibration_parameter                      (double 
       }
     }
   }
+
 
 void c_opencv_unmanaged::set_calibration_parameter                      (double             (&DistCoeffs)[1][5],      double            (&Intrinsic)[3][3])
   {
@@ -439,6 +440,9 @@ void c_opencv_unmanaged::gpu_filter_hsv                                 (cv::cud
 }
 void c_opencv_unmanaged::find_contours                                        (cv::Mat*           thresholded_source_image, cv::Mat*          dst_contoured_image)
   {
+  objekt_anzahl = 0;
+  std::vector<std::vector<cv::Point>>     contours;
+  std::vector<cv::Vec4i>                  hirarchy;
 
 
   //OpenCV Hirarchy: https://docs.opencv.org/3.4/d9/d8b/tutorial_py_contours_hierarchy.html
@@ -447,12 +451,12 @@ void c_opencv_unmanaged::find_contours                                        (c
   // Zeichne Bildmittelpunkt ein
    Mittelpunkt_x = dst_contoured_image->cols / 2;
    Mittelpunkt_y = dst_contoured_image->rows / 2;
-  cv::circle(*dst_contoured_image, cv::Point(static_cast<int>(Mittelpunkt_x), static_cast<int>(Mittelpunkt_y)), 2, cv::Scalar(0, 255, 0));
+  cv::circle(*dst_contoured_image, cv::Point(static_cast<int>(Mittelpunkt_x), static_cast<int>(Mittelpunkt_y)), 15, cv::Scalar(0, 255, 0));
 
   // Zeichne kalibrierten Bildmittelpunkt ein
   cx = this->Intrinsic->at<double>(0, 2);
   cy = this->Intrinsic->at<double>(1, 2);
-  cv::circle(*dst_contoured_image, cv::Point(static_cast<int>(cx), static_cast<int>(cy)), 2, cv::Scalar(255, 255, 0));
+  cv::circle(*dst_contoured_image, cv::Point(static_cast<int>(cx), static_cast<int>(cy)), 15, cv::Scalar(255, 255, 0));
 
   cv::findContours(*thresholded_source_image, contours, hirarchy, cv::RETR_TREE, cv::CHAIN_APPROX_NONE, cv::Point(0, 0));
 
@@ -461,113 +465,113 @@ void c_opencv_unmanaged::find_contours                                        (c
 
   cv::drawContours(*dst_contoured_image, contours,0, cv::Scalar(0, 255, 0), 10, cv::LINE_AA, hirarchy);
 
-  if (objekt_anzahl > 0)
-    {
-    // Vorinitialisierung des Abstands des Konturschwerpunktes zum Bildmittelpunkt
-    Image_Moments          = cv::moments(static_cast<cv::Mat>(contours[0]));
+  //if (objekt_anzahl > 0)
+  //  {
+  //  // Vorinitialisierung des Abstands des Konturschwerpunktes zum Bildmittelpunkt
+  //  Image_Moments          = cv::moments(static_cast<cv::Mat>(contours[0]));
 
-    KonturIndex             = 0;
-    Ist_x                   = 0.0;
-    Ist_y                   = 0.0;
-    Soll_x                  = 0.0;
-    Soll_y                  = 0.0;
-    Delta_x                 = 0.0;
-    Delta_y                 = 0.0;
-    contour_found           = false;
-    Vec_Object[0]           = 0.0;
-    Vec_Object[1]           = 0.0;
-    Vec_Object[2]           = 0.0;
-    max_Moment_m00          = 0.0;
+  //  KonturIndex             = 0;
+  //  Ist_x                   = 0.0;
+  //  Ist_y                   = 0.0;
+  //  Soll_x                  = 0.0;
+  //  Soll_y                  = 0.0;
+  //  Delta_x                 = 0.0;
+  //  Delta_y                 = 0.0;
+  //  contour_found           = false;
+  //  Vec_Object[0]           = 0.0;
+  //  Vec_Object[1]           = 0.0;
+  //  Vec_Object[2]           = 0.0;
+  //  max_Moment_m00          = 0.0;
 
-    // Größte Kontur anhand der Fläche suchen
-    for (int i = 0; i < objekt_anzahl; i++)
-      {
-      Image_Moments              = cv::moments(static_cast<cv::Mat>(contours[i]));
-       Moment_0_Ordnung   = Image_Moments.m00;
+  //  // Größte Kontur anhand der Fläche suchen
+  //  for (int i = 0; i < objekt_anzahl; i++)
+  //    {
+  //    Image_Moments              = cv::moments(static_cast<cv::Mat>(contours[i]));
+  //     Moment_0_Ordnung   = Image_Moments.m00;
 
-      if (Moment_0_Ordnung > max_Moment_m00)
-        {
-        max_Moment_m00 = Moment_0_Ordnung;
-        KonturIndex          = i;
-        }
-      else
-        {
-        // tue nichts
-        }
-      }
+  //    if (Moment_0_Ordnung > max_Moment_m00)
+  //      {
+  //      max_Moment_m00 = Moment_0_Ordnung;
+  //      KonturIndex          = i;
+  //      }
+  //    else
+  //      {
+  //      // tue nichts
+  //      }
+  //    }
 
-    // Bestimmen der Flchenmomente 0. (Flche) und 1. Ordnung (Flche * x bzw. Flche * y) zur Bestimmung des Flchenschwerpunktes: x_ = summe(m1) / summe(m0);
-    Image_Moments              = cv::moments(static_cast<cv::Mat>(contours[KonturIndex]));
-    Moment_0_Ordnung   = Image_Moments.m00;
+  //  // Bestimmen der Flchenmomente 0. (Flche) und 1. Ordnung (Flche * x bzw. Flche * y) zur Bestimmung des Flchenschwerpunktes: x_ = summe(m1) / summe(m0);
+  //  Image_Moments              = cv::moments(static_cast<cv::Mat>(contours[KonturIndex]));
+  //  Moment_0_Ordnung   = Image_Moments.m00;
 
-    // Bestimme Flchenmoment 1. Ordnung (Flche * x bzw.Flche * y) zur Bestimmung des Flchenschwerpunktes: x_ = summe(m1) / summe(m0);
-      Moment_1_Ordnung_x = Image_Moments.m10;
-      Moment_1_Ordnung_y = Image_Moments.m01;
-      Schwerpunkt_x      = Moment_1_Ordnung_x / Moment_0_Ordnung;
-      Schwerpunkt_y      = Moment_1_Ordnung_y / Moment_0_Ordnung;
+  //  // Bestimme Flchenmoment 1. Ordnung (Flche * x bzw.Flche * y) zur Bestimmung des Flchenschwerpunktes: x_ = summe(m1) / summe(m0);
+  //    Moment_1_Ordnung_x = Image_Moments.m10;
+  //    Moment_1_Ordnung_y = Image_Moments.m01;
+  //    Schwerpunkt_x      = Moment_1_Ordnung_x / Moment_0_Ordnung;
+  //    Schwerpunkt_y      = Moment_1_Ordnung_y / Moment_0_Ordnung;
 
-    // Den Radius und den Mittelpunkt des kleinstes Kreises einer gefundenen Kontur ermitteln.
-    minEnclosingCircle(static_cast<cv::Mat>(contours[KonturIndex]), Center, Radius);
+  //  // Den Radius und den Mittelpunkt des kleinstes Kreises einer gefundenen Kontur ermitteln.
+  //  minEnclosingCircle(static_cast<cv::Mat>(contours[KonturIndex]), Center, Radius);
 
-    // Mittelpunkt / schwerpunkt der kontur einzeichnen
-    cv::circle(*dst_contoured_image, cv::Point(static_cast<int>(Schwerpunkt_x), static_cast<int>(Schwerpunkt_y)), 2, cv::Scalar(0, 255, 255));
+  //  // Mittelpunkt / schwerpunkt der kontur einzeichnen
+  //  cv::circle(*dst_contoured_image, cv::Point(static_cast<int>(Schwerpunkt_x), static_cast<int>(Schwerpunkt_y)), 2, cv::Scalar(0, 255, 255));
 
-    // Konturumfang zeichnen
-    cv::circle(*dst_contoured_image, Center, static_cast<int>(Radius), cv::Scalar(0, 255, 255));
+  //  // Konturumfang zeichnen
+  //  cv::circle(*dst_contoured_image, Center, static_cast<int>(Radius), cv::Scalar(0, 255, 255));
 
-    // Schwerpunktkoordinaten als Text im Bild darstellen
-    S_x = std::to_string(Schwerpunkt_x);
-    S_y = std::to_string(Schwerpunkt_y);
-    cv::putText(*dst_contoured_image, "S_x: " + S_x, cv::Point(0, 20), 1, 1, cv::Scalar(255, 255, 255), 2);
-    cv::putText(*dst_contoured_image, "S_y: " + S_y, cv::Point(0, 50), 1, 1, cv::Scalar(255, 255, 255), 2);
+  //  // Schwerpunktkoordinaten als Text im Bild darstellen
+  //  S_x = std::to_string(Schwerpunkt_x);
+  //  S_y = std::to_string(Schwerpunkt_y);
+  //  cv::putText(*dst_contoured_image, "S_x: " + S_x, cv::Point(0, 20), 1, 1, cv::Scalar(255, 255, 255), 2);
+  //  cv::putText(*dst_contoured_image, "S_y: " + S_y, cv::Point(0, 50), 1, 1, cv::Scalar(255, 255, 255), 2);
 
-    // Bestimme den Abstand des Mittelpunktes der gefundenen Kontur zum Bildmittelpunkt
-    contour_found        = true;
-    Ist_x                = Schwerpunkt_x;
-    Ist_y                = Schwerpunkt_y;
-    Soll_x               = cx;
-    Soll_y               = cy;
-    Delta_x              = Ist_x - Soll_x;
-    Delta_y              = Ist_y - Soll_y;
+  //  // Bestimme den Abstand des Mittelpunktes der gefundenen Kontur zum Bildmittelpunkt
+  //  contour_found        = true;
+  //  Ist_x                = Schwerpunkt_x;
+  //  Ist_y                = Schwerpunkt_y;
+  //  Soll_x               = cx;
+  //  Soll_y               = cy;
+  //  Delta_x              = Ist_x - Soll_x;
+  //  Delta_y              = Ist_y - Soll_y;
 
-    // Bestimme den Lichtstrahlvektor der Kontur bezogen auf das Kamera-KS
-     x_Kamera_KS       = Delta_x;
-     y_Kamera_KS       = Delta_y;
-     fx                = this->Intrinsic->at<double>(0, 0);
-     fy                = this->Intrinsic->at<double>(1, 1);
-     f                 = (fx + fy) / 2.0; // Mittelwert der Brennweite
-    Vec_Object[0]      = x_Kamera_KS;
-    Vec_Object[1]      = y_Kamera_KS;
-    Vec_Object[2]      = f;
-    Vec_Object_Abs    = sqrt(x_Kamera_KS * x_Kamera_KS + y_Kamera_KS * y_Kamera_KS + f * f);
-    Vec_Object[0]     /= Vec_Object_Abs;
-    Vec_Object[1]     /= Vec_Object_Abs;
-    Vec_Object[2]     /= Vec_Object_Abs;
+  //  // Bestimme den Lichtstrahlvektor der Kontur bezogen auf das Kamera-KS
+  //   x_Kamera_KS       = Delta_x;
+  //   y_Kamera_KS       = Delta_y;
+  //   fx                = this->Intrinsic->at<double>(0, 0);
+  //   fy                = this->Intrinsic->at<double>(1, 1);
+  //   f                 = (fx + fy) / 2.0; // Mittelwert der Brennweite
+  //  Vec_Object[0]      = x_Kamera_KS;
+  //  Vec_Object[1]      = y_Kamera_KS;
+  //  Vec_Object[2]      = f;
+  //  Vec_Object_Abs    = sqrt(x_Kamera_KS * x_Kamera_KS + y_Kamera_KS * y_Kamera_KS + f * f);
+  //  Vec_Object[0]     /= Vec_Object_Abs;
+  //  Vec_Object[1]     /= Vec_Object_Abs;
+  //  Vec_Object[2]     /= Vec_Object_Abs;
 
 
-    // Schreibe die Delta-Werte auf das Bild
-    Delta_x_str   = std::to_string(Delta_x);
-    Delta_y_str   = std::to_string(Delta_y);
-    cv::putText(*dst_contoured_image, "Delta_x: " + Delta_x_str, cv::Point(0, 80), 1, 1, cv::Scalar(255, 255, 255), 2);
-    cv::putText(*dst_contoured_image, "Delta_y: " + Delta_y_str, cv::Point(0, 110), 1, 1, cv::Scalar(255, 255, 255), 2);
+  //  // Schreibe die Delta-Werte auf das Bild
+  //  Delta_x_str   = std::to_string(Delta_x);
+  //  Delta_y_str   = std::to_string(Delta_y);
+  //  cv::putText(*dst_contoured_image, "Delta_x: " + Delta_x_str, cv::Point(0, 80), 1, 1, cv::Scalar(255, 255, 255), 2);
+  //  cv::putText(*dst_contoured_image, "Delta_y: " + Delta_y_str, cv::Point(0, 110), 1, 1, cv::Scalar(255, 255, 255), 2);
 
-    // Zeichne eine Linie zwischen kalibriertem Bildmittelpunkt und dem Objektschwerpunkt
-    cv::line(*dst_contoured_image, cv::Point(static_cast<int>(Ist_x), static_cast<int>(Ist_y)), cv::Point(static_cast<int>(Soll_x), static_cast<int>(Soll_y)), cv::Scalar(0, 0, 255), 4, 8, 0);
+  //  // Zeichne eine Linie zwischen kalibriertem Bildmittelpunkt und dem Objektschwerpunkt
+  // // cv::line(*dst_contoured_image, cv::Point(static_cast<int>(Ist_x), static_cast<int>(Ist_y)), cv::Point(static_cast<int>(Soll_x), static_cast<int>(Soll_y)), cv::Scalar(0, 0, 255), 4, 8, 0);
 
-    }
-  else
-    {
-    contour_found           = false;
-    this->Vec_Object[0]     = 0.0;
-    this->Vec_Object[1]     = 0.0;
-    this->Vec_Object[2]     = 0.0;
-    max_Moment_m00          = 0.0;
+  //  }
+  //else
+  //  {
+  //  contour_found           = false;
+  //  this->Vec_Object[0]     = 0.0;
+  //  this->Vec_Object[1]     = 0.0;
+  //  this->Vec_Object[2]     = 0.0;
+  //  max_Moment_m00          = 0.0;
 
-    cv::putText(*dst_contoured_image, "S_x:     Object not found", cv::Point(0, 20), 1, 1, cv::Scalar(255, 255, 255), 2);
-    cv::putText(*dst_contoured_image, "S_y:     Object not found", cv::Point(0, 50), 1, 1, cv::Scalar(255, 255, 255), 2);
-    cv::putText(*dst_contoured_image, "Delta_x: Object not found", cv::Point(0, 80), 1, 1, cv::Scalar(255, 255, 255), 2);
-    cv::putText(*dst_contoured_image, "Delta_y: Object not found", cv::Point(0, 110), 1, 1, cv::Scalar(255, 255, 255), 2);
-    }
+  //  cv::putText(*dst_contoured_image, "S_x:     Object not found", cv::Point(0, 20), 1, 1, cv::Scalar(255, 255, 255), 2);
+  //  cv::putText(*dst_contoured_image, "S_y:     Object not found", cv::Point(0, 50), 1, 1, cv::Scalar(255, 255, 255), 2);
+  //  cv::putText(*dst_contoured_image, "Delta_x: Object not found", cv::Point(0, 80), 1, 1, cv::Scalar(255, 255, 255), 2);
+  //  cv::putText(*dst_contoured_image, "Delta_y: Object not found", cv::Point(0, 110), 1, 1, cv::Scalar(255, 255, 255), 2);
+  //  }
   }
 
 void  c_opencv_unmanaged::undistord_img                                       (cv::Mat* cpu_src, cv::Mat* cpu_dst)
