@@ -7,12 +7,12 @@ using namespace nmsp_Main;
 namespace NmSp_frm_ObjectCalibration 
   {
   using namespace nmsp_GlobalObjects;
-  public ref class C_frm_ObjectCalibration : public System::Windows::Forms::Form
+  public ref class c_frm_object_calibration : public System::Windows::Forms::Form
 	  {
 	  public:
-    C_frm_ObjectCalibration               (C_GlobalObjects* GlobalObjects, C_Main^  Main);
+    c_frm_object_calibration               (C_GlobalObjects* GlobalObjects, C_Main^  Main);
  	  protected:
-    ~C_frm_ObjectCalibration              ();
+    ~c_frm_object_calibration              ();
 
 	  private:
     C_GlobalObjects*    GlobalObjects;
@@ -453,7 +453,7 @@ namespace NmSp_frm_ObjectCalibration
         {
         2, 0, 0, 131072
         });
-      this->numUD_bilateral_color->ValueChanged += gcnew System::EventHandler(this, &C_frm_ObjectCalibration::numUD_bilateral_color_ValueChanged);
+      this->numUD_bilateral_color->ValueChanged += gcnew System::EventHandler(this, &c_frm_object_calibration::numUD_bilateral_color_ValueChanged);
       // 
       // label22
       // 
@@ -508,53 +508,65 @@ namespace NmSp_frm_ObjectCalibration
       // 
       this->chkb_morph->AutoSize = true;
       this->chkb_morph->Location = System::Drawing::Point(16, 184);
-      this->chkb_morph->Margin = System::Windows::Forms::Padding(2, 2, 2, 2);
+      this->chkb_morph->Margin = System::Windows::Forms::Padding(2);
       this->chkb_morph->Name = L"chkb_morph";
       this->chkb_morph->Size = System::Drawing::Size(15, 14);
       this->chkb_morph->TabIndex = 75;
       this->chkb_morph->UseVisualStyleBackColor = true;
-      this->chkb_morph->CheckStateChanged += gcnew System::EventHandler(this, &C_frm_ObjectCalibration::chkb_morph_CheckStateChanged);
+      this->chkb_morph->CheckStateChanged += gcnew System::EventHandler(this, &c_frm_object_calibration::chkb_morph_CheckStateChanged);
       // 
       // chkb_dilate
       // 
       this->chkb_dilate->AutoSize = true;
       this->chkb_dilate->Location = System::Drawing::Point(16, 155);
-      this->chkb_dilate->Margin = System::Windows::Forms::Padding(2, 2, 2, 2);
+      this->chkb_dilate->Margin = System::Windows::Forms::Padding(2);
       this->chkb_dilate->Name = L"chkb_dilate";
       this->chkb_dilate->Size = System::Drawing::Size(15, 14);
       this->chkb_dilate->TabIndex = 71;
       this->chkb_dilate->UseVisualStyleBackColor = true;
-      this->chkb_dilate->CheckStateChanged += gcnew System::EventHandler(this, &C_frm_ObjectCalibration::chkb_dilate_CheckStateChanged);
+      this->chkb_dilate->CheckStateChanged += gcnew System::EventHandler(this, &c_frm_object_calibration::chkb_dilate_CheckStateChanged);
       // 
       // chkb_erode
       // 
       this->chkb_erode->AutoSize = true;
       this->chkb_erode->Location = System::Drawing::Point(16, 132);
-      this->chkb_erode->Margin = System::Windows::Forms::Padding(2, 2, 2, 2);
+      this->chkb_erode->Margin = System::Windows::Forms::Padding(2);
       this->chkb_erode->Name = L"chkb_erode";
       this->chkb_erode->Size = System::Drawing::Size(15, 14);
       this->chkb_erode->TabIndex = 70;
       this->chkb_erode->UseVisualStyleBackColor = true;
-      this->chkb_erode->CheckStateChanged += gcnew System::EventHandler(this, &C_frm_ObjectCalibration::chkb_erode_CheckStateChanged);
+      this->chkb_erode->CheckStateChanged += gcnew System::EventHandler(this, &c_frm_object_calibration::chkb_erode_CheckStateChanged);
       // 
       // chkb_bilateral
       // 
       this->chkb_bilateral->AutoSize = true;
       this->chkb_bilateral->Location = System::Drawing::Point(22, 284);
-      this->chkb_bilateral->Margin = System::Windows::Forms::Padding(2, 2, 2, 2);
+      this->chkb_bilateral->Margin = System::Windows::Forms::Padding(2);
       this->chkb_bilateral->Name = L"chkb_bilateral";
       this->chkb_bilateral->Size = System::Drawing::Size(15, 14);
       this->chkb_bilateral->TabIndex = 74;
       this->chkb_bilateral->UseVisualStyleBackColor = true;
-      this->chkb_bilateral->CheckStateChanged += gcnew System::EventHandler(this, &C_frm_ObjectCalibration::chkb_bilateral_CheckStateChanged);
+      this->chkb_bilateral->CheckStateChanged += gcnew System::EventHandler(this, &c_frm_object_calibration::chkb_bilateral_CheckStateChanged);
       // 
       // numUD_gaussian_kernel_size
       // 
+      this->numUD_gaussian_kernel_size->Increment = System::Decimal(gcnew cli::array< System::Int32 >(4)
+        {
+        2, 0, 0, 0
+        });
       this->numUD_gaussian_kernel_size->Location = System::Drawing::Point(275, 228);
+      this->numUD_gaussian_kernel_size->Minimum = System::Decimal(gcnew cli::array< System::Int32 >(4)
+        {
+        1, 0, 0, 0
+        });
       this->numUD_gaussian_kernel_size->Name = L"numUD_gaussian_kernel_size";
       this->numUD_gaussian_kernel_size->Size = System::Drawing::Size(57, 20);
       this->numUD_gaussian_kernel_size->TabIndex = 67;
-      this->numUD_gaussian_kernel_size->ValueChanged += gcnew System::EventHandler(this, &C_frm_ObjectCalibration::numUD_gaussian_kernel_size_ValueChanged);
+      this->numUD_gaussian_kernel_size->Value = System::Decimal(gcnew cli::array< System::Int32 >(4)
+        {
+        1, 0, 0, 0
+        });
+      this->numUD_gaussian_kernel_size->ValueChanged += gcnew System::EventHandler(this, &c_frm_object_calibration::numUD_gaussian_kernel_size_ValueChanged);
       // 
       // numUD_dilation_kernelsize
       // 
@@ -567,7 +579,7 @@ namespace NmSp_frm_ObjectCalibration
         {
         1, 0, 0, 0
         });
-      this->numUD_dilation_kernelsize->ValueChanged += gcnew System::EventHandler(this, &C_frm_ObjectCalibration::numUD_dilation_kernelsize_ValueChanged);
+      this->numUD_dilation_kernelsize->ValueChanged += gcnew System::EventHandler(this, &c_frm_object_calibration::numUD_dilation_kernelsize_ValueChanged);
       // 
       // lbl_iterations
       // 
@@ -591,7 +603,7 @@ namespace NmSp_frm_ObjectCalibration
         {
         1, 0, 0, 0
         });
-      this->numUD_morph_kernelsize->ValueChanged += gcnew System::EventHandler(this, &C_frm_ObjectCalibration::numUD_morph_kernelsize_ValueChanged);
+      this->numUD_morph_kernelsize->ValueChanged += gcnew System::EventHandler(this, &c_frm_object_calibration::numUD_morph_kernelsize_ValueChanged);
       // 
       // lbl_kernel_size
       // 
@@ -615,7 +627,7 @@ namespace NmSp_frm_ObjectCalibration
         {
         1, 0, 0, 0
         });
-      this->numUD_dilation_iterations->ValueChanged += gcnew System::EventHandler(this, &C_frm_ObjectCalibration::numUD_dilation_iterations_ValueChanged);
+      this->numUD_dilation_iterations->ValueChanged += gcnew System::EventHandler(this, &c_frm_object_calibration::numUD_dilation_iterations_ValueChanged);
       // 
       // numUD_bilateral_kernelsize
       // 
@@ -628,7 +640,7 @@ namespace NmSp_frm_ObjectCalibration
         {
         1, 0, 0, 0
         });
-      this->numUD_bilateral_kernelsize->ValueChanged += gcnew System::EventHandler(this, &C_frm_ObjectCalibration::numUD_bilateral_kernelsize_ValueChanged);
+      this->numUD_bilateral_kernelsize->ValueChanged += gcnew System::EventHandler(this, &c_frm_object_calibration::numUD_bilateral_kernelsize_ValueChanged);
       // 
       // numUD_morph_iterations
       // 
@@ -641,7 +653,7 @@ namespace NmSp_frm_ObjectCalibration
         {
         1, 0, 0, 0
         });
-      this->numUD_morph_iterations->ValueChanged += gcnew System::EventHandler(this, &C_frm_ObjectCalibration::numUD_morph_iterations_ValueChanged);
+      this->numUD_morph_iterations->ValueChanged += gcnew System::EventHandler(this, &c_frm_object_calibration::numUD_morph_iterations_ValueChanged);
       // 
       // numUD_erode_iterations
       // 
@@ -654,7 +666,7 @@ namespace NmSp_frm_ObjectCalibration
         {
         1, 0, 0, 0
         });
-      this->numUD_erode_iterations->ValueChanged += gcnew System::EventHandler(this, &C_frm_ObjectCalibration::numUD_erode_iterations_ValueChanged);
+      this->numUD_erode_iterations->ValueChanged += gcnew System::EventHandler(this, &c_frm_object_calibration::numUD_erode_iterations_ValueChanged);
       // 
       // numUD_bilateral_spatial
       // 
@@ -672,7 +684,7 @@ namespace NmSp_frm_ObjectCalibration
         {
         2, 0, 0, 131072
         });
-      this->numUD_bilateral_spatial->ValueChanged += gcnew System::EventHandler(this, &C_frm_ObjectCalibration::numUD_bilateral_spatial_ValueChanged);
+      this->numUD_bilateral_spatial->ValueChanged += gcnew System::EventHandler(this, &c_frm_object_calibration::numUD_bilateral_spatial_ValueChanged);
       // 
       // numUD_erode_kernelsize
       // 
@@ -685,7 +697,7 @@ namespace NmSp_frm_ObjectCalibration
         {
         1, 0, 0, 0
         });
-      this->numUD_erode_kernelsize->ValueChanged += gcnew System::EventHandler(this, &C_frm_ObjectCalibration::numUD_erode_kernelsize_ValueChanged);
+      this->numUD_erode_kernelsize->ValueChanged += gcnew System::EventHandler(this, &c_frm_object_calibration::numUD_erode_kernelsize_ValueChanged);
       // 
       // numUD_closing_kernelsize
       // 
@@ -697,7 +709,7 @@ namespace NmSp_frm_ObjectCalibration
         {
         1, 0, 0, 0
         });
-      this->numUD_closing_kernelsize->ValueChanged += gcnew System::EventHandler(this, &C_frm_ObjectCalibration::numUD_closing_kernelsize_ValueChanged);
+      this->numUD_closing_kernelsize->ValueChanged += gcnew System::EventHandler(this, &c_frm_object_calibration::numUD_closing_kernelsize_ValueChanged);
       // 
       // label15
       // 
@@ -731,7 +743,7 @@ namespace NmSp_frm_ObjectCalibration
         {
         1, 0, 0, 0
         });
-      this->numUD_closing_iterations->ValueChanged += gcnew System::EventHandler(this, &C_frm_ObjectCalibration::numUD_closing_iterations_ValueChanged);
+      this->numUD_closing_iterations->ValueChanged += gcnew System::EventHandler(this, &c_frm_object_calibration::numUD_closing_iterations_ValueChanged);
       // 
       // label10
       // 
@@ -765,7 +777,7 @@ namespace NmSp_frm_ObjectCalibration
         {
         1, 0, 0, 0
         });
-      this->numUD_opening_kernelsize->ValueChanged += gcnew System::EventHandler(this, &C_frm_ObjectCalibration::numUD_opening_kernelsize_ValueChanged);
+      this->numUD_opening_kernelsize->ValueChanged += gcnew System::EventHandler(this, &c_frm_object_calibration::numUD_opening_kernelsize_ValueChanged);
       // 
       // label13
       // 
@@ -810,7 +822,7 @@ namespace NmSp_frm_ObjectCalibration
         {
         1, 0, 0, 0
         });
-      this->numUD_opening_iterations->ValueChanged += gcnew System::EventHandler(this, &C_frm_ObjectCalibration::numUD_opening_iterations_ValueChanged);
+      this->numUD_opening_iterations->ValueChanged += gcnew System::EventHandler(this, &c_frm_object_calibration::numUD_opening_iterations_ValueChanged);
       // 
       // label7
       // 
@@ -921,7 +933,7 @@ namespace NmSp_frm_ObjectCalibration
       this->bt_exit->TabIndex = 12;
       this->bt_exit->Text = L"Exit";
       this->bt_exit->UseVisualStyleBackColor = true;
-      this->bt_exit->Click += gcnew System::EventHandler(this, &C_frm_ObjectCalibration::bt_exit_Click);
+      this->bt_exit->Click += gcnew System::EventHandler(this, &c_frm_object_calibration::bt_exit_Click);
       // 
       // txtb_counter
       // 
@@ -933,7 +945,7 @@ namespace NmSp_frm_ObjectCalibration
       // Taktgeber
       // 
       this->Taktgeber->Interval = 10;
-      this->Taktgeber->Tick += gcnew System::EventHandler(this, &C_frm_ObjectCalibration::Taktgeber_Tick);
+      this->Taktgeber->Tick += gcnew System::EventHandler(this, &c_frm_object_calibration::Taktgeber_Tick);
       // 
       // numUD_cam_id
       // 
@@ -947,7 +959,7 @@ namespace NmSp_frm_ObjectCalibration
       this->numUD_cam_id->Name = L"numUD_cam_id";
       this->numUD_cam_id->Size = System::Drawing::Size(78, 38);
       this->numUD_cam_id->TabIndex = 13;
-      this->numUD_cam_id->ValueChanged += gcnew System::EventHandler(this, &C_frm_ObjectCalibration::numUD_cam_id_ValueChanged);
+      this->numUD_cam_id->ValueChanged += gcnew System::EventHandler(this, &c_frm_object_calibration::numUD_cam_id_ValueChanged);
       // 
       // label17
       // 
@@ -963,25 +975,25 @@ namespace NmSp_frm_ObjectCalibration
       // trb_hue_min
       // 
       this->trb_hue_min->Location = System::Drawing::Point(146, 32);
-      this->trb_hue_min->Margin = System::Windows::Forms::Padding(2, 2, 2, 2);
+      this->trb_hue_min->Margin = System::Windows::Forms::Padding(2);
       this->trb_hue_min->Name = L"trb_hue_min";
       this->trb_hue_min->Size = System::Drawing::Size(282, 45);
       this->trb_hue_min->TabIndex = 59;
-      this->trb_hue_min->ValueChanged += gcnew System::EventHandler(this, &C_frm_ObjectCalibration::trb_hue_min_ValueChanged);
+      this->trb_hue_min->ValueChanged += gcnew System::EventHandler(this, &c_frm_object_calibration::trb_hue_min_ValueChanged);
       // 
       // trb_hue_max
       // 
       this->trb_hue_max->Location = System::Drawing::Point(146, 83);
-      this->trb_hue_max->Margin = System::Windows::Forms::Padding(2, 2, 2, 2);
+      this->trb_hue_max->Margin = System::Windows::Forms::Padding(2);
       this->trb_hue_max->Name = L"trb_hue_max";
       this->trb_hue_max->Size = System::Drawing::Size(282, 45);
       this->trb_hue_max->TabIndex = 60;
-      this->trb_hue_max->ValueChanged += gcnew System::EventHandler(this, &C_frm_ObjectCalibration::trb_hue_max_ValueChanged);
+      this->trb_hue_max->ValueChanged += gcnew System::EventHandler(this, &c_frm_object_calibration::trb_hue_max_ValueChanged);
       // 
       // txb_hue_min
       // 
       this->txb_hue_min->Location = System::Drawing::Point(433, 32);
-      this->txb_hue_min->Margin = System::Windows::Forms::Padding(2, 2, 2, 2);
+      this->txb_hue_min->Margin = System::Windows::Forms::Padding(2);
       this->txb_hue_min->Name = L"txb_hue_min";
       this->txb_hue_min->Size = System::Drawing::Size(84, 20);
       this->txb_hue_min->TabIndex = 66;
@@ -989,7 +1001,7 @@ namespace NmSp_frm_ObjectCalibration
       // txb_hue_max
       // 
       this->txb_hue_max->Location = System::Drawing::Point(433, 83);
-      this->txb_hue_max->Margin = System::Windows::Forms::Padding(2, 2, 2, 2);
+      this->txb_hue_max->Margin = System::Windows::Forms::Padding(2);
       this->txb_hue_max->Name = L"txb_hue_max";
       this->txb_hue_max->Size = System::Drawing::Size(84, 20);
       this->txb_hue_max->TabIndex = 67;
@@ -1018,9 +1030,9 @@ namespace NmSp_frm_ObjectCalibration
       this->groupBox1->Controls->Add(this->label2);
       this->groupBox1->Controls->Add(this->label9);
       this->groupBox1->Location = System::Drawing::Point(398, 324);
-      this->groupBox1->Margin = System::Windows::Forms::Padding(2, 2, 2, 2);
+      this->groupBox1->Margin = System::Windows::Forms::Padding(2);
       this->groupBox1->Name = L"groupBox1";
-      this->groupBox1->Padding = System::Windows::Forms::Padding(2, 2, 2, 2);
+      this->groupBox1->Padding = System::Windows::Forms::Padding(2);
       this->groupBox1->Size = System::Drawing::Size(532, 417);
       this->groupBox1->TabIndex = 13;
       this->groupBox1->TabStop = false;
@@ -1029,25 +1041,25 @@ namespace NmSp_frm_ObjectCalibration
       // trb_value_min
       // 
       this->trb_value_min->Location = System::Drawing::Point(146, 264);
-      this->trb_value_min->Margin = System::Windows::Forms::Padding(2, 2, 2, 2);
+      this->trb_value_min->Margin = System::Windows::Forms::Padding(2);
       this->trb_value_min->Name = L"trb_value_min";
       this->trb_value_min->Size = System::Drawing::Size(282, 45);
       this->trb_value_min->TabIndex = 72;
-      this->trb_value_min->ValueChanged += gcnew System::EventHandler(this, &C_frm_ObjectCalibration::trb_value_min_ValueChanged);
+      this->trb_value_min->ValueChanged += gcnew System::EventHandler(this, &c_frm_object_calibration::trb_value_min_ValueChanged);
       // 
       // trb_value_max
       // 
       this->trb_value_max->Location = System::Drawing::Point(146, 314);
-      this->trb_value_max->Margin = System::Windows::Forms::Padding(2, 2, 2, 2);
+      this->trb_value_max->Margin = System::Windows::Forms::Padding(2);
       this->trb_value_max->Name = L"trb_value_max";
       this->trb_value_max->Size = System::Drawing::Size(282, 45);
       this->trb_value_max->TabIndex = 73;
-      this->trb_value_max->ValueChanged += gcnew System::EventHandler(this, &C_frm_ObjectCalibration::trb_value_max_ValueChanged);
+      this->trb_value_max->ValueChanged += gcnew System::EventHandler(this, &c_frm_object_calibration::trb_value_max_ValueChanged);
       // 
       // txb_value_max
       // 
       this->txb_value_max->Location = System::Drawing::Point(433, 314);
-      this->txb_value_max->Margin = System::Windows::Forms::Padding(2, 2, 2, 2);
+      this->txb_value_max->Margin = System::Windows::Forms::Padding(2);
       this->txb_value_max->Name = L"txb_value_max";
       this->txb_value_max->Size = System::Drawing::Size(84, 20);
       this->txb_value_max->TabIndex = 75;
@@ -1055,7 +1067,7 @@ namespace NmSp_frm_ObjectCalibration
       // txb_value_min
       // 
       this->txb_value_min->Location = System::Drawing::Point(433, 264);
-      this->txb_value_min->Margin = System::Windows::Forms::Padding(2, 2, 2, 2);
+      this->txb_value_min->Margin = System::Windows::Forms::Padding(2);
       this->txb_value_min->Name = L"txb_value_min";
       this->txb_value_min->Size = System::Drawing::Size(84, 20);
       this->txb_value_min->TabIndex = 74;
@@ -1063,25 +1075,25 @@ namespace NmSp_frm_ObjectCalibration
       // trb_saturation_min
       // 
       this->trb_saturation_min->Location = System::Drawing::Point(146, 150);
-      this->trb_saturation_min->Margin = System::Windows::Forms::Padding(2, 2, 2, 2);
+      this->trb_saturation_min->Margin = System::Windows::Forms::Padding(2);
       this->trb_saturation_min->Name = L"trb_saturation_min";
       this->trb_saturation_min->Size = System::Drawing::Size(282, 45);
       this->trb_saturation_min->TabIndex = 68;
-      this->trb_saturation_min->ValueChanged += gcnew System::EventHandler(this, &C_frm_ObjectCalibration::trb_saturation_min_ValueChanged);
+      this->trb_saturation_min->ValueChanged += gcnew System::EventHandler(this, &c_frm_object_calibration::trb_saturation_min_ValueChanged);
       // 
       // trb_saturation_max
       // 
       this->trb_saturation_max->Location = System::Drawing::Point(146, 200);
-      this->trb_saturation_max->Margin = System::Windows::Forms::Padding(2, 2, 2, 2);
+      this->trb_saturation_max->Margin = System::Windows::Forms::Padding(2);
       this->trb_saturation_max->Name = L"trb_saturation_max";
       this->trb_saturation_max->Size = System::Drawing::Size(282, 45);
       this->trb_saturation_max->TabIndex = 69;
-      this->trb_saturation_max->ValueChanged += gcnew System::EventHandler(this, &C_frm_ObjectCalibration::trb_saturation_max_ValueChanged);
+      this->trb_saturation_max->ValueChanged += gcnew System::EventHandler(this, &c_frm_object_calibration::trb_saturation_max_ValueChanged);
       // 
       // txb_saturation_max
       // 
       this->txb_saturation_max->Location = System::Drawing::Point(433, 200);
-      this->txb_saturation_max->Margin = System::Windows::Forms::Padding(2, 2, 2, 2);
+      this->txb_saturation_max->Margin = System::Windows::Forms::Padding(2);
       this->txb_saturation_max->Name = L"txb_saturation_max";
       this->txb_saturation_max->Size = System::Drawing::Size(84, 20);
       this->txb_saturation_max->TabIndex = 71;
@@ -1089,7 +1101,7 @@ namespace NmSp_frm_ObjectCalibration
       // txb_saturation_min
       // 
       this->txb_saturation_min->Location = System::Drawing::Point(433, 150);
-      this->txb_saturation_min->Margin = System::Windows::Forms::Padding(2, 2, 2, 2);
+      this->txb_saturation_min->Margin = System::Windows::Forms::Padding(2);
       this->txb_saturation_min->Name = L"txb_saturation_min";
       this->txb_saturation_min->Size = System::Drawing::Size(84, 20);
       this->txb_saturation_min->TabIndex = 70;
@@ -1121,7 +1133,7 @@ namespace NmSp_frm_ObjectCalibration
       this->bt_apply->TabIndex = 62;
       this->bt_apply->Text = L"Apply";
       this->bt_apply->UseVisualStyleBackColor = true;
-      this->bt_apply->Click += gcnew System::EventHandler(this, &C_frm_ObjectCalibration::bt_apply_Click);
+      this->bt_apply->Click += gcnew System::EventHandler(this, &c_frm_object_calibration::bt_apply_Click);
       // 
       // bt_apply_all
       // 
@@ -1131,9 +1143,9 @@ namespace NmSp_frm_ObjectCalibration
       this->bt_apply_all->TabIndex = 65;
       this->bt_apply_all->Text = L"Apply all";
       this->bt_apply_all->UseVisualStyleBackColor = true;
-      this->bt_apply_all->Click += gcnew System::EventHandler(this, &C_frm_ObjectCalibration::bt_apply_all_Click);
+      this->bt_apply_all->Click += gcnew System::EventHandler(this, &c_frm_object_calibration::bt_apply_all_Click);
       // 
-      // C_frm_ObjectCalibration
+      // c_frm_object_calibration
       // 
       this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
       this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
@@ -1154,10 +1166,10 @@ namespace NmSp_frm_ObjectCalibration
       this->Controls->Add(this->pb_filtered);
       this->Controls->Add(this->lbl_org_pic);
       this->Controls->Add(this->pb_original);
-      this->Name = L"C_frm_ObjectCalibration";
+      this->Name = L"c_frm_object_calibration";
       this->Text = L"frm_UM_Object_Calibration";
-      this->FormClosing += gcnew System::Windows::Forms::FormClosingEventHandler(this, &C_frm_ObjectCalibration::C_frm_ObjectCalibration_FormClosing);
-      this->Load += gcnew System::EventHandler(this, &C_frm_ObjectCalibration::C_frm_ObjectCalibration_Load);
+      this->FormClosing += gcnew System::Windows::Forms::FormClosingEventHandler(this, &c_frm_object_calibration::C_frm_ObjectCalibration_FormClosing);
+      this->Load += gcnew System::EventHandler(this, &c_frm_object_calibration::C_frm_ObjectCalibration_Load);
       (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->pb_original))->EndInit();
       (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->pb_filtered))->EndInit();
       (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->pb_tracked))->EndInit();
@@ -1233,7 +1245,6 @@ namespace NmSp_frm_ObjectCalibration
     System::Void    bt_apply_all_Click                                   (System::Object^  sender, System::EventArgs^  e);
 
     public:
-
-    //System::Void    GetCameraSettings ();
+    System::Void    get_camera_settings (int camera_id);
     };
   }//namespace NmSp_frm_ObjectCalibration

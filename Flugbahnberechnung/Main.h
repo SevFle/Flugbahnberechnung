@@ -35,7 +35,7 @@ namespace NmSp_frm_CameraCalibration_Stereo
 
   namespace NmSp_frm_ObjectCalibration
     {
-    ref class C_frm_ObjectCalibration;
+    ref class c_frm_object_calibration;
   }
   using namespace NmSp_frm_ObjectCalibration;
 
@@ -73,7 +73,7 @@ namespace NmSp_frm_CameraCalibration_Stereo
       C_frm_CameraCalibration_Menu^     frm_CameraCalibration_Menu;
       C_frm_CameraCalibration_Single^   frm_CameraCalibration_Single;
       C_frm_CameraCalibration_Stereo^   frm_CameraCalibration_Stereo;
-      C_frm_ObjectCalibration^          frm_ObjectCalibration;
+      c_frm_object_calibration^          frm_ObjectCalibration;
       c_frm_Camera_Positioning^         frm_Camera_Positioning;
       C_camera_managed^                 camera_managed;
 

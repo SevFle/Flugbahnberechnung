@@ -13,7 +13,7 @@ C_Main::C_Main              (C_GlobalObjects* GlobalObjects)
   this->frm_Main->Show();
 
   this->frm_CameraCalibration_Single  = gcnew C_frm_CameraCalibration_Single    (GlobalObjects, this);
-  this->frm_ObjectCalibration         = gcnew C_frm_ObjectCalibration           (GlobalObjects, this);
+  this->frm_ObjectCalibration         = gcnew c_frm_object_calibration           (GlobalObjects, this);
   this->frm_Camera_Positioning        = gcnew c_frm_Camera_Positioning          (GlobalObjects, this);
 
 
