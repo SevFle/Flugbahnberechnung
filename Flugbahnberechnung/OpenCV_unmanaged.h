@@ -31,7 +31,7 @@ namespace nmsp_opencv_unmanaged
       //Maps for undistorting
       cv::cuda::GpuMat*                         gpu_map1;
       cv::cuda::GpuMat*                         gpu_map2;
-
+      cv::cuda::GpuMat*                         gpu_gaussian_kernel_size;
 
 
       /**************************************************** Öffentliche Klassenobjekte ********************************************************/
@@ -97,8 +97,6 @@ namespace nmsp_opencv_unmanaged
       bool                                    contour_found;
       float                                   Radius;
 
-      //std::vector<std::vector<cv::Point>>     contours;
-      //std::vector<cv::Vec4i>                  hirarchy;
 
 
       cv::Moments                            Image_Moments;
@@ -107,6 +105,7 @@ namespace nmsp_opencv_unmanaged
       std::string                            S_y;
       std::string                            Delta_x_str;
       std::string                            Delta_y_str;
+      cv::Rect                               rect_roi;
 
 
 
@@ -167,7 +166,6 @@ namespace nmsp_opencv_unmanaged
       void            set_aspect_ratio                                    (int              Height,   int width);
       void            set_framerate                                       (int              framerate);
 
-
       /******************************************************* Private Klassenmethoden***************************************************************/
       private:
       void            init                                                (int              camera_id);
@@ -182,6 +180,7 @@ namespace nmsp_opencv_unmanaged
 
       void            gpu_bilateral_filter                                (cv::cuda::GpuMat* gpu_src, cv::cuda::GpuMat* gpu_dst);
       void            gpu_gaussian_filter                                 (cv::cuda::GpuMat* gpu_src, cv::cuda::GpuMat* gpu_dst);
+      void            get_gaussian_kernel                                 ();
       void            gpu_morph_gradient                                  (cv::cuda::GpuMat* gpu_src, cv::cuda::GpuMat* gpu_dst);
 
       void            gpu_filter_hsv                                      (cv::cuda::GpuMat* gpu_src, cv::cuda::GpuMat* gpu_dst);
