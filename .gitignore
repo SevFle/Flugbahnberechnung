@@ -382,4 +382,4 @@ MigrationBackup/
 *.out
 *.app
 
-/Parameter/Bilder/
+/Parameter/Bilder/*
