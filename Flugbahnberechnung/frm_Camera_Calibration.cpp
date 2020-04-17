@@ -44,30 +44,42 @@ C_frm_CameraCalibration_Single::~C_frm_CameraCalibration_Single                 
 System::Void          C_frm_CameraCalibration_Single::C_frm_CameraCalibration_Single_Load                 (System::Object^  sender, System::EventArgs^  e)
   {
   this->Zaehler                           = 0;
-  this->Taktgeber->Interval               = 100;
+  this->Taktgeber->Interval               = 25;
   this->Taktgeber->Enabled                = true;
   this->cameras_in_use                    = GlobalObjects->cameras_in_use;
   this->current_camera_id                 = 0;
   //Main->camera_managed->camera_unmanaged->camera_vector[0]->set_aspect_ratio(1080, 1920);
   }
 
-
 System::Void          C_frm_CameraCalibration_Single::rb_single_calibration_Click                         (System::Object^  sender, System::EventArgs^  e)
   {
-  this->method = 0;
-  this->rb_stereo_calibration->Checked = false;
-  this->rb_single_calibration->Checked = true;
+  this->method                          = 0;
+  this->nup_camera_id->Value            = 0;
+  this->nup_camera_id->Increment        = 1;
+  this->current_camera_id               = 0;
 
+  this->rb_stereo_calibration->Checked  = false;
+  this->rb_single_calibration->Checked  = true;
+
+  this->pb_stereo_L->Visible            = false;
+  this->pb_stereo_R->Visible            = false;
   this->pb_live_camera_picture->Visible = true;
 
   }
 System::Void          C_frm_CameraCalibration_Single::rb_stereo_calibration_Click                         (System::Object^  sender, System::EventArgs^  e)
   {
-  this->method = 1;
-  this->rb_single_calibration->Checked = false;
-  this->rb_stereo_calibration->Checked = true;
-  }
+  this->method                          = 1;
+  this->nup_camera_id->Value            = 0;
+  this->nup_camera_id->Increment        = 2;
+  this->current_camera_id               = 0;
 
+  this->rb_single_calibration->Checked  = false;
+  this->rb_stereo_calibration->Checked  = true;
+
+  this->pb_live_camera_picture->Visible = false;
+  this->pb_stereo_L->Visible            = true;
+  this->pb_stereo_R->Visible            = true;
+  }
 
 System::Void          C_frm_CameraCalibration_Single::Taktgeber_Tick                                      (System::Object^  sender, System::EventArgs^  e)
   {
@@ -77,15 +89,14 @@ System::Void          C_frm_CameraCalibration_Single::Taktgeber_Tick            
     switch (method)
       {
         case 0:
-          FillMat2Picturebox    (pb_live_camera_picture, Main->camera_managed->camera_unmanaged->camera_vector[current_camera_id]->cpu_undistorted);
-          break;
+          this->FillMat2Picturebox    (pb_live_camera_picture, Main->camera_managed->camera_unmanaged->camera_vector[current_camera_id]->cpu_src_img);
+      break;
+
         case 1:
-          break;
+          this->FillMat2Picturebox    (pb_stereo_L, Main->camera_managed->camera_unmanaged->camera_vector[current_camera_id]->cpu_src_img);
+          this->FillMat2Picturebox    (pb_stereo_R, Main->camera_managed->camera_unmanaged->camera_vector[current_camera_id+1]->cpu_src_img);
+      break;
       }
-    }
-  if (photo_id >= photocount_user_input)
-    {
-    Camera_calibration_condition();
     }
   }
 
@@ -98,8 +109,20 @@ System::Void          C_frm_CameraCalibration_Single::bt_start_Click            
   {
   this->lbl_calibration_running->Visible  = false;
   this->bt_take_photo->Visible            = true;
-  Camera_calibration_condition();
+  this->sm_calibration_state              = 0;
+  this->calibration_running               =   true;
+
+  switch (method)
+    {
+      case 0:
+        sm_Single_camera_calibration();
+        break;
+      case 1:
+        sm_Stereo_camera_calibration();
+        break;
+    }
   }
+  
 
 System::Void          C_frm_CameraCalibration_Single::FillPicturebox                                      (System::Windows::Forms::PictureBox^ Picturebox, Int32 ColorImageCols, Int32 ColorImageRows, Int32 ColorImageStep, Int32 ColorImageType, System::IntPtr ColorImagePtr)
   {
@@ -128,73 +151,149 @@ System::Void          C_frm_CameraCalibration_Single::nup_camera_id_ValueChanged
   Main->camera_managed->camera_unmanaged->camera_vector[current_camera_id]->idle = false;
   }
 
-System::Void          C_frm_CameraCalibration_Single::Camera_calibration_condition                        ()
-  {
-  switch(method)
+System::Void          C_frm_CameraCalibration_Single::camera_calibration_thread                           ()
     {
-      case 0:
-        if (!calibration_running)
-          {
+    //lbl_calibration_running->Invoke(gcnew Action<bool>(lbl_calibration_running->Visible, true));
+    switch (method)
+      {
+        case 0:
+          this->Main->camera_managed->camera_unmanaged->calibrate_single_camera(this->current_camera_id);
+          break;
+
+        case 1:
+          this->Main->camera_managed->camera_unmanaged->calibrate_stereo_camera(this->current_camera_id);
+          break;
+      }
+    //this->lbl_calibration_running->ForeColor = System::Drawing::Color::Green;
+    //this->lbl_calibration_running->Text = "Kalibrierung beendet";
+    //terminate();
+    }
+System::Void          C_frm_CameraCalibration_Single::bt_take_photo_Click                                 (System::Object^  sender, System::EventArgs^  e)
+    {
+    switch(method)
+      {
+        case 0:
+          sm_Single_camera_calibration();
+          break;
+        case 1:
+          sm_Stereo_camera_calibration();
+          break;
+      }
+    }
+
+System::Void          C_frm_CameraCalibration_Single::sm_Single_camera_calibration                        ()
+  {
+  std::string naming = "../Parameter/Bilder/Camera_Single_Calibration_";
+    switch (this->sm_calibration_state)
+      {
+        case 0:
           this->Main->camera_managed->camera_unmanaged->camera_vector[current_camera_id]->cap->set(cv::CAP_PROP_XI_AEAG, false);
-          //this->Main->camera_managed->camera_unmanaged->camera_vector[current_camera_id]->set_framerate(3);
-          //this->Main->camera_managed->camera_unmanaged->camera_vector[current_camera_id]->set_aspect_ratio(1080, 1920);
-          photo_id                  =   0;
-          photo_interval            =   int::Parse(tb_photo_interval->Text)*10;
-          photocount_user_input     =   int::Parse(tb_single_imgs_to_take->Text);
+          this->current_camera_id         =   static_cast<int>(this->nup_camera_id->Value);
+          this->photo_id                  =   0;
+          this->photo_interval            =   int::Parse(tb_photo_interval->Text)*10;
+          this->photocount_user_input     =   int::Parse(tb_single_imgs_to_take->Text);
 
-          grB_single->Enabled       =   false;
-          grb_stereo->Enabled       =   false;
-          this->bt_start->Text      =   "Beenden";
-          this->calibration_running =   true;
+          this->grB_options->Enabled      =   false;
+          this->bt_start->Text            =   "Beenden";
 
-          }
-        else
-          {
-          this->Main->camera_managed->camera_unmanaged->camera_vector[current_camera_id]->set_framerate(30);
-          this->Main->camera_managed->camera_unmanaged->camera_vector[current_camera_id]->set_aspect_ratio(600, 800);
-          this->bt_take_photo->Visible = false;
-          calibration_running       =   false;
-          grB_single->Enabled       =   true;
-          grb_stereo->Enabled       =   true;
-          this->bt_start->Text      =   "Start";
+          this->sm_calibration_state = 1;
+          break;
 
-          this->Main->camera_managed->camera_unmanaged->SquareSize        = static_cast<float>  (double::Parse(this->tb_single_edge_length->Text));
-          this->Main->camera_managed->camera_unmanaged->numBoards_imgs    = this->photo_id;
-          this->Main->camera_managed->camera_unmanaged->numCornersHeight  = int::Parse          (this->tb_single_corner_count_H->Text);
-          this->Main->camera_managed->camera_unmanaged->numCornersWidth   = int::Parse          (this->tb_single_corner_count_B->Text);
-          this->Main->camera_managed->camera_unmanaged->camera_id         = this->current_camera_id;
-          this->lbl_calibration_running->Visible                          = true;
+            //Take pictures
+        case 1:
+          //this->Main->camera_managed->camera_unmanaged->save_picture(current_camera_id, photo_id, naming);
+          this->tb_picture_count->Text								= System::String::Format("{0:0}", this->photo_id+1);
+          this->photo_id++;
+
+          if (photo_id >= photocount_user_input)
+            {
+            this->sm_calibration_state                             =   2;
+            }
+
+          break;
+
+        case 2:
+          this->bt_take_photo->Visible                                    =   false;
+          this->calibration_running                                       =   false;
+          this->grB_options->Enabled                                      =   true;
+          this->bt_start->Text                                            =   "Start";
+
+          this->Main->camera_managed->camera_unmanaged->SquareSize        =   static_cast<float>  (double::Parse(this->tb_single_edge_length->Text));
+          this->Main->camera_managed->camera_unmanaged->numBoards_imgs    =   this->photo_id;
+          this->Main->camera_managed->camera_unmanaged->numCornersHeight  =   int::Parse          (this->tb_single_corner_count_H->Text);
+          this->Main->camera_managed->camera_unmanaged->numCornersWidth   =   int::Parse          (this->tb_single_corner_count_B->Text);
+          this->Main->camera_managed->camera_unmanaged->camera_id         =   this->current_camera_id;
+          this->lbl_calibration_running->Visible                          =   true;
+          this->Main->camera_managed->camera_unmanaged->camera_vector[current_camera_id]->undistord_active = false;
 
           //Starte Hintergrund Thread zur Verarbeitung der aufgenommenen Bilder
           Thread ^calibrate = gcnew Thread(gcnew ThreadStart(this, &C_frm_CameraCalibration_Single::camera_calibration_thread));
           calibrate->Start();
           photo_id                  =   0;
 
-          }
 
-        break;
+          break;
 
-      case 1:
-
-        break;
+      }
 
     }
-  }
+System::Void          C_frm_CameraCalibration_Single::sm_Stereo_camera_calibration                        ()
+  {
+  std::string naming = "../Parameter/Bilder/Camera_Stereo_Calibration_";
+    switch (this->sm_calibration_state)
+      {
+        case 0:
+          this->Main->camera_managed->camera_unmanaged->camera_vector[current_camera_id]->cap->set(cv::CAP_PROP_XI_AEAG, false);
+          current_camera_id         =   static_cast<int>(this->nup_camera_id->Value);
+          photo_id                  =   0;
+          photo_interval            =   int::Parse(tb_photo_interval->Text)*10;
+          photocount_user_input     =   int::Parse(tb_single_imgs_to_take->Text);
 
-  System::Void      C_frm_CameraCalibration_Single::camera_calibration_thread                           ()
-    {
-    //lbl_calibration_running->Invoke(gcnew Action<bool>(lbl_calibration_running->Visible, true));
-    this->Main->camera_managed->camera_unmanaged->calibrate_single_camera(this->current_camera_id);
-    //this->lbl_calibration_running->ForeColor = System::Drawing::Color::Green;
-    //this->lbl_calibration_running->Text = "Kalibrierung beendet";
-    //terminate();
-    }
-  System::Void      C_frm_CameraCalibration_Single::bt_take_photo_Click                                 (System::Object^  sender, System::EventArgs^  e)
-    {
-    this->Main->camera_managed->camera_unmanaged->save_picture(current_camera_id, photo_id);
-    this->tb_picture_count->Text								= System::String::Format("{0:0}", this->photo_id+1);
-    photo_id++;
-    }
+          grB_options->Enabled       =   false;
+          this->bt_start->Text      =   "Beenden";
 
+          this->sm_calibration_state = 1;
+          break;
+
+            //Take pictures
+        case 1:
+          this->Main->camera_managed->camera_unmanaged->save_picture(current_camera_id, photo_id, naming);
+          this->Main->camera_managed->camera_unmanaged->save_picture(current_camera_id+1, photo_id, naming);
+
+          this->tb_picture_count->Text								= System::String::Format("{0:0}", this->photo_id+1);
+          this->photo_id++;
+
+          if (photo_id >= photocount_user_input)
+            {
+            this->sm_calibration_state                             =   2;
+            }
+
+          break;
+
+        case 2:
+          this->bt_take_photo->Visible                                    =   false;
+          this->calibration_running                                       =   false;
+          this->grB_options->Enabled                                      =   true;
+          this->bt_start->Text                                            =   "Start";
+
+          this->Main->camera_managed->camera_unmanaged->SquareSize        =   static_cast<float>  (double::Parse(this->tb_single_edge_length->Text));
+          this->Main->camera_managed->camera_unmanaged->numBoards_imgs    =   this->photo_id;
+          this->Main->camera_managed->camera_unmanaged->numCornersHeight  =   int::Parse          (this->tb_single_corner_count_H->Text);
+          this->Main->camera_managed->camera_unmanaged->numCornersWidth   =   int::Parse          (this->tb_single_corner_count_B->Text);
+          this->Main->camera_managed->camera_unmanaged->camera_id         =   this->current_camera_id;
+          this->lbl_calibration_running->Visible                          =   true;
+          this->Main->camera_managed->camera_unmanaged->camera_vector[current_camera_id]->undistord_active = false;
+
+          //Starte Hintergrund Thread zur Verarbeitung der aufgenommenen Bilder
+          Thread ^calibrate = gcnew Thread(gcnew ThreadStart(this, &C_frm_CameraCalibration_Single::camera_calibration_thread));
+          calibrate->Start();
+          photo_id                  =   0;
+
+
+          break;
+
+      }
+
+    }
 
 

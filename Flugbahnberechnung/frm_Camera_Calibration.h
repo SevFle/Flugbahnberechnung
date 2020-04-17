@@ -35,6 +35,9 @@ namespace NmSp_CamerCalibration_Single
     int         photo_id;
     int         method;
     int         current_camera_id;
+    int         sm_calibration_state;
+
+
     Int16       photocount_user_input;
 
 
@@ -70,22 +73,22 @@ namespace NmSp_CamerCalibration_Single
     private: System::Windows::Forms::TextBox^  tb_single_corner_count_B;
 
     private: System::Windows::Forms::TextBox^  tb_single_corner_count_H;
-    private: System::Windows::Forms::GroupBox^  grB_single;
-    private: System::Windows::Forms::GroupBox^  grb_stereo;
+    private: System::Windows::Forms::GroupBox^  grB_options;
 
 
 
 
-    private: System::Windows::Forms::TextBox^  tb_stereo_corner_count_H;
 
-    private: System::Windows::Forms::Label^  label6;
-    private: System::Windows::Forms::TextBox^  tb_stereo_corner_count_L;
 
-    private: System::Windows::Forms::Label^  label7;
-    private: System::Windows::Forms::TextBox^  tb_stereo_edge_length;
 
-    private: System::Windows::Forms::Label^  label8;
-    private: System::Windows::Forms::TextBox^  tb_stereo_imgs_to_take;
+
+
+
+
+
+
+
+
 
     private: System::Windows::Forms::RadioButton^  rb_single_calibration;
     private: System::Windows::Forms::RadioButton^  rb_stereo_calibration;
@@ -131,17 +134,9 @@ namespace NmSp_CamerCalibration_Single
       this->label5 = (gcnew System::Windows::Forms::Label());
       this->tb_single_corner_count_B = (gcnew System::Windows::Forms::TextBox());
       this->tb_single_corner_count_H = (gcnew System::Windows::Forms::TextBox());
-      this->grB_single = (gcnew System::Windows::Forms::GroupBox());
+      this->grB_options = (gcnew System::Windows::Forms::GroupBox());
       this->rb_single_calibration = (gcnew System::Windows::Forms::RadioButton());
-      this->grb_stereo = (gcnew System::Windows::Forms::GroupBox());
       this->rb_stereo_calibration = (gcnew System::Windows::Forms::RadioButton());
-      this->tb_stereo_corner_count_H = (gcnew System::Windows::Forms::TextBox());
-      this->label6 = (gcnew System::Windows::Forms::Label());
-      this->tb_stereo_corner_count_L = (gcnew System::Windows::Forms::TextBox());
-      this->label7 = (gcnew System::Windows::Forms::Label());
-      this->tb_stereo_edge_length = (gcnew System::Windows::Forms::TextBox());
-      this->label8 = (gcnew System::Windows::Forms::Label());
-      this->tb_stereo_imgs_to_take = (gcnew System::Windows::Forms::TextBox());
       this->groupBox3 = (gcnew System::Windows::Forms::GroupBox());
       this->tb_photo_interval = (gcnew System::Windows::Forms::TextBox());
       this->label9 = (gcnew System::Windows::Forms::Label());
@@ -155,8 +150,7 @@ namespace NmSp_CamerCalibration_Single
       (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->pb_taken_picture_1))->BeginInit();
       (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->pb_taken_picture_2))->BeginInit();
       (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->pb_taken_picture_3))->BeginInit();
-      this->grB_single->SuspendLayout();
-      this->grb_stereo->SuspendLayout();
+      this->grB_options->SuspendLayout();
       this->groupBox3->SuspendLayout();
       (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->pb_stereo_L))->BeginInit();
       (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->pb_stereo_R))->BeginInit();
@@ -252,7 +246,7 @@ namespace NmSp_CamerCalibration_Single
       // tb_picture_count
       // 
       this->tb_picture_count->Location = System::Drawing::Point(230, 22);
-      this->tb_picture_count->Margin = System::Windows::Forms::Padding(2, 2, 2, 2);
+      this->tb_picture_count->Margin = System::Windows::Forms::Padding(2);
       this->tb_picture_count->Name = L"tb_picture_count";
       this->tb_picture_count->Size = System::Drawing::Size(37, 26);
       this->tb_picture_count->TabIndex = 12;
@@ -282,7 +276,7 @@ namespace NmSp_CamerCalibration_Single
       // label3
       // 
       this->label3->AutoSize = true;
-      this->label3->Location = System::Drawing::Point(8, 61);
+      this->label3->Location = System::Drawing::Point(8, 108);
       this->label3->Margin = System::Windows::Forms::Padding(2, 0, 2, 0);
       this->label3->Name = L"label3";
       this->label3->Size = System::Drawing::Size(150, 13);
@@ -291,8 +285,8 @@ namespace NmSp_CamerCalibration_Single
       // 
       // tb_single_imgs_to_take
       // 
-      this->tb_single_imgs_to_take->Location = System::Drawing::Point(10, 77);
-      this->tb_single_imgs_to_take->Margin = System::Windows::Forms::Padding(2, 2, 2, 2);
+      this->tb_single_imgs_to_take->Location = System::Drawing::Point(10, 124);
+      this->tb_single_imgs_to_take->Margin = System::Windows::Forms::Padding(2);
       this->tb_single_imgs_to_take->Name = L"tb_single_imgs_to_take";
       this->tb_single_imgs_to_take->Size = System::Drawing::Size(96, 20);
       this->tb_single_imgs_to_take->TabIndex = 15;
@@ -300,7 +294,7 @@ namespace NmSp_CamerCalibration_Single
       // label4
       // 
       this->label4->AutoSize = true;
-      this->label4->Location = System::Drawing::Point(8, 103);
+      this->label4->Location = System::Drawing::Point(8, 150);
       this->label4->Margin = System::Windows::Forms::Padding(2, 0, 2, 0);
       this->label4->Name = L"label4";
       this->label4->Size = System::Drawing::Size(141, 13);
@@ -309,8 +303,8 @@ namespace NmSp_CamerCalibration_Single
       // 
       // tb_single_edge_length
       // 
-      this->tb_single_edge_length->Location = System::Drawing::Point(10, 119);
-      this->tb_single_edge_length->Margin = System::Windows::Forms::Padding(2, 2, 2, 2);
+      this->tb_single_edge_length->Location = System::Drawing::Point(10, 166);
+      this->tb_single_edge_length->Margin = System::Windows::Forms::Padding(2);
       this->tb_single_edge_length->Name = L"tb_single_edge_length";
       this->tb_single_edge_length->Size = System::Drawing::Size(96, 20);
       this->tb_single_edge_length->TabIndex = 17;
@@ -318,7 +312,7 @@ namespace NmSp_CamerCalibration_Single
       // label5
       // 
       this->label5->AutoSize = true;
-      this->label5->Location = System::Drawing::Point(8, 167);
+      this->label5->Location = System::Drawing::Point(8, 214);
       this->label5->Margin = System::Windows::Forms::Padding(2, 0, 2, 0);
       this->label5->Name = L"label5";
       this->label5->Size = System::Drawing::Size(129, 13);
@@ -327,146 +321,66 @@ namespace NmSp_CamerCalibration_Single
       // 
       // tb_single_corner_count_B
       // 
-      this->tb_single_corner_count_B->Location = System::Drawing::Point(10, 183);
-      this->tb_single_corner_count_B->Margin = System::Windows::Forms::Padding(2, 2, 2, 2);
+      this->tb_single_corner_count_B->Location = System::Drawing::Point(10, 230);
+      this->tb_single_corner_count_B->Margin = System::Windows::Forms::Padding(2);
       this->tb_single_corner_count_B->Name = L"tb_single_corner_count_B";
       this->tb_single_corner_count_B->Size = System::Drawing::Size(96, 20);
       this->tb_single_corner_count_B->TabIndex = 19;
       // 
       // tb_single_corner_count_H
       // 
-      this->tb_single_corner_count_H->Location = System::Drawing::Point(110, 183);
-      this->tb_single_corner_count_H->Margin = System::Windows::Forms::Padding(2, 2, 2, 2);
+      this->tb_single_corner_count_H->Location = System::Drawing::Point(110, 230);
+      this->tb_single_corner_count_H->Margin = System::Windows::Forms::Padding(2);
       this->tb_single_corner_count_H->Name = L"tb_single_corner_count_H";
       this->tb_single_corner_count_H->Size = System::Drawing::Size(96, 20);
       this->tb_single_corner_count_H->TabIndex = 21;
       // 
-      // grB_single
+      // grB_options
       // 
-      this->grB_single->Controls->Add(this->rb_single_calibration);
-      this->grB_single->Controls->Add(this->tb_single_corner_count_H);
-      this->grB_single->Controls->Add(this->label5);
-      this->grB_single->Controls->Add(this->tb_single_corner_count_B);
-      this->grB_single->Controls->Add(this->label4);
-      this->grB_single->Controls->Add(this->tb_single_edge_length);
-      this->grB_single->Controls->Add(this->label3);
-      this->grB_single->Controls->Add(this->tb_single_imgs_to_take);
-      this->grB_single->Location = System::Drawing::Point(320, 13);
-      this->grB_single->Margin = System::Windows::Forms::Padding(2, 2, 2, 2);
-      this->grB_single->Name = L"grB_single";
-      this->grB_single->Padding = System::Windows::Forms::Padding(2, 2, 2, 2);
-      this->grB_single->Size = System::Drawing::Size(224, 332);
-      this->grB_single->TabIndex = 22;
-      this->grB_single->TabStop = false;
-      this->grB_single->Text = L"Single Calibration [Intrinsic]";
+      this->grB_options->Controls->Add(this->rb_stereo_calibration);
+      this->grB_options->Controls->Add(this->rb_single_calibration);
+      this->grB_options->Controls->Add(this->tb_single_corner_count_H);
+      this->grB_options->Controls->Add(this->label5);
+      this->grB_options->Controls->Add(this->tb_single_corner_count_B);
+      this->grB_options->Controls->Add(this->label4);
+      this->grB_options->Controls->Add(this->tb_single_edge_length);
+      this->grB_options->Controls->Add(this->label3);
+      this->grB_options->Controls->Add(this->tb_single_imgs_to_take);
+      this->grB_options->Location = System::Drawing::Point(320, 13);
+      this->grB_options->Margin = System::Windows::Forms::Padding(2);
+      this->grB_options->Name = L"grB_options";
+      this->grB_options->Padding = System::Windows::Forms::Padding(2);
+      this->grB_options->Size = System::Drawing::Size(224, 332);
+      this->grB_options->TabIndex = 22;
+      this->grB_options->TabStop = false;
+      this->grB_options->Text = L"Parameter";
       // 
       // rb_single_calibration
       // 
       this->rb_single_calibration->AutoSize = true;
       this->rb_single_calibration->Checked = true;
       this->rb_single_calibration->Location = System::Drawing::Point(12, 30);
-      this->rb_single_calibration->Margin = System::Windows::Forms::Padding(2, 2, 2, 2);
+      this->rb_single_calibration->Margin = System::Windows::Forms::Padding(2);
       this->rb_single_calibration->Name = L"rb_single_calibration";
-      this->rb_single_calibration->Size = System::Drawing::Size(49, 17);
+      this->rb_single_calibration->Size = System::Drawing::Size(110, 17);
       this->rb_single_calibration->TabIndex = 22;
       this->rb_single_calibration->TabStop = true;
-      this->rb_single_calibration->Text = L"Aktiv";
+      this->rb_single_calibration->Text = L"Single [Intrinsisch]";
       this->rb_single_calibration->UseVisualStyleBackColor = true;
       this->rb_single_calibration->Click += gcnew System::EventHandler(this, &C_frm_CameraCalibration_Single::rb_single_calibration_Click);
-      // 
-      // grb_stereo
-      // 
-      this->grb_stereo->Controls->Add(this->rb_stereo_calibration);
-      this->grb_stereo->Controls->Add(this->tb_stereo_corner_count_H);
-      this->grb_stereo->Controls->Add(this->label6);
-      this->grb_stereo->Controls->Add(this->tb_stereo_corner_count_L);
-      this->grb_stereo->Controls->Add(this->label7);
-      this->grb_stereo->Controls->Add(this->tb_stereo_edge_length);
-      this->grb_stereo->Controls->Add(this->label8);
-      this->grb_stereo->Controls->Add(this->tb_stereo_imgs_to_take);
-      this->grb_stereo->Location = System::Drawing::Point(549, 13);
-      this->grb_stereo->Margin = System::Windows::Forms::Padding(2, 2, 2, 2);
-      this->grb_stereo->Name = L"grb_stereo";
-      this->grb_stereo->Padding = System::Windows::Forms::Padding(2, 2, 2, 2);
-      this->grb_stereo->Size = System::Drawing::Size(224, 332);
-      this->grb_stereo->TabIndex = 23;
-      this->grb_stereo->TabStop = false;
-      this->grb_stereo->Text = L"Stereo Calibration [Extrinsic]";
       // 
       // rb_stereo_calibration
       // 
       this->rb_stereo_calibration->AutoSize = true;
-      this->rb_stereo_calibration->Location = System::Drawing::Point(12, 30);
-      this->rb_stereo_calibration->Margin = System::Windows::Forms::Padding(2, 2, 2, 2);
+      this->rb_stereo_calibration->Location = System::Drawing::Point(12, 51);
+      this->rb_stereo_calibration->Margin = System::Windows::Forms::Padding(2);
       this->rb_stereo_calibration->Name = L"rb_stereo_calibration";
-      this->rb_stereo_calibration->Size = System::Drawing::Size(49, 17);
+      this->rb_stereo_calibration->Size = System::Drawing::Size(115, 17);
       this->rb_stereo_calibration->TabIndex = 23;
       this->rb_stereo_calibration->TabStop = true;
-      this->rb_stereo_calibration->Text = L"Aktiv";
+      this->rb_stereo_calibration->Text = L"Stereo [Extrinsisch]";
       this->rb_stereo_calibration->UseVisualStyleBackColor = true;
       this->rb_stereo_calibration->Click += gcnew System::EventHandler(this, &C_frm_CameraCalibration_Single::rb_stereo_calibration_Click);
-      // 
-      // tb_stereo_corner_count_H
-      // 
-      this->tb_stereo_corner_count_H->Location = System::Drawing::Point(111, 183);
-      this->tb_stereo_corner_count_H->Margin = System::Windows::Forms::Padding(2, 2, 2, 2);
-      this->tb_stereo_corner_count_H->Name = L"tb_stereo_corner_count_H";
-      this->tb_stereo_corner_count_H->Size = System::Drawing::Size(96, 20);
-      this->tb_stereo_corner_count_H->TabIndex = 21;
-      // 
-      // label6
-      // 
-      this->label6->AutoSize = true;
-      this->label6->Location = System::Drawing::Point(10, 167);
-      this->label6->Margin = System::Windows::Forms::Padding(2, 0, 2, 0);
-      this->label6->Name = L"label6";
-      this->label6->Size = System::Drawing::Size(128, 13);
-      this->label6->TabIndex = 20;
-      this->label6->Text = L"Anzahl der Kanten (L x H)";
-      // 
-      // tb_stereo_corner_count_L
-      // 
-      this->tb_stereo_corner_count_L->Location = System::Drawing::Point(12, 183);
-      this->tb_stereo_corner_count_L->Margin = System::Windows::Forms::Padding(2, 2, 2, 2);
-      this->tb_stereo_corner_count_L->Name = L"tb_stereo_corner_count_L";
-      this->tb_stereo_corner_count_L->Size = System::Drawing::Size(96, 20);
-      this->tb_stereo_corner_count_L->TabIndex = 19;
-      // 
-      // label7
-      // 
-      this->label7->AutoSize = true;
-      this->label7->Location = System::Drawing::Point(10, 103);
-      this->label7->Margin = System::Windows::Forms::Padding(2, 0, 2, 0);
-      this->label7->Name = L"label7";
-      this->label7->Size = System::Drawing::Size(166, 13);
-      this->label7->TabIndex = 18;
-      this->label7->Text = L"Kantenlänge eines Quadrats [mm]";
-      // 
-      // tb_stereo_edge_length
-      // 
-      this->tb_stereo_edge_length->Location = System::Drawing::Point(12, 119);
-      this->tb_stereo_edge_length->Margin = System::Windows::Forms::Padding(2, 2, 2, 2);
-      this->tb_stereo_edge_length->Name = L"tb_stereo_edge_length";
-      this->tb_stereo_edge_length->Size = System::Drawing::Size(96, 20);
-      this->tb_stereo_edge_length->TabIndex = 17;
-      // 
-      // label8
-      // 
-      this->label8->AutoSize = true;
-      this->label8->Location = System::Drawing::Point(10, 61);
-      this->label8->Margin = System::Windows::Forms::Padding(2, 0, 2, 0);
-      this->label8->Name = L"label8";
-      this->label8->Size = System::Drawing::Size(150, 13);
-      this->label8->TabIndex = 16;
-      this->label8->Text = L"Anzahl aufzunehmender Bilder";
-      // 
-      // tb_stereo_imgs_to_take
-      // 
-      this->tb_stereo_imgs_to_take->Location = System::Drawing::Point(12, 77);
-      this->tb_stereo_imgs_to_take->Margin = System::Windows::Forms::Padding(2, 2, 2, 2);
-      this->tb_stereo_imgs_to_take->Name = L"tb_stereo_imgs_to_take";
-      this->tb_stereo_imgs_to_take->Size = System::Drawing::Size(96, 20);
-      this->tb_stereo_imgs_to_take->TabIndex = 15;
       // 
       // groupBox3
       // 
@@ -478,9 +392,9 @@ namespace NmSp_CamerCalibration_Single
       this->groupBox3->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 12, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
                                static_cast<System::Byte>(0)));
       this->groupBox3->Location = System::Drawing::Point(9, 10);
-      this->groupBox3->Margin = System::Windows::Forms::Padding(2, 2, 2, 2);
+      this->groupBox3->Margin = System::Windows::Forms::Padding(2);
       this->groupBox3->Name = L"groupBox3";
-      this->groupBox3->Padding = System::Windows::Forms::Padding(2, 2, 2, 2);
+      this->groupBox3->Padding = System::Windows::Forms::Padding(2);
       this->groupBox3->Size = System::Drawing::Size(307, 707);
       this->groupBox3->TabIndex = 24;
       this->groupBox3->TabStop = false;
@@ -491,7 +405,7 @@ namespace NmSp_CamerCalibration_Single
       this->tb_photo_interval->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 10.8F, System::Drawing::FontStyle::Regular,
                                        System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
       this->tb_photo_interval->Location = System::Drawing::Point(386, 756);
-      this->tb_photo_interval->Margin = System::Windows::Forms::Padding(2, 2, 2, 2);
+      this->tb_photo_interval->Margin = System::Windows::Forms::Padding(2);
       this->tb_photo_interval->Name = L"tb_photo_interval";
       this->tb_photo_interval->Size = System::Drawing::Size(37, 24);
       this->tb_photo_interval->TabIndex = 14;
@@ -549,19 +463,21 @@ namespace NmSp_CamerCalibration_Single
       // 
       // pb_stereo_L
       // 
-      this->pb_stereo_L->Location = System::Drawing::Point(313, 389);
+      this->pb_stereo_L->Location = System::Drawing::Point(325, 388);
       this->pb_stereo_L->Name = L"pb_stereo_L";
-      this->pb_stereo_L->Size = System::Drawing::Size(400, 300);
+      this->pb_stereo_L->Size = System::Drawing::Size(320, 275);
       this->pb_stereo_L->TabIndex = 28;
       this->pb_stereo_L->TabStop = false;
+      this->pb_stereo_L->Visible = false;
       // 
       // pb_stereo_R
       // 
-      this->pb_stereo_R->Location = System::Drawing::Point(616, 389);
+      this->pb_stereo_R->Location = System::Drawing::Point(651, 388);
       this->pb_stereo_R->Name = L"pb_stereo_R";
-      this->pb_stereo_R->Size = System::Drawing::Size(288, 275);
+      this->pb_stereo_R->Size = System::Drawing::Size(320, 275);
       this->pb_stereo_R->TabIndex = 29;
       this->pb_stereo_R->TabStop = false;
+      this->pb_stereo_R->Visible = false;
       // 
       // C_frm_CameraCalibration_Single
       // 
@@ -576,8 +492,7 @@ namespace NmSp_CamerCalibration_Single
       this->Controls->Add(this->label9);
       this->Controls->Add(this->tb_photo_interval);
       this->Controls->Add(this->groupBox3);
-      this->Controls->Add(this->grb_stereo);
-      this->Controls->Add(this->grB_single);
+      this->Controls->Add(this->grB_options);
       this->Controls->Add(this->bt_start);
       this->Controls->Add(this->label1);
       this->Controls->Add(this->pb_live_camera_picture);
@@ -593,10 +508,8 @@ namespace NmSp_CamerCalibration_Single
       (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->pb_taken_picture_1))->EndInit();
       (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->pb_taken_picture_2))->EndInit();
       (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->pb_taken_picture_3))->EndInit();
-      this->grB_single->ResumeLayout(false);
-      this->grB_single->PerformLayout();
-      this->grb_stereo->ResumeLayout(false);
-      this->grb_stereo->PerformLayout();
+      this->grB_options->ResumeLayout(false);
+      this->grB_options->PerformLayout();
       this->groupBox3->ResumeLayout(false);
       this->groupBox3->PerformLayout();
       (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->pb_stereo_L))->EndInit();
@@ -621,8 +534,9 @@ namespace NmSp_CamerCalibration_Single
 
       System::Void      nup_camera_id_ValueChanged                          (System::Object^  sender, System::EventArgs^  e);
 
-      System::Void      Camera_calibration_condition                        ();
       System::Void      camera_calibration_thread                           ();
       System::Void      bt_take_photo_Click                                 (System::Object^  sender, System::EventArgs^  e);
-};
+      System::Void      sm_Single_camera_calibration                        ();
+      System::Void      sm_Stereo_camera_calibration                        ();
+  };
 }

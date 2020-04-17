@@ -89,7 +89,7 @@ namespace nmsp_camera_unmanaged
 
       void calibrate_single_camera                          (int current_camera_id);
     void calibrate_stereo_camera (int current_camera_id);
-    void save_picture                                     (int camera_id, int photo_id);
+    void save_picture                                     (int camera_id, int photo_id, std::string definition);
 
 
 

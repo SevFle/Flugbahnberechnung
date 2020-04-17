@@ -147,7 +147,7 @@ System::Void          c_frm_Camera_Positioning::c_frm_Camera_Positioning_FormClo
 System::Void          c_frm_Camera_Positioning::c_frm_Camera_Positioning_Load                       (System::Object^  sender, System::EventArgs^  e)
   {
   this->Zaehler                           = 0;
-  this->Taktgeber->Interval               = 100;
+  this->Taktgeber->Interval               = 25;
   this->Taktgeber->Enabled                = true;
   this->cameras_in_use                    = GlobalObjects->cameras_in_use;
   if (Main->camera_managed->camera_unmanaged->load_positioning)       this->set_numUD_value(*GlobalObjects->camera_order);

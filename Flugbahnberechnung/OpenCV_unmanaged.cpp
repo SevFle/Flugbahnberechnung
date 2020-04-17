@@ -47,7 +47,7 @@ c_opencv_unmanaged::c_opencv_unmanaged                                  (int cam
 
   idle                        = false;
 
-  undistord_active            = false;
+  undistord_active            = true;
 
 
   this->gpu_src_img           = new cv::cuda::GpuMat();
@@ -235,7 +235,10 @@ void c_opencv_unmanaged::camera_thread                                  ()
         //Grabbing photos and undistorting last image
         case 2:
           this->cpu_grab_frame(cpu_src_img);
-          this->undistord_img(this->cpu_src_img, this->cpu_undistorted);
+          if (undistord_active == true)
+            {
+            this->undistord_img(this->cpu_src_img, this->cpu_undistorted);
+            }
           this->statemachine_state = 3;
 
         case 3:  //Image Processing
@@ -315,6 +318,11 @@ void c_opencv_unmanaged::init                                           (int    
   {
   cv::Mat                         cpu_map1;
   cv::Mat                         cpu_map2;
+
+  //ELP Webcam 5-50 mm USB8MP02G-SFV
+  //  1024X768  MJPEG 30fps
+  //  800X600   MJPEG 30fps
+  //  640X480   MJPEG 30fps
 
   cap->set                        (cv::CAP_PROP_FRAME_HEIGHT, 600);
   cap->set                        (cv::CAP_PROP_FRAME_WIDTH, 800);
@@ -586,9 +594,7 @@ void  c_opencv_unmanaged::undistord_img                                       (c
   cv::cuda::GpuMat gpu_temp1;
   cv::cuda::GpuMat gpu_temp2;
 
-
   gpu_temp1.upload(*cpu_src);
-
 
   cv::cuda::remap(gpu_temp1, gpu_temp2, *gpu_map1, *gpu_map2, cv::INTER_NEAREST, cv::BORDER_CONSTANT,0);
 
