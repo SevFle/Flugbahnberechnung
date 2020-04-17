@@ -335,10 +335,10 @@ void c_opencv_unmanaged::init                                           (int    
   //  +--------+----+----+----+----+------+------+------+------+
 
   //Redifinition der zwei GpuMat Arrays für die Verwendung in der Cuda-InRange Funktion. 
-  gpu_src2color->create           (480, 800, CV_8UC1);
-  gpu_color_threshold->create     (480, 800, CV_8UC1);
-  cpu_undistorted->create         (480, 800, CV_32FC1);
-  cpu_contoured->create           (480, 800, CV_8UC3);
+  gpu_src2color->create           (600, 800, CV_8UC1);
+  gpu_color_threshold->create     (600, 800, CV_8UC1);
+  cpu_undistorted->create         (600, 800, CV_32FC1);
+  cpu_contoured->create           (600, 800, CV_8UC3);
  
   cv::initUndistortRectifyMap(*Intrinsic, *DistCoeffs, cv::Mat(), *Intrinsic, cv::Size(cpu_undistorted->cols, cpu_undistorted->rows), CV_32FC1, cpu_map1, cpu_map2);
   gpu_map1->upload(cpu_map1);
@@ -563,7 +563,7 @@ void c_opencv_unmanaged::find_contours                                  (cv::Mat
 
     rect_roi = cv::Rect(Ist_x, Ist_y, Radius+20, Radius +20);
 
-     c
+     
     }
   else
     {

@@ -1,4 +1,4 @@
-﻿  opencv_unmanaged.cpp
+﻿  Camera_unmanaged.cpp
   App_Main.obj : MSIL module encountered; incremental linking is disabled for MSIL; performing full link
 Main.obj : warning LNK4248: unresolved typeref token (0100000F) for 'NmSp_CamerCalibration_Menu.C_frm_CameraCalibration_Menu'; image may not run
 frm_Main.obj : warning LNK4248: unresolved typeref token (0100000F) for 'NmSp_CamerCalibration_Menu.C_frm_CameraCalibration_Menu'; image may not run
@@ -12,7 +12,7 @@ frm_Object_Calibration.obj : warning LNK4248: unresolved typeref token (01000010
 frm_Camera_Positioning.obj : warning LNK4248: unresolved typeref token (01000010) for 'NmSp_frm_CameraCalibration_Stereo.C_frm_CameraCalibration_Stereo'; image may not run
 frm_Camera_Calibration.obj : warning LNK4248: unresolved typeref token (01000010) for 'NmSp_frm_CameraCalibration_Stereo.C_frm_CameraCalibration_Stereo'; image may not run
 App_Main.obj : warning LNK4248: unresolved typeref token (01000010) for 'NmSp_frm_CameraCalibration_Stereo.C_frm_CameraCalibration_Stereo'; image may not run
-  Flugbahnberechnung.vcxproj -> D:\Projekte\VisualStudio\Flugbahnberechnung\Flugbahnberechnung\x64\Debug\ObjectTracking.exe
+  Flugbahnberechnung.vcxproj -> D:\Projekte\VisualStudio\Flugbahnberechnung\x64\Debug\ObjectTracking.exe
 C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\Common7\IDE\VC\VCTargets\Microsoft.MetaGen.targets(52,5): warning MSB4018: The "METAGEN" task failed unexpectedly.
 C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\Common7\IDE\VC\VCTargets\Microsoft.MetaGen.targets(52,5): warning MSB4018: System.TypeLoadException: Could not load type 'NmSp_CamerCalibration_Menu.C_frm_CameraCalibration_Menu' from assembly 'ObjectTracking, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null' due to value type mismatch.
 C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\Common7\IDE\VC\VCTargets\Microsoft.MetaGen.targets(52,5): warning MSB4018:    at System.Signature.GetSignature(Void* pCorSig, Int32 cCorSig, RuntimeFieldHandleInternal fieldHandle, IRuntimeMethodInfo methodHandle, RuntimeType declaringType)
