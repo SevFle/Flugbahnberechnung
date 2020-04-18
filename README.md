@@ -1,10 +1,15 @@
 # Flugbahnberechnung
 
 Projektarbeit   SS2020
+
 Bachelorarbeit  WS20/21
 
+**Projektarbeit**
 Echtzeit Flugbahnberechnung eines geworfenen Objektes mittels Stereoskopie zweier gegenüberliegender Kameras, welche einen Raumabschnitt abbilden. 
 Der Korridor besteht aus N Raumabschnitten.
+
+
+**Bachelorarbeit**
 
 
 **Software**
