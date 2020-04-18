@@ -166,6 +166,9 @@ namespace nmsp_opencv_unmanaged
       void            set_aspect_ratio                                    (int              Height,   int width);
       void            set_framerate                                       (int              framerate);
 
+      void            init_rectify_map                                    ();
+
+
       /******************************************************* Private Klassenmethoden***************************************************************/
       private:
       void            init                                                (int              camera_id);
@@ -173,7 +176,7 @@ namespace nmsp_opencv_unmanaged
       void            apply_filter                                        (cv::Mat*         cpu_src, cv::Mat *cpu_dst);
 
 
-      void            gpu_erode                                           (cv::cuda::GpuMat* gpu_src, cv::cuda::GpuMat* gpu_dst, int borderType);
+    void            gpu_erode                                           (cv::cuda::GpuMat* gpu_src, cv::cuda::GpuMat* gpu_dst, int borderType);
       void            gpu_dilate                                          (cv::cuda::GpuMat* gpu_src, cv::cuda::GpuMat* gpu_dst);
       void            gpu_open                                            (cv::cuda::GpuMat* gpu_src, cv::cuda::GpuMat* gpu_dst);
       void            gpu_close                                           (cv::cuda::GpuMat* gpu_src, cv::cuda::GpuMat* gpu_dst);
