@@ -190,7 +190,7 @@ System::Void          C_frm_CameraCalibration_Single::sm_Single_camera_calibrati
           this->Main->camera_managed->camera_unmanaged->camera_vector[current_camera_id]->cap->set(cv::CAP_PROP_XI_AEAG, false);
           this->current_camera_id         =   static_cast<int>(this->nup_camera_id->Value);
           this->photo_id                  =   0;
-          this->photo_interval            =   int::Parse(tb_photo_interval->Text)*10;
+          //this->photo_interval            =   int::Parse(tb_photo_interval->Text)*10;
           this->photocount_user_input     =   int::Parse(tb_single_imgs_to_take->Text);
 
           this->grB_options->Enabled      =   false;
@@ -246,7 +246,7 @@ System::Void          C_frm_CameraCalibration_Single::sm_Stereo_camera_calibrati
           this->Main->camera_managed->camera_unmanaged->camera_vector[current_camera_id]->cap->set(cv::CAP_PROP_XI_AEAG, false);
           current_camera_id         =   static_cast<int>(this->nup_camera_id->Value);
           photo_id                  =   0;
-          photo_interval            =   int::Parse(tb_photo_interval->Text)*10;
+          //photo_interval            =   int::Parse(tb_photo_interval->Text)*10;
           photocount_user_input     =   int::Parse(tb_single_imgs_to_take->Text);
 
           grB_options->Enabled       =   false;
@@ -257,8 +257,8 @@ System::Void          C_frm_CameraCalibration_Single::sm_Stereo_camera_calibrati
 
             //Take pictures
         case 1:
-          this->Main->camera_managed->camera_unmanaged->save_picture(current_camera_id, photo_id, naming);
-          this->Main->camera_managed->camera_unmanaged->save_picture(current_camera_id+1, photo_id, naming);
+          //this->Main->camera_managed->camera_unmanaged->save_picture(current_camera_id, photo_id, naming);
+          //this->Main->camera_managed->camera_unmanaged->save_picture(current_camera_id+1, photo_id, naming);
 
           this->tb_picture_count->Text								= System::String::Format("{0:0}", this->photo_id+1);
           this->photo_id++;

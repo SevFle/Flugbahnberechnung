@@ -538,6 +538,7 @@ void c_camera_unmanaged::calibrate_stereo_camera                        (int cur
   vector< vector<cv::Point2f > > imagePoints1, imagePoints2;
   vector<cv::Point2f > corners1, corners2;
   vector< vector<cv::Point2f > > left_img_points, right_img_points;
+  int error_count = 0;
 
   cv::Mat img1, img2, gray1, gray2;
 
@@ -564,7 +565,9 @@ void c_camera_unmanaged::calibrate_stereo_camera                        (int cur
       if (!found1 || !found2)
         {
         std::cout << "Chessboard find error!" << endl;
-        std::cout << "leftImg: " << left_img << " and rightImg: " << right_img <<endl;
+        std::cout << "Setnumber: " << Photo_ID <<endl;
+        Photo_ID++;
+        error_count++;
         continue;
         }
 
@@ -584,7 +587,7 @@ void c_camera_unmanaged::calibrate_stereo_camera                        (int cur
       vector<cv::Point3f > obj;
       for (int i = 0; i < this->numCornersHeight; i++)
         for (int j = 0; j < this->numCornersWidth; j++)
-          obj.push_back(cv::Point3f((float)j * SquareSize, (float)i * SquareSize, 0));
+          obj.emplace_back(static_cast<float>(j) * SquareSize, static_cast<float>(i) * SquareSize, 0);
 
       if (found1 && found2)
         {
@@ -592,82 +595,45 @@ void c_camera_unmanaged::calibrate_stereo_camera                        (int cur
         imagePoints2.push_back(corners2);
         object_points.push_back(obj);
         }
+      Photo_ID++;
       }
+    std::cout << endl << "Analyzed " << Photo_ID-error_count << " out of " << Photo_ID << " source immages successfully.";
     for (int i = 0; i < imagePoints1.size(); i++)
       {
       vector<cv::Point2f > v1, v2;
       for (int j = 0; j < imagePoints1[i].size(); j++)
         {
-        v1.push_back(cv::Point2f((double)imagePoints1[i][j].x, (double)imagePoints1[i][j].y));
-        v2.push_back(cv::Point2f((double)imagePoints2[i][j].x, (double)imagePoints2[i][j].y));
+        v1.emplace_back(static_cast<double>(imagePoints1[i][j].x), static_cast<double>(imagePoints1[i][j].y));
+        v2.emplace_back(static_cast<double>(imagePoints2[i][j].x), static_cast<double>(imagePoints2[i][j].y));
         }
       left_img_points.push_back(v1);
       right_img_points.push_back(v2);
       }
-    }
-
-  int main(int argc, char const *argv[])
-    {
-    char* leftcalib_file;
-    char* rightcalib_file;
-    char* leftimg_dir;
-    char* rightimg_dir;
-    char* leftimg_filename;
-    char* rightimg_filename;
-    char* extension;
-    char* out_file;
-    int num_imgs;
-
-    static struct poptOption options[] ={
-      { "num_imgs",'n',POPT_ARG_INT,&num_imgs,0,"Number of checkerboard images","NUM" },
-      { "leftcalib_file",'u',POPT_ARG_STRING,&leftcalib_file,0,"Left camera calibration","STR" },
-      { "rightcalib_file",'v',POPT_ARG_STRING,&rightcalib_file,0,"Right camera calibration","STR" },
-      { "leftimg_dir",'L',POPT_ARG_STRING,&leftimg_dir,0,"Directory containing left images","STR" },
-      { "rightimg_dir",'R',POPT_ARG_STRING,&rightimg_dir,0,"Directory containing right images","STR" },
-      { "leftimg_filename",'l',POPT_ARG_STRING,&leftimg_filename,0,"Left image prefix","STR" },
-      { "rightimg_filename",'r',POPT_ARG_STRING,&rightimg_filename,0,"Right image prefix","STR" },
-      { "extension",'e',POPT_ARG_STRING,&extension,0,"Image extension","STR" },
-      { "out_file",'o',POPT_ARG_STRING,&out_file,0,"Output calibration filename (YML)","STR" },
-      POPT_AUTOHELP
-      { NULL, 0, 0, NULL, 0, NULL, NULL }
-      };
-
-    POpt popt(NULL, argc, argv, options, 0);
-    int c;
-    while ((c = popt.getNextOpt()) >= 0)
-      {
-      }
-
-    FileStorage fsl(leftcalib_file, FileStorage::READ);
-    FileStorage fsr(rightcalib_file, FileStorage::READ);
-
-    load_image_points(fsl["board_width"], fsl["board_height"], num_imgs, fsl["square_size"],
-                      leftimg_dir, rightimg_dir, leftimg_filename, rightimg_filename, extension);
 
     printf("Starting Calibration\n");
-    Mat K1, K2, R, F, E;
-    Vec3d T;
-    Mat D1, D2;
-    fsl["K"] >> K1;
-    fsr["K"] >> K2;
-    fsl["D"] >> D1;
-    fsr["D"] >> D2;
+    cv::Mat K1, K2, R, F, E;
+    cv::Vec3d T;
+    cv::Mat D1, D2;
+    this->camera_vector[current_camera_id]->Intrinsic->     copyTo(K1);
+    this->camera_vector[current_camera_id+1]->Intrinsic->   copyTo(K2);
+    this->camera_vector[current_camera_id]->DistCoeffs->    copyTo(D1);
+    this->camera_vector[current_camera_id+1]->DistCoeffs->  copyTo(D2);
     int flag = 0;
-    flag |= CV_CALIB_FIX_INTRINSIC;
+    flag |= cv::CALIB_FIX_INTRINSIC;
 
-    cout << "Read intrinsics" << endl;
+    cout << "Starting Stereo Calibration, this may take a while" << endl << endl;
 
-    stereoCalibrate(object_points, left_img_points, right_img_points, K1, D1, K2, D2, img1.size(), R, T, E, F);
+    cv::stereoCalibrate(object_points, left_img_points, right_img_points, K1, D1, K2, D2, img1.size(), R, T, E, F, cv::CALIB_FIX_INTRINSIC );
 
-    cv::FileStorage fs1(out_file, cv::FileStorage::WRITE);
-    fs1 << "K1" << K1;
-    fs1 << "K2" << K2;
-    fs1 << "D1" << D1;
-    fs1 << "D2" << D2;
-    fs1 << "R" << R;
-    fs1 << "T" << T;
-    fs1 << "E" << E;
-    fs1 << "F" << F;
+   // cv::FileStorage fs1(cv::out_file, cv::FileStorage::WRITE);
+    std::cout << "K1" << K1 << endl;
+    std::cout << "K2" << K2<< endl;
+    std::cout << "D1" << D1<< endl;
+    std::cout << "D2" << D2<< endl;
+    std::cout << "R" << R<< endl;
+    std::cout << "T" << T<< endl;
+    std::cout << "E" << E<< endl;
+    std::cout << "F" << F<< endl;
 
     printf("Done Calibration\n");
 
@@ -676,15 +642,14 @@ void c_camera_unmanaged::calibrate_stereo_camera                        (int cur
     cv::Mat R1, R2, P1, P2, Q;
     stereoRectify(K1, D1, K2, D2, img1.size(), R, T, R1, R2, P1, P2, Q);
 
-    fs1 << "R1" << R1;
-    fs1 << "R2" << R2;
-    fs1 << "P1" << P1;
-    fs1 << "P2" << P2;
-    fs1 << "Q" << Q;
+    std::cout << "R1" << R1 << endl;
+    std::cout << "R2" << R2 << endl;
+    std::cout << "P1" << P1 << endl;
+    std::cout << "P2" << P2 << endl;
+    std::cout << "Q" << Q << endl;
 
     printf("Done Rectification\n");
 
-    return 0;
   }
 
 void c_camera_unmanaged::save_picture                                   (int camera_id, int photo_id, std::string definition)
