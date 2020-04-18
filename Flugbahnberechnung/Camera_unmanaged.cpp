@@ -610,7 +610,7 @@ void c_camera_unmanaged::calibrate_stereo_camera                        (int cur
       right_img_points.push_back(v2);
       }
 
-    printf("Starting Calibration\n");
+    std::cout <<"Starting Calibration" << endl;
     cv::Mat K1, K2, R, F, E;
     cv::Vec3d T;
     cv::Mat D1, D2;
@@ -618,26 +618,23 @@ void c_camera_unmanaged::calibrate_stereo_camera                        (int cur
     this->camera_vector[current_camera_id+1]->Intrinsic->   copyTo(K2);
     this->camera_vector[current_camera_id]->DistCoeffs->    copyTo(D1);
     this->camera_vector[current_camera_id+1]->DistCoeffs->  copyTo(D2);
-    int flag = 0;
-    flag |= cv::CALIB_FIX_INTRINSIC;
 
-    cout << "Starting Stereo Calibration, this may take a while" << endl << endl;
 
     cv::stereoCalibrate(object_points, left_img_points, right_img_points, K1, D1, K2, D2, img1.size(), R, T, E, F, cv::CALIB_FIX_INTRINSIC );
 
    // cv::FileStorage fs1(cv::out_file, cv::FileStorage::WRITE);
     std::cout << "K1" << K1 << endl;
-    std::cout << "K2" << K2<< endl;
-    std::cout << "D1" << D1<< endl;
-    std::cout << "D2" << D2<< endl;
-    std::cout << "R" << R<< endl;
-    std::cout << "T" << T<< endl;
-    std::cout << "E" << E<< endl;
-    std::cout << "F" << F<< endl;
+    std::cout << "K2" << K2 << endl;
+    std::cout << "D1" << D1 << endl;
+    std::cout << "D2" << D2 << endl;
+    std::cout << "R"  << R  << endl;
+    std::cout << "T"  << T  << endl;
+    std::cout << "E"  << E  << endl;
+    std::cout << "F"  << F  << endl;
 
-    printf("Done Calibration\n");
+    std::cout <<"Done Calibration" << endl;
 
-    printf("Starting Rectification\n");
+    std::cout <<"Starting Rectification"  << endl;
 
     cv::Mat R1, R2, P1, P2, Q;
     stereoRectify(K1, D1, K2, D2, img1.size(), R, T, R1, R2, P1, P2, Q);
@@ -646,9 +643,9 @@ void c_camera_unmanaged::calibrate_stereo_camera                        (int cur
     std::cout << "R2" << R2 << endl;
     std::cout << "P1" << P1 << endl;
     std::cout << "P2" << P2 << endl;
-    std::cout << "Q" << Q << endl;
+    std::cout << "Q"  << Q  << endl;
 
-    printf("Done Rectification\n");
+    std::cout <<"Done Rectification"<< endl;
 
   }
 
