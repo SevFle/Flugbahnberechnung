@@ -432,7 +432,7 @@ void c_camera_unmanaged::calibrate_single_camera                        (int cur
     {
     std::cout << "Processing image " << Photo_ID << " out of " << numBoards_imgs << " images." << endl;
     // Laden des Bildes mit der angegebenen Photo_ID
-    Originalbild = cv::imread ("../Parameter/Bilder/Camera_Single_Calibration_" + std::to_string(camera_id) + "_Snapshot_" + std::to_string(this->Photo_ID) + ".png", 1);
+    Originalbild = cv::imread ("../Parameter/Bilder/Camera_Single_Calibration_" + std::to_string(current_camera_id) + "_Snapshot_" + std::to_string(this->Photo_ID) + ".png", 1);
 
     // Umwandeln des geladenen Bildes in ein Grauwertbild und abspeichern dieses in einem anderen Bild-Array
     cvtColor (Originalbild, Grau_Bild, cv::COLOR_BGR2GRAY);
@@ -500,152 +500,136 @@ void c_camera_unmanaged::calibrate_single_camera                        (int cur
 
   std::cout << "Calculation finished. Saving data." << endl << endl;
 
-  *camera_vector[camera_id]->Intrinsic  = intrinsic;
-  *camera_vector[camera_id]->DistCoeffs = distCoeffs;
+  //Kopieren der berechneten Daten zur dazugehörigen Kamera
+  *camera_vector[current_camera_id]->Intrinsic  = intrinsic;
+  *camera_vector[current_camera_id]->DistCoeffs = distCoeffs;
 
-  this->save_camera_calibration(camera_id);
+  //Speichern der berechenten Daten in CSV Datei
+  this->save_camera_calibration(current_camera_id);
 
-  //// Durchführen der HandEye-Kalibrierung zur Berechnung der Kamerapose relativ zum TCP-Koordinatensystem.
-  //// Für die Funktion "calibrateHandEye" müssen die Orientierungen zwischen Kamera und Schachbrett als 3x3-Matrix
-  //// vorliegen. Die Ausgabe aus der Kamerakalibrierung übergibt jedoch einen 3x1 Vektor (Rotation um eine Beliebige
-  //// Achse mit einem beliebigen Drehwinkel). Die Funktion "Rodrigues" wandelt den 3x1-Vektor in eine 3x3-Matrix um
-  //// (Rodrigues-Frank-Formeln). Die umgewandelten Vektoren werden als Matrix in einem Vektor abgelegt.
-  //for (int i = 0; i < (int)Rvecs.size(); i++)
-  //  {
-  //  Mat Rvec_Rodrigues (Mat_<double>(3, 3));
-  //  Rodrigues(Rvecs.at(i), Rvec_Rodrigues);
-  //  Rvecs_Rodrigues.push_back(Rvec_Rodrigues);
-  //  }
-
-  //// Die Funktion "calibrateHandEye" berechnet die Transformationspose zwischen TCP / Gripper und der Kamera (T_g_c).
-  //// Die ersten beiden Parameter sind jeweils die Orientierung und die Position des TCP bezogen auf das Roboter-Basis-
-  //// Koordinatensystem und zwar bezogen auf jedes aufgenommene Foto. Die Roboterpose wird also jedes mal bei Foto-
-  //// aufnahme während der Kalibrierung in einem Vektor abgespeichert. Diese Pose wird dann in Orientierung und Position
-  //// getrennt ("TCP_Orientation" und "TCP_Position", for-Schleife oben). Die Parameter Rvecs_Rodrigues und Tvecs
-  //// erhalten dabei die Orientierung und die Position der Transformationsmatrix zwischen Kamerakoordinatensystem
-  //// und Schachbrettkoordinatensystem. Die Parameter "R_Cam2TCP" und "T_Cam2TCP" sind nun die Orientierung und Position der
-  //// Transformationsmatrix (die Lösung der Gleichungssysteme) zwischen TCP und Kamera. Mit dem letzten Parameter kann die
-  //// Berechnungmethode bestimmt werden.
-  //calibrateHandEye(TCP_Orientation, TCP_Position, Rvecs_Rodrigues, Tvecs, R_TCP2Cam, T_TCP2Cam, cv::CALIB_HAND_EYE_ANDREFF);
-
-  //*this->Translation_TCP2Cam = T_TCP2Cam;
-  //*this->Orientation_TCP2Cam = R_TCP2Cam;
-  this->camera_vector[current_camera_id]->undistord_active = false;
+  //Reaktivierung der Bildentzerrung
+  this->camera_vector[current_camera_id]->init_rectify_map();
+  this->camera_vector[current_camera_id]->undistord_active = true;
   }
+
+
 void c_camera_unmanaged::calibrate_stereo_camera                        (int current_camera_id)
   {
   vector< vector<cv::Point3f > > object_points;
   vector< vector<cv::Point2f > > imagePoints1, imagePoints2;
   vector<cv::Point2f > corners1, corners2;
   vector< vector<cv::Point2f > > left_img_points, right_img_points;
-  int error_count = 0;
-
   cv::Mat img1, img2, gray1, gray2;
 
-    cv::Size board_size = cv::Size(this->numCornersWidth, this->numCornersHeight);
-    int board_n = this->numCornersWidth * this->numCornersHeight;
+  Photo_ID        = 0;
+  int error_count = 0;
 
-    while (this->Photo_ID < this->numBoards_imgs)
+
+  cv::Size board_size = cv::Size(this->numCornersWidth, this->numCornersHeight);
+  int board_n = this->numCornersWidth * this->numCornersHeight;
+
+  while (this->Photo_ID < this->numBoards_imgs)
+    {
+    char left_img[100], right_img[100];
+    img1 = cv::imread ("../Parameter/Bilder/Camera_Stereo_Calibration_" + std::to_string(current_camera_id) + "_Snapshot_" + std::to_string(this->Photo_ID) + ".png", 1);
+    img2 = cv::imread ("../Parameter/Bilder/Camera_Stereo_Calibration_" + std::to_string(current_camera_id+1) + "_Snapshot_" + std::to_string(this->Photo_ID) + ".png", 1);
+
+    cv::cvtColor(img1, gray1, cv::COLOR_BGR2GRAY);
+    cv::cvtColor(img2, gray2, cv::COLOR_BGR2GRAY);
+
+    bool found1 = false, found2 = false;
+
+    found1 = cv::findChessboardCorners(img1, board_size, corners1,
+                                         cv::CALIB_CB_ADAPTIVE_THRESH | cv::CALIB_CB_FILTER_QUADS);
+    found2 = cv::findChessboardCorners(img2, board_size, corners2,
+                                         cv::CALIB_CB_ADAPTIVE_THRESH | cv::CALIB_CB_FILTER_QUADS);
+
+
+    if (!found1 || !found2)
       {
-      char left_img[100], right_img[100];
-      img1 = cv::imread ("../Parameter/Bilder/Camera_Stereo_Calibration_" + std::to_string(camera_id) + "_Snapshot_" + std::to_string(this->Photo_ID) + ".png", 1);
-      img2 = cv::imread ("../Parameter/Bilder/Camera_Stereo_Calibration_" + std::to_string(camera_id+1) + "_Snapshot_" + std::to_string(this->Photo_ID) + ".png", 1);
-
-      cv::cvtColor(img1, gray1, cv::COLOR_BGR2GRAY);
-      cv::cvtColor(img2, gray2, cv::COLOR_BGR2GRAY);
-
-      bool found1 = false, found2 = false;
-
-      found1 = cv::findChessboardCorners(img1, board_size, corners1,
-                                         cv::CALIB_CB_ADAPTIVE_THRESH | cv::CALIB_CB_FILTER_QUADS);
-      found2 = cv::findChessboardCorners(img2, board_size, corners2,
-                                         cv::CALIB_CB_ADAPTIVE_THRESH | cv::CALIB_CB_FILTER_QUADS);
-
-
-      if (!found1 || !found2)
-        {
-        std::cout << "Chessboard find error!" << endl;
-        std::cout << "Setnumber: " << Photo_ID <<endl;
-        Photo_ID++;
-        error_count++;
-        continue;
-        }
-
-      if (found1)
-        {
-        cv::cornerSubPix(gray1, corners1, cv::Size(5, 5), cv::Size(-1, -1),
-                         cv::TermCriteria(cv::TermCriteria::EPS | cv::TermCriteria::MAX_ITER, 30, 0.1));
-        cv::drawChessboardCorners(gray1, board_size, corners1, found1);
-        }
-      if (found2)
-        {
-        cv::cornerSubPix(gray2, corners2, cv::Size(5, 5), cv::Size(-1, -1),
-                         cv::TermCriteria(cv::TermCriteria::EPS | cv::TermCriteria::MAX_ITER, 30, 0.1));
-        cv::drawChessboardCorners(gray2, board_size, corners2, found2);
-        }
-
-      vector<cv::Point3f > obj;
-      for (int i = 0; i < this->numCornersHeight; i++)
-        for (int j = 0; j < this->numCornersWidth; j++)
-          obj.emplace_back(static_cast<float>(j) * SquareSize, static_cast<float>(i) * SquareSize, 0);
-
-      if (found1 && found2)
-        {
-        imagePoints1.push_back(corners1);
-        imagePoints2.push_back(corners2);
-        object_points.push_back(obj);
-        }
+      std::cout << "Chessboard find error!" << endl;
+      std::cout << "Setnumber: " << Photo_ID <<endl;
       Photo_ID++;
+      error_count++;
+      continue;
       }
-    std::cout << endl << "Analyzed " << Photo_ID-error_count << " out of " << Photo_ID << " source immages successfully.";
-    for (int i = 0; i < imagePoints1.size(); i++)
+
+    if (found1)
       {
-      vector<cv::Point2f > v1, v2;
-      for (int j = 0; j < imagePoints1[i].size(); j++)
-        {
-        v1.emplace_back(static_cast<double>(imagePoints1[i][j].x), static_cast<double>(imagePoints1[i][j].y));
-        v2.emplace_back(static_cast<double>(imagePoints2[i][j].x), static_cast<double>(imagePoints2[i][j].y));
-        }
-      left_img_points.push_back(v1);
-      right_img_points.push_back(v2);
+      cv::cornerSubPix(gray1, corners1, cv::Size(5, 5), cv::Size(-1, -1),
+                       cv::TermCriteria(cv::TermCriteria::EPS | cv::TermCriteria::MAX_ITER, 30, 0.1));
+      cv::drawChessboardCorners(gray1, board_size, corners1, found1);
+      }
+    if (found2)
+      {
+      cv::cornerSubPix(gray2, corners2, cv::Size(5, 5), cv::Size(-1, -1),
+                       cv::TermCriteria(cv::TermCriteria::EPS | cv::TermCriteria::MAX_ITER, 30, 0.1));
+      cv::drawChessboardCorners(gray2, board_size, corners2, found2);
       }
 
-    std::cout <<"Starting Calibration" << endl;
-    cv::Mat K1, K2, R, F, E;
-    cv::Vec3d T;
-    cv::Mat D1, D2;
-    this->camera_vector[current_camera_id]->Intrinsic->     copyTo(K1);
-    this->camera_vector[current_camera_id+1]->Intrinsic->   copyTo(K2);
-    this->camera_vector[current_camera_id]->DistCoeffs->    copyTo(D1);
-    this->camera_vector[current_camera_id+1]->DistCoeffs->  copyTo(D2);
+    vector<cv::Point3f > obj;
+    for (int i = 0; i < this->numCornersHeight; i++)
+      for (int j = 0; j < this->numCornersWidth; j++)
+        obj.emplace_back(static_cast<float>(j) * SquareSize, static_cast<float>(i) * SquareSize, 0);
+
+    if (found1 && found2)
+      {
+      imagePoints1.push_back(corners1);
+      imagePoints2.push_back(corners2);
+      object_points.push_back(obj);
+      }
+    Photo_ID++;
+  }//  while (this->Photo_ID < this->numBoards_imgs)
+
+  std::cout << endl << "Analyzed " << Photo_ID - error_count << " out of " << Photo_ID << " source immages successfully.";
+
+  for (int i = 0; i < imagePoints1.size(); i++)
+    {
+    vector<cv::Point2f > v1, v2;
+    for (int j = 0; j < imagePoints1[i].size(); j++)
+      {
+      v1.emplace_back(static_cast<double>(imagePoints1[i][j].x), static_cast<double>(imagePoints1[i][j].y));
+      v2.emplace_back(static_cast<double>(imagePoints2[i][j].x), static_cast<double>(imagePoints2[i][j].y));
+      }
+    left_img_points.push_back(v1);
+    right_img_points.push_back(v2);
+    }
+
+  std::cout <<"Starting Calibration" << endl;
+  cv::Mat K1, K2, R, F, E;
+  cv::Vec3d T;
+  cv::Mat D1, D2;
+  this->camera_vector[current_camera_id]->Intrinsic->     copyTo(K1);
+  this->camera_vector[current_camera_id+1]->Intrinsic->   copyTo(K2);
+  this->camera_vector[current_camera_id]->DistCoeffs->    copyTo(D1);
+  this->camera_vector[current_camera_id+1]->DistCoeffs->  copyTo(D2);
+
+  cv::stereoCalibrate(object_points, left_img_points, right_img_points, K1, D1, K2, D2, img1.size(), R, T, E, F, cv::CALIB_FIX_INTRINSIC );
+
+  // cv::FileStorage fs1(cv::out_file, cv::FileStorage::WRITE);
+  std::cout << "K1" << K1 << endl;
+  std::cout << "K2" << K2 << endl;
+  std::cout << "D1" << D1 << endl;
+  std::cout << "D2" << D2 << endl;
+  std::cout << "R"  << R  << endl;
+  std::cout << "T"  << T  << endl;
+  std::cout << "E"  << E  << endl;
+  std::cout << "F"  << F  << endl;
+  std::cout <<"Done Calibration" << endl;
 
 
-    cv::stereoCalibrate(object_points, left_img_points, right_img_points, K1, D1, K2, D2, img1.size(), R, T, E, F, cv::CALIB_FIX_INTRINSIC );
+  std::cout <<"Starting Rectification"  << endl;
 
-   // cv::FileStorage fs1(cv::out_file, cv::FileStorage::WRITE);
-    std::cout << "K1" << K1 << endl;
-    std::cout << "K2" << K2 << endl;
-    std::cout << "D1" << D1 << endl;
-    std::cout << "D2" << D2 << endl;
-    std::cout << "R"  << R  << endl;
-    std::cout << "T"  << T  << endl;
-    std::cout << "E"  << E  << endl;
-    std::cout << "F"  << F  << endl;
+  cv::Mat R1, R2, P1, P2, Q;
+  stereoRectify(K1, D1, K2, D2, img1.size(), R, T, R1, R2, P1, P2, Q);
 
-    std::cout <<"Done Calibration" << endl;
+  std::cout << "R1" << R1 << endl;
+  std::cout << "R2" << R2 << endl;
+  std::cout << "P1" << P1 << endl;
+  std::cout << "P2" << P2 << endl;
+  std::cout << "Q"  << Q  << endl;
 
-    std::cout <<"Starting Rectification"  << endl;
-
-    cv::Mat R1, R2, P1, P2, Q;
-    stereoRectify(K1, D1, K2, D2, img1.size(), R, T, R1, R2, P1, P2, Q);
-
-    std::cout << "R1" << R1 << endl;
-    std::cout << "R2" << R2 << endl;
-    std::cout << "P1" << P1 << endl;
-    std::cout << "P2" << P2 << endl;
-    std::cout << "Q"  << Q  << endl;
-
-    std::cout <<"Done Rectification"<< endl;
+  std::cout <<"Done Rectification"<< endl;
 
   }
 

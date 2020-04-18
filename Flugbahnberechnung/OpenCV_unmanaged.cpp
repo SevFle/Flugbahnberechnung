@@ -311,13 +311,10 @@ void c_opencv_unmanaged::set_framerate                                  (int    
   {
   this->cap->set                  (cv::CAP_PROP_FPS, framerate);
   }
-
 /*************************************************************** Private Klassenmethoden*****************************************************/
 
 void c_opencv_unmanaged::init                                           (int                camera_id)
   {
-  cv::Mat                         cpu_map1;
-  cv::Mat                         cpu_map2;
 
   //ELP Webcam 5-50 mm USB8MP02G-SFV
   //  1024X768  MJPEG 30fps
@@ -348,10 +345,7 @@ void c_opencv_unmanaged::init                                           (int    
   cpu_undistorted->create         (600, 800, CV_32FC1);
   cpu_contoured->create           (600, 800, CV_8UC3);
  
-  cv::initUndistortRectifyMap(*Intrinsic, *DistCoeffs, cv::Mat(), *Intrinsic, cv::Size(cpu_undistorted->cols, cpu_undistorted->rows), CV_32FC1, cpu_map1, cpu_map2);
-  gpu_map1->upload(cpu_map1);
-  gpu_map2->upload(cpu_map2);
-
+  this->init_rectify_map();
 
 
   }
@@ -380,7 +374,16 @@ void c_opencv_unmanaged::apply_filter                                   (cv::Mat
 
   gpu_thresholded->download                                 (*cpu_dst);
   }
+void c_opencv_unmanaged::init_rectify_map()
+  {
+  cv::Mat                         cpu_map1;
+  cv::Mat                         cpu_map2;
 
+  gpu_map1->upload(cpu_map1);
+  gpu_map2->upload(cpu_map2);
+
+  cv::initUndistortRectifyMap(*Intrinsic, *DistCoeffs, cv::Mat(), *Intrinsic, cv::Size(cpu_undistorted->cols, cpu_undistorted->rows), CV_32FC1, cpu_map1, cpu_map2);
+  }
 
 void c_opencv_unmanaged::gpu_erode                                      (cv::cuda::GpuMat*  gpu_src,                  cv::cuda::GpuMat* gpu_dst, int borderType)  //
   {
