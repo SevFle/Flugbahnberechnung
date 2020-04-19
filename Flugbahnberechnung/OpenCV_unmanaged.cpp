@@ -31,6 +31,11 @@ c_opencv_unmanaged::c_opencv_unmanaged                                  (int cam
   bilateral_sigma_color       = 0;
   bilateral_sigma_spatial     = 0;
 
+  erode_active                = false;
+  dilate_active               = false;
+  morph_active                = false;
+  bilateral_active            = false;
+
   statemachine_state          = 0;
 
   capture_api                 = cv::CAP_DSHOW;
@@ -134,6 +139,13 @@ c_opencv_unmanaged::~c_opencv_unmanaged                                 ()
   bilateral_kernel_size       = 0;
   bilateral_sigma_color       = 0;
   bilateral_sigma_spatial     = 0;
+
+
+  erode_active                = false;
+  dilate_active               = false;
+  morph_active                = false;
+  bilateral_active            = false;
+
 
   statemachine_state          = 0;
 
@@ -379,10 +391,12 @@ void c_opencv_unmanaged::init_rectify_map()
   cv::Mat                         cpu_map1;
   cv::Mat                         cpu_map2;
 
-  gpu_map1->upload(cpu_map1);
-  gpu_map2->upload(cpu_map2);
 
   cv::initUndistortRectifyMap(*Intrinsic, *DistCoeffs, cv::Mat(), *Intrinsic, cv::Size(cpu_undistorted->cols, cpu_undistorted->rows), CV_32FC1, cpu_map1, cpu_map2);
+
+  this->gpu_map1->upload(cpu_map1);
+  this->gpu_map2->upload(cpu_map2);
+
   }
 
 void c_opencv_unmanaged::gpu_erode                                      (cv::cuda::GpuMat*  gpu_src,                  cv::cuda::GpuMat* gpu_dst, int borderType)  //
@@ -456,28 +470,29 @@ void c_opencv_unmanaged::find_contours                                  (cv::Mat
   objekt_anzahl = 0;
   std::vector<std::vector<cv::Point>>     contours;
   std::vector<cv::Vec4i>                  hirarchy;
-  *dst_contoured_image = cv::Mat::zeros(dst_contoured_image->rows, dst_contoured_image->cols, dst_contoured_image->type());
+  dst_contoured_image->copyTo(*cpu_temp);
+  //*dst_contoured_image = cv::Mat::zeros(dst_contoured_image->rows, dst_contoured_image->cols, dst_contoured_image->type());
 
 
   //OpenCV Hirarchy: https://docs.opencv.org/3.4/d9/d8b/tutorial_py_contours_hierarchy.html
 
 
   // Zeichne Bildmittelpunkt ein
-   Mittelpunkt_x = dst_contoured_image->cols / 2;
-   Mittelpunkt_y = dst_contoured_image->rows / 2;
-  cv::circle(*dst_contoured_image, cv::Point(static_cast<int>(Mittelpunkt_x), static_cast<int>(Mittelpunkt_y)), 15, cv::Scalar(0, 255, 0));
+   Mittelpunkt_x = cpu_temp->cols / 2;
+   Mittelpunkt_y = cpu_temp->rows / 2;
+  cv::circle(*cpu_temp, cv::Point(static_cast<int>(Mittelpunkt_x), static_cast<int>(Mittelpunkt_y)), 15, cv::Scalar(0, 255, 0));
 
   // Zeichne kalibrierten Bildmittelpunkt ein
   cx = this->Intrinsic->at<double>(0, 2);
   cy = this->Intrinsic->at<double>(1, 2);
-  cv::circle(*dst_contoured_image, cv::Point(static_cast<int>(cx), static_cast<int>(cy)), 15, cv::Scalar(255, 255, 0));
+  cv::circle(*cpu_temp, cv::Point(static_cast<int>(cx), static_cast<int>(cy)), 15, cv::Scalar(255, 255, 0));
 
   cv::findContours(*thresholded_source_image, contours, hirarchy, cv::RETR_TREE, cv::CHAIN_APPROX_NONE, cv::Point(0, 0));
 
 
   objekt_anzahl = static_cast<int>(hirarchy.size());
 
-  cv::drawContours(*dst_contoured_image, contours,0, cv::Scalar(0, 255, 255), 2, cv::LINE_AA, hirarchy);
+  cv::drawContours(*cpu_temp, contours,0, cv::Scalar(0, 255, 255), 2, cv::LINE_AA, hirarchy);
 
   if (objekt_anzahl > 0)
     {
@@ -528,16 +543,16 @@ void c_opencv_unmanaged::find_contours                                  (cv::Mat
     minEnclosingCircle(static_cast<cv::Mat>(contours[KonturIndex]), Center, Radius);
 
     // Mittelpunkt / schwerpunkt der kontur einzeichnen
-    cv::circle(*dst_contoured_image, cv::Point(static_cast<int>(Schwerpunkt_x), static_cast<int>(Schwerpunkt_y)), 2, cv::Scalar(0, 255, 255));
+    cv::circle(*cpu_temp, cv::Point(static_cast<int>(Schwerpunkt_x), static_cast<int>(Schwerpunkt_y)), 2, cv::Scalar(0, 255, 255));
 
     // Konturumfang zeichnen
-    cv::circle(*dst_contoured_image, Center, static_cast<int>(Radius), cv::Scalar(0, 255, 255));
+    cv::circle(*cpu_temp, Center, static_cast<int>(Radius), cv::Scalar(0, 255, 255));
 
     // Schwerpunktkoordinaten als Text im Bild darstellen
     S_x = std::to_string(Schwerpunkt_x);
     S_y = std::to_string(Schwerpunkt_y);
-    cv::putText(*dst_contoured_image, "S_x: " + S_x, cv::Point(0, 20), 1, 1, cv::Scalar(255, 255, 255), 2);
-    cv::putText(*dst_contoured_image, "S_y: " + S_y, cv::Point(0, 50), 1, 1, cv::Scalar(255, 255, 255), 2);
+    cv::putText(*cpu_temp, "S_x: " + S_x, cv::Point(0, 20), 1, 1, cv::Scalar(255, 255, 255), 2);
+    cv::putText(*cpu_temp, "S_y: " + S_y, cv::Point(0, 50), 1, 1, cv::Scalar(255, 255, 255), 2);
 
     // Bestimme den Abstand des Mittelpunktes der gefundenen Kontur zum Bildmittelpunkt
     contour_found        = true;
@@ -566,12 +581,13 @@ void c_opencv_unmanaged::find_contours                                  (cv::Mat
     // Schreibe die Delta-Werte auf das Bild
     Delta_x_str   = std::to_string(Delta_x);
     Delta_y_str   = std::to_string(Delta_y);
-    cv::putText(*dst_contoured_image, "Delta_x: " + Delta_x_str, cv::Point(0, 80), 1, 1, cv::Scalar(255, 255, 255), 2);
-    cv::putText(*dst_contoured_image, "Delta_y: " + Delta_y_str, cv::Point(0, 110), 1, 1, cv::Scalar(255, 255, 255), 2);
+    cv::putText(*cpu_temp, "Delta_x: " + Delta_x_str, cv::Point(0, 80), 1, 1, cv::Scalar(255, 255, 255), 2);
+    cv::putText(*cpu_temp, "Delta_y: " + Delta_y_str, cv::Point(0, 110), 1, 1, cv::Scalar(255, 255, 255), 2);
 
     // Zeichne eine Linie zwischen kalibriertem Bildmittelpunkt und dem Objektschwerpunkt
-    cv::line(*dst_contoured_image, cv::Point(static_cast<int>(Ist_x), static_cast<int>(Ist_y)), cv::Point(static_cast<int>(Soll_x), static_cast<int>(Soll_y)), cv::Scalar(0, 0, 255), 4, 8, 0);
+    cv::line(*cpu_temp, cv::Point(static_cast<int>(Ist_x), static_cast<int>(Ist_y)), cv::Point(static_cast<int>(Soll_x), static_cast<int>(Soll_y)), cv::Scalar(0, 0, 255), 4, 8, 0);
 
+    cpu_temp->copyTo(*dst_contoured_image);
     rect_roi = cv::Rect(Ist_x, Ist_y, Radius+20, Radius +20);
 
      
@@ -584,10 +600,10 @@ void c_opencv_unmanaged::find_contours                                  (cv::Mat
     this->Vec_Object[2]     = 0.0;
     max_Moment_m00          = 0.0;
 
-    cv::putText(*dst_contoured_image, "S_x:     Object not found", cv::Point(0, 20), 1, 1, cv::Scalar(255, 255, 255), 2);
-    cv::putText(*dst_contoured_image, "S_y:     Object not found", cv::Point(0, 50), 1, 1, cv::Scalar(255, 255, 255), 2);
-    cv::putText(*dst_contoured_image, "Delta_x: Object not found", cv::Point(0, 80), 1, 1, cv::Scalar(255, 255, 255), 2);
-    cv::putText(*dst_contoured_image, "Delta_y: Object not found", cv::Point(0, 110), 1, 1, cv::Scalar(255, 255, 255), 2);
+    cv::putText(*cpu_temp, "S_x:     Object not found", cv::Point(0, 20), 1, 1, cv::Scalar(255, 255, 255), 2);
+    cv::putText(*cpu_temp, "S_y:     Object not found", cv::Point(0, 50), 1, 1, cv::Scalar(255, 255, 255), 2);
+    cv::putText(*cpu_temp, "Delta_x: Object not found", cv::Point(0, 80), 1, 1, cv::Scalar(255, 255, 255), 2);
+    cv::putText(*cpu_temp, "Delta_y: Object not found", cv::Point(0, 110), 1, 1, cv::Scalar(255, 255, 255), 2);
     }
   
   }

@@ -79,12 +79,17 @@ void c_camera_unmanaged::save_camera_settings                           (int cam
     GlobalObjects->csv_parameter_datei->Schreiben("closing_kernel_size", to_string(camera_vector[camera_id]->closing_kernel_size), "[1]");
     GlobalObjects->csv_parameter_datei->Schreiben("morph_kernel_size", to_string(camera_vector[camera_id]->morph_kernel_size), "[1]");
     GlobalObjects->csv_parameter_datei->Schreiben("gaussian_kernel_size", to_string(camera_vector[camera_id]->gaussian_kernel_size), "[1]");
+    GlobalObjects->csv_parameter_datei->Schreiben("bilateral_kernel_size", to_string(camera_vector[camera_id]->bilateral_kernel_size), "[1]");
 
     GlobalObjects->csv_parameter_datei->Schreiben("gaussian_sigma", to_string(camera_vector[camera_id]->gaussian_sigma), "[1]");
 
     GlobalObjects->csv_parameter_datei->Schreiben("bilateral_sigma_color", to_string(camera_vector[camera_id]->bilateral_sigma_color), "[1]");
     GlobalObjects->csv_parameter_datei->Schreiben("bilateral_sigma_spatial", to_string(camera_vector[camera_id]->bilateral_sigma_spatial), "[1]");
 
+    GlobalObjects->csv_parameter_datei->Schreiben("Erode_Active", to_string(camera_vector[camera_id]->erode_active), "[1]");
+    GlobalObjects->csv_parameter_datei->Schreiben("Dilate_Active", to_string(camera_vector[camera_id]->dilate_active), "[1]");
+    GlobalObjects->csv_parameter_datei->Schreiben("Morph_Active", to_string(camera_vector[camera_id]->morph_active), "[1]");
+    GlobalObjects->csv_parameter_datei->Schreiben("Bilateral_Active", to_string(camera_vector[camera_id]->bilateral_active), "[1]");
 
     }
   this->GlobalObjects->csv_parameter_datei->Schliessen();
@@ -113,12 +118,18 @@ void c_camera_unmanaged::load_camera_settings                           (int cam
   int     closing_kernel_size;
   int     morph_kernel_size;
   int     gaussian_kernel_size;
+  int     bilateral_kernel_size;
 
   double  gaussian_sigma;
 
 
   float   bilateral_sigma_color;
   float   bilateral_sigma_spatial;
+
+  bool    erode_active;
+  bool    dilation_active;
+  bool    morph_active;
+  bool    bilateral_active;
 
 
   GlobalObjects->csv_parameter_datei->Oeffnen(Dateiname, Enum_CSV_Access::Read);
@@ -146,11 +157,18 @@ void c_camera_unmanaged::load_camera_settings                           (int cam
     GlobalObjects->csv_parameter_datei->Lesen(closing_kernel_size);
     GlobalObjects->csv_parameter_datei->Lesen(morph_kernel_size);
     GlobalObjects->csv_parameter_datei->Lesen(gaussian_kernel_size);
+    GlobalObjects->csv_parameter_datei->Lesen(bilateral_kernel_size);
 
     GlobalObjects->csv_parameter_datei->Lesen(gaussian_sigma);
 
     GlobalObjects->csv_parameter_datei->Lesen(bilateral_sigma_color);
     GlobalObjects->csv_parameter_datei->Lesen(bilateral_sigma_spatial);
+
+    GlobalObjects->csv_parameter_datei->Lesen(erode_active);
+    GlobalObjects->csv_parameter_datei->Lesen(dilation_active);
+    GlobalObjects->csv_parameter_datei->Lesen(morph_active);
+    GlobalObjects->csv_parameter_datei->Lesen(bilateral_active);
+
 
     camera_vector[camera_id]->hue_min                 = hue_min;
     camera_vector[camera_id]->hue_max                 = hue_max;
@@ -171,13 +189,17 @@ void c_camera_unmanaged::load_camera_settings                           (int cam
     camera_vector[camera_id]->closing_kernel_size     = closing_kernel_size;
     camera_vector[camera_id]->morph_kernel_size       = morph_kernel_size;
     camera_vector[camera_id]->gaussian_kernel_size    = gaussian_kernel_size;
+    camera_vector[camera_id]->bilateral_kernel_size   = bilateral_kernel_size;
 
     camera_vector[camera_id]->gaussian_sigma          = gaussian_sigma;
 
     camera_vector[camera_id]->bilateral_sigma_color   = bilateral_sigma_color;
     camera_vector[camera_id]->bilateral_sigma_spatial = bilateral_sigma_spatial;
 
-
+    camera_vector[camera_id]->dilate_active           = dilation_active;
+    camera_vector[camera_id]->erode_active            = erode_active;
+    camera_vector[camera_id]->morph_active            = morph_active;
+    camera_vector[camera_id]->bilateral_active        = bilateral_active;
     }
   std::cout << "Loaded Settings for Camera " << camera_id <<"." <<endl;
   }

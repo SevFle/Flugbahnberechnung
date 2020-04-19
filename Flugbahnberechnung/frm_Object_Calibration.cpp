@@ -367,8 +367,19 @@ System::Void          c_frm_object_calibration::bt_apply_Click                  
 
 System::Void          c_frm_object_calibration::bt_apply_all_Click                                  (System::Object^  sender, System::EventArgs^  e)
   {
+  int current_camera = static_cast<int>(numUD_cam_id->Value);
   for (int i = 0;     i<GlobalObjects->cameras_in_use;      i++)
     {
+    this->Main->camera_managed->camera_unmanaged->camera_vector[i]->value_min = this->trb_value_min->Value;
+    this->Main->camera_managed->camera_unmanaged->camera_vector[i]->value_max = this->trb_value_max->Value;
+
+    this->Main->camera_managed->camera_unmanaged->camera_vector[i]->saturation_min = this->trb_saturation_min->Value;
+    this->Main->camera_managed->camera_unmanaged->camera_vector[i]->saturation_max = this->trb_saturation_max->Value;
+
+    this->Main->camera_managed->camera_unmanaged->camera_vector[i]->value_min = this->trb_value_min->Value;
+    this->Main->camera_managed->camera_unmanaged->camera_vector[i]->value_min = this->trb_value_max->Value;
+
+
     Main->camera_managed->camera_unmanaged->save_camera_settings        (i);
     }
   }

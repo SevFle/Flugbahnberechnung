@@ -133,8 +133,11 @@ System::Void          c_frm_Camera_Positioning::bt_apply_Click                  
         break;
     }
 
-  Main->camera_managed->camera_unmanaged->move_camera_temp2vector(this->GlobalObjects->cameras_in_use);
-  Main->camera_managed->camera_unmanaged->save_camera_positioning(camera_list);
+  this->Main->camera_managed->camera_unmanaged->move_camera_temp2vector(cameras_in_use);
+  for (int i=0; i< cameras_in_use; i++)
+    this->Main->camera_managed->camera_unmanaged->load_camera_calibration(i);
+  this->Main->camera_managed->camera_unmanaged->save_camera_positioning(camera_list);
+
 
 
   TimerWait = Zaehler + 5;

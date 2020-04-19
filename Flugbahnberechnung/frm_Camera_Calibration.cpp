@@ -201,7 +201,7 @@ System::Void          C_frm_CameraCalibration_Single::sm_Single_camera_calibrati
 
             //Take pictures
         case 1:
-          //this->Main->camera_managed->camera_unmanaged->save_picture(current_camera_id, photo_id, naming);
+          this->Main->camera_managed->camera_unmanaged->save_picture(current_camera_id, photo_id, naming);
           this->tb_picture_count->Text								= System::String::Format("{0:0}", this->photo_id+1);
           this->photo_id++;
 
@@ -257,8 +257,8 @@ System::Void          C_frm_CameraCalibration_Single::sm_Stereo_camera_calibrati
 
             //Take pictures
         case 1:
-          //this->Main->camera_managed->camera_unmanaged->save_picture(current_camera_id, photo_id, naming);
-          //this->Main->camera_managed->camera_unmanaged->save_picture(current_camera_id+1, photo_id, naming);
+          this->Main->camera_managed->camera_unmanaged->save_picture(current_camera_id, photo_id, naming);
+          this->Main->camera_managed->camera_unmanaged->save_picture(current_camera_id+1, photo_id, naming);
 
           this->tb_picture_count->Text								= System::String::Format("{0:0}", this->photo_id+1);
           this->photo_id++;
