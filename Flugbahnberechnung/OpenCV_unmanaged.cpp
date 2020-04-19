@@ -261,6 +261,7 @@ void c_opencv_unmanaged::camera_thread                                  ()
             this->gpu_filtered->download(*cpu_filtered);
             cpu_undistorted->copyTo(*cpu_contoured);
             this->find_contours(cpu_filtered, cpu_contoured);
+            cv::imshow("contoured", *cpu_contoured);
             }
           statemachine_state = 4;
 

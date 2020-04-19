@@ -57,39 +57,39 @@ void c_camera_unmanaged::save_camera_settings                           (int cam
 
   if (GlobalObjects->csv_parameter_datei->IsOpen())
     {
-    GlobalObjects->csv_parameter_datei->Schreiben("Dateityp", Dateityp, "[1]");
+    GlobalObjects->csv_parameter_datei->Schreiben("Dateityp",                 Dateityp, "[1]");
 
 
-    GlobalObjects->csv_parameter_datei->Schreiben("hue_min", to_string(camera_vector[camera_id]->hue_min), "[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben("hue_max", to_string(camera_vector[camera_id]->hue_max), "[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben("saturation_min", to_string(camera_vector[camera_id]->saturation_min), "[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben("saturation_max", to_string(camera_vector[camera_id]->saturation_max), "[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben("value_min", to_string(camera_vector[camera_id]->value_min), "[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben("value_max", to_string(camera_vector[camera_id]->value_max), "[1]");
+    GlobalObjects->csv_parameter_datei->Schreiben("hue_min",                  to_string(camera_vector[camera_id]->hue_min),                 "[1]");
+    GlobalObjects->csv_parameter_datei->Schreiben("hue_max",                  to_string(camera_vector[camera_id]->hue_max),                 "[1]");
+    GlobalObjects->csv_parameter_datei->Schreiben("saturation_min",           to_string(camera_vector[camera_id]->saturation_min),          "[1]");
+    GlobalObjects->csv_parameter_datei->Schreiben("saturation_max",           to_string(camera_vector[camera_id]->saturation_max),          "[1]");
+    GlobalObjects->csv_parameter_datei->Schreiben("value_min",                to_string(camera_vector[camera_id]->value_min),               "[1]");
+    GlobalObjects->csv_parameter_datei->Schreiben("value_max",                to_string(camera_vector[camera_id]->value_max),               "[1]");
 
-    GlobalObjects->csv_parameter_datei->Schreiben("erosion_iterations", to_string(camera_vector[camera_id]->erosion_iterations), "[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben("dilation_iterations", to_string(camera_vector[camera_id]->dilation_iterations), "[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben("opening_iteration", to_string(camera_vector[camera_id]->opening_iterations), "[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben("closing_iteration", to_string(camera_vector[camera_id]->closing_iterations), "[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben("morph_iteration", to_string(camera_vector[camera_id]->morph_iterations), "[1]");
+    GlobalObjects->csv_parameter_datei->Schreiben("erosion_iterations",       to_string(camera_vector[camera_id]->erosion_iterations),      "[1]");
+    GlobalObjects->csv_parameter_datei->Schreiben("dilation_iterations",      to_string(camera_vector[camera_id]->dilation_iterations),     "[1]");
+    GlobalObjects->csv_parameter_datei->Schreiben("opening_iteration",        to_string(camera_vector[camera_id]->opening_iterations),      "[1]");
+    GlobalObjects->csv_parameter_datei->Schreiben("closing_iteration",        to_string(camera_vector[camera_id]->closing_iterations),      "[1]");
+    GlobalObjects->csv_parameter_datei->Schreiben("morph_iteration",          to_string(camera_vector[camera_id]->morph_iterations),        "[1]");
 
-    GlobalObjects->csv_parameter_datei->Schreiben("erosion_kernel_size", to_string(camera_vector[camera_id]->erosion_kernel_size), "[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben("dilation_kernel_size", to_string(camera_vector[camera_id]->dilation_kernel_size), "[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben("opening_kernel_size", to_string(camera_vector[camera_id]->opening_kernel_size), "[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben("closing_kernel_size", to_string(camera_vector[camera_id]->closing_kernel_size), "[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben("morph_kernel_size", to_string(camera_vector[camera_id]->morph_kernel_size), "[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben("gaussian_kernel_size", to_string(camera_vector[camera_id]->gaussian_kernel_size), "[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben("bilateral_kernel_size", to_string(camera_vector[camera_id]->bilateral_kernel_size), "[1]");
+    GlobalObjects->csv_parameter_datei->Schreiben("erosion_kernel_size",      to_string(camera_vector[camera_id]->erosion_kernel_size),     "[1]");
+    GlobalObjects->csv_parameter_datei->Schreiben("dilation_kernel_size",     to_string(camera_vector[camera_id]->dilation_kernel_size),    "[1]");
+    GlobalObjects->csv_parameter_datei->Schreiben("opening_kernel_size",      to_string(camera_vector[camera_id]->opening_kernel_size),     "[1]");
+    GlobalObjects->csv_parameter_datei->Schreiben("closing_kernel_size",      to_string(camera_vector[camera_id]->closing_kernel_size),     "[1]");
+    GlobalObjects->csv_parameter_datei->Schreiben("morph_kernel_size",        to_string(camera_vector[camera_id]->morph_kernel_size),       "[1]");
+    GlobalObjects->csv_parameter_datei->Schreiben("gaussian_kernel_size",     to_string(camera_vector[camera_id]->gaussian_kernel_size),    "[1]");
+    GlobalObjects->csv_parameter_datei->Schreiben("bilateral_kernel_size",    to_string(camera_vector[camera_id]->bilateral_kernel_size),   "[1]");
 
-    GlobalObjects->csv_parameter_datei->Schreiben("gaussian_sigma", to_string(camera_vector[camera_id]->gaussian_sigma), "[1]");
+    GlobalObjects->csv_parameter_datei->Schreiben("gaussian_sigma",           to_string(camera_vector[camera_id]->gaussian_sigma),          "[1]");
 
-    GlobalObjects->csv_parameter_datei->Schreiben("bilateral_sigma_color", to_string(camera_vector[camera_id]->bilateral_sigma_color), "[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben("bilateral_sigma_spatial", to_string(camera_vector[camera_id]->bilateral_sigma_spatial), "[1]");
+    GlobalObjects->csv_parameter_datei->Schreiben("bilateral_sigma_color",    to_string(camera_vector[camera_id]->bilateral_sigma_color),   "[1]");
+    GlobalObjects->csv_parameter_datei->Schreiben("bilateral_sigma_spatial",  to_string(camera_vector[camera_id]->bilateral_sigma_spatial), "[1]");
 
-    GlobalObjects->csv_parameter_datei->Schreiben("Erode_Active", to_string(camera_vector[camera_id]->erode_active), "[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben("Dilate_Active", to_string(camera_vector[camera_id]->dilate_active), "[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben("Morph_Active", to_string(camera_vector[camera_id]->morph_active), "[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben("Bilateral_Active", to_string(camera_vector[camera_id]->bilateral_active), "[1]");
+    GlobalObjects->csv_parameter_datei->Schreiben("Erode_Active",             to_string(camera_vector[camera_id]->erode_active),            "[1]");
+    GlobalObjects->csv_parameter_datei->Schreiben("Dilate_Active",            to_string(camera_vector[camera_id]->dilate_active),           "[1]");
+    GlobalObjects->csv_parameter_datei->Schreiben("Morph_Active",             to_string(camera_vector[camera_id]->morph_active),            "[1]");
+    GlobalObjects->csv_parameter_datei->Schreiben("Bilateral_Active",         to_string(camera_vector[camera_id]->bilateral_active),        "[1]");
 
     }
   this->GlobalObjects->csv_parameter_datei->Schliessen();
@@ -97,39 +97,39 @@ void c_camera_unmanaged::save_camera_settings                           (int cam
   }
 void c_camera_unmanaged::load_camera_settings                           (int camera_id)
   {
-  string  Dateiname = "../Parameter/Camera_setting"+to_string(camera_id)+".csv";
-  string  Dateityp  = "Value of the individual setting";
-  uchar   hue_min;
-  uchar   hue_max;
-  uchar   saturation_min;
-  uchar   saturation_max;
-  uchar   value_min;
-  uchar   value_max;
+  string  Dateiname             = "../Parameter/Camera_setting"+to_string(camera_id)+".csv";
+  string  Dateityp              = "Value of the individual setting";
+  int   hue_min                 = 0;
+  int   hue_max                 = 0;
+  int   saturation_min          = 0;
+  int   saturation_max          = 0;
+  int   value_min               = 0;
+  int   value_max               = 0;
 
-  int     erosion_iterations;
-  int     dilation_iterations;
-  int     opening_iterations;
-  int     closing_iterations;
-  int     morph_iterations;
+  int     erosion_iterations    = 0;
+  int     dilation_iterations   = 0;
+  int     opening_iterations    = 0;
+  int     closing_iterations    = 0;
+  int     morph_iterations      = 0;
 
-  int     erosion_kernel_size;
-  int     dilation_kernel_size;
-  int     opening_kernel_size;
-  int     closing_kernel_size;
-  int     morph_kernel_size;
-  int     gaussian_kernel_size;
-  int     bilateral_kernel_size;
+  int     erosion_kernel_size   = 0;
+  int     dilation_kernel_size  = 0;
+  int     opening_kernel_size   = 0;
+  int     closing_kernel_size   = 0;
+  int     morph_kernel_size     = 0;
+  int     gaussian_kernel_size  = 0;
+  int     bilateral_kernel_size = 0;
 
-  double  gaussian_sigma;
+  double  gaussian_sigma        = 0.0;
 
 
-  float   bilateral_sigma_color;
-  float   bilateral_sigma_spatial;
+  float   bilateral_sigma_color   = 0.0;
+  float   bilateral_sigma_spatial = 0.0;
 
-  bool    erode_active;
-  bool    dilation_active;
-  bool    morph_active;
-  bool    bilateral_active;
+  bool    erode_active            = false;
+  bool    dilation_active         = false;
+  bool    morph_active            = false;
+  bool    bilateral_active        = false;
 
 
   GlobalObjects->csv_parameter_datei->Oeffnen(Dateiname, Enum_CSV_Access::Read);
@@ -435,7 +435,8 @@ void c_camera_unmanaged::calibrate_single_camera                        (int cur
   vector<cv::Mat>             TCP_Orientation;
   vector<cv::Mat>             TCP_Position;
 
-  this->Photo_ID = 0;
+  this->Photo_ID              = 0;
+  int error_count             = 0;
 
   // Füllen des "Obj"-Vektors mit 3D-Koordinaten der Schachbrett-Ecken. Die Koordinaten werden manuell vorgegeben und ergeben sich über Länge
   // und Breite der Schachbrett-Rechtecke über die gesamte Länge und Breite des Schachbrettes. Das Schachbrett-Rechteck hat eine Größe von
@@ -463,6 +464,8 @@ void c_camera_unmanaged::calibrate_single_camera                        (int cur
     // die gefundenen Ecken werden in "Corners" abgespeichert. Es wird eine adaptive Schwellwertbildung genutzt und das Bild wird nach Rechtecken
     // gefiltert. "Found" wird nur true, wenn alle Ecken gefunden wurden. Die Ecken-Koordinaten aus "Corners" sind 2D-Koordinaten der Bildebene.
     bool Found = findChessboardCorners (Originalbild, Board_Sz, Corners, cv::CALIB_CB_ADAPTIVE_THRESH | cv::CALIB_CB_FILTER_QUADS);
+
+    if (!Found) error_count++;
 
     if (Found) // Falls Rechtecke gefunden wurden
       {
@@ -514,6 +517,8 @@ void c_camera_unmanaged::calibrate_single_camera                        (int cur
     this->Photo_ID++;
     }
 
+  std::cout << "Analyzed " << numBoards_imgs - error_count << "good images out of " << numBoards_imgs << endl; 
+
   // Mit den gefundenen Ecken in 2D-Koordinaten und den vorgegebenen 3D-Koordinaten werden die intrinsischen Parameter (Camera-Matrix) und
   // die Koeffizienten der Verzerrung berechnet. Rvecs und Tvecs erhalten dabei die Orientierung und die Position der Transformationsmatrix
   // zwischen Kamerakoordinatensystem und Schachbrettkoordinatensystem.
@@ -536,20 +541,29 @@ void c_camera_unmanaged::calibrate_single_camera                        (int cur
 
 
 void c_camera_unmanaged::calibrate_stereo_camera                        (int current_camera_id)
-  {
-  vector< vector<cv::Point3f > > object_points;
-  vector< vector<cv::Point2f > > imagePoints1, imagePoints2;
-  vector<cv::Point2f > corners1, corners2;
-  vector< vector<cv::Point2f > > left_img_points, right_img_points;
-  cv::Mat img1, img2, gray1, gray2;
+  {                            
+  vector<vector<cv::Point3f>>     object_points;
+  vector<vector<cv::Point2f>>     imagePoints1;
+  vector<vector<cv::Point2f>>     imagePoints2;
+  vector<vector<cv::Point2f>>     left_img_points;
+  vector<vector<cv::Point2f>>     right_img_points;
 
-  Photo_ID        = 0;
-  int error_count = 0;
+  vector<cv::Point2f>             corners1;
+  vector<cv::Point2f>             corners2;
+
+  cv::Mat                         img1;
+  cv::Mat                         img2;
+  cv::Mat                         gray1;
+  cv::Mat                         gray2;
+
+  Photo_ID                        = 0;
+  int error_count                 = 0;
+
+  cv::Size board_size             = cv::Size(this->numCornersWidth, this->numCornersHeight);
+  int board_n                     = this->numCornersWidth * this->numCornersHeight;
 
 
-  cv::Size board_size = cv::Size(this->numCornersWidth, this->numCornersHeight);
-  int board_n = this->numCornersWidth * this->numCornersHeight;
-
+  //Iterate over all available photos
   while (this->Photo_ID < this->numBoards_imgs)
     {
     char left_img[100], right_img[100];
@@ -559,7 +573,8 @@ void c_camera_unmanaged::calibrate_stereo_camera                        (int cur
     cv::cvtColor(img1, gray1, cv::COLOR_BGR2GRAY);
     cv::cvtColor(img2, gray2, cv::COLOR_BGR2GRAY);
 
-    bool found1 = false, found2 = false;
+    bool found1 = false;
+    bool found2 = false;
 
     found1 = cv::findChessboardCorners(img1, board_size, corners1,
                                          cv::CALIB_CB_ADAPTIVE_THRESH | cv::CALIB_CB_FILTER_QUADS);
@@ -628,7 +643,6 @@ void c_camera_unmanaged::calibrate_stereo_camera                        (int cur
 
   cv::stereoCalibrate(object_points, left_img_points, right_img_points, K1, D1, K2, D2, img1.size(), R, T, E, F, cv::CALIB_FIX_INTRINSIC );
 
-  // cv::FileStorage fs1(cv::out_file, cv::FileStorage::WRITE);
   std::cout << "K1" << K1 << endl;
   std::cout << "K2" << K2 << endl;
   std::cout << "D1" << D1 << endl;

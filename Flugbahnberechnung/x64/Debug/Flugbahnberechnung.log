@@ -1,10 +1,10 @@
 ﻿  opencv_unmanaged.cpp
-d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\opencv_unmanaged.cpp(591): warning C4244: 'argument': conversion from 'float' to '_Tp', possible loss of data
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\opencv_unmanaged.cpp(592): warning C4244: 'argument': conversion from 'float' to '_Tp', possible loss of data
           with
           [
               _Tp=int
           ]
-d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\opencv_unmanaged.cpp(591): warning C4244: 'argument': conversion from 'double' to '_Tp', possible loss of data
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\opencv_unmanaged.cpp(592): warning C4244: 'argument': conversion from 'double' to '_Tp', possible loss of data
           with
           [
               _Tp=int

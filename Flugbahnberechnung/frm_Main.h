@@ -24,6 +24,8 @@ namespace NmSp_frm_Main
     UInt32              Zaehler;
     UInt32              Taktgeber_Intervall;
 
+    UInt32              state;
+    UInt32              timerwait;
 
 
     private: 
@@ -66,10 +68,9 @@ namespace NmSp_frm_Main
       // 
       this->bt_exit->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 14.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
                              static_cast<System::Byte>(0)));
-      this->bt_exit->Location = System::Drawing::Point(15, 463);
-      this->bt_exit->Margin = System::Windows::Forms::Padding(4);
+      this->bt_exit->Location = System::Drawing::Point(11, 376);
       this->bt_exit->Name = L"bt_exit";
-      this->bt_exit->Size = System::Drawing::Size(223, 90);
+      this->bt_exit->Size = System::Drawing::Size(167, 73);
       this->bt_exit->TabIndex = 2;
       this->bt_exit->Text = L"Exit";
       this->bt_exit->UseVisualStyleBackColor = true;
@@ -80,10 +81,9 @@ namespace NmSp_frm_Main
       this->bt_ObjectCalibration->Enabled = false;
       this->bt_ObjectCalibration->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 14.25F, System::Drawing::FontStyle::Regular,
                                           System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
-      this->bt_ObjectCalibration->Location = System::Drawing::Point(15, 21);
-      this->bt_ObjectCalibration->Margin = System::Windows::Forms::Padding(4);
+      this->bt_ObjectCalibration->Location = System::Drawing::Point(11, 17);
       this->bt_ObjectCalibration->Name = L"bt_ObjectCalibration";
-      this->bt_ObjectCalibration->Size = System::Drawing::Size(263, 90);
+      this->bt_ObjectCalibration->Size = System::Drawing::Size(211, 73);
       this->bt_ObjectCalibration->TabIndex = 3;
       this->bt_ObjectCalibration->Text = L"Objektkalibierung";
       this->bt_ObjectCalibration->UseVisualStyleBackColor = true;
@@ -94,10 +94,9 @@ namespace NmSp_frm_Main
       this->bt_CameraCalibration->Enabled = false;
       this->bt_CameraCalibration->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 14.25F, System::Drawing::FontStyle::Regular,
                                           System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
-      this->bt_CameraCalibration->Location = System::Drawing::Point(15, 118);
-      this->bt_CameraCalibration->Margin = System::Windows::Forms::Padding(4);
+      this->bt_CameraCalibration->Location = System::Drawing::Point(11, 96);
       this->bt_CameraCalibration->Name = L"bt_CameraCalibration";
-      this->bt_CameraCalibration->Size = System::Drawing::Size(261, 90);
+      this->bt_CameraCalibration->Size = System::Drawing::Size(211, 73);
       this->bt_CameraCalibration->TabIndex = 4;
       this->bt_CameraCalibration->Text = L"Kamerakalibierung";
       this->bt_CameraCalibration->UseVisualStyleBackColor = true;
@@ -105,18 +104,16 @@ namespace NmSp_frm_Main
       // 
       // txtb_counter
       // 
-      this->txtb_counter->Location = System::Drawing::Point(15, 561);
-      this->txtb_counter->Margin = System::Windows::Forms::Padding(4);
+      this->txtb_counter->Location = System::Drawing::Point(11, 456);
       this->txtb_counter->Name = L"txtb_counter";
-      this->txtb_counter->Size = System::Drawing::Size(220, 22);
+      this->txtb_counter->Size = System::Drawing::Size(166, 20);
       this->txtb_counter->TabIndex = 0;
       // 
       // nup_camera_count
       // 
       this->nup_camera_count->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 13.8F, System::Drawing::FontStyle::Regular,
                                       System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
-      this->nup_camera_count->Location = System::Drawing::Point(15, 355);
-      this->nup_camera_count->Margin = System::Windows::Forms::Padding(4);
+      this->nup_camera_count->Location = System::Drawing::Point(11, 301);
       this->nup_camera_count->Maximum = System::Decimal(gcnew cli::array< System::Int32 >(4)
         {
         10, 0, 0, 0
@@ -126,7 +123,7 @@ namespace NmSp_frm_Main
         1, 0, 0, 0
         });
       this->nup_camera_count->Name = L"nup_camera_count";
-      this->nup_camera_count->Size = System::Drawing::Size(83, 34);
+      this->nup_camera_count->Size = System::Drawing::Size(62, 28);
       this->nup_camera_count->TabIndex = 5;
       this->nup_camera_count->Value = System::Decimal(gcnew cli::array< System::Int32 >(4)
         {
@@ -138,10 +135,9 @@ namespace NmSp_frm_Main
       this->label1->AutoSize = true;
       this->label1->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 13.8F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
                             static_cast<System::Byte>(0)));
-      this->label1->Location = System::Drawing::Point(10, 322);
-      this->label1->Margin = System::Windows::Forms::Padding(4, 0, 4, 0);
+      this->label1->Location = System::Drawing::Point(8, 262);
       this->label1->Name = L"label1";
-      this->label1->Size = System::Drawing::Size(423, 29);
+      this->label1->Size = System::Drawing::Size(335, 24);
       this->label1->TabIndex = 6;
       this->label1->Text = L"Anzahl der angeschlossenen Kameras";
       // 
@@ -150,10 +146,9 @@ namespace NmSp_frm_Main
       this->bt_camera_positioning->Enabled = false;
       this->bt_camera_positioning->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 14.25F, System::Drawing::FontStyle::Regular,
                                            System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
-      this->bt_camera_positioning->Location = System::Drawing::Point(15, 216);
-      this->bt_camera_positioning->Margin = System::Windows::Forms::Padding(4);
+      this->bt_camera_positioning->Location = System::Drawing::Point(11, 176);
       this->bt_camera_positioning->Name = L"bt_camera_positioning";
-      this->bt_camera_positioning->Size = System::Drawing::Size(261, 90);
+      this->bt_camera_positioning->Size = System::Drawing::Size(211, 73);
       this->bt_camera_positioning->TabIndex = 7;
       this->bt_camera_positioning->Text = L"Kamerapositionierung";
       this->bt_camera_positioning->UseVisualStyleBackColor = true;
@@ -163,10 +158,9 @@ namespace NmSp_frm_Main
       // 
       this->bt_apply_cameras->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 14.25F, System::Drawing::FontStyle::Regular,
                                       System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
-      this->bt_apply_cameras->Location = System::Drawing::Point(106, 355);
-      this->bt_apply_cameras->Margin = System::Windows::Forms::Padding(4);
+      this->bt_apply_cameras->Location = System::Drawing::Point(80, 288);
       this->bt_apply_cameras->Name = L"bt_apply_cameras";
-      this->bt_apply_cameras->Size = System::Drawing::Size(145, 34);
+      this->bt_apply_cameras->Size = System::Drawing::Size(142, 41);
       this->bt_apply_cameras->TabIndex = 8;
       this->bt_apply_cameras->Text = L"Anwenden";
       this->bt_apply_cameras->UseVisualStyleBackColor = true;
@@ -174,9 +168,9 @@ namespace NmSp_frm_Main
       // 
       // C_frm_Main
       // 
-      this->AutoScaleDimensions = System::Drawing::SizeF(8, 16);
+      this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
       this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
-      this->ClientSize = System::Drawing::Size(474, 773);
+      this->ClientSize = System::Drawing::Size(356, 628);
       this->Controls->Add(this->bt_apply_cameras);
       this->Controls->Add(this->bt_camera_positioning);
       this->Controls->Add(this->label1);
@@ -185,7 +179,6 @@ namespace NmSp_frm_Main
       this->Controls->Add(this->bt_CameraCalibration);
       this->Controls->Add(this->bt_ObjectCalibration);
       this->Controls->Add(this->bt_exit);
-      this->Margin = System::Windows::Forms::Padding(4);
       this->Name = L"C_frm_Main";
       this->Text = L"frm_Main";
       this->FormClosing += gcnew System::Windows::Forms::FormClosingEventHandler(this, &C_frm_Main::C_frm_Main_FormClosing);

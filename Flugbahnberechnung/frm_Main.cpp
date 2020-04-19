@@ -9,15 +9,17 @@ C_frm_Main::C_frm_Main                                                  (C_Globa
   this->GlobalObjects     = GlobalObjects;
   this->Main              = Main;
   this->Zaehler           = 0;
+  this->state             = 0;
   }
 /**************************************************************** Destruktor ****************************************************************/
 C_frm_Main::~C_frm_Main                                                 ()
   {
   //Stop Camera Thread
-  //for (int i = 0; i< GlobalObjects->cameras_in_use; i++)
-  //{
-  //  Main->camera_managed->camera_unmanaged->camera_vector[i]->thread_running = false;
-  //}
+  for (int i = 0; i< GlobalObjects->cameras_in_use; i++)
+  {
+    Main->camera_managed->camera_unmanaged->camera_vector[i]->thread_running = false;
+  }
+  this->state             = 0;
   this->Zaehler           = 0;
   this->Main              = nullptr;
   this->GlobalObjects     = nullptr;
@@ -66,7 +68,24 @@ System::Void        C_frm_Main::C_frm_Main_FormClosing                  (System:
 
 System::Void        C_frm_Main::Taktgeber_Tick                          (System::Object ^ sender, System::EventArgs ^ e)
   {
-  this->txtb_counter->Text								= System::String::Format("{0:0}", this->Zaehler++);
+  switch (state)
+    {
+      case 0:
+        this->txtb_counter->Text								= System::String::Format("{0:0}", this->Zaehler++);
+        break;
+      case 1 :
+        this->txtb_counter->Text								= System::String::Format("{0:0}", this->Zaehler++);
+        if(Zaehler > timerwait)
+          {
+          bt_ObjectCalibration->Enabled           = true;
+          bt_CameraCalibration->Enabled           = true;
+          bt_camera_positioning->Enabled          = true;
+          nup_camera_count->Enabled               = false;
+          bt_apply_cameras->Enabled               = false;
+          state = 0;
+          }
+        break;
+    }
   }
 
 System::Void        C_frm_Main::bt_camera_positioning_MouseClick        (System::Object^  sender, System::Windows::Forms::MouseEventArgs^  e)
@@ -82,21 +101,17 @@ System::Void        C_frm_Main::bt_camera_positioning_MouseClick        (System:
 
 System::Void        C_frm_Main::bt_apply_cameras_Click                  (System::Object^  sender, System::EventArgs^  e)
   {
-  //if (static_cast<int>(nup_camera_count->Value) % 2 != 0)
-  //  {
-  //  MessageBox::Show("Es muss eine gerade Anzahl an Kameras verwendet werden", "Fehler", MessageBoxButtons::OK, MessageBoxIcon::Error);
-  //  }
-  //else
+  if (static_cast<int>(nup_camera_count->Value) % 2 != 0)
+    {
+    MessageBox::Show("Es muss eine gerade Anzahl an Kameras verwendet werden", "Fehler", MessageBoxButtons::OK, MessageBoxIcon::Error);
+    }
+  else
     {
     GlobalObjects->cameras_in_use           = static_cast<int>                                      (nup_camera_count->Value);
 
     Main->camera_managed->camera_unmanaged->init_camera_vectors                 (static_cast<int>   (nup_camera_count->Value));
-
-    bt_ObjectCalibration->Enabled           = true;
-    bt_CameraCalibration->Enabled           = true;
-    bt_camera_positioning->Enabled          = true;
-    nup_camera_count->Enabled               = false;
-    bt_apply_cameras->Enabled               = false;
+    timerwait = Zaehler + 30;
+    this->state                             = 1;
     }
   }
 
