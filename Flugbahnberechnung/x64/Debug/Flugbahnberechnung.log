@@ -1,38 +1,248 @@
-﻿  opencv_unmanaged.cpp
-d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\opencv_unmanaged.cpp(592): warning C4244: 'argument': conversion from 'float' to '_Tp', possible loss of data
-          with
-          [
-              _Tp=int
-          ]
-d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\opencv_unmanaged.cpp(592): warning C4244: 'argument': conversion from 'double' to '_Tp', possible loss of data
-          with
-          [
-              _Tp=int
-          ]
-  App_Main.obj : MSIL module encountered; incremental linking is disabled for MSIL; performing full link
-Main.obj : warning LNK4248: unresolved typeref token (0100000F) for 'NmSp_CamerCalibration_Menu.C_frm_CameraCalibration_Menu'; image may not run
-frm_Main.obj : warning LNK4248: unresolved typeref token (0100000F) for 'NmSp_CamerCalibration_Menu.C_frm_CameraCalibration_Menu'; image may not run
-frm_Object_Calibration.obj : warning LNK4248: unresolved typeref token (0100000F) for 'NmSp_CamerCalibration_Menu.C_frm_CameraCalibration_Menu'; image may not run
-frm_Camera_Positioning.obj : warning LNK4248: unresolved typeref token (0100000F) for 'NmSp_CamerCalibration_Menu.C_frm_CameraCalibration_Menu'; image may not run
-frm_Camera_Calibration.obj : warning LNK4248: unresolved typeref token (0100000F) for 'NmSp_CamerCalibration_Menu.C_frm_CameraCalibration_Menu'; image may not run
-App_Main.obj : warning LNK4248: unresolved typeref token (0100000F) for 'NmSp_CamerCalibration_Menu.C_frm_CameraCalibration_Menu'; image may not run
-Main.obj : warning LNK4248: unresolved typeref token (01000010) for 'NmSp_frm_CameraCalibration_Stereo.C_frm_CameraCalibration_Stereo'; image may not run
-frm_Main.obj : warning LNK4248: unresolved typeref token (01000010) for 'NmSp_frm_CameraCalibration_Stereo.C_frm_CameraCalibration_Stereo'; image may not run
-frm_Object_Calibration.obj : warning LNK4248: unresolved typeref token (01000010) for 'NmSp_frm_CameraCalibration_Stereo.C_frm_CameraCalibration_Stereo'; image may not run
-frm_Camera_Positioning.obj : warning LNK4248: unresolved typeref token (01000010) for 'NmSp_frm_CameraCalibration_Stereo.C_frm_CameraCalibration_Stereo'; image may not run
-frm_Camera_Calibration.obj : warning LNK4248: unresolved typeref token (01000010) for 'NmSp_frm_CameraCalibration_Stereo.C_frm_CameraCalibration_Stereo'; image may not run
-App_Main.obj : warning LNK4248: unresolved typeref token (01000010) for 'NmSp_frm_CameraCalibration_Stereo.C_frm_CameraCalibration_Stereo'; image may not run
-  Flugbahnberechnung.vcxproj -> D:\Projekte\VisualStudio\Flugbahnberechnung\x64\Debug\ObjectTracking.exe
-C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\Common7\IDE\VC\VCTargets\Microsoft.MetaGen.targets(52,5): warning MSB4018: The "METAGEN" task failed unexpectedly.
-C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\Common7\IDE\VC\VCTargets\Microsoft.MetaGen.targets(52,5): warning MSB4018: System.TypeLoadException: Could not load type 'NmSp_CamerCalibration_Menu.C_frm_CameraCalibration_Menu' from assembly 'ObjectTracking, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null' due to value type mismatch.
-C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\Common7\IDE\VC\VCTargets\Microsoft.MetaGen.targets(52,5): warning MSB4018:    at System.Signature.GetSignature(Void* pCorSig, Int32 cCorSig, RuntimeFieldHandleInternal fieldHandle, IRuntimeMethodInfo methodHandle, RuntimeType declaringType)
-C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\Common7\IDE\VC\VCTargets\Microsoft.MetaGen.targets(52,5): warning MSB4018:    at System.Signature..ctor(IRuntimeFieldInfo fieldHandle, RuntimeType declaringType)
-C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\Common7\IDE\VC\VCTargets\Microsoft.MetaGen.targets(52,5): warning MSB4018:    at System.Reflection.RtFieldInfo.GetRequiredCustomModifiers()
-C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\Common7\IDE\VC\VCTargets\Microsoft.MetaGen.targets(52,5): warning MSB4018:    at Microsoft.Build.CPPTasks.MetaDumper.DumpFields(Type aType)
-C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\Common7\IDE\VC\VCTargets\Microsoft.MetaGen.targets(52,5): warning MSB4018:    at Microsoft.Build.CPPTasks.MetaDumper.DumpType(Type aType)
-C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\Common7\IDE\VC\VCTargets\Microsoft.MetaGen.targets(52,5): warning MSB4018:    at Microsoft.Build.CPPTasks.MetaDumper.GenerateAssemblyMeta(String theModule, String refSearchPath)
-C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\Common7\IDE\VC\VCTargets\Microsoft.MetaGen.targets(52,5): warning MSB4018:    at Microsoft.Build.CPPTasks.MetaDumper.GenerateAssemblyMeta(String theModule, String refSearchPath)
-C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\Common7\IDE\VC\VCTargets\Microsoft.MetaGen.targets(52,5): warning MSB4018:    at Microsoft.Build.CPPTasks.AsmMeta.CreateMeta(String assemblyFileName, String searchPath, String metaFileName)
-C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\Common7\IDE\VC\VCTargets\Microsoft.MetaGen.targets(52,5): warning MSB4018:    at Microsoft.Build.CPPTasks.METAGEN.Execute()
-C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\Common7\IDE\VC\VCTargets\Microsoft.MetaGen.targets(52,5): warning MSB4018:    at Microsoft.Build.BackEnd.TaskExecutionHost.Microsoft.Build.BackEnd.ITaskExecutionHost.Execute()
-C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\Common7\IDE\VC\VCTargets\Microsoft.MetaGen.targets(52,5): warning MSB4018:    at Microsoft.Build.BackEnd.TaskBuilder.<ExecuteInstantiatedTask>d__26.MoveNext()
+﻿  App_Main.cpp
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\main.h(78): warning C4677: 'camera_managed': signature of non-private member contains assembly private type 'nmsp_camera_managed::C_camera_managed'
+  d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\camera_managed.h(12): note: see declaration of 'nmsp_camera_managed::C_camera_managed'
+  frm_Camera_Calibration.cpp
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\main.h(78): warning C4677: 'camera_managed': signature of non-private member contains assembly private type 'nmsp_camera_managed::C_camera_managed'
+  d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\camera_managed.h(12): note: see declaration of 'nmsp_camera_managed::C_camera_managed'
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\frm_camera_calibration.cpp(87): warning C4018: '>': signed/unsigned mismatch
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\frm_camera_calibration.cpp(139): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+  frm_Camera_Positioning.cpp
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\main.h(78): warning C4677: 'camera_managed': signature of non-private member contains assembly private type 'nmsp_camera_managed::C_camera_managed'
+  d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\camera_managed.h(12): note: see declaration of 'nmsp_camera_managed::C_camera_managed'
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\frm_camera_positioning.cpp(137): warning C4018: '<': signed/unsigned mismatch
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\frm_camera_positioning.cpp(180): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+  frm_Object_Calibration.cpp
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\main.h(78): warning C4677: 'camera_managed': signature of non-private member contains assembly private type 'nmsp_camera_managed::C_camera_managed'
+  d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\camera_managed.h(12): note: see declaration of 'nmsp_camera_managed::C_camera_managed'
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\frm_object_calibration.cpp(366): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+  Camera_managed.cpp
+  frm_Main.cpp
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\main.h(78): warning C4677: 'camera_managed': signature of non-private member contains assembly private type 'nmsp_camera_managed::C_camera_managed'
+  d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\camera_managed.h(12): note: see declaration of 'nmsp_camera_managed::C_camera_managed'
+  frm_Object_Tracking.cpp
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\main.h(78): warning C4677: 'camera_managed': signature of non-private member contains assembly private type 'nmsp_camera_managed::C_camera_managed'
+  d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\camera_managed.h(12): note: see declaration of 'nmsp_camera_managed::C_camera_managed'
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\frm_object_tracking.cpp(67): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+  Main.cpp
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\main.h(78): warning C4677: 'camera_managed': signature of non-private member contains assembly private type 'nmsp_camera_managed::C_camera_managed'
+  d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\camera_managed.h(12): note: see declaration of 'nmsp_camera_managed::C_camera_managed'
+  posen.cpp
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\posen.cpp(1876): error C4578: 'abs': conversion from 'double' to 'int', possible loss of data (Did you mean to call 'fabs' or to #include <cmath>?)
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\posen.cpp(1884): error C4578: 'abs': conversion from 'double' to 'int', possible loss of data (Did you mean to call 'fabs' or to #include <cmath>?)
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\posen.cpp(1890): error C4578: 'abs': conversion from 'double' to 'int', possible loss of data (Did you mean to call 'fabs' or to #include <cmath>?)
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\posen.cpp(1900): error C4578: 'abs': conversion from 'double' to 'int', possible loss of data (Did you mean to call 'fabs' or to #include <cmath>?)
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\posen.cpp(1910): error C4578: 'abs': conversion from 'double' to 'int', possible loss of data (Did you mean to call 'fabs' or to #include <cmath>?)
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\posen.cpp(1920): error C4578: 'abs': conversion from 'double' to 'int', possible loss of data (Did you mean to call 'fabs' or to #include <cmath>?)
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\posen.cpp(1930): error C4578: 'abs': conversion from 'double' to 'int', possible loss of data (Did you mean to call 'fabs' or to #include <cmath>?)
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\posen.cpp(1940): error C4578: 'abs': conversion from 'double' to 'int', possible loss of data (Did you mean to call 'fabs' or to #include <cmath>?)
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\posen.cpp(1956): error C4578: 'abs': conversion from 'double' to 'int', possible loss of data (Did you mean to call 'fabs' or to #include <cmath>?)
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\posen.cpp(1957): error C4578: 'abs': conversion from 'double' to 'int', possible loss of data (Did you mean to call 'fabs' or to #include <cmath>?)
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\posen.cpp(1958): error C4578: 'abs': conversion from 'double' to 'int', possible loss of data (Did you mean to call 'fabs' or to #include <cmath>?)
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\posen.cpp(2009): error C4578: 'abs': conversion from 'double' to 'int', possible loss of data (Did you mean to call 'fabs' or to #include <cmath>?)
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\posen.cpp(2017): error C4578: 'abs': conversion from 'double' to 'int', possible loss of data (Did you mean to call 'fabs' or to #include <cmath>?)
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\posen.cpp(2023): error C4578: 'abs': conversion from 'double' to 'int', possible loss of data (Did you mean to call 'fabs' or to #include <cmath>?)
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\posen.cpp(2033): error C4578: 'abs': conversion from 'double' to 'int', possible loss of data (Did you mean to call 'fabs' or to #include <cmath>?)
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\posen.cpp(2043): error C4578: 'abs': conversion from 'double' to 'int', possible loss of data (Did you mean to call 'fabs' or to #include <cmath>?)
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\posen.cpp(2053): error C4578: 'abs': conversion from 'double' to 'int', possible loss of data (Did you mean to call 'fabs' or to #include <cmath>?)
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\posen.cpp(2063): error C4578: 'abs': conversion from 'double' to 'int', possible loss of data (Did you mean to call 'fabs' or to #include <cmath>?)
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\posen.cpp(2073): error C4578: 'abs': conversion from 'double' to 'int', possible loss of data (Did you mean to call 'fabs' or to #include <cmath>?)
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\posen.cpp(2089): error C4578: 'abs': conversion from 'double' to 'int', possible loss of data (Did you mean to call 'fabs' or to #include <cmath>?)
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\posen.cpp(2090): error C4578: 'abs': conversion from 'double' to 'int', possible loss of data (Did you mean to call 'fabs' or to #include <cmath>?)
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\posen.cpp(2091): error C4578: 'abs': conversion from 'double' to 'int', possible loss of data (Did you mean to call 'fabs' or to #include <cmath>?)
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\posen.cpp(2142): error C4578: 'abs': conversion from 'double' to 'int', possible loss of data (Did you mean to call 'fabs' or to #include <cmath>?)
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\posen.cpp(2150): error C4578: 'abs': conversion from 'double' to 'int', possible loss of data (Did you mean to call 'fabs' or to #include <cmath>?)
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\posen.cpp(2156): error C4578: 'abs': conversion from 'double' to 'int', possible loss of data (Did you mean to call 'fabs' or to #include <cmath>?)
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\posen.cpp(2166): error C4578: 'abs': conversion from 'double' to 'int', possible loss of data (Did you mean to call 'fabs' or to #include <cmath>?)
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\posen.cpp(2176): error C4578: 'abs': conversion from 'double' to 'int', possible loss of data (Did you mean to call 'fabs' or to #include <cmath>?)
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\posen.cpp(2186): error C4578: 'abs': conversion from 'double' to 'int', possible loss of data (Did you mean to call 'fabs' or to #include <cmath>?)
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\posen.cpp(2196): error C4578: 'abs': conversion from 'double' to 'int', possible loss of data (Did you mean to call 'fabs' or to #include <cmath>?)
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\posen.cpp(2206): error C4578: 'abs': conversion from 'double' to 'int', possible loss of data (Did you mean to call 'fabs' or to #include <cmath>?)
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\posen.cpp(2222): error C4578: 'abs': conversion from 'double' to 'int', possible loss of data (Did you mean to call 'fabs' or to #include <cmath>?)
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\posen.cpp(2223): error C4578: 'abs': conversion from 'double' to 'int', possible loss of data (Did you mean to call 'fabs' or to #include <cmath>?)
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\posen.cpp(2224): error C4578: 'abs': conversion from 'double' to 'int', possible loss of data (Did you mean to call 'fabs' or to #include <cmath>?)
+  tracking.cpp
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\tracking.cpp(25): error C2653: 'std´': is not a class or namespace name
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\tracking.cpp(25): error C2065: 'vector': undeclared identifier
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\tracking.cpp(25): error C2062: type 'bool' unexpected
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\tracking.cpp(27): error C2039: 'Main': is not a member of 'nmsp_tracking::c_tracking'
+  d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\tracking.h(9): note: see declaration of 'nmsp_tracking::c_tracking'
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\tracking.cpp(28): error C2039: 'UM_Main': is not a member of 'nmsp_tracking::c_tracking'
+  d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\tracking.h(9): note: see declaration of 'nmsp_tracking::c_tracking'
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\tracking.cpp(31): error C2065: 'vec_Object_Found': undeclared identifier
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\tracking.cpp(32): error C2065: 'vec_Object_Found': undeclared identifier
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\tracking.cpp(35): error C2065: 'vector': undeclared identifier
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\tracking.cpp(35): error C2275: 'UM_Posen::S_Positionsvektor': illegal use of this type as an expression
+  d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\posen.h(216): note: see declaration of 'UM_Posen::S_Positionsvektor'
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\tracking.cpp(35): error C2065: 'vec_Richtungsvektoren_World': undeclared identifier
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\tracking.cpp(36): error C2065: 'vec_Richtungsvektoren_World': undeclared identifier
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\tracking.cpp(36): error C2065: 'vec_TCP_Poses': undeclared identifier
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\tracking.cpp(39): error C2065: 'E_ObjectTracking': undeclared identifier
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\tracking.cpp(39): error C2146: syntax error: missing ';' before identifier 'enum_ObjectTracking_0'
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\tracking.cpp(39): error C2065: 'enum_ObjectTracking_0': undeclared identifier
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\tracking.cpp(40): error C2065: 'E_ObjectTracking': undeclared identifier
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\tracking.cpp(40): error C2146: syntax error: missing ';' before identifier 'enum_ObjectTracking_1'
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\tracking.cpp(40): error C2065: 'enum_ObjectTracking_1': undeclared identifier
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\tracking.cpp(42): error C2065: 'vec_Object_Found': undeclared identifier
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\tracking.cpp(44): error C2065: 'vec_Richtungsvektoren_World': undeclared identifier
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\tracking.cpp(44): error C2065: 'vec_WorldToTCP_Poses': undeclared identifier
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\tracking.cpp(46): error C2065: 'enum_ObjectTracking_0': undeclared identifier
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\tracking.cpp(46): error C2653: 'E_ObjectTracking': is not a class or namespace name
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\tracking.cpp(46): error C2065: 'Stereo_Object': undeclared identifier
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\tracking.cpp(47): error C2065: 'enum_ObjectTracking_1': undeclared identifier
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\tracking.cpp(47): error C2653: 'E_ObjectTracking': is not a class or namespace name
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\tracking.cpp(47): error C2065: 'Stereo_Object': undeclared identifier
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\tracking.cpp(49): error C2065: 'vec_Object_Found': undeclared identifier
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\tracking.cpp(52): error C2065: 'enum_ObjectTracking_0': undeclared identifier
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\tracking.cpp(52): error C2653: 'E_ObjectTracking': is not a class or namespace name
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\tracking.cpp(52): error C2065: 'Mono_Object': undeclared identifier
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\tracking.cpp(53): error C2065: 'enum_ObjectTracking_1': undeclared identifier
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\tracking.cpp(53): error C2653: 'E_ObjectTracking': is not a class or namespace name
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\tracking.cpp(53): error C2065: 'Object_Not_Found': undeclared identifier
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\tracking.cpp(55): error C2065: 'vec_Object_Found': undeclared identifier
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\tracking.cpp(58): error C2065: 'enum_ObjectTracking_0': undeclared identifier
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\tracking.cpp(58): error C2653: 'E_ObjectTracking': is not a class or namespace name
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\tracking.cpp(58): error C2065: 'Object_Not_Found': undeclared identifier
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\tracking.cpp(59): error C2065: 'enum_ObjectTracking_1': undeclared identifier
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\tracking.cpp(59): error C2653: 'E_ObjectTracking': is not a class or namespace name
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\tracking.cpp(59): error C2065: 'Mono_Object': undeclared identifier
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\tracking.cpp(64): error C2065: 'enum_ObjectTracking_0': undeclared identifier
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\tracking.cpp(64): error C2653: 'E_ObjectTracking': is not a class or namespace name
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\tracking.cpp(64): error C2065: 'Object_Not_Found': undeclared identifier
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\tracking.cpp(65): error C2065: 'enum_ObjectTracking_1': undeclared identifier
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\tracking.cpp(65): error C2653: 'E_ObjectTracking': is not a class or namespace name
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\tracking.cpp(65): error C2065: 'Object_Not_Found': undeclared identifier
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\tracking.cpp(69): error C2039: 'UM_Main': is not a member of 'nmsp_tracking::c_tracking'
+  d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\tracking.h(9): note: see declaration of 'nmsp_tracking::c_tracking'
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\tracking.cpp(69): error C2065: 'enum_ObjectTracking_0': undeclared identifier
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\tracking.cpp(70): error C2039: 'UM_Main': is not a member of 'nmsp_tracking::c_tracking'
+  d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\tracking.h(9): note: see declaration of 'nmsp_tracking::c_tracking'
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\tracking.cpp(70): error C2065: 'enum_ObjectTracking_1': undeclared identifier
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\tracking.cpp(72): error C2653: 'C_frm_UM_ObjectTracking': is not a class or namespace name
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\tracking.cpp(72): error C2061: syntax error: identifier 'vector'
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\tracking.cpp(79): error C2065: 'vec_Richtungsvektoren_World': undeclared identifier
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\tracking.cpp(94): error C2065: 'vec_Richtungsvektoren_World': undeclared identifier
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\tracking.cpp(97): error C2065: 'vec_Richtungsvektoren_World': undeclared identifier
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\tracking.cpp(100): error C2065: 'vec_Richtungsvektoren_World': undeclared identifier
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\tracking.cpp(106): error C2065: 'vec_Richtungsvektoren_World': undeclared identifier
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\tracking.cpp(109): error C2065: 'vec_Richtungsvektoren_World': undeclared identifier
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\tracking.cpp(118): error C2065: 'vec_Richtungsvektoren_World': undeclared identifier
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\tracking.cpp(152): error C2065: 'vec_WorldToTCP_Poses': undeclared identifier
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\tracking.cpp(152): error C2065: 'vec_Richtungsvektoren_World': undeclared identifier
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\tracking.cpp(153): error C2065: 'vec_WorldToTCP_Poses': undeclared identifier
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\tracking.cpp(153): error C2065: 'vec_Richtungsvektoren_World': undeclared identifier
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\tracking.cpp(154): error C2065: 'vec_WorldToTCP_Poses': undeclared identifier
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\tracking.cpp(154): error C2065: 'vec_Richtungsvektoren_World': undeclared identifier
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\tracking.cpp(155): error C2065: 'vec_WorldToTCP_Poses': undeclared identifier
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\tracking.cpp(155): error C2065: 'vec_Richtungsvektoren_World': undeclared identifier
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\tracking.cpp(156): error C2065: 'vec_WorldToTCP_Poses': undeclared identifier
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\tracking.cpp(156): error C2065: 'vec_Richtungsvektoren_World': undeclared identifier
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\tracking.cpp(157): error C2065: 'vec_WorldToTCP_Poses': undeclared identifier
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\tracking.cpp(157): error C2065: 'vec_Richtungsvektoren_World': undeclared identifier
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\tracking.cpp(171): error C2653: 'C_frm_UM_ObjectTracking': is not a class or namespace name
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\tracking.cpp(171): error C2065: 'vector': undeclared identifier
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\tracking.cpp(171): error C2275: 'UM_Posen::S_Positionsvektor': illegal use of this type as an expression
+  d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\posen.h(216): note: see declaration of 'UM_Posen::S_Positionsvektor'
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\tracking.cpp(171): error C2065: 'vec_Richtungsvektoren': undeclared identifier
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\tracking.cpp(171): error C2065: 'vec_Richtungsvektoren_World': undeclared identifier
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\tracking.cpp(171): error C2275: 'UM_Posen::C_AbsolutePose': illegal use of this type as an expression
+  d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\posen.h(244): note: see declaration of 'UM_Posen::C_AbsolutePose'
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\tracking.cpp(171): error C2065: 'vec_TCP_Poses': undeclared identifier
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\tracking.cpp(171): error C2182: 'Calc_RichtungsvektorenToWorld': illegal use of type 'void'
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\tracking.cpp(172): error C2448: 'Calc_RichtungsvektorenToWorld': function-style initializer appears to be a function definition
+  Generating Code...
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\cuda.inl.hpp(105): warning C4793: 'cv::cuda::GpuMat::GpuMat': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\cuda.inl.hpp(395): warning C4793: 'cv::cuda::HostMem::HostMem': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\mat.inl.hpp(530): warning C4793: 'cv::Mat::Mat': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\mat.inl.hpp(850): warning C4793: 'cv::Mat::release': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\mat.inl.hpp(2181): warning C4793: 'cv::SparseMat::addref': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\mat.inl.hpp(3781): warning C4793: 'cv::UMat::addref': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\cuda.inl.hpp(105): warning C4793: 'cv::cuda::GpuMat::GpuMat': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\cuda.inl.hpp(395): warning C4793: 'cv::cuda::HostMem::HostMem': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\mat.inl.hpp(530): warning C4793: 'cv::Mat::Mat': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\mat.inl.hpp(850): warning C4793: 'cv::Mat::release': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\mat.inl.hpp(2181): warning C4793: 'cv::SparseMat::addref': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\mat.inl.hpp(3781): warning C4793: 'cv::UMat::addref': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\cuda.inl.hpp(105): warning C4793: 'cv::cuda::GpuMat::GpuMat': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\cuda.inl.hpp(395): warning C4793: 'cv::cuda::HostMem::HostMem': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\mat.inl.hpp(530): warning C4793: 'cv::Mat::Mat': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\mat.inl.hpp(850): warning C4793: 'cv::Mat::release': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\mat.inl.hpp(2181): warning C4793: 'cv::SparseMat::addref': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\mat.inl.hpp(3781): warning C4793: 'cv::UMat::addref': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\cuda.inl.hpp(105): warning C4793: 'cv::cuda::GpuMat::GpuMat': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\cuda.inl.hpp(395): warning C4793: 'cv::cuda::HostMem::HostMem': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\mat.inl.hpp(530): warning C4793: 'cv::Mat::Mat': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\mat.inl.hpp(850): warning C4793: 'cv::Mat::release': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\mat.inl.hpp(2181): warning C4793: 'cv::SparseMat::addref': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\mat.inl.hpp(3781): warning C4793: 'cv::UMat::addref': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\cuda.inl.hpp(105): warning C4793: 'cv::cuda::GpuMat::GpuMat': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\cuda.inl.hpp(395): warning C4793: 'cv::cuda::HostMem::HostMem': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\mat.inl.hpp(530): warning C4793: 'cv::Mat::Mat': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\mat.inl.hpp(850): warning C4793: 'cv::Mat::release': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\mat.inl.hpp(2181): warning C4793: 'cv::SparseMat::addref': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\mat.inl.hpp(3781): warning C4793: 'cv::UMat::addref': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\cuda.inl.hpp(105): warning C4793: 'cv::cuda::GpuMat::GpuMat': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\cuda.inl.hpp(395): warning C4793: 'cv::cuda::HostMem::HostMem': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\mat.inl.hpp(530): warning C4793: 'cv::Mat::Mat': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\mat.inl.hpp(850): warning C4793: 'cv::Mat::release': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\mat.inl.hpp(2181): warning C4793: 'cv::SparseMat::addref': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\mat.inl.hpp(3781): warning C4793: 'cv::UMat::addref': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\cuda.inl.hpp(105): warning C4793: 'cv::cuda::GpuMat::GpuMat': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\cuda.inl.hpp(395): warning C4793: 'cv::cuda::HostMem::HostMem': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\mat.inl.hpp(530): warning C4793: 'cv::Mat::Mat': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\mat.inl.hpp(850): warning C4793: 'cv::Mat::release': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\mat.inl.hpp(2181): warning C4793: 'cv::SparseMat::addref': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\mat.inl.hpp(3781): warning C4793: 'cv::UMat::addref': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\cuda.inl.hpp(105): warning C4793: 'cv::cuda::GpuMat::GpuMat': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\cuda.inl.hpp(395): warning C4793: 'cv::cuda::HostMem::HostMem': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\mat.inl.hpp(530): warning C4793: 'cv::Mat::Mat': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\mat.inl.hpp(850): warning C4793: 'cv::Mat::release': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\mat.inl.hpp(2181): warning C4793: 'cv::SparseMat::addref': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\mat.inl.hpp(3781): warning C4793: 'cv::UMat::addref': function compiled as native:
+  	Found an intrinsic not supported in managed code

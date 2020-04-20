@@ -102,7 +102,7 @@ System::Void          C_frm_CameraCalibration_Single::Taktgeber_Tick            
 
 System::Void          C_frm_CameraCalibration_Single::bt_exit_Click                                       (System::Object^  sender, System::EventArgs^  e)
   {
-  this->Taktgeber->Enabled = false;
+  this->Taktgeber->Enabled                = false;
   this->Close();
   }
 System::Void          C_frm_CameraCalibration_Single::bt_start_Click                                      (System::Object^  sender, System::EventArgs^  e)

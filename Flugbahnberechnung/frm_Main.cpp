@@ -15,7 +15,7 @@ C_frm_Main::C_frm_Main                                                  (C_Globa
 C_frm_Main::~C_frm_Main                                                 ()
   {
   //Stop Camera Thread
-  for (int i = 0; i< GlobalObjects->cameras_in_use; i++)
+  for (int i = 0; i< static_cast<int>(nup_camera_count->Value); i++)
   {
     Main->camera_managed->camera_unmanaged->camera_vector[i]->thread_running = false;
   }

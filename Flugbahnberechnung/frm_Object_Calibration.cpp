@@ -74,6 +74,10 @@ c_frm_object_calibration::~c_frm_object_calibration                       ()
 
     this->Main                    = nullptr;
     this->GlobalObjects           = nullptr;
+    if (components)
+      {
+      delete components;
+      }
 
   }
 /**************************************************** WinForms Event-Handler *********************************************************/

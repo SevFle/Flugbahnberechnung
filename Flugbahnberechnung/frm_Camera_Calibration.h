@@ -135,8 +135,8 @@ namespace NmSp_CamerCalibration_Single
       this->tb_single_corner_count_B = (gcnew System::Windows::Forms::TextBox());
       this->tb_single_corner_count_H = (gcnew System::Windows::Forms::TextBox());
       this->grB_options = (gcnew System::Windows::Forms::GroupBox());
-      this->rb_single_calibration = (gcnew System::Windows::Forms::RadioButton());
       this->rb_stereo_calibration = (gcnew System::Windows::Forms::RadioButton());
+      this->rb_single_calibration = (gcnew System::Windows::Forms::RadioButton());
       this->groupBox3 = (gcnew System::Windows::Forms::GroupBox());
       this->tb_photo_interval = (gcnew System::Windows::Forms::TextBox());
       this->label9 = (gcnew System::Windows::Forms::Label());
@@ -162,7 +162,7 @@ namespace NmSp_CamerCalibration_Single
       // 
       // txtb_counter
       // 
-      this->txtb_counter->Location = System::Drawing::Point(853, 781);
+      this->txtb_counter->Location = System::Drawing::Point(1673, 787);
       this->txtb_counter->Name = L"txtb_counter";
       this->txtb_counter->Size = System::Drawing::Size(166, 20);
       this->txtb_counter->TabIndex = 3;
@@ -171,7 +171,7 @@ namespace NmSp_CamerCalibration_Single
       // 
       this->bt_exit->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 14.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
                              static_cast<System::Byte>(0)));
-      this->bt_exit->Location = System::Drawing::Point(853, 701);
+      this->bt_exit->Location = System::Drawing::Point(1673, 707);
       this->bt_exit->Name = L"bt_exit";
       this->bt_exit->Size = System::Drawing::Size(167, 73);
       this->bt_exit->TabIndex = 4;
@@ -202,9 +202,9 @@ namespace NmSp_CamerCalibration_Single
       // 
       // pb_live_camera_picture
       // 
-      this->pb_live_camera_picture->Location = System::Drawing::Point(325, 388);
+      this->pb_live_camera_picture->Location = System::Drawing::Point(754, 10);
       this->pb_live_camera_picture->Name = L"pb_live_camera_picture";
-      this->pb_live_camera_picture->Size = System::Drawing::Size(448, 328);
+      this->pb_live_camera_picture->Size = System::Drawing::Size(916, 640);
       this->pb_live_camera_picture->TabIndex = 7;
       this->pb_live_camera_picture->TabStop = false;
       // 
@@ -213,7 +213,7 @@ namespace NmSp_CamerCalibration_Single
       this->label1->AutoSize = true;
       this->label1->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 14.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
                             static_cast<System::Byte>(0)));
-      this->label1->Location = System::Drawing::Point(321, 348);
+      this->label1->Location = System::Drawing::Point(539, 10);
       this->label1->Name = L"label1";
       this->label1->Size = System::Drawing::Size(105, 24);
       this->label1->TabIndex = 8;
@@ -355,6 +355,19 @@ namespace NmSp_CamerCalibration_Single
       this->grB_options->TabStop = false;
       this->grB_options->Text = L"Parameter";
       // 
+      // rb_stereo_calibration
+      // 
+      this->rb_stereo_calibration->AutoSize = true;
+      this->rb_stereo_calibration->Location = System::Drawing::Point(12, 51);
+      this->rb_stereo_calibration->Margin = System::Windows::Forms::Padding(2);
+      this->rb_stereo_calibration->Name = L"rb_stereo_calibration";
+      this->rb_stereo_calibration->Size = System::Drawing::Size(115, 17);
+      this->rb_stereo_calibration->TabIndex = 23;
+      this->rb_stereo_calibration->TabStop = true;
+      this->rb_stereo_calibration->Text = L"Stereo [Extrinsisch]";
+      this->rb_stereo_calibration->UseVisualStyleBackColor = true;
+      this->rb_stereo_calibration->Click += gcnew System::EventHandler(this, &C_frm_CameraCalibration_Single::rb_stereo_calibration_Click);
+      // 
       // rb_single_calibration
       // 
       this->rb_single_calibration->AutoSize = true;
@@ -368,19 +381,6 @@ namespace NmSp_CamerCalibration_Single
       this->rb_single_calibration->Text = L"Single [Intrinsisch]";
       this->rb_single_calibration->UseVisualStyleBackColor = true;
       this->rb_single_calibration->Click += gcnew System::EventHandler(this, &C_frm_CameraCalibration_Single::rb_single_calibration_Click);
-      // 
-      // rb_stereo_calibration
-      // 
-      this->rb_stereo_calibration->AutoSize = true;
-      this->rb_stereo_calibration->Location = System::Drawing::Point(12, 51);
-      this->rb_stereo_calibration->Margin = System::Windows::Forms::Padding(2);
-      this->rb_stereo_calibration->Name = L"rb_stereo_calibration";
-      this->rb_stereo_calibration->Size = System::Drawing::Size(115, 17);
-      this->rb_stereo_calibration->TabIndex = 23;
-      this->rb_stereo_calibration->TabStop = true;
-      this->rb_stereo_calibration->Text = L"Stereo [Extrinsisch]";
-      this->rb_stereo_calibration->UseVisualStyleBackColor = true;
-      this->rb_stereo_calibration->Click += gcnew System::EventHandler(this, &C_frm_CameraCalibration_Single::rb_stereo_calibration_Click);
       // 
       // groupBox3
       // 
@@ -440,7 +440,7 @@ namespace NmSp_CamerCalibration_Single
       this->lbl_calibration_running->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 16.2F, System::Drawing::FontStyle::Regular,
                                              System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
       this->lbl_calibration_running->ForeColor = System::Drawing::Color::Red;
-      this->lbl_calibration_running->Location = System::Drawing::Point(425, 348);
+      this->lbl_calibration_running->Location = System::Drawing::Point(320, 372);
       this->lbl_calibration_running->Margin = System::Windows::Forms::Padding(2, 0, 2, 0);
       this->lbl_calibration_running->Name = L"lbl_calibration_running";
       this->lbl_calibration_running->Size = System::Drawing::Size(324, 26);
@@ -463,18 +463,18 @@ namespace NmSp_CamerCalibration_Single
       // 
       // pb_stereo_L
       // 
-      this->pb_stereo_L->Location = System::Drawing::Point(325, 388);
+      this->pb_stereo_L->Location = System::Drawing::Point(1253, 10);
       this->pb_stereo_L->Name = L"pb_stereo_L";
-      this->pb_stereo_L->Size = System::Drawing::Size(320, 275);
+      this->pb_stereo_L->Size = System::Drawing::Size(608, 550);
       this->pb_stereo_L->TabIndex = 28;
       this->pb_stereo_L->TabStop = false;
       this->pb_stereo_L->Visible = false;
       // 
       // pb_stereo_R
       // 
-      this->pb_stereo_R->Location = System::Drawing::Point(651, 388);
+      this->pb_stereo_R->Location = System::Drawing::Point(649, 10);
       this->pb_stereo_R->Name = L"pb_stereo_R";
-      this->pb_stereo_R->Size = System::Drawing::Size(320, 275);
+      this->pb_stereo_R->Size = System::Drawing::Size(608, 550);
       this->pb_stereo_R->TabIndex = 29;
       this->pb_stereo_R->TabStop = false;
       this->pb_stereo_R->Visible = false;
@@ -483,7 +483,7 @@ namespace NmSp_CamerCalibration_Single
       // 
       this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
       this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
-      this->ClientSize = System::Drawing::Size(1030, 818);
+      this->ClientSize = System::Drawing::Size(1862, 818);
       this->Controls->Add(this->pb_stereo_R);
       this->Controls->Add(this->pb_stereo_L);
       this->Controls->Add(this->bt_take_photo);

@@ -604,6 +604,9 @@ void c_camera_unmanaged::calibrate_stereo_camera                        (int cur
       cv::drawChessboardCorners(gray2, board_size, corners2, found2);
       }
 
+    cv::imwrite ("../Parameter/Bilder/Camera_Stereo_Calibration_" + std::to_string(camera_id) + "_Gray_DrawCorners_" + std::to_string(this->Photo_ID) + ".png", gray1);
+    cv::imwrite ("../Parameter/Bilder/Camera_Stereo_Calibration_" + std::to_string(camera_id+1) + "_Gray_DrawCorners_" + std::to_string(this->Photo_ID) + ".png", gray2);
+
     vector<cv::Point3f > obj;
     for (int i = 0; i < this->numCornersHeight; i++)
       for (int j = 0; j < this->numCornersWidth; j++)
@@ -618,7 +621,7 @@ void c_camera_unmanaged::calibrate_stereo_camera                        (int cur
     Photo_ID++;
   }//  while (this->Photo_ID < this->numBoards_imgs)
 
-  std::cout << endl << "Analyzed " << Photo_ID - error_count << " out of " << Photo_ID << " source immages successfully.";
+  std::cout << endl << "Analyzed " << Photo_ID - error_count << " out of " << Photo_ID << " source immages successfully."<< endl;
 
   for (int i = 0; i < imagePoints1.size(); i++)
     {
@@ -643,14 +646,14 @@ void c_camera_unmanaged::calibrate_stereo_camera                        (int cur
 
   cv::stereoCalibrate(object_points, left_img_points, right_img_points, K1, D1, K2, D2, img1.size(), R, T, E, F, cv::CALIB_FIX_INTRINSIC );
 
-  std::cout << "K1" << K1 << endl;
-  std::cout << "K2" << K2 << endl;
-  std::cout << "D1" << D1 << endl;
-  std::cout << "D2" << D2 << endl;
-  std::cout << "R"  << R  << endl;
-  std::cout << "T"  << T  << endl;
-  std::cout << "E"  << E  << endl;
-  std::cout << "F"  << F  << endl;
+  std::cout << "K1" << endl<< K1 << endl<< endl;
+  std::cout << "K2" << endl<< K2 << endl<< endl;
+  std::cout << "D1" << endl<< D1 << endl<< endl;
+  std::cout << "D2" << endl<< D2 << endl<< endl;
+  std::cout << "R"  << endl<< R  << endl<< endl;
+  std::cout << "T"  << endl<< T  << endl<< endl;
+  std::cout << "E"  << endl<< E  << endl<< endl;
+  std::cout << "F"  << endl<< F  << endl<< endl;
   std::cout <<"Done Calibration" << endl;
 
 

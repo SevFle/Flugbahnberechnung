@@ -3,8 +3,8 @@
 /************************************************************ Includes *******************************************************************/
 
 #include "opencv_unmanaged.h"
+#include "tracking.h"
 #include "GlobalObjects.h"
-#include <bitset>
 
 namespace std
   {
@@ -88,8 +88,8 @@ namespace nmsp_camera_unmanaged
       void load_camera_settings                             (int camera_id);
 
       void calibrate_single_camera                          (int current_camera_id);
-    void calibrate_stereo_camera (int current_camera_id);
-    void save_picture                                     (int camera_id, int photo_id, std::string definition);
+      void calibrate_stereo_camera (int current_camera_id);
+      void save_picture                                     (int camera_id, int photo_id, std::string definition);
 
 
 

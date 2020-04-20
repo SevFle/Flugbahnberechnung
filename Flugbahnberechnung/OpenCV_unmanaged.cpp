@@ -335,10 +335,10 @@ void c_opencv_unmanaged::init                                           (int    
   //  640X480   MJPEG 30fps
 
   cap->set                        (cv::CAP_PROP_FRAME_HEIGHT, 600);
-  cap->set                        (cv::CAP_PROP_FRAME_WIDTH, 800);
-  cap->set                        (cv::CAP_PROP_FPS, 30);
-  cap->set                        (cv::CAP_PROP_BUFFERSIZE, 3);
-  cap->open                       (camera_id, capture_api);
+  cap->set                        (cv::CAP_PROP_FRAME_WIDTH,  800);
+  cap->set                        (cv::CAP_PROP_FPS,          30);
+  cap->set                        (cv::CAP_PROP_BUFFERSIZE,   3);
+  cap->open                       (camera_id,            capture_api);
 
   //+--------+----+----+----+----+------+------+------+------+
   //  |        | C1 | C2 | C3 | C4 | C(5) | C(6) | C(7) | C(8) |
@@ -353,8 +353,8 @@ void c_opencv_unmanaged::init                                           (int    
   //  +--------+----+----+----+----+------+------+------+------+
 
   //Redifinition der zwei GpuMat Arrays für die Verwendung in der Cuda-InRange Funktion. 
-  gpu_src2color->create           (600, 800, CV_8UC1);
-  gpu_color_threshold->create     (600, 800, CV_8UC1);
+  gpu_src2color->create           ( 600, 800, CV_8UC1);
+  gpu_color_threshold->create     (600,  800, CV_8UC1);
   cpu_undistorted->create         (600, 800, CV_32FC1);
   cpu_contoured->create           (600, 800, CV_8UC3);
  
@@ -393,10 +393,10 @@ void c_opencv_unmanaged::init_rectify_map()
   cv::Mat                         cpu_map2;
 
 
-  cv::initUndistortRectifyMap(*Intrinsic, *DistCoeffs, cv::Mat(), *Intrinsic, cv::Size(cpu_undistorted->cols, cpu_undistorted->rows), CV_32FC1, cpu_map1, cpu_map2);
+  cv::initUndistortRectifyMap   (*Intrinsic, *DistCoeffs, cv::Mat(), *Intrinsic, cv::Size(cpu_undistorted->cols, cpu_undistorted->rows), CV_32FC1, cpu_map1, cpu_map2);
 
-  this->gpu_map1->upload(cpu_map1);
-  this->gpu_map2->upload(cpu_map2);
+  this->gpu_map1->upload        (cpu_map1);
+  this->gpu_map2->upload        (cpu_map2);
 
   }
 

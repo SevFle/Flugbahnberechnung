@@ -141,6 +141,7 @@
     <ClCompile Include="frm_Object_Calibration.cpp" />
     <ClCompile Include="Camera_managed.cpp" />
     <ClCompile Include="frm_Main.cpp" />
+    <ClCompile Include="frm_Object_Tracking.cpp" />
     <ClCompile Include="GlobalObjects.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Camera_unmanaged.cpp">
@@ -151,6 +152,8 @@
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</CompileAsManaged>
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsManaged>
     </ClCompile>
+    <ClCompile Include="posen.cpp" />
+    <ClCompile Include="tracking.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -174,7 +177,12 @@
     <ClInclude Include="frm_Object_Calibration.h">
       <FileType>CppForm</FileType>
     </ClInclude>
+    <ClInclude Include="frm_Object_Tracking.h">
+      <FileType>CppForm</FileType>
+    </ClInclude>
     <ClInclude Include="GlobalObjects.h" />
+    <ClInclude Include="posen.h" />
+    <ClInclude Include="tracking.h" />
     <CudaCompile Include="CudaKernels.cuh" />
     <ClInclude Include="Main.h" />
     <ClInclude Include="Camera_managed.h" />
@@ -198,6 +206,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="frm_Object_Calibration.resx">
       <DependentUpon>frm_Object_Calibration.h</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frm_Object_Tracking.resx">
+      <DependentUpon>frm_Object_Tracking.h</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
