@@ -77,11 +77,10 @@ System::Void        C_frm_Main::Taktgeber_Tick                          (System:
         this->txtb_counter->Text								= System::String::Format("{0:0}", this->Zaehler++);
         if(Zaehler > timerwait)
           {
-          bt_ObjectCalibration->Enabled           = true;
-          bt_CameraCalibration->Enabled           = true;
-          bt_camera_positioning->Enabled          = true;
-          nup_camera_count->Enabled               = false;
-          bt_apply_cameras->Enabled               = false;
+          bt_ObjectCalibration->  Enabled     = true;
+          bt_CameraCalibration->  Enabled     = true;
+          bt_camera_positioning-> Enabled     = true;
+          bt_tracking->           Enabled     = true;
           state = 0;
           }
         break;
@@ -108,11 +107,19 @@ System::Void        C_frm_Main::bt_apply_cameras_Click                  (System:
   else
     {
     GlobalObjects->cameras_in_use           = static_cast<int>                                      (nup_camera_count->Value);
+    nup_camera_count->Enabled               = false;
+    bt_apply_cameras->Enabled               = false;
 
     Main->camera_managed->camera_unmanaged->init_camera_vectors                 (static_cast<int>   (nup_camera_count->Value));
     timerwait = Zaehler + 30;
     this->state                             = 1;
     }
+  }
+System::Void C_frm_Main::bt_tracking_Click(System::Object^  sender, System::EventArgs^  e)
+  {
+  this->Taktgeber->Enabled                = false;
+  this->Main->frm_object_tracking->ShowDialog();
+  this->Taktgeber->Enabled								= true;
   }
 
 

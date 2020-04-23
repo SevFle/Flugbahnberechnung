@@ -11,11 +11,15 @@ namespace std
   class thread;
   } using namespace std;
 
+using namespace nmsp_opencv_unmanaged;
+using namespace nmsp_tracking;
+using namespace nmsp_posen;
+using namespace nmsp_GlobalObjects;
+
+
 
 namespace nmsp_camera_unmanaged
   {
-  using namespace nmsp_opencv_unmanaged;
-  using namespace nmsp_GlobalObjects;
   class c_camera_unmanaged
     {
       
@@ -28,7 +32,7 @@ namespace nmsp_camera_unmanaged
 
       /**************************************************** Öffentliche Klassenobjekte ********************************************************/
       public:
-      //c_opencv_unmanaged*                                   opencv_unmananged;
+      c_tracking*                                               tracking;
 
       std::thread*                                              camera_thread;
 
@@ -36,13 +40,13 @@ namespace nmsp_camera_unmanaged
       /**************************************************** Öffentliche Anwender-Attribute ********************************************************/
       public:
       int                                                       cameras_in_use;
-      int                                                       statemachine_state;
       int                                                       camera_id;
 
       int**                                                     camera_referrence;
 
       bool                                                      stop_statemachine;
       bool                                                      load_positioning;
+      bool                                                      tracking_active;
 
       std::vector<nmsp_opencv_unmanaged::c_opencv_unmanaged*>   camera_vector;
       std::vector<nmsp_opencv_unmanaged::c_opencv_unmanaged*>   camera_vector_temp;
@@ -88,9 +92,8 @@ namespace nmsp_camera_unmanaged
       void load_camera_settings                             (int camera_id);
 
       void calibrate_single_camera                          (int current_camera_id);
-      void calibrate_stereo_camera (int current_camera_id);
-      void save_picture                                     (int camera_id, int photo_id, std::string definition);
-
+      void calibrate_stereo_camera                          (int current_camera_id);
+      void sm_object_tracking                               ();
 
 
     /******************************************************* Private Klassenmethoden***************************************************************/

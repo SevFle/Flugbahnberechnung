@@ -4,7 +4,14 @@
 #include <opencv2/highgui.hpp>
 //#include <ipp.h>
 #include "CudaKernels.cuh"
+//#include "posen.h"
 
+
+
+namespace nmsp_posen
+  {
+  struct S_Positionsvektor;
+  }
 
 namespace nmsp_opencv_unmanaged
   {
@@ -59,6 +66,8 @@ namespace nmsp_opencv_unmanaged
       bool                                    filtering_gray_active;
       bool                                    contours_active;
       bool                                    undistord_active;
+      bool                                    contour_found;
+
 
 
       /******************************************** Nicht öffentliche private Anwender-Attribute **************************************************/
@@ -94,10 +103,7 @@ namespace nmsp_opencv_unmanaged
       double                                  f;
       double                                  Vec_Object_Abs;
 
-      bool                                    contour_found;
       float                                   Radius;
-
-
 
       cv::Moments                            Image_Moments;
       cv::Point2f                            Center;
@@ -135,11 +141,8 @@ namespace nmsp_opencv_unmanaged
 
       double                                  gaussian_sigma;
 
-
-
       float                                   bilateral_sigma_color;
       float                                   bilateral_sigma_spatial;
-
 
       bool                                    erode_active;
       bool                                    dilate_active;
@@ -163,11 +166,14 @@ namespace nmsp_opencv_unmanaged
       void            set_calibration_parameter                           (double           (&DistCoeffs)[1][5], double  (&Intrinsic)[3][3]);
       void            get_calibration_parameter                           (double           (&DistCoeffs)[1][5], double  (&Intrinsic)[3][3]) const;
       void            get_camera_settings                                 ();
+      void            get_objectPosition_2D_Pixel                         (bool&   Contour_Found, nmsp_posen::S_Positionsvektor& Vec_Object);
+
+
       void            set_aspect_ratio                                    (int              Height,   int width);
       void            set_framerate                                       (int              framerate);
 
       void            init_rectify_map                                    ();
-
+      void            save_picture                                        (int camera_id, int photo_id, std::string definition);
 
       /******************************************************* Private Klassenmethoden***************************************************************/
       private:
@@ -176,7 +182,7 @@ namespace nmsp_opencv_unmanaged
       void            apply_filter                                        (cv::Mat*         cpu_src, cv::Mat *cpu_dst);
 
 
-    void            gpu_erode                                           (cv::cuda::GpuMat* gpu_src, cv::cuda::GpuMat* gpu_dst, int borderType);
+      void            gpu_erode                                           (cv::cuda::GpuMat* gpu_src, cv::cuda::GpuMat* gpu_dst, int borderType);
       void            gpu_dilate                                          (cv::cuda::GpuMat* gpu_src, cv::cuda::GpuMat* gpu_dst);
       void            gpu_open                                            (cv::cuda::GpuMat* gpu_src, cv::cuda::GpuMat* gpu_dst);
       void            gpu_close                                           (cv::cuda::GpuMat* gpu_src, cv::cuda::GpuMat* gpu_dst);
@@ -193,13 +199,6 @@ namespace nmsp_opencv_unmanaged
       void            find_contours                                       (cv::Mat* thresholded_source_image, cv::Mat* dst_contoured_image);
 
       void            undistord_img                                       (cv::Mat* cpu_src, cv::Mat* cpu_dst);
-
-
-
-
-
-
-
     };
 
   }

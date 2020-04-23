@@ -38,6 +38,8 @@ namespace NmSp_frm_Main
     System::Windows::Forms::Label^  label1;
       private: System::Windows::Forms::Button^  bt_camera_positioning;
       private: System::Windows::Forms::Button^  bt_apply_cameras;
+      private: System::Windows::Forms::GroupBox^  groupBox1;
+      private: System::Windows::Forms::Button^  bt_tracking;
                System::ComponentModel::IContainer^  components;
 
 
@@ -57,7 +59,10 @@ namespace NmSp_frm_Main
       this->label1 = (gcnew System::Windows::Forms::Label());
       this->bt_camera_positioning = (gcnew System::Windows::Forms::Button());
       this->bt_apply_cameras = (gcnew System::Windows::Forms::Button());
+      this->groupBox1 = (gcnew System::Windows::Forms::GroupBox());
+      this->bt_tracking = (gcnew System::Windows::Forms::Button());
       (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->nup_camera_count))->BeginInit();
+      this->groupBox1->SuspendLayout();
       this->SuspendLayout();
       // 
       // Taktgeber
@@ -81,9 +86,9 @@ namespace NmSp_frm_Main
       this->bt_ObjectCalibration->Enabled = false;
       this->bt_ObjectCalibration->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 14.25F, System::Drawing::FontStyle::Regular,
                                           System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
-      this->bt_ObjectCalibration->Location = System::Drawing::Point(11, 17);
+      this->bt_ObjectCalibration->Location = System::Drawing::Point(10, 37);
       this->bt_ObjectCalibration->Name = L"bt_ObjectCalibration";
-      this->bt_ObjectCalibration->Size = System::Drawing::Size(211, 73);
+      this->bt_ObjectCalibration->Size = System::Drawing::Size(213, 54);
       this->bt_ObjectCalibration->TabIndex = 3;
       this->bt_ObjectCalibration->Text = L"Objektkalibierung";
       this->bt_ObjectCalibration->UseVisualStyleBackColor = true;
@@ -94,9 +99,9 @@ namespace NmSp_frm_Main
       this->bt_CameraCalibration->Enabled = false;
       this->bt_CameraCalibration->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 14.25F, System::Drawing::FontStyle::Regular,
                                           System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
-      this->bt_CameraCalibration->Location = System::Drawing::Point(11, 96);
+      this->bt_CameraCalibration->Location = System::Drawing::Point(12, 97);
       this->bt_CameraCalibration->Name = L"bt_CameraCalibration";
-      this->bt_CameraCalibration->Size = System::Drawing::Size(211, 73);
+      this->bt_CameraCalibration->Size = System::Drawing::Size(211, 54);
       this->bt_CameraCalibration->TabIndex = 4;
       this->bt_CameraCalibration->Text = L"Kamerakalibierung";
       this->bt_CameraCalibration->UseVisualStyleBackColor = true;
@@ -146,9 +151,9 @@ namespace NmSp_frm_Main
       this->bt_camera_positioning->Enabled = false;
       this->bt_camera_positioning->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 14.25F, System::Drawing::FontStyle::Regular,
                                            System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
-      this->bt_camera_positioning->Location = System::Drawing::Point(11, 176);
+      this->bt_camera_positioning->Location = System::Drawing::Point(12, 157);
       this->bt_camera_positioning->Name = L"bt_camera_positioning";
-      this->bt_camera_positioning->Size = System::Drawing::Size(211, 73);
+      this->bt_camera_positioning->Size = System::Drawing::Size(211, 54);
       this->bt_camera_positioning->TabIndex = 7;
       this->bt_camera_positioning->Text = L"Kamerapositionierung";
       this->bt_camera_positioning->UseVisualStyleBackColor = true;
@@ -166,36 +171,64 @@ namespace NmSp_frm_Main
       this->bt_apply_cameras->UseVisualStyleBackColor = true;
       this->bt_apply_cameras->Click += gcnew System::EventHandler(this, &C_frm_Main::bt_apply_cameras_Click);
       // 
+      // groupBox1
+      // 
+      this->groupBox1->Controls->Add(this->bt_ObjectCalibration);
+      this->groupBox1->Controls->Add(this->bt_CameraCalibration);
+      this->groupBox1->Controls->Add(this->bt_camera_positioning);
+      this->groupBox1->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 14.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+                               static_cast<System::Byte>(0)));
+      this->groupBox1->Location = System::Drawing::Point(447, 1);
+      this->groupBox1->Name = L"groupBox1";
+      this->groupBox1->Size = System::Drawing::Size(229, 239);
+      this->groupBox1->TabIndex = 9;
+      this->groupBox1->TabStop = false;
+      this->groupBox1->Text = L"Settings";
+      // 
+      // bt_tracking
+      // 
+      this->bt_tracking->Enabled = false;
+      this->bt_tracking->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 14.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+                                 static_cast<System::Byte>(0)));
+      this->bt_tracking->Location = System::Drawing::Point(12, 31);
+      this->bt_tracking->Name = L"bt_tracking";
+      this->bt_tracking->Size = System::Drawing::Size(180, 69);
+      this->bt_tracking->TabIndex = 10;
+      this->bt_tracking->Text = L"Tracking";
+      this->bt_tracking->UseVisualStyleBackColor = true;
+      this->bt_tracking->Click += gcnew System::EventHandler(this, &C_frm_Main::bt_tracking_Click);
+      // 
       // C_frm_Main
       // 
       this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
       this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
-      this->ClientSize = System::Drawing::Size(356, 628);
+      this->ClientSize = System::Drawing::Size(709, 628);
+      this->Controls->Add(this->bt_tracking);
+      this->Controls->Add(this->groupBox1);
       this->Controls->Add(this->bt_apply_cameras);
-      this->Controls->Add(this->bt_camera_positioning);
       this->Controls->Add(this->label1);
       this->Controls->Add(this->nup_camera_count);
       this->Controls->Add(this->txtb_counter);
-      this->Controls->Add(this->bt_CameraCalibration);
-      this->Controls->Add(this->bt_ObjectCalibration);
       this->Controls->Add(this->bt_exit);
       this->Name = L"C_frm_Main";
       this->Text = L"frm_Main";
       this->FormClosing += gcnew System::Windows::Forms::FormClosingEventHandler(this, &C_frm_Main::C_frm_Main_FormClosing);
       this->Load += gcnew System::EventHandler(this, &C_frm_Main::C_frm_Main_Load);
       (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->nup_camera_count))->EndInit();
+      this->groupBox1->ResumeLayout(false);
       this->ResumeLayout(false);
       this->PerformLayout();
 
       }
 #pragma endregion
-    private: System::Void bt_ObjectCalibration_Click(System::Object^  sender, System::EventArgs^  e);
-    private: System::Void bt_CameraCalibration_Click(System::Object^  sender, System::EventArgs^  e);
-    private: System::Void bt_exit_Click(System::Object^  sender, System::EventArgs^  e);
-    private: System::Void C_frm_Main_Load(System::Object^  sender, System::EventArgs^  e);
-    private: System::Void C_frm_Main_FormClosing(System::Object^  sender, System::Windows::Forms::FormClosingEventArgs^  e);
-    private: System::Void Taktgeber_Tick(System::Object^  sender, System::EventArgs^  e);
-    private: System::Void bt_camera_positioning_MouseClick(System::Object^  sender, System::Windows::Forms::MouseEventArgs^  e);
-    private: System::Void bt_apply_cameras_Click(System::Object^  sender, System::EventArgs^  e);
+    private: System::Void bt_ObjectCalibration_Click        (System::Object^  sender, System::EventArgs^  e);
+    private: System::Void bt_CameraCalibration_Click        (System::Object^  sender, System::EventArgs^  e);
+    private: System::Void bt_exit_Click                     (System::Object^  sender, System::EventArgs^  e);
+    private: System::Void C_frm_Main_Load                   (System::Object^  sender, System::EventArgs^  e);
+    private: System::Void C_frm_Main_FormClosing            (System::Object^  sender, System::Windows::Forms::FormClosingEventArgs^  e);
+    private: System::Void Taktgeber_Tick                    (System::Object^  sender, System::EventArgs^  e);
+    private: System::Void bt_camera_positioning_MouseClick  (System::Object^  sender, System::Windows::Forms::MouseEventArgs^  e);
+    private: System::Void bt_apply_cameras_Click            (System::Object^  sender, System::EventArgs^  e);
+    private: System::Void bt_tracking_Click                 (System::Object^  sender, System::EventArgs^  e);
 };
 }

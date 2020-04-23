@@ -45,6 +45,12 @@ namespace NmSp_frm_CameraCalibration_Stereo
     }
   using namespace nmsp_frm_camera_positioning;
 
+namespace nsmp_frm_object_tracking
+  {
+  ref class c_frm_Object_Tracking;
+  } using namespace nsmp_frm_object_tracking;
+
+
   #pragma endregion
 
 /*********************************************************** Definition Namespace **************************************************************/
@@ -73,8 +79,9 @@ namespace NmSp_frm_CameraCalibration_Stereo
       C_frm_CameraCalibration_Menu^     frm_CameraCalibration_Menu;
       C_frm_CameraCalibration_Single^   frm_CameraCalibration_Single;
       C_frm_CameraCalibration_Stereo^   frm_CameraCalibration_Stereo;
-      c_frm_object_calibration^          frm_ObjectCalibration;
+      c_frm_object_calibration^         frm_ObjectCalibration;
       c_frm_Camera_Positioning^         frm_Camera_Positioning;
+      c_frm_Object_Tracking^            frm_object_tracking;
       C_camera_managed^                 camera_managed;
 
     };//ref class C_Main
@@ -86,4 +93,5 @@ namespace NmSp_frm_CameraCalibration_Stereo
 #include "frm_Camera_Calibration.h"
 #include "frm_Object_Calibration.h"
 #include "frm_Camera_Positioning.h"
+#include "frm_Object_Tracking.h"
 

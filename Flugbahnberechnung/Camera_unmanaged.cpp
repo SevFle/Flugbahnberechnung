@@ -12,29 +12,30 @@ using namespace nmsp_GlobalObjects;
 c_camera_unmanaged::c_camera_unmanaged                                  (int cameras_in_use, C_GlobalObjects* GlobalObjects)
   {
   this->cameras_in_use        = cameras_in_use;
+  this->tracking              = new c_tracking();
   stop_statemachine           = false;
   this->GlobalObjects         = GlobalObjects;
-
   load_positioning            = false;
-
   numCornersWidth             = 0;
   numCornersHeight            = 0;
   SquareSize                  = 0;
   numBoards_imgs              = 0;
   Photo_ID                    = 0;
-
-
   }
 /**************************************************************** Destruktor ****************************************************************/
 c_camera_unmanaged::~c_camera_unmanaged                                 ()
   {
+  Photo_ID                    = 0;
+  numBoards_imgs              = 0;
+  SquareSize                  = 0;
+  numCornersHeight            = 0;
+  numCornersWidth             = 0;
   load_positioning            = false;
-
-
-
   GlobalObjects               = nullptr;
   stop_statemachine           = false;
   cameras_in_use              = 0;
+  delete(this->tracking);
+  this->tracking              = nullptr;
   }
 
 /*************************************************** Nicht öffentliche private Methoden *****************************************************/
@@ -538,8 +539,6 @@ void c_camera_unmanaged::calibrate_single_camera                        (int cur
   this->camera_vector[current_camera_id]->init_rectify_map();
   this->camera_vector[current_camera_id]->undistord_active = true;
   }
-
-
 void c_camera_unmanaged::calibrate_stereo_camera                        (int current_camera_id)
   {                            
   vector<vector<cv::Point3f>>     object_points;
@@ -672,7 +671,39 @@ void c_camera_unmanaged::calibrate_stereo_camera                        (int cur
 
   }
 
-void c_camera_unmanaged::save_picture                                   (int camera_id, int photo_id, std::string definition)
+void c_camera_unmanaged::sm_object_tracking                             ()
   {
-  cv::imwrite(definition + std::to_string(camera_id) + "_Snapshot_" + std::to_string(photo_id) + ".png", *camera_vector[camera_id]->cpu_src_img);
+  int statemachine_state = 0;
+   s_tracking_data tracking_data;
+
+  while(this->tracking_active)
+    {
+    double                                  Vec_Object[3];
+    int                                     object_found_camID;
+    switch (statemachine_state)
+      {
+        case 0:
+          for(int i = 0; i < this->camera_vector.size(); i+2)
+            {
+             if (this->camera_vector[i]->contour_found)
+               {
+               object_found_camID = i;
+               statemachine_state = 1;
+               break;
+               }
+            }
+          
+          break;
+        case 1:
+          statemachine_state = 2;
+          break;
+        case 2:
+          this->camera_vector[object_found_camID]->get_objectPosition_2D_Pixel(tracking_data.found_0, tracking_data.Richtungsvektor_0);
+          this->camera_vector[object_found_camID+1]->get_objectPosition_2D_Pixel(tracking_data.found_1, tracking_data.Richtungsvektor_1);
+
+          this->tracking->Get_Position_ObjectTracking(tracking_data);
+
+          break;
+      }
+    }
   }

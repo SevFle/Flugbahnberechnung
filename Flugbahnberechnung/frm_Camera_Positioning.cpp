@@ -28,7 +28,7 @@ using namespace nmsp_camera_unmanaged;
 System::Void          c_frm_Camera_Positioning::taktgeber_Tick                                      (System::Object^  sender, System::EventArgs^  e)
   {
   this->txtb_counter->Text								= System::String::Format("{0:0}", this->Zaehler++);
-  if (Zaehler > TimerWait+15)
+  if (Zaehler > TimerWait+30)
     {
     switch (this->cameras_in_use)
       {

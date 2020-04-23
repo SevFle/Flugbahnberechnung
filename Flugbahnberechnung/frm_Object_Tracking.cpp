@@ -1,6 +1,6 @@
 #include "frm_Object_Tracking.h"
 
-using namespace nsmp_object_tracking;
+using namespace nsmp_frm_object_tracking;
 
 c_frm_Object_Tracking::c_frm_Object_Tracking (C_GlobalObjects* GlobalObjects, C_Main^  Main)
 {
@@ -11,12 +11,12 @@ c_frm_Object_Tracking::c_frm_Object_Tracking (C_GlobalObjects* GlobalObjects, C_
 
 c_frm_Object_Tracking::~c_frm_Object_Tracking ()
   {
+  this->Main                    = nullptr;
+  this->GlobalObjects           = nullptr;
   if (components)
     {
     delete components;
     }
-  this->Main                    = nullptr;
-  this->GlobalObjects           = nullptr;
 
   }
 
@@ -28,6 +28,11 @@ System::Void c_frm_Object_Tracking::bt_exit_Click (System::Object^ sender, Syste
 System::Void c_frm_Object_Tracking::Taktgeber_Tick (System::Object^ sender, System::EventArgs^ e)
   {
   this->txtb_counter->Text = System::String::Format("{0:0}", this->Zaehler++);
+  if(this->Zaehler > TimerWait)
+    {
+    this->FillMat2Picturebox(pb_cam_left, *this->Main->camera_managed->camera_unmanaged->camera_vector[this->camera_id_in_use]->  cpu_contoured);
+    this->FillMat2Picturebox(pb_cam_right, *this->Main->camera_managed->camera_unmanaged->camera_vector[this->camera_id_in_use+1]->cpu_contoured);
+    }
   }
 
 System::Void c_frm_Object_Tracking::FillPicturebox (System::Windows::Forms::PictureBox^ Picturebox, Int32 ColorImageCols, Int32 ColorImageRows, Int32 ColorImageStep, Int32 ColorImageType, System::IntPtr ColorImagePtr)
@@ -71,5 +76,28 @@ System::Void c_frm_Object_Tracking::FillMat2Picturebox (System::Windows::Forms::
   FillPicturebox                     (Picturebox, colorImage_cols, colorImage_rows, colorImage_step, colorImage_type, colorImage_ptr);
   }
 
+System::Void c_frm_Object_Tracking::c_frm_Object_Tracking_Load(System::Object^  sender, System::EventArgs^  e)
+  {
+  this->Taktgeber->Enabled =true;
+  this->TimerWait = 15;
+  this->Main->camera_managed->camera_unmanaged->camera_vector[0]->undistord_active = true;
+  this->Main->camera_managed->camera_unmanaged->camera_vector[1]->undistord_active = true;
+  this->Main->camera_managed->camera_unmanaged->camera_vector[0]->filtering_active = true;
+  this->Main->camera_managed->camera_unmanaged->camera_vector[1]->filtering_active = true;
+  }
+System::Void c_frm_Object_Tracking::c_frm_Object_Tracking_FormClosing(System::Object^  sender, System::Windows::Forms::FormClosingEventArgs^  e)
+  {
+  this->Taktgeber->Enabled =false;
+  }
+System::Void c_frm_Object_Tracking::bt_start_Click(System::Object^  sender, System::EventArgs^  e)
+  {
+  this->lbl_thread_running->Enabled = true;
 
+  this->tracking->Start();
+  }
+
+System::Void c_frm_Object_Tracking::tracking_thread ()
+  {
+  this->Main->camera_managed->camera_unmanaged->sm_object_tracking();
+  }
 

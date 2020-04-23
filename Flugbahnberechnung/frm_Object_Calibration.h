@@ -74,6 +74,8 @@ namespace NmSp_frm_ObjectCalibration
 
 
 
+
+
       private: System::Windows::Forms::PictureBox^  pb_original;
 
 

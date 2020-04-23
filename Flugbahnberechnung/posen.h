@@ -8,8 +8,6 @@
 /*                                                                                                                                          */
 /********************************************************************************************************************************************/
 //#pragma once
-#ifndef __UM_Posen_H
-#define __UM_Posen_H
 
 /************************************************************ Anwender-Defines **************************************************************/
 #define  PI 3.14159265358979323846
@@ -20,14 +18,14 @@
 /************************************************************** using namespaces **************************************************************/
 
 /*********************************************************** Vorwärtsdeklarationen ************************************************************/
-namespace UM_Posen
+namespace nmsp_posen
   {
   class  C_RelativePose;
   class  C_URPose;
-  }using namespace UM_Posen;
+  }using namespace nmsp_posen;
 
 
-namespace UM_Posen
+namespace nmsp_posen
   {
   struct S_EllbogenWerte
     {
@@ -274,7 +272,7 @@ namespace UM_Posen
       C_RelativePose          operator|                               (C_URPose&                              URPose);
       C_RelativePose          operator|                               (C_AbsolutePose&                        AbsolutePose);
 
-      // Methoden zur Umwandlung von UR-Posen in homogene Koordinaten
+      // Methoden zur Umwandlung von UR-nmsp_posen in homogene Koordinaten
       void                    URPoseToHomogenousPose                  (S_PoseWerte&                           URPose, double   (&HomogenePoseMatrix)[4][4]);
       void                    URPoseToHomogenousPose                  (C_URPose&                              URPose, double   (&HomogenePoseMatrix)[4][4]);
       void                    URPoseToHomogenousPose                  (double                                 (&URPoseMatrix)[6][1], double   (&HomogenePoseMatrix)[4][4]);
@@ -468,7 +466,7 @@ namespace UM_Posen
       // berladener Operator "|=" statt "\=" (Linksmultiplikation)
       void                    operator|=                              (C_RelativePose&                        RelativePose);
 
-      // Methoden zur Umwandlung von UR-Posen in homogene Koordinaten
+      // Methoden zur Umwandlung von UR-nmsp_posen in homogene Koordinaten
       void            URPoseToHomogenousPose                          (C_URPose&                              URPose, double   (&HomogenePoseMatrix)[4][4]);
       void            URPoseToHomogenousPose                          (double                                 (&URPoseMatrix)[6][1], double   (&HomogenePoseMatrix)[4][4]);
 
@@ -671,7 +669,7 @@ namespace UM_Posen
 
       /*********************************************Private Methoden*********************************************/
       private:
-      // Methoden zur Umwandlung von homogenen Koordinaten in UR-Posen
+      // Methoden zur Umwandlung von homogenen Koordinaten in UR-nmsp_posen
       void          HomogenousPoseToURPose                            (C_AbsolutePose&                          AbsolutePose);
       void          HomogenousPoseToURPose                            (C_RelativePose&                          RelativePose);
       void          HomogenousPoseToURPose                            (double                                   (&HomogenePoseMatrix)[4][4]);
@@ -696,4 +694,4 @@ namespace UM_Posen
     };
   /************************************************** Klasse C_URPose **************************************************/
   }
-#endif
+

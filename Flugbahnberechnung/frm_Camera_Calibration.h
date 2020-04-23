@@ -40,6 +40,9 @@ namespace NmSp_CamerCalibration_Single
 
     Int16       photocount_user_input;
 
+    Thread ^calibrate = gcnew Thread(gcnew ThreadStart(this, &C_frm_CameraCalibration_Single::camera_calibration_thread));
+
+
 
 
 

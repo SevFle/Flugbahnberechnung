@@ -1,6 +1,7 @@
 #pragma once
 /****************************************************************** Includes ****************************************************************/
 #include "opencv_unmanaged.h"
+#include "posen.h"
 /****************************************************************** Namespaces***************************************************************/
 using namespace nmsp_opencv_unmanaged;
 /*************************************************************** Konstruktoren **************************************************************/
@@ -296,6 +297,17 @@ void c_opencv_unmanaged::get_calibration_parameter                      (double 
       }
     }
   }
+void c_opencv_unmanaged::get_camera_settings ()
+  {
+  }
+void c_opencv_unmanaged::get_objectPosition_2D_Pixel                    (bool& Contour_Found,                         S_Positionsvektor& Vec_Object)
+  {
+  Contour_Found  = this->contour_found;
+  Vec_Object.X   = this->Vec_Object[0];
+  Vec_Object.Y   = this->Vec_Object[1];
+  Vec_Object.Z   = this->Vec_Object[2];
+
+  }
 
 void c_opencv_unmanaged::set_calibration_parameter                      (double             (&DistCoeffs)[1][5],      double            (&Intrinsic)[3][3])
   {
@@ -387,7 +399,7 @@ void c_opencv_unmanaged::apply_filter                                   (cv::Mat
 
   gpu_thresholded->download                                 (*cpu_dst);
   }
-void c_opencv_unmanaged::init_rectify_map()
+void c_opencv_unmanaged::init_rectify_map                               ()
   {
   cv::Mat                         cpu_map1;
   cv::Mat                         cpu_map2;
@@ -400,7 +412,7 @@ void c_opencv_unmanaged::init_rectify_map()
 
   }
 
-void c_opencv_unmanaged::gpu_erode                                      (cv::cuda::GpuMat*  gpu_src,                  cv::cuda::GpuMat* gpu_dst, int borderType)  //
+void c_opencv_unmanaged::gpu_erode                                      (cv::cuda::GpuMat*  gpu_src,                  cv::cuda::GpuMat* gpu_dst,              int borderType)  //
   {
   cv::Mat                     erode_structuring_element   =  cv::getStructuringElement            (cv::MORPH_ELLIPSE, cv::Size (2*erosion_kernel_size, 2*erosion_kernel_size));
   cv::Ptr<cv::cuda::Filter>   erode                       =  cv::cuda::createMorphologyFilter     (cv::MORPH_ERODE, gpu_src->type(), erode_structuring_element, cv::Point(-1, -1), erosion_iterations);
@@ -442,7 +454,7 @@ void c_opencv_unmanaged::gpu_morph_gradient                             (cv::cud
   morph->apply                                                                                    (*gpu_src, *gpu_dst);
 
   }
-void c_opencv_unmanaged::get_gaussian_kernel()
+void c_opencv_unmanaged::get_gaussian_kernel                            ()
   {
   cv::Mat cpu_gaussian = cv::getGaussianKernel(gaussian_kernel_size, gaussian_sigma, CV_32F);
   gpu_gaussian_kernel_size->upload(cpu_gaussian);
@@ -609,7 +621,7 @@ void c_opencv_unmanaged::find_contours                                  (cv::Mat
   
   }
 
-void  c_opencv_unmanaged::undistord_img                                       (cv::Mat* cpu_src, cv::Mat* cpu_dst)
+void  c_opencv_unmanaged::undistord_img                                 (cv::Mat*           cpu_src,                  cv::Mat*          cpu_dst)
   {
   cv::cuda::GpuMat gpu_temp1;
   cv::cuda::GpuMat gpu_temp2;
@@ -621,6 +633,12 @@ void  c_opencv_unmanaged::undistord_img                                       (c
   gpu_temp2.download(*cpu_dst);
 
   }
+
+void c_opencv_unmanaged::save_picture                                   (int camera_id,                               int photo_id,                             std::string definition)
+  {
+  cv::imwrite(definition + std::to_string(camera_id) + "_Snapshot_" + std::to_string(photo_id) + ".png", *cpu_src_img);
+  }
+
 
 
 

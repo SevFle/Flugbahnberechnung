@@ -10,9 +10,10 @@
 
 /************************************************************ Anwender-Includes *************************************************************/
 #include "posen.h"
-
+#include <math.h>
+#include <cmath>
 /************************************************************* using namespaces *************************************************************/
-using namespace UM_Posen;
+using namespace nmsp_posen;
 
 
 
@@ -161,7 +162,7 @@ C_AbsolutePose           C_AbsolutePose::operator*                          (C_R
       }
     }
 
-    // Ausgabe der im Objekt "C_AbsolutePose HomogenePoseAusgabe" gefüllten Posen-Matrix.
+    // Ausgabe der im Objekt "C_AbsolutePose HomogenePoseAusgabe" gefüllten nmsp_posen-Matrix.
   return (HomogenePoseAusgabe);
   }
 void                     C_AbsolutePose::operator*=                         (C_RelativePose&                    RelativePose)
@@ -234,7 +235,7 @@ C_AbsolutePose           C_AbsolutePose::operator/                          (C_R
       }
     }
 
-  // Ausgabe der im Objekt "HomogenePoseAusgabe.HomogenePosenMatrix[i][j]" gefüllten Posen-Matrix.
+  // Ausgabe der im Objekt "HomogenePoseAusgabe.HomogenePosenMatrix[i][j]" gefüllten nmsp_posen-Matrix.
   return (HomogenePoseAusgabe);
   }
 void                     C_AbsolutePose::operator/=                         (C_RelativePose&                    RelativePose)
@@ -315,7 +316,7 @@ C_RelativePose           C_AbsolutePose::operator|                          (C_U
       }
     }
 
-  // Ausgabe der im Objekt "HomogenePoseAusgabe.HomogenePosenMatrix[i][j]" gefüllten Posen-Matrix.
+  // Ausgabe der im Objekt "HomogenePoseAusgabe.HomogenePosenMatrix[i][j]" gefüllten nmsp_posen-Matrix.
   return (HomogenePoseAusgabe);
   }
 C_RelativePose           C_AbsolutePose::operator|                          (C_AbsolutePose&                    AbsolutePose)
@@ -349,7 +350,7 @@ C_RelativePose           C_AbsolutePose::operator|                          (C_A
       }
     }
 
-  // Ausgabe der im Objekt "HomogenePoseAusgabe.HomogenePosenMatrix[i][j]" gefüllten Posen-Matrix.
+  // Ausgabe der im Objekt "HomogenePoseAusgabe.HomogenePosenMatrix[i][j]" gefüllten nmsp_posen-Matrix.
   return (HomogenePoseAusgabe);
   }
 void                     C_AbsolutePose::URPoseToHomogenousPose             (S_PoseWerte&                       URPose, double   (&HomogenePoseMatrix)[4][4])
@@ -962,7 +963,7 @@ C_RelativePose           C_RelativePose::operator*                          (C_R
       }
     }
 
-    // Ausgabe der im Objekt "C_RelativePose HomogenePoseAusgabe" gefüllten Posen-Matrix.
+    // Ausgabe der im Objekt "C_RelativePose HomogenePoseAusgabe" gefüllten nmsp_posen-Matrix.
   return (HomogenePoseAusgabe);
   }
 void                     C_RelativePose::operator*=                         (C_RelativePose&                    RelativePose)
@@ -1035,7 +1036,7 @@ C_RelativePose           C_RelativePose::operator/                          (C_R
       }
     }
 
-  // Ausgabe der im Objekt "HomogenePoseAusgabe.HomogenePosenMatrix[i][j]" gefüllten Posen-Matrix.
+  // Ausgabe der im Objekt "HomogenePoseAusgabe.HomogenePosenMatrix[i][j]" gefüllten nmsp_posen-Matrix.
   return (HomogenePoseAusgabe);
   }
 void                     C_RelativePose::operator/=                         (C_RelativePose&                    RelativePose)
@@ -1110,7 +1111,7 @@ C_RelativePose           C_RelativePose::operator|                          (C_R
       }
     }
 
-  // Ausgabe der im Objekt "HomogenePoseAusgabe.HomogenePosenMatrix[i][j]" gefüllten Posen-Matrix.
+  // Ausgabe der im Objekt "HomogenePoseAusgabe.HomogenePosenMatrix[i][j]" gefüllten nmsp_posen-Matrix.
   return (HomogenePoseAusgabe);
   }
 void                     C_RelativePose::operator|=                         (C_RelativePose&                    RelativePose)
@@ -1635,7 +1636,7 @@ C_URPose::~C_URPose                                                         ()
 /*********************************************Öffentliche Methoden*********************************************/
 void                     C_URPose::operator=                                (C_URPose                           URPose)
   {
-  // Zuweisen der Posenwerte der beiden UR-Posen
+  // Zuweisen der Posenwerte der beiden UR-nmsp_posen
   this->X          = URPose.X;
   this->Y          = URPose.Y;
   this->Z          = URPose.Z;
@@ -1645,7 +1646,7 @@ void                     C_URPose::operator=                                (C_U
   }
 void                     C_URPose::operator=                                (S_PoseWerte&                       URPose)
   {
-  // Zuweisen der Posenwerte der beiden UR-Posen
+  // Zuweisen der Posenwerte der beiden UR-nmsp_posen
   this->X          = URPose.X;
   this->Y          = URPose.Y;
   this->Z          = URPose.Z;
@@ -1705,7 +1706,7 @@ C_AbsolutePose           C_URPose::operator*                                (C_R
       }
     }
 
-  // Ausgabe der im Objekt "HomogenePoseAusgabe.HomogenePosenMatrix[i][j]" gefüllten Posen-Matrix.
+  // Ausgabe der im Objekt "HomogenePoseAusgabe.HomogenePosenMatrix[i][j]" gefüllten nmsp_posen-Matrix.
   return (HomogenePoseAusgabe);
   }
 C_AbsolutePose           C_URPose::operator/                                (C_RelativePose&                    RelativePose)
@@ -1743,7 +1744,7 @@ C_AbsolutePose           C_URPose::operator/                                (C_R
       }
     }
 
-  // Ausgabe der im Objekt "HomogenePoseAusgabe.HomogenePosenMatrix[i][j]" gefüllten Posen-Matrix.
+  // Ausgabe der im Objekt "HomogenePoseAusgabe.HomogenePosenMatrix[i][j]" gefüllten nmsp_posen-Matrix.
   return (HomogenePoseAusgabe);
   }
 C_RelativePose           C_URPose::operator|                                (C_AbsolutePose&                    AbsolutePose)
@@ -1780,7 +1781,7 @@ C_RelativePose           C_URPose::operator|                                (C_A
       }
     }
 
-  // Ausgabe der im Objekt "HomogenePoseAusgabe.HomogenePosenMatrix[i][j]" gefüllten Posen-Matrix.
+  // Ausgabe der im Objekt "HomogenePoseAusgabe.HomogenePosenMatrix[i][j]" gefüllten nmsp_posen-Matrix.
   return (HomogenePoseAusgabe);
   }
 C_RelativePose           C_URPose::operator|                                (C_URPose&                          URPose)
@@ -1819,7 +1820,7 @@ C_RelativePose           C_URPose::operator|                                (C_U
       }
     }
 
-  // Ausgabe der im Objekt "HomogenePoseAusgabe.HomogenePosenMatrix[i][j]" gefüllten Posen-Matrix.
+  // Ausgabe der im Objekt "HomogenePoseAusgabe.HomogenePosenMatrix[i][j]" gefüllten nmsp_posen-Matrix.
   return (HomogenePoseAusgabe);
   }
 
@@ -2204,7 +2205,7 @@ void                     C_URPose::HomogenousPoseToURPose                   (dou
       }
 
 
-    +if (abs(HomogenePoseMatrix[0][0] + 1.0) < Epsilon && abs(HomogenePoseMatrix[2][1] + 1.0) < Epsilon && abs(HomogenePoseMatrix[1][2] + 1.0) < Epsilon)
+    if (abs(HomogenePoseMatrix[0][0] + 1.0) < Epsilon && abs(HomogenePoseMatrix[2][1] + 1.0) < Epsilon && abs(HomogenePoseMatrix[1][2] + 1.0) < Epsilon)
       {
       // R = -1  0  0
       //      0  0 -1
