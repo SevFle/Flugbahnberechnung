@@ -94,9 +94,12 @@ System::Void				c_frm_object_calibration::Taktgeber_Tick			        (System::Obje
   if (Zaehler > TimerWait )
     {
     FillMat2Picturebox(pb_original, *Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->cpu_src_img);
-    FillMat2Picturebox(pb_gray,     *Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->cpu_filtered);
+    FillMat2Picturebox(pb_gray,     *Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->cpu_hsv_filtered);
     FillMat2Picturebox(pb_filtered, *Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->cpu_masked_img);
-    FillMat2Picturebox(pb_tracked,  *Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->cpu_contoured);
+    if(this->Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->image_prepared)
+      {
+      FillMat2Picturebox(pb_tracked, *Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->cpu_contoured);
+      }
     }
   }
 
@@ -120,19 +123,15 @@ System::Void        c_frm_object_calibration::C_frm_ObjectCalibration_Load(Syste
 
   this->get_camera_settings(0);
 
-  Main->camera_managed->camera_unmanaged->camera_vector[0]->idle              = false;
-  Main->camera_managed->camera_unmanaged->camera_vector[0]->filtering_active  = true;
-
-
   }
 
 #pragma region ValueChanged_Events
 System::Void        c_frm_object_calibration::numUD_cam_id_ValueChanged         (System::Object^  sender, System::EventArgs^  e)
   {
   TimerWait = Zaehler + 15;
-  this->Main->camera_managed->camera_unmanaged->camera_vector[static_cast<int> (numUD_cam_id->Value)]->idle             = false;
-  this->Main->camera_managed->camera_unmanaged->camera_vector[static_cast<int> (numUD_cam_id->Value)]->filtering_active = true;
   this->camera_id_in_use = static_cast<int> (numUD_cam_id->Value);
+  this->Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->idle             = false;
+  this->Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->filtering_active = true;
   this->get_camera_settings(camera_id_in_use);
 
   }
@@ -153,10 +152,8 @@ System::Void        c_frm_object_calibration::trb_hue_max_ValueChanged          
  }
 System::Void        c_frm_object_calibration::trb_saturation_min_ValueChanged   (System::Object^  sender, System::EventArgs^  e)
  {
-  //if (this->trb_saturation_min->Value > this->trb_saturation_max->Value)
-  //  {
-  //  this->trb_saturation_min->Value = this->trb_saturation_max->Value-1;
-  //  }
+  if (this->trb_saturation_min->Value > this->trb_saturation_max->Value)  this->trb_saturation_min->Value = this->trb_saturation_max->Value-1;
+
  Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->saturation_min = static_cast<uchar> (trb_saturation_min->Value);
  txb_saturation_min->Text = trb_saturation_min->Value.ToString();
  }
@@ -171,10 +168,7 @@ System::Void        c_frm_object_calibration::trb_saturation_max_ValueChanged   
  }
 System::Void        c_frm_object_calibration::trb_value_min_ValueChanged        (System::Object^  sender, System::EventArgs^  e)
  {
-  //if (this->trb_value_min->Value > this->trb_value_max->Value)
-  //  {
-  //  this->trb_value_min->Value = this->trb_value_max->Value-1;
-  //  }
+  if (this->trb_value_min->Value > this->trb_value_max->Value)  this->trb_value_min->Value = this->trb_value_max->Value-1;
 
   Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->value_min = static_cast<uchar> (trb_value_min->Value);
   txb_value_min->Text = trb_value_min->Value.ToString();
@@ -188,6 +182,22 @@ System::Void        c_frm_object_calibration::trb_value_max_ValueChanged        
   txb_value_max->Text = trb_value_max->Value.ToString();
 
  }
+
+System::Void        c_frm_object_calibration::trb_ObjectSize_min_ValueChanged   (System::Object^  sender, System::EventArgs^  e)
+  {
+  if (this->trb_ObjectSize_min->Value > this->trb_ObjectSize_max->Value)  this->trb_ObjectSize_min->Value = this->trb_ObjectSize_max->Value-1;
+
+  Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->Object_Size_min = static_cast<uchar> (trb_ObjectSize_min->Value);
+  txb_objectsize_min->Text = trb_ObjectSize_min->Value.ToString();
+  }
+System::Void        c_frm_object_calibration::trb_ObjectSize_max_ValueChanged   (System::Object^  sender, System::EventArgs^  e)
+  {
+  if (this->trb_ObjectSize_min->Value > this->trb_ObjectSize_max->Value)  this->trb_ObjectSize_max->Value = this->trb_ObjectSize_min->Value+1;
+
+  Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->Object_Size_max = static_cast<uchar> (trb_ObjectSize_max->Value);
+  txb_objectsize_max->Text = trb_ObjectSize_max->Value.ToString();
+
+  }
 
 System::Void        c_frm_object_calibration::numUD_opening_iterations_ValueChanged(System::Object^  sender, System::EventArgs^  e)
   {

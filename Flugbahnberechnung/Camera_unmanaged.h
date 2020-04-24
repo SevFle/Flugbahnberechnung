@@ -49,7 +49,7 @@ namespace nmsp_camera_unmanaged
       bool                                                      tracking_active;
 
       std::vector<nmsp_opencv_unmanaged::c_opencv_unmanaged*>   camera_vector;
-      std::vector<nmsp_opencv_unmanaged::c_opencv_unmanaged*>   camera_vector_temp;
+
 
       /*** Variablen zur Kamerakalibrierung ********************************************************/
 
@@ -77,8 +77,8 @@ namespace nmsp_camera_unmanaged
     
       /********************************************************* Öffentliche Klassenmethoden*******************************************************/
       public:
-      void  move_camera_vector2temp                         (int camera_desired_id, int camera_current_id);
-      void  move_camera_temp2vector                         (int cameras_in_use);
+      void  move_camera_vector2temp                         (int camera_desired_id, int camera_current_id, std::vector<c_opencv_unmanaged*>& temp_CameraVector);
+      void  move_camera_temp2vector                         (int cameras_in_use, std::vector<c_opencv_unmanaged*> temp_CameraVector);
 
 
       void save_camera_calibration                          (int camera_id);

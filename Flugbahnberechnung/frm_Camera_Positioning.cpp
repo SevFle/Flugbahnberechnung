@@ -62,6 +62,9 @@ System::Void          c_frm_Camera_Positioning::taktgeber_Tick                  
   }
 System::Void          c_frm_Camera_Positioning::bt_apply_Click                                      (System::Object^  sender, System::EventArgs^  e)
   {
+  std::vector<nmsp_opencv_unmanaged::c_opencv_unmanaged*>   camera_vector_temp;
+  camera_vector_temp.resize                                 (cameras_in_use);
+
   this->Taktgeber->Enabled  = false;
   this->bt_apply->Enabled   = false;
 
@@ -70,7 +73,7 @@ System::Void          c_frm_Camera_Positioning::bt_apply_Click                  
   switch (this->cameras_in_use)                              
     {
       case 1:   //Nur zu Testzwecken für die Laptopverwendung
-        Main->camera_managed->camera_unmanaged->move_camera_vector2temp(0, static_cast<int> (nup_Camera_L1->Value));
+        Main->camera_managed->camera_unmanaged->move_camera_vector2temp(0, static_cast<int> (nup_Camera_L1->Value), camera_vector_temp);
 
         camera_list.push_back(static_cast<int> (nup_Camera_L1->Value));
 
@@ -79,8 +82,8 @@ System::Void          c_frm_Camera_Positioning::bt_apply_Click                  
         break;
 
       case 2:
-        Main->camera_managed->camera_unmanaged->move_camera_vector2temp(0, static_cast<int> (nup_Camera_L1->Value));
-        Main->camera_managed->camera_unmanaged->move_camera_vector2temp(1, static_cast<int> (nup_Camera_R1->Value));
+        Main->camera_managed->camera_unmanaged->move_camera_vector2temp(0, static_cast<int> (nup_Camera_L1->Value), camera_vector_temp);
+        Main->camera_managed->camera_unmanaged->move_camera_vector2temp(1, static_cast<int> (nup_Camera_R1->Value), camera_vector_temp);
 
         camera_list.push_back(static_cast<int> (nup_Camera_L1->Value));
         camera_list.push_back(static_cast<int> (nup_Camera_R1->Value));
@@ -91,10 +94,10 @@ System::Void          c_frm_Camera_Positioning::bt_apply_Click                  
         break;
 
       case 4:
-        Main->camera_managed->camera_unmanaged->move_camera_vector2temp(0, static_cast<int> (nup_Camera_L1->Value));
-        Main->camera_managed->camera_unmanaged->move_camera_vector2temp(1, static_cast<int> (nup_Camera_R1->Value));
-        Main->camera_managed->camera_unmanaged->move_camera_vector2temp(2, static_cast<int> (nup_Camera_L2->Value));
-        Main->camera_managed->camera_unmanaged->move_camera_vector2temp(3, static_cast<int> (nup_Camera_R2->Value));
+        Main->camera_managed->camera_unmanaged->move_camera_vector2temp(0, static_cast<int> (nup_Camera_L1->Value), camera_vector_temp);
+        Main->camera_managed->camera_unmanaged->move_camera_vector2temp(1, static_cast<int> (nup_Camera_R1->Value), camera_vector_temp);
+        Main->camera_managed->camera_unmanaged->move_camera_vector2temp(2, static_cast<int> (nup_Camera_L2->Value), camera_vector_temp);
+        Main->camera_managed->camera_unmanaged->move_camera_vector2temp(3, static_cast<int> (nup_Camera_R2->Value), camera_vector_temp);
 
         camera_list.push_back(static_cast<int> (nup_Camera_L1->Value));
         camera_list.push_back(static_cast<int> (nup_Camera_R1->Value));
@@ -109,12 +112,12 @@ System::Void          c_frm_Camera_Positioning::bt_apply_Click                  
         break;
 
       case 6:
-        Main->camera_managed->camera_unmanaged->move_camera_vector2temp(0, static_cast<int> (nup_Camera_L1->Value));
-        Main->camera_managed->camera_unmanaged->move_camera_vector2temp(1, static_cast<int> (nup_Camera_R1->Value));
-        Main->camera_managed->camera_unmanaged->move_camera_vector2temp(2, static_cast<int> (nup_Camera_L2->Value));
-        Main->camera_managed->camera_unmanaged->move_camera_vector2temp(3, static_cast<int> (nup_Camera_R2->Value));
-        Main->camera_managed->camera_unmanaged->move_camera_vector2temp(4, static_cast<int> (nup_Camera_L3->Value));
-        Main->camera_managed->camera_unmanaged->move_camera_vector2temp(5, static_cast<int> (nup_Camera_R3->Value));
+        Main->camera_managed->camera_unmanaged->move_camera_vector2temp(0, static_cast<int> (nup_Camera_L1->Value), camera_vector_temp);
+        Main->camera_managed->camera_unmanaged->move_camera_vector2temp(1, static_cast<int> (nup_Camera_R1->Value), camera_vector_temp);
+        Main->camera_managed->camera_unmanaged->move_camera_vector2temp(2, static_cast<int> (nup_Camera_L2->Value), camera_vector_temp);
+        Main->camera_managed->camera_unmanaged->move_camera_vector2temp(3, static_cast<int> (nup_Camera_R2->Value), camera_vector_temp);
+        Main->camera_managed->camera_unmanaged->move_camera_vector2temp(4, static_cast<int> (nup_Camera_L3->Value), camera_vector_temp);
+        Main->camera_managed->camera_unmanaged->move_camera_vector2temp(5, static_cast<int> (nup_Camera_R3->Value), camera_vector_temp);
 
         camera_list.push_back(static_cast<int> (nup_Camera_L1->Value));
         camera_list.push_back(static_cast<int> (nup_Camera_R1->Value));
@@ -133,7 +136,7 @@ System::Void          c_frm_Camera_Positioning::bt_apply_Click                  
         break;
     }
 
-  this->Main->camera_managed->camera_unmanaged->move_camera_temp2vector(cameras_in_use);
+  this->Main->camera_managed->camera_unmanaged->move_camera_temp2vector(cameras_in_use, camera_vector_temp);
   for (int i=0; i< cameras_in_use; i++)
     {
     this->Main->camera_managed->camera_unmanaged->load_camera_calibration(i);
@@ -149,11 +152,17 @@ System::Void          c_frm_Camera_Positioning::bt_apply_Click                  
 System::Void          c_frm_Camera_Positioning::c_frm_Camera_Positioning_FormClosing                (System::Object^  sender, System::Windows::Forms::FormClosingEventArgs^  e)
   {
   this->Taktgeber->Enabled                = false;
+  for (int i = 0; i < GlobalObjects->cameras_in_use; i++)
+    {
+    Main->camera_managed->camera_unmanaged->camera_vector[i]->idle = true;
+    }
+
   }
 System::Void          c_frm_Camera_Positioning::c_frm_Camera_Positioning_Load                       (System::Object^  sender, System::EventArgs^  e)
   {
   this->Zaehler                           = 0;
   this->Taktgeber->Interval               = 25;
+  this->TimerWait                         = 80;
   this->Taktgeber->Enabled                = true;
   this->cameras_in_use                    = GlobalObjects->cameras_in_use;
   if (Main->camera_managed->camera_unmanaged->load_positioning)       this->set_numUD_value(*GlobalObjects->camera_order);

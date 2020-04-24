@@ -225,6 +225,16 @@ namespace NmSp_frm_ObjectCalibration
     private: System::Windows::Forms::Label^  label21;
   private: System::Windows::Forms::Button^  bt_apply;
   private: System::Windows::Forms::Button^  bt_apply_all;
+  private: System::Windows::Forms::TrackBar^  trb_ObjectSize_min;
+  private: System::Windows::Forms::TrackBar^  trb_ObjectSize_max;
+  private: System::Windows::Forms::TextBox^  txb_objectsize_max;
+
+
+  private: System::Windows::Forms::TextBox^  txb_objectsize_min;
+
+    private: System::Windows::Forms::Label^  label18;
+    private: System::Windows::Forms::Label^  label20;
+    private: System::Windows::Forms::Label^  label23;
 
 
 
@@ -300,6 +310,13 @@ namespace NmSp_frm_ObjectCalibration
       this->txb_hue_min = (gcnew System::Windows::Forms::TextBox());
       this->txb_hue_max = (gcnew System::Windows::Forms::TextBox());
       this->groupBox1 = (gcnew System::Windows::Forms::GroupBox());
+      this->trb_ObjectSize_min = (gcnew System::Windows::Forms::TrackBar());
+      this->trb_ObjectSize_max = (gcnew System::Windows::Forms::TrackBar());
+      this->txb_objectsize_max = (gcnew System::Windows::Forms::TextBox());
+      this->txb_objectsize_min = (gcnew System::Windows::Forms::TextBox());
+      this->label18 = (gcnew System::Windows::Forms::Label());
+      this->label20 = (gcnew System::Windows::Forms::Label());
+      this->label23 = (gcnew System::Windows::Forms::Label());
       this->trb_value_min = (gcnew System::Windows::Forms::TrackBar());
       this->trb_value_max = (gcnew System::Windows::Forms::TrackBar());
       this->txb_value_max = (gcnew System::Windows::Forms::TextBox());
@@ -335,6 +352,8 @@ namespace NmSp_frm_ObjectCalibration
       (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->trb_hue_min))->BeginInit();
       (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->trb_hue_max))->BeginInit();
       this->groupBox1->SuspendLayout();
+      (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->trb_ObjectSize_min))->BeginInit();
+      (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->trb_ObjectSize_max))->BeginInit();
       (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->trb_value_min))->BeginInit();
       (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->trb_value_max))->BeginInit();
       (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->trb_saturation_min))->BeginInit();
@@ -1010,6 +1029,13 @@ namespace NmSp_frm_ObjectCalibration
       // 
       // groupBox1
       // 
+      this->groupBox1->Controls->Add(this->trb_ObjectSize_min);
+      this->groupBox1->Controls->Add(this->trb_ObjectSize_max);
+      this->groupBox1->Controls->Add(this->txb_objectsize_max);
+      this->groupBox1->Controls->Add(this->txb_objectsize_min);
+      this->groupBox1->Controls->Add(this->label18);
+      this->groupBox1->Controls->Add(this->label20);
+      this->groupBox1->Controls->Add(this->label23);
       this->groupBox1->Controls->Add(this->trb_value_min);
       this->groupBox1->Controls->Add(this->trb_value_max);
       this->groupBox1->Controls->Add(this->txb_value_max);
@@ -1035,10 +1061,77 @@ namespace NmSp_frm_ObjectCalibration
       this->groupBox1->Margin = System::Windows::Forms::Padding(2);
       this->groupBox1->Name = L"groupBox1";
       this->groupBox1->Padding = System::Windows::Forms::Padding(2);
-      this->groupBox1->Size = System::Drawing::Size(532, 417);
+      this->groupBox1->Size = System::Drawing::Size(532, 496);
       this->groupBox1->TabIndex = 13;
       this->groupBox1->TabStop = false;
       this->groupBox1->Text = L"HSV-Filter";
+      // 
+      // trb_ObjectSize_min
+      // 
+      this->trb_ObjectSize_min->Location = System::Drawing::Point(146, 382);
+      this->trb_ObjectSize_min->Margin = System::Windows::Forms::Padding(2);
+      this->trb_ObjectSize_min->Name = L"trb_ObjectSize_min";
+      this->trb_ObjectSize_min->Size = System::Drawing::Size(282, 45);
+      this->trb_ObjectSize_min->TabIndex = 79;
+      this->trb_ObjectSize_min->ValueChanged += gcnew System::EventHandler(this, &c_frm_object_calibration::trb_ObjectSize_min_ValueChanged);
+      // 
+      // trb_ObjectSize_max
+      // 
+      this->trb_ObjectSize_max->Location = System::Drawing::Point(146, 432);
+      this->trb_ObjectSize_max->Margin = System::Windows::Forms::Padding(2);
+      this->trb_ObjectSize_max->Name = L"trb_ObjectSize_max";
+      this->trb_ObjectSize_max->Size = System::Drawing::Size(282, 45);
+      this->trb_ObjectSize_max->TabIndex = 80;
+      this->trb_ObjectSize_max->ValueChanged += gcnew System::EventHandler(this, &c_frm_object_calibration::trb_ObjectSize_max_ValueChanged);
+      // 
+      // txb_objectsize_max
+      // 
+      this->txb_objectsize_max->Location = System::Drawing::Point(433, 432);
+      this->txb_objectsize_max->Margin = System::Windows::Forms::Padding(2);
+      this->txb_objectsize_max->Name = L"txb_objectsize_max";
+      this->txb_objectsize_max->Size = System::Drawing::Size(84, 20);
+      this->txb_objectsize_max->TabIndex = 82;
+      // 
+      // txb_objectsize_min
+      // 
+      this->txb_objectsize_min->Location = System::Drawing::Point(433, 382);
+      this->txb_objectsize_min->Margin = System::Windows::Forms::Padding(2);
+      this->txb_objectsize_min->Name = L"txb_objectsize_min";
+      this->txb_objectsize_min->Size = System::Drawing::Size(84, 20);
+      this->txb_objectsize_min->TabIndex = 81;
+      // 
+      // label18
+      // 
+      this->label18->AutoSize = true;
+      this->label18->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 11.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+                             static_cast<System::Byte>(0)));
+      this->label18->Location = System::Drawing::Point(106, 432);
+      this->label18->Name = L"label18";
+      this->label18->Size = System::Drawing::Size(36, 18);
+      this->label18->TabIndex = 78;
+      this->label18->Text = L"max";
+      // 
+      // label20
+      // 
+      this->label20->AutoSize = true;
+      this->label20->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 11.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+                             static_cast<System::Byte>(0)));
+      this->label20->Location = System::Drawing::Point(106, 382);
+      this->label20->Name = L"label20";
+      this->label20->Size = System::Drawing::Size(32, 18);
+      this->label20->TabIndex = 77;
+      this->label20->Text = L"min";
+      // 
+      // label23
+      // 
+      this->label23->AutoSize = true;
+      this->label23->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 11.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+                             static_cast<System::Byte>(0)));
+      this->label23->Location = System::Drawing::Point(5, 382);
+      this->label23->Name = L"label23";
+      this->label23->Size = System::Drawing::Size(90, 18);
+      this->label23->TabIndex = 76;
+      this->label23->Text = L"Objektgröße";
       // 
       // trb_value_min
       // 
@@ -1197,6 +1290,8 @@ namespace NmSp_frm_ObjectCalibration
       (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->trb_hue_max))->EndInit();
       this->groupBox1->ResumeLayout(false);
       this->groupBox1->PerformLayout();
+      (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->trb_ObjectSize_min))->EndInit();
+      (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->trb_ObjectSize_max))->EndInit();
       (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->trb_value_min))->EndInit();
       (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->trb_value_max))->EndInit();
       (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->trb_saturation_min))->EndInit();
@@ -1244,9 +1339,10 @@ namespace NmSp_frm_ObjectCalibration
     System::Void    numUD_bilateral_color_ValueChanged               (System::Object^  sender, System::EventArgs^  e);
     System::Void    bt_apply_Click                                   (System::Object^  sender, System::EventArgs^  e);
 
-    System::Void    bt_apply_all_Click                                   (System::Object^  sender, System::EventArgs^  e);
-
-    public:
+    System::Void    bt_apply_all_Click                               (System::Object^  sender, System::EventArgs^  e);
+    System::Void    trb_ObjectSize_min_ValueChanged                  (System::Object^  sender, System::EventArgs^  e);
+    System::Void    trb_ObjectSize_max_ValueChanged                  (System::Object^  sender, System::EventArgs^  e);
+      public:
     System::Void    get_camera_settings (int camera_id);
-    };
+};
   }//namespace NmSp_frm_ObjectCalibration

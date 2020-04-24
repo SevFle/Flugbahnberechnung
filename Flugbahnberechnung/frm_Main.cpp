@@ -14,11 +14,6 @@ C_frm_Main::C_frm_Main                                                  (C_Globa
 /**************************************************************** Destruktor ****************************************************************/
 C_frm_Main::~C_frm_Main                                                 ()
   {
-  //Stop Camera Thread
-  for (int i = 0; i< static_cast<int>(nup_camera_count->Value); i++)
-  {
-    Main->camera_managed->camera_unmanaged->camera_vector[i]->thread_running = false;
-  }
   this->state             = 0;
   this->Zaehler           = 0;
   this->Main              = nullptr;
@@ -33,10 +28,13 @@ C_frm_Main::~C_frm_Main                                                 ()
 /**************************************************** WinForms Event-Handler *********************************************************/
 System::Void        C_frm_Main::bt_ObjectCalibration_Click              (System::Object ^ sender, System::EventArgs ^ e)
   {
-  this->Taktgeber->Enabled								= false;
-  this->Main->camera_managed->camera_unmanaged->camera_vector[0]->idle = false;
+  this->Taktgeber->Enabled								                                          = false;
+  this->Main->camera_managed->camera_unmanaged->camera_vector[0]->idle              = false;
+  this->Main->camera_managed->camera_unmanaged->camera_vector[0]->undistord_active  = true;
+  this->Main->camera_managed->camera_unmanaged->camera_vector[0]->filtering_active  = true;
+
   this->Main->frm_ObjectCalibration->ShowDialog();
-  this->Taktgeber->Enabled								= true;
+  this->Taktgeber->Enabled								                                          = true;
   }
 
 System::Void        C_frm_Main::bt_CameraCalibration_Click              (System::Object ^ sender, System::EventArgs ^ e)
@@ -49,7 +47,7 @@ System::Void        C_frm_Main::bt_CameraCalibration_Click              (System:
 
 System::Void        C_frm_Main::bt_exit_Click                           (System::Object ^ sender, System::EventArgs ^ e)
   {
-  if(this->bt_apply_cameras->Enabled) this->Main->camera_managed->camera_unmanaged->close_cameras(static_cast<int>(nup_camera_count->Value));
+  if(!this->bt_apply_cameras->Enabled) this->Main->camera_managed->camera_unmanaged->close_cameras(GlobalObjects->cameras_in_use);
   this->Close();
 
   }
@@ -90,7 +88,7 @@ System::Void        C_frm_Main::Taktgeber_Tick                          (System:
 System::Void        C_frm_Main::bt_camera_positioning_MouseClick        (System::Object^  sender, System::Windows::Forms::MouseEventArgs^  e)
   {
   this->Taktgeber->Enabled								= false;
-  for (int i = 0; i < static_cast<int>(nup_camera_count->Value)-1; i++)
+  for (int i = 0; i < GlobalObjects->cameras_in_use; i++)
     {
     Main->camera_managed->camera_unmanaged->camera_vector[i]->idle = false;
     }
@@ -111,7 +109,7 @@ System::Void        C_frm_Main::bt_apply_cameras_Click                  (System:
     bt_apply_cameras->Enabled               = false;
 
     Main->camera_managed->camera_unmanaged->init_camera_vectors                 (static_cast<int>   (nup_camera_count->Value));
-    timerwait = Zaehler + 30;
+    timerwait = Zaehler + 50;
     this->state                             = 1;
     }
   }

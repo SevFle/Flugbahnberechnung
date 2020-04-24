@@ -43,6 +43,7 @@ c_camera_unmanaged::~c_camera_unmanaged                                 ()
 void c_camera_unmanaged::start_camera_thread                            ()
   {
   camera_vector[current_camera_id]->idle = true;
+
   camera_vector[current_camera_id]->camera_thread();
   }
 /******************************************************* Öffentliche Anwender-Methoden ******************************************************/
@@ -338,6 +339,9 @@ void c_camera_unmanaged::load_camera_positioning                        ()
   {
   string  Dateiname = "../Parameter/Camera_Positioning.csv";
   string  Dateityp;
+  std::vector<nmsp_opencv_unmanaged::c_opencv_unmanaged*>   camera_vector_temp;
+  camera_vector_temp.resize                               (GlobalObjects->cameras_in_use);
+
   int id;
   int Camera_count;
 
@@ -353,10 +357,10 @@ void c_camera_unmanaged::load_camera_positioning                        ()
         {
         GlobalObjects->csv_parameter_datei->Lesen(id);
         GlobalObjects->camera_order->push_back(id);
-        move_camera_vector2temp(i, id);
+        move_camera_vector2temp(i, id, camera_vector_temp);
         }
 
-      move_camera_temp2vector(Camera_count);
+      move_camera_temp2vector(Camera_count, camera_vector_temp);
       load_positioning = true;
       }
 
@@ -378,8 +382,10 @@ void c_camera_unmanaged::init_camera_vectors                            (int cam
 
 
     current_camera_id                                           = i;
-    camera_thread   = new std::thread                       (&c_camera_unmanaged::start_camera_thread, this);
-    camera_vector_temp.resize                               (cameras_in_use);
+    //camera_thread   = new std::thread                       (&c_camera_unmanaged::start_camera_thread, this);
+    this->camera_thread = new std::thread                   (&c_camera_unmanaged::start_camera_thread, this);
+    
+
     }
 
   //Reorder recently created Cameras
@@ -396,26 +402,27 @@ void c_camera_unmanaged::close_cameras                                  (int cam
   {
   for (int i = 0; i < cameras_in_use; i++)
     {
-    camera_vector[i]->cap->release();
     camera_vector[i]->thread_running = false;
+    camera_vector[i]->cap->release();
+    
     }
   }
 
-void c_camera_unmanaged::move_camera_vector2temp                        (int camera_desired_id, int camera_current_id)
+void c_camera_unmanaged::move_camera_vector2temp                        (int camera_desired_id, int camera_current_id, std::vector<c_opencv_unmanaged*>& temp_CameraVector)
   {
-  std::vector<nmsp_opencv_unmanaged::c_opencv_unmanaged*>::iterator iterator = camera_vector_temp.begin();
+
   // Wo ist die feste Position der Kamera? -> Camera_Current_ID
   // Wo ist die Position der Kamera im unsorted Vector? ->Camera_desired_id
   // Zeige die fest installierte Position des Vektors "Referrences" auf die Adresse im Unsortierten Vektor
-  camera_vector_temp[camera_desired_id] = std::move(camera_vector[camera_current_id]);
+  temp_CameraVector[camera_desired_id] = std::move(camera_vector[camera_current_id]);
   //camera_vector_temp.insert(camera_vector_temp.begin()+camera_desired_id, camera_vector[camera_current_id]);
   std::cout << " Moved Pointer for Camera " << camera_current_id << " to Position " << camera_desired_id << " in temporary Vector" << std::endl;
   }
-void c_camera_unmanaged::move_camera_temp2vector                        (int cameras_in_use)
+void c_camera_unmanaged::move_camera_temp2vector                        (int cameras_in_use, std::vector<c_opencv_unmanaged*> temp_CameraVector)
   {
   for (int i = 0; i < cameras_in_use; i++)
     {
-    camera_vector[i] = std::move(camera_vector_temp[i]);
+    camera_vector[i] = std::move(temp_CameraVector[i]);
     }
   }
 
@@ -700,9 +707,13 @@ void c_camera_unmanaged::sm_object_tracking                             ()
         case 2:
           this->camera_vector[object_found_camID]->get_objectPosition_2D_Pixel(tracking_data.found_0, tracking_data.Richtungsvektor_0);
           this->camera_vector[object_found_camID+1]->get_objectPosition_2D_Pixel(tracking_data.found_1, tracking_data.Richtungsvektor_1);
-
+          if(!tracking_data.found_1 && tracking_data.found_0)
+            {
+            statemachine_state = 0;
+            break;
+            }
           this->tracking->Get_Position_ObjectTracking(tracking_data);
-
+          statemachine_state = 2;
           break;
       }
     }

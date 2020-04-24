@@ -5,83 +5,89 @@
 /****************************************************************** Namespaces***************************************************************/
 using namespace nmsp_opencv_unmanaged;
 /*************************************************************** Konstruktoren **************************************************************/
-c_opencv_unmanaged::c_opencv_unmanaged                                  (int camera_id) 
+c_opencv_unmanaged::c_opencv_unmanaged                                  (int camera_id)
   {
-  hue_min                     = 0;
-  hue_max                     = 179;
-  saturation_min              = 0;
-  saturation_max              = 255;
-  value_min                   = 0;
-  value_max                   = 255;
+  hue_min                   = 0;
+  hue_max                   = 179;
+  saturation_min            = 0;
+  saturation_max            = 255;
+  value_min                 = 0;
+  value_max                 = 255;
 
-  erosion_iterations          = 1;
-  dilation_iterations         = 1;
-  opening_iterations          = 1;
-  closing_iterations          = 1;
-  morph_iterations            = 1;
-  gaussian_sigma              = 0.1;
+  erosion_iterations        = 1;
+  dilation_iterations       = 1;
+  opening_iterations        = 1;
+  closing_iterations        = 1;
+  morph_iterations          = 1;
+  gaussian_sigma            = 0.1;
 
-  erosion_kernel_size         = 1;
-  dilation_kernel_size        = 1;
-  opening_kernel_size         = 1;
-  morph_kernel_size           = 1;
-  closing_kernel_size         = 1;
-  gaussian_kernel_size        = 1;
+  erosion_kernel_size       = 1;
+  dilation_kernel_size      = 1;
+  opening_kernel_size       = 1;
+  morph_kernel_size         = 1;
+  closing_kernel_size       = 1;
+  gaussian_kernel_size      = 1;
 
-  bilateral_kernel_size       = 1;
-  bilateral_sigma_color       = 0;
-  bilateral_sigma_spatial     = 0;
+  bilateral_kernel_size     = 1;
+  bilateral_sigma_color     = 0;
+  bilateral_sigma_spatial   = 0;
 
-  erode_active                = false;
-  dilate_active               = false;
-  morph_active                = false;
-  bilateral_active            = false;
+  fx                        = 0;
+  fy                        = 0;
+  f                         = 0;
+  Vec_Object_Abs            = 0;
+  Object_Size_min           = 0;
+  Object_Size_max           = 0;
+  gaussian_active           = false;
 
-  statemachine_state          = 0;
-
-  capture_api                 = cv::CAP_DSHOW;
-  this->camera_id             = camera_id;
-
-  thread_running              = true;
-  filtering_active            = false;
-
-  filtering_hsv_active        = true;
-  filtering_bgr_active        = false;
-  filtering_gray_active       = false;
-
-  contours_active             = false;
-
-  idle                        = false;
-
-  undistord_active            = true;
+  erode_active              = false;
+  dilate_active             = false;
+  morph_active              = false;
+  bilateral_active          = false;
 
 
-  this->gpu_src_img           = new cv::cuda::GpuMat();
-  this->gpu_thresholded       = new cv::cuda::GpuMat();
-  this->gpu_filtered          = new cv::cuda::GpuMat();
-  this->gpu_src2color         = new cv::cuda::GpuMat();
-  this->gpu_color_threshold   = new cv::cuda::GpuMat();
-  this->gpu_bgr_threshold     = new cv::cuda::GpuMat();
-  this->gpu_temp              = new cv::cuda::GpuMat();
+  capture_api = cv::CAP_DSHOW;
+  this->camera_id = camera_id;
 
-  this->gpu_map1              = new cv::cuda::GpuMat();
-  this->gpu_map2              = new cv::cuda::GpuMat();
+  thread_running = true;
+  filtering_active = false;
 
-
-  this->cpu_src_img           = new cv::Mat();
-  this->cpu_temp              = new cv::Mat();
-
-  this->cpu_masked_img        = new cv::Mat();
-  this->cpu_filtered          = new cv::Mat();
-  this->cpu_contoured         = new cv::Mat();
-  this->cpu_undistorted       = new cv::Mat();
+  filtering_hsv_active = true;
+  filtering_bgr_active = false;
+  filtering_gray_active = false;
 
 
-  this->DistCoeffs            = new cv::Mat(cv::Mat_<double>(1,5));
-  this->Intrinsic             = new cv::Mat(cv::Mat_<double>(3,3));
+  idle = false;
 
-  this->gpu_gaussian_kernel_size       = new cv::cuda::GpuMat();
-/**************************************************************** Contour variablen ****************************************************************/
+  undistord_active = true;
+
+
+  this->gpu_src_img = new cv::cuda::GpuMat();
+  this->gpu_thresholded = new cv::cuda::GpuMat();
+  this->gpu_filtered = new cv::cuda::GpuMat();
+  this->gpu_src2color = new cv::cuda::GpuMat();
+  this->gpu_color_threshold = new cv::cuda::GpuMat();
+  this->gpu_bgr_threshold = new cv::cuda::GpuMat();
+  this->gpu_temp = new cv::cuda::GpuMat();
+
+  this->gpu_map1 = new cv::cuda::GpuMat();
+  this->gpu_map2 = new cv::cuda::GpuMat();
+
+
+  this->cpu_src_img = new cv::Mat();
+  this->cpu_temp = new cv::Mat();
+
+  this->cpu_masked_img = new cv::Mat();
+  this->cpu_hsv_filtered = new cv::Mat();
+  this->cpu_contoured = new cv::Mat();
+  this->cpu_undistorted = new cv::Mat();
+
+
+  this->DistCoeffs = new cv::Mat(cv::Mat_<double>(1, 5));
+  this->Intrinsic = new cv::Mat(cv::Mat_<double>(3, 3));
+
+  this->gpu_gaussian_kernel_size = new cv::cuda::GpuMat();
+  /**************************************************************** Contour variablen ****************************************************************/
   objekt_anzahl = 0;
   KonturIndex = 0;
   Objekt_Anzahl = 0;
@@ -112,8 +118,7 @@ c_opencv_unmanaged::c_opencv_unmanaged                                  (int cam
   contour_found = false;
   Radius = 0.0f;
 
-  this->cap                   = new cv::VideoCapture;
-
+  this->cap = new cv::VideoCapture;
   }
 
 /**************************************************************** Destruktor ****************************************************************/
@@ -148,7 +153,6 @@ c_opencv_unmanaged::~c_opencv_unmanaged                                 ()
   bilateral_active            = false;
 
 
-  statemachine_state          = 0;
 
   capture_api                 = cv::CAP_DSHOW;
   camera_id                   = 0;
@@ -172,7 +176,7 @@ c_opencv_unmanaged::~c_opencv_unmanaged                                 ()
   delete                      (cpu_src_img);
   delete                      (cpu_temp);
   delete                      (cpu_masked_img);
-  delete                      (cpu_filtered);
+  delete                      (cpu_hsv_filtered);
   delete                      (cpu_contoured);
 
 
@@ -219,65 +223,108 @@ c_opencv_unmanaged::~c_opencv_unmanaged                                 ()
 
 void c_opencv_unmanaged::camera_thread                                  ()
   {
+  int statemachine_state = 0;
   while (thread_running == true)
     {
     switch (statemachine_state)
       {
         case 0:
-          std::cout<< "Thread " << this->camera_id +1 << " running." << std::endl<< std::endl<< std::endl;
+          std::cout<< "Thread " << this->camera_id +1 << " running with ID: " << std::this_thread::get_id() << std::endl<< std::endl<< std::endl;
 
           init(camera_id);
 
 
-          statemachine_state = 2;
+          statemachine_state = 1;
+          break;
 
         //used for keeping Threads in idle mode. Increases CPU usage to max through switching too fast in the statemachine.
         case 1:
-          //if (idle)
-          //  {
-          //  statemachine_state = 1;
-          //  }
-          //else
-          //  {
-          //std::this_thread::sleep_for(std::chrono::milliseconds(200));
-            statemachine_state  = 2;
-          //  }
+          if (idle)
+            {
+            std::this_thread::sleep_for(std::chrono::milliseconds(200));
+            break;
+            }
+          statemachine_state  = 2;
           break;
 
-        //Default Camera Status
-        //Grabbing photos and undistorting last image
+        //STEP2: Grab a new frame from Videocapture object
         case 2:
           this->cpu_grab_frame(cpu_src_img);
+
           if (undistord_active == true)
             {
-            this->undistord_img(this->cpu_src_img, this->cpu_undistorted);
+            statemachine_state = 3;
+            break;
             }
-          this->statemachine_state = 3;
+          statemachine_state = 6;
+          break;
 
-        case 3:  //Image Processing
-          if (filtering_active == true)
+        //STEP 3: Undistort and remap the source image if needed. Remaping via GPU
+        case 3:
+          this->undistord_img(this->cpu_src_img, this->cpu_undistorted);
+          this->image_prepared = false;
+          this->cpu_undistorted->copyTo(*cpu_contoured);
+          if (filtering_active)
             {
-            this->apply_filter(cpu_undistorted, cpu_masked_img);
-            this->contours_active = true;
-            this->gpu_filtered->download(*cpu_filtered);
-            cpu_undistorted->copyTo(*cpu_contoured);
-            this->find_contours(cpu_filtered, cpu_contoured);
-            cv::imshow("contoured", *cpu_contoured);
+            statemachine_state = 4;
+            break;
             }
-          statemachine_state = 4;
+          statemachine_state = 6;
+          break;
 
+        //STEP 4: Apply chosen filter to cpu_undistorted image
         case 4:
+          {
+          if (filtering_hsv_active)
+            {
+            gpu_src_img->upload                                     (*cpu_undistorted);
+            gpu_filter_hsv                                          (gpu_src_img, gpu_thresholded);
+            }
+          if (filtering_bgr_active)
+            {
+            gpu_src_img->upload                                     (*cpu_undistorted);
+            gpu_filter_bgr                                          (gpu_src_img, gpu_thresholded);
+            }
+          if (filtering_gray_active)
+            {
+            gpu_src_img->upload                                     (*cpu_undistorted);
+            gpu_filter_gray                                         (gpu_src_img, gpu_thresholded);
+            }
+
+          gpu_thresholded->download                                 (*cpu_masked_img);
+
+          //gpu_filtered stellt das gefilterte HSV Bild dar.
+          this->gpu_filtered->download(*cpu_hsv_filtered);
+
+          statemachine_state = 5;
+          break;
+
+        //STEP 5: Find Contours and draw them onto cpu_contoured
+        case 5:
+          //this->cpu_undistorted->copyTo(*cpu_contoured);
+
+          this->find_contours(cpu_hsv_filtered, cpu_contoured);
+
+          cv::imshow("contoured"+ std::to_string(camera_id), *cpu_contoured);
+
+          statemachine_state = 6;
+          break;
+
+
+        case 6:
           if (cv::waitKey(1)>=0)
             break;
 
           statemachine_state = 1;
+          }
       }
     }
+  std::cout << std::endl << "Thread " << std::this_thread::get_id() << " ending." << std::endl;
   }
 
 /********************************************************Öffentlich Get and Set methods for Cameras************************/
 void c_opencv_unmanaged::get_calibration_parameter                      (double             (&DistCoeffs)[1][5],      double            (&Intrinsic)[3][3]) const
-{
+  {
 
   for (int i = 0; i < 1; i++)
     {
@@ -365,7 +412,7 @@ void c_opencv_unmanaged::init                                           (int    
   //  +--------+----+----+----+----+------+------+------+------+
 
   //Redifinition der zwei GpuMat Arrays für die Verwendung in der Cuda-InRange Funktion. 
-  gpu_src2color->create           ( 600, 800, CV_8UC1);
+  gpu_src2color->create           (600,  800, CV_8UC1);
   gpu_color_threshold->create     (600,  800, CV_8UC1);
   cpu_undistorted->create         (600, 800, CV_32FC1);
   cpu_contoured->create           (600, 800, CV_8UC3);
@@ -463,9 +510,9 @@ void c_opencv_unmanaged::get_gaussian_kernel                            ()
 void c_opencv_unmanaged::gpu_filter_hsv                                 (cv::cuda::GpuMat*  gpu_src,                  cv::cuda::GpuMat* gpu_dst)
 {
 
-  cv::cuda::cvtColor        (*gpu_src, *gpu_src2color, cv::COLOR_BGR2HSV);
+  cv::cuda::cvtColor        (*gpu_src, *gpu_temp, cv::COLOR_BGR2HSV);
 
-  gpu_gaussian_filter       (gpu_src2color, gpu_filtered);
+  gpu_gaussian_filter       (gpu_temp, gpu_filtered);
 
   cudaKernel::inRange_gpu   (*gpu_filtered, cv::Scalar(this->hue_min, this->saturation_min, this->value_min),
                              cv::Scalar(this->hue_max, this->saturation_max, this->value_max), *gpu_color_threshold);
@@ -474,38 +521,48 @@ void c_opencv_unmanaged::gpu_filter_hsv                                 (cv::cud
 
   gpu_close                 (gpu_temp, gpu_filtered);
 
-  cv::cuda::cvtColor        (*gpu_filtered, *gpu_bgr_threshold, cv::COLOR_GRAY2BGR);
+  cv::cuda::cvtColor        (*gpu_filtered, *gpu_temp, cv::COLOR_GRAY2BGR);
 
-  cv::cuda::bitwise_and     (*gpu_src_img, *gpu_bgr_threshold, *gpu_dst);
+  cv::cuda::bitwise_and     (*gpu_src_img, *gpu_temp, *gpu_dst);
 }
+
+void c_opencv_unmanaged::gpu_filter_bgr (cv::cuda::GpuMat* gpu_src, cv::cuda::GpuMat* gpu_dst)
+  {
+  }
+
+void c_opencv_unmanaged::gpu_filter_gray (cv::cuda::GpuMat* gpu_src, cv::cuda::GpuMat* gpu_dst)
+  {
+  }
+
+//TODO Add Objectsize threshold
 void c_opencv_unmanaged::find_contours                                  (cv::Mat*           thresholded_source_image, cv::Mat*          dst_contoured_image)
   {
   objekt_anzahl = 0;
   std::vector<std::vector<cv::Point>>     contours;
   std::vector<cv::Vec4i>                  hirarchy;
-  dst_contoured_image->copyTo(*cpu_temp);
+  //dst_contoured_image->copyTo(*dst_contoured_image);
   //*dst_contoured_image = cv::Mat::zeros(dst_contoured_image->rows, dst_contoured_image->cols, dst_contoured_image->type());
 
 
   //OpenCV Hirarchy: https://docs.opencv.org/3.4/d9/d8b/tutorial_py_contours_hierarchy.html
 
-
-  // Zeichne Bildmittelpunkt ein
-   Mittelpunkt_x = cpu_temp->cols / 2;
-   Mittelpunkt_y = cpu_temp->rows / 2;
-  cv::circle(*cpu_temp, cv::Point(static_cast<int>(Mittelpunkt_x), static_cast<int>(Mittelpunkt_y)), 15, cv::Scalar(0, 255, 0));
+// Zeichne Bildmittelpunkt ein
+   Mittelpunkt_x = dst_contoured_image->cols / 2;
+   Mittelpunkt_y = dst_contoured_image->rows / 2;
+  cv::circle(*dst_contoured_image, cv::Point(static_cast<int>(Mittelpunkt_x), static_cast<int>(Mittelpunkt_y)), 15, cv::Scalar(0, 255, 0));
 
   // Zeichne kalibrierten Bildmittelpunkt ein
   cx = this->Intrinsic->at<double>(0, 2);
   cy = this->Intrinsic->at<double>(1, 2);
-  cv::circle(*cpu_temp, cv::Point(static_cast<int>(cx), static_cast<int>(cy)), 15, cv::Scalar(255, 255, 0));
+  cv::circle(*dst_contoured_image, cv::Point(static_cast<int>(cx), static_cast<int>(cy)), 15, cv::Scalar(255, 255, 0));
 
-  cv::findContours(*thresholded_source_image, contours, hirarchy, cv::RETR_TREE, cv::CHAIN_APPROX_NONE, cv::Point(0, 0));
+
+
+  cv::findContours(*thresholded_source_image, contours, hirarchy, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE, cv::Point(0, 0));
 
 
   objekt_anzahl = static_cast<int>(hirarchy.size());
 
-  cv::drawContours(*cpu_temp, contours,0, cv::Scalar(0, 255, 255), 2, cv::LINE_AA, hirarchy);
 
   if (objekt_anzahl > 0)
     {
@@ -528,13 +585,13 @@ void c_opencv_unmanaged::find_contours                                  (cv::Mat
     // Größte Kontur anhand der Fläche suchen
     for (int i = 0; i < objekt_anzahl; i++)
       {
-      Image_Moments              = cv::moments(static_cast<cv::Mat>(contours[i]));
-       Moment_0_Ordnung   = Image_Moments.m00;
+      Image_Moments             = cv::moments(static_cast<cv::Mat>(contours[i]));
+      Moment_0_Ordnung          = Image_Moments.m00;
 
       if (Moment_0_Ordnung > max_Moment_m00)
         {
         max_Moment_m00 = Moment_0_Ordnung;
-        KonturIndex          = i;
+        KonturIndex             = i;
         }
       else
         {
@@ -543,8 +600,13 @@ void c_opencv_unmanaged::find_contours                                  (cv::Mat
       }
 
     // Bestimmen der Flchenmomente 0. (Flche) und 1. Ordnung (Flche * x bzw. Flche * y) zur Bestimmung des Flchenschwerpunktes: x_ = summe(m1) / summe(m0);
-    Image_Moments              = cv::moments(static_cast<cv::Mat>(contours[KonturIndex]));
-    Moment_0_Ordnung   = Image_Moments.m00;
+    Image_Moments               = cv::moments(static_cast<cv::Mat>(contours[KonturIndex]));
+    Moment_0_Ordnung            = Image_Moments.m00;
+
+    //if (Object_Size_min > Moment_0_Ordnung ||Moment_0_Ordnung > Object_Size_max)
+    //  {
+    //  return;
+    //  }
 
     // Bestimme Flchenmoment 1. Ordnung (Flche * x bzw.Flche * y) zur Bestimmung des Flchenschwerpunktes: x_ = summe(m1) / summe(m0);
       Moment_1_Ordnung_x = Image_Moments.m10;
@@ -556,16 +618,16 @@ void c_opencv_unmanaged::find_contours                                  (cv::Mat
     minEnclosingCircle(static_cast<cv::Mat>(contours[KonturIndex]), Center, Radius);
 
     // Mittelpunkt / schwerpunkt der kontur einzeichnen
-    cv::circle(*cpu_temp, cv::Point(static_cast<int>(Schwerpunkt_x), static_cast<int>(Schwerpunkt_y)), 2, cv::Scalar(0, 255, 255));
+    cv::circle(*dst_contoured_image, cv::Point(static_cast<int>(Schwerpunkt_x), static_cast<int>(Schwerpunkt_y)), 2, cv::Scalar(0, 255, 255));
 
     // Konturumfang zeichnen
-    cv::circle(*cpu_temp, Center, static_cast<int>(Radius), cv::Scalar(0, 255, 255));
+    cv::circle(*dst_contoured_image, Center, static_cast<int>(Radius), cv::Scalar(0, 255, 255));
 
     // Schwerpunktkoordinaten als Text im Bild darstellen
     S_x = std::to_string(Schwerpunkt_x);
     S_y = std::to_string(Schwerpunkt_y);
-    cv::putText(*cpu_temp, "S_x: " + S_x, cv::Point(0, 20), 1, 1, cv::Scalar(255, 255, 255), 2);
-    cv::putText(*cpu_temp, "S_y: " + S_y, cv::Point(0, 50), 1, 1, cv::Scalar(255, 255, 255), 2);
+    cv::putText(*dst_contoured_image, "S_x: " + S_x, cv::Point(0, 20), 1, 1, cv::Scalar(255, 255, 255), 2);
+    cv::putText(*dst_contoured_image, "S_y: " + S_y, cv::Point(0, 50), 1, 1, cv::Scalar(255, 255, 255), 2);
 
     // Bestimme den Abstand des Mittelpunktes der gefundenen Kontur zum Bildmittelpunkt
     contour_found        = true;
@@ -594,16 +656,12 @@ void c_opencv_unmanaged::find_contours                                  (cv::Mat
     // Schreibe die Delta-Werte auf das Bild
     Delta_x_str   = std::to_string(Delta_x);
     Delta_y_str   = std::to_string(Delta_y);
-    cv::putText(*cpu_temp, "Delta_x: " + Delta_x_str, cv::Point(0, 80), 1, 1, cv::Scalar(255, 255, 255), 2);
-    cv::putText(*cpu_temp, "Delta_y: " + Delta_y_str, cv::Point(0, 110), 1, 1, cv::Scalar(255, 255, 255), 2);
+    cv::putText(*dst_contoured_image, "Delta_x: " + Delta_x_str, cv::Point(0, 80), 1, 1, cv::Scalar(255, 255, 255), 2);
+    cv::putText(*dst_contoured_image, "Delta_y: " + Delta_y_str, cv::Point(0, 110), 1, 1, cv::Scalar(255, 255, 255), 2);
 
     // Zeichne eine Linie zwischen kalibriertem Bildmittelpunkt und dem Objektschwerpunkt
-    cv::line(*cpu_temp, cv::Point(static_cast<int>(Ist_x), static_cast<int>(Ist_y)), cv::Point(static_cast<int>(Soll_x), static_cast<int>(Soll_y)), cv::Scalar(0, 0, 255), 4, 8, 0);
-
-    cpu_temp->copyTo(*dst_contoured_image);
-    rect_roi = cv::Rect(Ist_x, Ist_y, Radius+20, Radius +20);
-
-     
+    cv::line(*dst_contoured_image, cv::Point(static_cast<int>(Ist_x), static_cast<int>(Ist_y)), cv::Point(static_cast<int>(Soll_x), static_cast<int>(Soll_y)), cv::Scalar(0, 0, 255), 4, 8, 0);
+    this->image_prepared = true;
     }
   else
     {
@@ -613,10 +671,10 @@ void c_opencv_unmanaged::find_contours                                  (cv::Mat
     this->Vec_Object[2]     = 0.0;
     max_Moment_m00          = 0.0;
 
-    cv::putText(*cpu_temp, "S_x:     Object not found", cv::Point(0, 20), 1, 1, cv::Scalar(255, 255, 255), 2);
-    cv::putText(*cpu_temp, "S_y:     Object not found", cv::Point(0, 50), 1, 1, cv::Scalar(255, 255, 255), 2);
-    cv::putText(*cpu_temp, "Delta_x: Object not found", cv::Point(0, 80), 1, 1, cv::Scalar(255, 255, 255), 2);
-    cv::putText(*cpu_temp, "Delta_y: Object not found", cv::Point(0, 110), 1, 1, cv::Scalar(255, 255, 255), 2);
+    cv::putText(*dst_contoured_image, "S_x:     Object not found", cv::Point(0, 20), 1, 1, cv::Scalar(255, 255, 255), 2);
+    cv::putText(*dst_contoured_image, "S_y:     Object not found", cv::Point(0, 50), 1, 1, cv::Scalar(255, 255, 255), 2);
+    cv::putText(*dst_contoured_image, "Delta_x: Object not found", cv::Point(0, 80), 1, 1, cv::Scalar(255, 255, 255), 2);
+    cv::putText(*dst_contoured_image, "Delta_y: Object not found", cv::Point(0, 110), 1, 1, cv::Scalar(255, 255, 255), 2);
     }
   
   }

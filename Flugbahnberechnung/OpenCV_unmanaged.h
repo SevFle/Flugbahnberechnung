@@ -47,7 +47,7 @@ namespace nmsp_opencv_unmanaged
       cv::Mat*                                 cpu_src_img;
       cv::Mat*                                 cpu_temp;
       cv::Mat*                                 cpu_masked_img;
-      cv::Mat*                                 cpu_filtered;
+      cv::Mat*                                 cpu_hsv_filtered;
       cv::Mat*                                 cpu_contoured;
       cv::Mat*                                 cpu_undistorted;
 
@@ -67,12 +67,11 @@ namespace nmsp_opencv_unmanaged
       bool                                    contours_active;
       bool                                    undistord_active;
       bool                                    contour_found;
-
+      bool                                    image_prepared;
 
 
       /******************************************** Nicht öffentliche private Anwender-Attribute **************************************************/
       private:
-      int                                     statemachine_state;
       int                                     capture_api;
       /******************************Find_Contours**********************************************/
       int                                     objekt_anzahl;
@@ -104,6 +103,7 @@ namespace nmsp_opencv_unmanaged
       double                                  Vec_Object_Abs;
 
       float                                   Radius;
+
 
       cv::Moments                            Image_Moments;
       cv::Point2f                            Center;
@@ -140,6 +140,9 @@ namespace nmsp_opencv_unmanaged
       int                                     gaussian_kernel_size;
 
       double                                  gaussian_sigma;
+      double                                  Object_Size_min;
+      double                                  Object_Size_max;
+
 
       float                                   bilateral_sigma_color;
       float                                   bilateral_sigma_spatial;
