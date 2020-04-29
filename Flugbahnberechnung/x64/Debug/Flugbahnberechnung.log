@@ -1,4 +1,20 @@
-﻿  opencv_unmanaged.cpp
+﻿  frm_Object_Calibration.cpp
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\main.h(85): warning C4677: 'camera_managed': signature of non-private member contains assembly private type 'nmsp_camera_managed::C_camera_managed'
+  d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\camera_managed.h(13): note: see declaration of 'nmsp_camera_managed::C_camera_managed'
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\frm_object_calibration.cpp(384): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\cuda.inl.hpp(105): warning C4793: 'cv::cuda::GpuMat::GpuMat': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\cuda.inl.hpp(395): warning C4793: 'cv::cuda::HostMem::HostMem': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\mat.inl.hpp(530): warning C4793: 'cv::Mat::Mat': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\mat.inl.hpp(850): warning C4793: 'cv::Mat::release': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\mat.inl.hpp(2181): warning C4793: 'cv::SparseMat::addref': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\mat.inl.hpp(3781): warning C4793: 'cv::UMat::addref': function compiled as native:
+  	Found an intrinsic not supported in managed code
+  opencv_unmanaged.cpp
   App_Main.obj : MSIL module encountered; incremental linking is disabled for MSIL; performing full link
 Main.obj : warning LNK4248: unresolved typeref token (0100000F) for 'NmSp_CamerCalibration_Menu.C_frm_CameraCalibration_Menu'; image may not run
 frm_Object_Tracking.obj : warning LNK4248: unresolved typeref token (0100000F) for 'NmSp_CamerCalibration_Menu.C_frm_CameraCalibration_Menu'; image may not run

@@ -235,6 +235,7 @@ namespace NmSp_frm_ObjectCalibration
     private: System::Windows::Forms::Label^  label18;
     private: System::Windows::Forms::Label^  label20;
     private: System::Windows::Forms::Label^  label23;
+  private: System::Windows::Forms::Button^  bt_Tracking;
 
 
 
@@ -329,6 +330,7 @@ namespace NmSp_frm_ObjectCalibration
       this->pb_gray = (gcnew System::Windows::Forms::PictureBox());
       this->bt_apply = (gcnew System::Windows::Forms::Button());
       this->bt_apply_all = (gcnew System::Windows::Forms::Button());
+      this->bt_Tracking = (gcnew System::Windows::Forms::Button());
       (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->pb_original))->BeginInit();
       (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->pb_filtered))->BeginInit();
       (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->pb_tracked))->BeginInit();
@@ -1240,11 +1242,24 @@ namespace NmSp_frm_ObjectCalibration
       this->bt_apply_all->UseVisualStyleBackColor = true;
       this->bt_apply_all->Click += gcnew System::EventHandler(this, &c_frm_object_calibration::bt_apply_all_Click);
       // 
+      // bt_Tracking
+      // 
+      this->bt_Tracking->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 14.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+                                 static_cast<System::Byte>(0)));
+      this->bt_Tracking->Location = System::Drawing::Point(1574, 663);
+      this->bt_Tracking->Name = L"bt_Tracking";
+      this->bt_Tracking->Size = System::Drawing::Size(167, 73);
+      this->bt_Tracking->TabIndex = 66;
+      this->bt_Tracking->Text = L"Tracking";
+      this->bt_Tracking->UseVisualStyleBackColor = true;
+      this->bt_Tracking->MouseClick += gcnew System::Windows::Forms::MouseEventHandler(this, &c_frm_object_calibration::bt_Tracking_MouseClick);
+      // 
       // c_frm_object_calibration
       // 
       this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
       this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
       this->ClientSize = System::Drawing::Size(1751, 846);
+      this->Controls->Add(this->bt_Tracking);
       this->Controls->Add(this->bt_apply_all);
       this->Controls->Add(this->bt_apply);
       this->Controls->Add(this->label16);
@@ -1344,5 +1359,6 @@ namespace NmSp_frm_ObjectCalibration
     System::Void    trb_ObjectSize_max_ValueChanged                  (System::Object^  sender, System::EventArgs^  e);
       public:
     System::Void    get_camera_settings (int camera_id);
+    System::Void bt_Tracking_MouseClick(System::Object^  sender, System::Windows::Forms::MouseEventArgs^  e);
 };
   }//namespace NmSp_frm_ObjectCalibration

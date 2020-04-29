@@ -78,7 +78,6 @@ System::Void        C_frm_Main::Taktgeber_Tick                          (System:
           bt_ObjectCalibration->  Enabled     = true;
           bt_CameraCalibration->  Enabled     = true;
           bt_camera_positioning-> Enabled     = true;
-          bt_tracking->           Enabled     = true;
           state = 0;
           }
         break;
@@ -112,12 +111,6 @@ System::Void        C_frm_Main::bt_apply_cameras_Click                  (System:
     timerwait = Zaehler + 50;
     this->state                             = 1;
     }
-  }
-System::Void C_frm_Main::bt_tracking_Click(System::Object^  sender, System::EventArgs^  e)
-  {
-  this->Taktgeber->Enabled                = false;
-  this->Main->frm_object_tracking->ShowDialog();
-  this->Taktgeber->Enabled								= true;
   }
 
 

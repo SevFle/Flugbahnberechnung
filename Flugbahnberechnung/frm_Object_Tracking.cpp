@@ -79,7 +79,7 @@ System::Void c_frm_Object_Tracking::FillMat2Picturebox (System::Windows::Forms::
 System::Void c_frm_Object_Tracking::c_frm_Object_Tracking_Load(System::Object^  sender, System::EventArgs^  e)
   {
   this->Taktgeber->Enabled =true;
-  this->TimerWait = 15;
+  this->TimerWait = 50;
   this->Main->camera_managed->camera_unmanaged->camera_vector[0]->undistord_active = true;
   this->Main->camera_managed->camera_unmanaged->camera_vector[1]->undistord_active = true;
   this->Main->camera_managed->camera_unmanaged->camera_vector[0]->filtering_active = true;

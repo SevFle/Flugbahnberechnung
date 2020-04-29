@@ -177,8 +177,9 @@ namespace nmsp_opencv_unmanaged
 
       void            init_rectify_map                                    ();
       void            save_picture                                        (int camera_id, int photo_id, std::string definition);
+    void crop_image (cv::Mat* undistorted_img, cv::Mat* crop_undist_img);
 
-      /******************************************************* Private Klassenmethoden***************************************************************/
+    /******************************************************* Private Klassenmethoden***************************************************************/
       private:
       void            init                                                (int              camera_id);
       void            cpu_grab_frame                                      (cv::Mat*         cpu_dst_img);

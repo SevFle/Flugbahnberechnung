@@ -224,6 +224,8 @@ c_opencv_unmanaged::~c_opencv_unmanaged                                 ()
 void c_opencv_unmanaged::camera_thread                                  ()
   {
   int statemachine_state = 0;
+  cv::Rect RoI;
+
   while (thread_running == true)
     {
     switch (statemachine_state)
@@ -256,24 +258,36 @@ void c_opencv_unmanaged::camera_thread                                  ()
             statemachine_state = 3;
             break;
             }
-          statemachine_state = 6;
+          //Proceed to imshow
+          statemachine_state = 8;
           break;
 
         //STEP 3: Undistort and remap the source image if needed. Remaping via GPU
         case 3:
           this->undistord_img(this->cpu_src_img, this->cpu_undistorted);
           this->image_prepared = false;
+          statemachine_state = 4;
+          break;
+
+        //STEP 4: Crop image to remove black corners
+        case 4:
+          cv::resize(*cpu_undistorted, *cpu_temp, cpu_src_img->size(),0,0, cv::INTER_CUBIC);
+          this->cpu_temp->copyTo(*cpu_undistorted);
           this->cpu_undistorted->copyTo(*cpu_contoured);
           if (filtering_active)
             {
-            statemachine_state = 4;
+            statemachine_state = 5;
             break;
             }
-          statemachine_state = 6;
-          break;
+          //Proceed to imshow
+          statemachine_state = 8;
+
+
+          //this->crop_image(cpu_contoured, cpu_contoured);
+
 
         //STEP 4: Apply chosen filter to cpu_undistorted image
-        case 4:
+        case 5:
           {
           if (filtering_hsv_active)
             {
@@ -293,25 +307,27 @@ void c_opencv_unmanaged::camera_thread                                  ()
 
           gpu_thresholded->download                                 (*cpu_masked_img);
 
+
           //gpu_filtered stellt das gefilterte HSV Bild dar.
           this->gpu_filtered->download(*cpu_hsv_filtered);
 
-          statemachine_state = 5;
-          break;
-
-        //STEP 5: Find Contours and draw them onto cpu_contoured
-        case 5:
-          //this->cpu_undistorted->copyTo(*cpu_contoured);
-
-          this->find_contours(cpu_hsv_filtered, cpu_contoured);
-
-          cv::imshow("contoured"+ std::to_string(camera_id), *cpu_contoured);
+          RoI = cv::boundingRect(*cpu_hsv_filtered);
 
           statemachine_state = 6;
           break;
 
-
+        //STEP 5: Find Contours and draw them onto cpu_contoured
         case 6:
+          //this->cpu_undistorted->copyTo(*cpu_contoured);
+
+          this->find_contours(cpu_hsv_filtered, cpu_contoured);
+          cv::rectangle(*cpu_contoured, RoI, cv::Scalar(0, 255, 0), 2, 8, 0);
+          cv::imshow("contoured"+ std::to_string(camera_id), *cpu_contoured);
+          //Proceed to imshow
+          statemachine_state = 8;
+          break;
+
+        case 8:
           if (cv::waitKey(1)>=0)
             break;
 
@@ -686,7 +702,7 @@ void  c_opencv_unmanaged::undistord_img                                 (cv::Mat
 
   gpu_temp1.upload(*cpu_src);
 
-  cv::cuda::remap(gpu_temp1, gpu_temp2, *gpu_map1, *gpu_map2, cv::INTER_NEAREST, cv::BORDER_CONSTANT,0);
+  cv::cuda::remap(gpu_temp1, gpu_temp2, *gpu_map1, *gpu_map2, cv::INTER_NEAREST, cv::BORDER_CONSTANT, 0);
 
   gpu_temp2.download(*cpu_dst);
 
@@ -697,7 +713,17 @@ void c_opencv_unmanaged::save_picture                                   (int cam
   cv::imwrite(definition + std::to_string(camera_id) + "_Snapshot_" + std::to_string(photo_id) + ".png", *cpu_src_img);
   }
 
+void c_opencv_unmanaged::crop_image(cv::Mat* undistorted_img, cv::Mat* crop_undist_img )
+  {
+  cv::Mat gray;
+  cv::Mat thres;
+  cv::Rect fitting;
+  cv::cvtColor(*undistorted_img, gray, cv::COLOR_BGR2GRAY);
+  cv::threshold(gray, thres, 10.0,255.0, cv::THRESH_BINARY);
+  fitting = cv::boundingRect(thres);
+  
 
+  }
 
 
      
