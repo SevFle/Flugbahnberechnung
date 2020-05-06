@@ -38,6 +38,8 @@ c_opencv_unmanaged::c_opencv_unmanaged                                  (int cam
   Vec_Object_Abs            = 0;
   Object_Size_min           = 0;
   Object_Size_max           = 0;
+  resize_height             = 400;
+  resize_width              = 400;
   gaussian_active           = false;
 
   erode_active              = false;
@@ -81,6 +83,7 @@ c_opencv_unmanaged::c_opencv_unmanaged                                  (int cam
   this->cpu_hsv_filtered = new cv::Mat();
   this->cpu_contoured = new cv::Mat();
   this->cpu_undistorted = new cv::Mat();
+  this->cpu_cropped_img = new cv::Mat();
 
 
   this->DistCoeffs = new cv::Mat(cv::Mat_<double>(1, 5));
@@ -151,6 +154,7 @@ c_opencv_unmanaged::~c_opencv_unmanaged                                 ()
   dilate_active               = false;
   morph_active                = false;
   bilateral_active            = false;
+  show_cropped_image          = false;
 
 
 
@@ -178,7 +182,7 @@ c_opencv_unmanaged::~c_opencv_unmanaged                                 ()
   delete                      (cpu_masked_img);
   delete                      (cpu_hsv_filtered);
   delete                      (cpu_contoured);
-
+  delete                      (cpu_cropped_img);
 
   delete                      (cap);
 
@@ -271,9 +275,10 @@ void c_opencv_unmanaged::camera_thread                                  ()
 
         //STEP 4: Crop image to remove black corners
         case 4:
-          cv::resize(*cpu_undistorted, *cpu_temp, cpu_src_img->size(),0,0, cv::INTER_CUBIC);
-          this->cpu_temp->copyTo(*cpu_undistorted);
-          this->cpu_undistorted->copyTo(*cpu_contoured);
+          //cv::resize(*cpu_undistorted, *cpu_temp, cpu_src_img->size(),0,0, cv::INTER_CUBIC);
+          this->crop_image(cpu_undistorted, cpu_cropped_img);
+          if(show_cropped_image) cv::imshow("cropped"+ std::to_string(camera_id), *cpu_cropped_img);
+
           if (filtering_active)
             {
             statemachine_state = 5;
@@ -281,9 +286,9 @@ void c_opencv_unmanaged::camera_thread                                  ()
             }
           //Proceed to imshow
           statemachine_state = 8;
+          break;
 
-
-          //this->crop_image(cpu_contoured, cpu_contoured);
+ 
 
 
         //STEP 4: Apply chosen filter to cpu_undistorted image
@@ -318,7 +323,7 @@ void c_opencv_unmanaged::camera_thread                                  ()
 
         //STEP 5: Find Contours and draw them onto cpu_contoured
         case 6:
-          //this->cpu_undistorted->copyTo(*cpu_contoured);
+          this->cpu_undistorted->copyTo(*cpu_contoured);
 
           this->find_contours(cpu_hsv_filtered, cpu_contoured);
           cv::rectangle(*cpu_contoured, RoI, cv::Scalar(0, 255, 0), 2, 8, 0);
@@ -715,14 +720,15 @@ void c_opencv_unmanaged::save_picture                                   (int cam
 
 void c_opencv_unmanaged::crop_image(cv::Mat* undistorted_img, cv::Mat* crop_undist_img )
   {
-  cv::Mat gray;
-  cv::Mat thres;
-  cv::Rect fitting;
-  cv::cvtColor(*undistorted_img, gray, cv::COLOR_BGR2GRAY);
-  cv::threshold(gray, thres, 10.0,255.0, cv::THRESH_BINARY);
-  fitting = cv::boundingRect(thres);
-  
+  cv::Mat temp;
+  undistorted_img->copyTo(temp);
+  cv::Rect cropped_region(0,0,this->resize_width, this->resize_height);
 
+  //cv::rectangle(*undistorted_img, cropped_region, cv::Scalar(255, 255, 0), 2, 8, 0);
+  //*crop_undist_img = undistorted_img->(cropped_region);
+  auto cropped = temp(cropped_region);
+
+  cropped.copyTo(*crop_undist_img);
   }
 
 

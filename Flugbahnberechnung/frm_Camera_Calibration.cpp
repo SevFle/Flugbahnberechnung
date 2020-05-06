@@ -48,6 +48,7 @@ System::Void          C_frm_CameraCalibration_Single::C_frm_CameraCalibration_Si
   this->Taktgeber->Enabled                = true;
   this->cameras_in_use                    = GlobalObjects->cameras_in_use;
   this->current_camera_id                 = 0;
+  this->Timerwait                         = 50;
   //Main->camera_managed->camera_unmanaged->camera_vector[0]->set_aspect_ratio(1080, 1920);
   }
 
@@ -181,6 +182,27 @@ System::Void          C_frm_CameraCalibration_Single::bt_take_photo_Click       
       }
     }
 
+System::Void          C_frm_CameraCalibration_Single::bt_show_crop_Click(System::Object^  sender, System::EventArgs^  e)
+  {
+  this->Taktgeber->Enabled = false;
+  for(int i = 0; i< cameras_in_use; i++)
+    {
+    this->Main->camera_managed->camera_unmanaged->camera_vector[i]->idle = false;
+    this->Main->camera_managed->camera_unmanaged->camera_vector[i]->undistord_active = true;
+    }
+  this->Main->frm_CameraCalibration_crop->ShowDialog();
+  this->Taktgeber->Enabled = true;
+
+  }
+
+
+System::Void C_frm_CameraCalibration_Single::num_UD_resize_width_ValueChanged(System::Object^  sender, System::EventArgs^  e)
+  {
+  }
+System::Void C_frm_CameraCalibration_Single::num_UD_resize_height_ValueChanged(System::Object^  sender, System::EventArgs^  e)
+  {
+  }
+
 System::Void          C_frm_CameraCalibration_Single::sm_Single_camera_calibration                        ()
   {
   std::string naming = "../Parameter/Bilder/Camera_Single_Calibration_";
@@ -237,6 +259,7 @@ System::Void          C_frm_CameraCalibration_Single::sm_Single_camera_calibrati
       }
 
     }
+
 System::Void          C_frm_CameraCalibration_Single::sm_Stereo_camera_calibration                        ()
   {
   std::string naming = "../Parameter/Bilder/Camera_Stereo_Calibration_";

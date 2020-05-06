@@ -12,10 +12,12 @@ using namespace nmsp_GlobalObjects;
 c_camera_unmanaged::c_camera_unmanaged                                  (int cameras_in_use, C_GlobalObjects* GlobalObjects)
   {
   this->cameras_in_use        = cameras_in_use;
-  this->tracking              = new c_tracking();
+  this->tracking_thread       = new c_tracking(GlobalObjects);
+  this->tracked_data          = new nmsp_tracking::s_tracking_data();
   stop_statemachine           = false;
   this->GlobalObjects         = GlobalObjects;
   load_positioning            = false;
+  tracking_active             = false;
   numCornersWidth             = 0;
   numCornersHeight            = 0;
   SquareSize                  = 0;
@@ -30,12 +32,17 @@ c_camera_unmanaged::~c_camera_unmanaged                                 ()
   SquareSize                  = 0;
   numCornersHeight            = 0;
   numCornersWidth             = 0;
+  tracking_active             = false;
+
   load_positioning            = false;
   GlobalObjects               = nullptr;
   stop_statemachine           = false;
   cameras_in_use              = 0;
-  delete(this->tracking);
-  this->tracking              = nullptr;
+  delete(this->tracked_data);
+  tracked_data               = nullptr;
+
+  delete(this->tracking_thread);
+  this->tracking_thread              = nullptr;
   }
 
 /*************************************************** Nicht öffentliche private Methoden *****************************************************/
@@ -402,8 +409,8 @@ void c_camera_unmanaged::close_cameras                                  (int cam
   {
   for (int i = 0; i < cameras_in_use; i++)
     {
-    camera_vector[i]->thread_running = false;
     camera_vector[i]->cap->release();
+    camera_vector[i]->thread_running = false;
     
     }
   }
@@ -680,16 +687,22 @@ void c_camera_unmanaged::calibrate_stereo_camera                        (int cur
 
 void c_camera_unmanaged::sm_object_tracking                             ()
   {
-  int statemachine_state = 0;
-   s_tracking_data tracking_data;
+  int statemachine_state                = 0;
+  this->tracked_data->positionsvektor.X = 0.0;
+  this->tracked_data->positionsvektor.Y = 0.0;
+  this->tracked_data->positionsvektor.Z = 0.0;
+  int   object_found_camID              = 0;
+
 
   while(this->tracking_active)
     {
-    double                                  Vec_Object[3];
-    int                                     object_found_camID;
+
     switch (statemachine_state)
       {
         case 0:
+          //Überprüfe ob eine Kameras das Objekt gefunden hat. Gehe dazu durch die komplette linke Reihe (+2).
+          //Hat eine Kamera (0) das Objekt gesichtet, wird es wahrscheinlich
+          //auch von der gegenüberliegenden Kamera (1) auffindbar sein.
           for(int i = 0; i < this->camera_vector.size(); i+2)
             {
              if (this->camera_vector[i]->contour_found)
@@ -699,21 +712,26 @@ void c_camera_unmanaged::sm_object_tracking                             ()
                break;
                }
             }
-          
           break;
+
         case 1:
-          statemachine_state = 2;
-          break;
-        case 2:
-          this->camera_vector[object_found_camID]->get_objectPosition_2D_Pixel(tracking_data.found_0, tracking_data.Richtungsvektor_0);
-          this->camera_vector[object_found_camID+1]->get_objectPosition_2D_Pixel(tracking_data.found_1, tracking_data.Richtungsvektor_1);
-          if(!tracking_data.found_1 && tracking_data.found_0)
+          //Hole die 2D-Koordinaten des Objektes aus dem Kamerabild
+          this->camera_vector[object_found_camID]->   get_objectPosition_2D_Pixel(tracked_data->found_0, tracked_data->Richtungsvektor_0);
+          this->camera_vector[object_found_camID+1]-> get_objectPosition_2D_Pixel(tracked_data->found_1, tracked_data->Richtungsvektor_1);
+
+          //Validiere die Bedingung, dass ein Objekt gefunden wurde 
+          if(!tracked_data->found_1 && tracked_data->found_0)
             {
             statemachine_state = 0;
             break;
             }
-          this->tracking->Get_Position_ObjectTracking(tracking_data);
           statemachine_state = 2;
+          break;
+
+        case 2:
+          this->tracking_thread->Get_Position_ObjectTracking(*tracked_data);
+
+          statemachine_state = 1;
           break;
       }
     }

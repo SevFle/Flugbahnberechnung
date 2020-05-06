@@ -49,9 +49,12 @@ namespace nsmp_frm_object_tracking
     private: System::Windows::Forms::Label^  label4;
     private: System::Windows::Forms::Label^  label3;
     private: System::Windows::Forms::Label^  label2;
-    private: System::Windows::Forms::TextBox^  lbl_object_pos_z;
-    private: System::Windows::Forms::TextBox^  lbl_object_pos_y;
-    private: System::Windows::Forms::TextBox^  lbl_object_pos_x;
+    private: System::Windows::Forms::TextBox^  txb_object_pos_z;
+
+    private: System::Windows::Forms::TextBox^  txb_object_pos_y;
+
+    private: System::Windows::Forms::TextBox^  txb_object_pos_x;
+
     private: System::Windows::Forms::Button^  bt_start;
     private: System::Windows::Forms::NumericUpDown^  numericUpDown1;
     private: System::Windows::Forms::Label^  label1;
@@ -84,9 +87,9 @@ namespace nsmp_frm_object_tracking
       this->label4 = (gcnew System::Windows::Forms::Label());
       this->label3 = (gcnew System::Windows::Forms::Label());
       this->label2 = (gcnew System::Windows::Forms::Label());
-      this->lbl_object_pos_z = (gcnew System::Windows::Forms::TextBox());
-      this->lbl_object_pos_y = (gcnew System::Windows::Forms::TextBox());
-      this->lbl_object_pos_x = (gcnew System::Windows::Forms::TextBox());
+      this->txb_object_pos_z = (gcnew System::Windows::Forms::TextBox());
+      this->txb_object_pos_y = (gcnew System::Windows::Forms::TextBox());
+      this->txb_object_pos_x = (gcnew System::Windows::Forms::TextBox());
       this->bt_start = (gcnew System::Windows::Forms::Button());
       this->numericUpDown1 = (gcnew System::Windows::Forms::NumericUpDown());
       this->label1 = (gcnew System::Windows::Forms::Label());
@@ -184,9 +187,9 @@ namespace nsmp_frm_object_tracking
       this->groupBox2->Controls->Add(this->label4);
       this->groupBox2->Controls->Add(this->label3);
       this->groupBox2->Controls->Add(this->label2);
-      this->groupBox2->Controls->Add(this->lbl_object_pos_z);
-      this->groupBox2->Controls->Add(this->lbl_object_pos_y);
-      this->groupBox2->Controls->Add(this->lbl_object_pos_x);
+      this->groupBox2->Controls->Add(this->txb_object_pos_z);
+      this->groupBox2->Controls->Add(this->txb_object_pos_y);
+      this->groupBox2->Controls->Add(this->txb_object_pos_x);
       this->groupBox2->Location = System::Drawing::Point(1309, 14);
       this->groupBox2->Name = L"groupBox2";
       this->groupBox2->Size = System::Drawing::Size(507, 266);
@@ -227,32 +230,32 @@ namespace nsmp_frm_object_tracking
       this->label2->TabIndex = 19;
       this->label2->Text = L"Position [X]";
       // 
-      // lbl_object_pos_z
+      // txb_object_pos_z
       // 
-      this->lbl_object_pos_z->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 11.25F, System::Drawing::FontStyle::Regular,
+      this->txb_object_pos_z->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 11.25F, System::Drawing::FontStyle::Regular,
                                       System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
-      this->lbl_object_pos_z->Location = System::Drawing::Point(121, 137);
-      this->lbl_object_pos_z->Name = L"lbl_object_pos_z";
-      this->lbl_object_pos_z->Size = System::Drawing::Size(71, 24);
-      this->lbl_object_pos_z->TabIndex = 2;
+      this->txb_object_pos_z->Location = System::Drawing::Point(121, 137);
+      this->txb_object_pos_z->Name = L"txb_object_pos_z";
+      this->txb_object_pos_z->Size = System::Drawing::Size(71, 24);
+      this->txb_object_pos_z->TabIndex = 2;
       // 
-      // lbl_object_pos_y
+      // txb_object_pos_y
       // 
-      this->lbl_object_pos_y->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 11.25F, System::Drawing::FontStyle::Regular,
+      this->txb_object_pos_y->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 11.25F, System::Drawing::FontStyle::Regular,
                                       System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
-      this->lbl_object_pos_y->Location = System::Drawing::Point(121, 90);
-      this->lbl_object_pos_y->Name = L"lbl_object_pos_y";
-      this->lbl_object_pos_y->Size = System::Drawing::Size(71, 24);
-      this->lbl_object_pos_y->TabIndex = 1;
+      this->txb_object_pos_y->Location = System::Drawing::Point(121, 90);
+      this->txb_object_pos_y->Name = L"txb_object_pos_y";
+      this->txb_object_pos_y->Size = System::Drawing::Size(71, 24);
+      this->txb_object_pos_y->TabIndex = 1;
       // 
-      // lbl_object_pos_x
+      // txb_object_pos_x
       // 
-      this->lbl_object_pos_x->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 11.25F, System::Drawing::FontStyle::Regular,
+      this->txb_object_pos_x->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 11.25F, System::Drawing::FontStyle::Regular,
                                       System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
-      this->lbl_object_pos_x->Location = System::Drawing::Point(121, 47);
-      this->lbl_object_pos_x->Name = L"lbl_object_pos_x";
-      this->lbl_object_pos_x->Size = System::Drawing::Size(71, 24);
-      this->lbl_object_pos_x->TabIndex = 0;
+      this->txb_object_pos_x->Location = System::Drawing::Point(121, 47);
+      this->txb_object_pos_x->Name = L"txb_object_pos_x";
+      this->txb_object_pos_x->Size = System::Drawing::Size(71, 24);
+      this->txb_object_pos_x->TabIndex = 0;
       // 
       // bt_start
       // 

@@ -50,6 +50,7 @@ namespace nmsp_opencv_unmanaged
       cv::Mat*                                 cpu_hsv_filtered;
       cv::Mat*                                 cpu_contoured;
       cv::Mat*                                 cpu_undistorted;
+      cv::Mat*                                 cpu_cropped_img;
 
       cv::Mat*                                 DistCoeffs;
       cv::Mat*                                 Intrinsic;
@@ -68,7 +69,7 @@ namespace nmsp_opencv_unmanaged
       bool                                    undistord_active;
       bool                                    contour_found;
       bool                                    image_prepared;
-
+      bool                                    show_cropped_image;
 
       /******************************************** Nicht öffentliche private Anwender-Attribute **************************************************/
       private:
@@ -138,6 +139,9 @@ namespace nmsp_opencv_unmanaged
       int                                     closing_kernel_size;
       int                                     morph_kernel_size;
       int                                     gaussian_kernel_size;
+
+      int                                     resize_width;
+      int                                     resize_height;
 
       double                                  gaussian_sigma;
       double                                  Object_Size_min;

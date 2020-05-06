@@ -441,7 +441,7 @@ namespace nmsp_posen
       ~C_RelativePose                                                 ();
 
 
-      /*********************************************ffentliche Methoden*********************************************/
+  //    /*********************************************ffentliche Methoden*********************************************/
       public:
       // berladener Operator "="
       void                    operator=                               (C_RelativePose                         RelativePose);
@@ -598,11 +598,11 @@ namespace nmsp_posen
         this->BerechneExtrinsischRPY(this->Euler_Psi(), this->Euler_Phi(), Euler_Chi);
         }
 
-      /************************************************Private Methoden************************************************/
+  //    /************************************************Private Methoden************************************************/
       private:
       void                    BerechneExtrinsischRPY                  (double Euler_Psi, double Euler_Phi, double Euler_Chi);
 
-      /*********************************************ffentliche Attribute*********************************************/
+  //    /*********************************************ffentliche Attribute*********************************************/
       public:
       // Variablen, welche der Ausgabe dienen
       double                                       Nullpose[4][4];
@@ -613,7 +613,7 @@ namespace nmsp_posen
       double                                       HomogenePosenMatrixTempPuffer_3[4][4];
 
 
-      /*********************************************Private Attribute*********************************************/
+  //    /*********************************************Private Attribute*********************************************/
       private:
       // Hilfsvariablen fr mathematische Operationen
       double                                       URPose_Puffer[6][1];
@@ -627,71 +627,72 @@ namespace nmsp_posen
 
   /************************************************** Klasse C_URPose **************************************************/
   // Eine URPose wird immer als absolute Pose betrachtet!!!
-  class C_URPose
-    {
-    /*********************************************Konstruktoren / Destruktor*********************************************/
-      public:
-      C_URPose                                                        ();
-      C_URPose                                                        (const C_URPose& URPose);
-      ~C_URPose                                                       ();
+      class C_URPose
+        {
+        /*********************************************Konstruktoren / Destruktor*********************************************/
+          public:
+          C_URPose                                                        ();
+          C_URPose                                                        (const C_URPose& URPose);
+          ~C_URPose                                                       ();
 
 
-      /*********************************************ffentliche Methoden*********************************************/
-      public:
-      // berladener Operator "="
-      void                    operator=                               (C_URPose                                 URPose);
-      void                    operator=                               (S_PoseWerte&                             URPose);
-      void                    operator=                               (C_AbsolutePose                           AbsolutePose);
-      void                    operator=                               (C_RelativePose                           RelativePose);
-      void                    operator=                               (double                                   (&NullposeMatrix)[6][1]);
+          /*********************************************ffentliche Methoden*********************************************/
+          public:
+          // berladener Operator "="
+          void                    operator=                               (C_URPose                                 URPose);
+          void                    operator=                               (S_PoseWerte&                             URPose);
+          void                    operator=                               (C_AbsolutePose                           AbsolutePose);
+          void                    operator=                               (C_RelativePose                           RelativePose);
+          void                    operator=                               (double                                   (&NullposeMatrix)[6][1]);
 
-      // berladener Operator "*"
-      C_AbsolutePose          operator*                               (C_RelativePose&                          RelativePose);
+          // berladener Operator "*"
+          C_AbsolutePose          operator*                               (C_RelativePose&                          RelativePose);
 
-      // berladener Operator "/" (Rechtsmultiplikation)
-      C_AbsolutePose          operator/                               (C_RelativePose&                          RelativePose);
+          // berladener Operator "/" (Rechtsmultiplikation)
+          C_AbsolutePose          operator/                               (C_RelativePose&                          RelativePose);
 
-      // berladener Operator "|" statt "\" (Linksmultiplikation)
-      C_RelativePose          operator|                               (C_AbsolutePose&                          AbsolutePose);
-      C_RelativePose          operator|                               (C_URPose&                                URPose);
+          // berladener Operator "|" statt "\" (Linksmultiplikation)
+          C_RelativePose          operator|                               (C_AbsolutePose&                          AbsolutePose);
+          C_RelativePose          operator|                               (C_URPose&                                URPose);
 
-  //    property double Drehwinkel
-  //      {
-  //      double        get  ()
-  //        {
-  //        return(Math::Sqrt(this->RX*this->RX + this->RY*this->RY + this->RZ*this->RZ));
-  //        }
-  //      void  set  (double Dummy)
-  //        {
-  //        // Hier soll nichts geschehen!
-  //        }
-  //      }
+      //    property double Drehwinkel
+      //      {
+      //      double        get  ()
+      //        {
+      //        return(Math::Sqrt(this->RX*this->RX + this->RY*this->RY + this->RZ*this->RZ));
+      //        }
+      //      void  set  (double Dummy)
+      //        {
+      //        // Hier soll nichts geschehen!
+      //        }
+      //      }
 
-      /*********************************************Private Methoden*********************************************/
-      private:
-      // Methoden zur Umwandlung von homogenen Koordinaten in UR-nmsp_posen
-      void          HomogenousPoseToURPose                            (C_AbsolutePose&                          AbsolutePose);
-      void          HomogenousPoseToURPose                            (C_RelativePose&                          RelativePose);
-      void          HomogenousPoseToURPose                            (double                                   (&HomogenePoseMatrix)[4][4]);
+          /*********************************************Private Methoden*********************************************/
+          private:
+          // Methoden zur Umwandlung von homogenen Koordinaten in UR-nmsp_posen
+          void          HomogenousPoseToURPose                            (C_AbsolutePose&                          AbsolutePose);
+          void          HomogenousPoseToURPose                            (C_RelativePose&                          RelativePose);
+          void          HomogenousPoseToURPose                            (double                                   (&HomogenePoseMatrix)[4][4]);
 
 
-      /*********************************************ffentliche Attribute*********************************************/
-      public:
-      // Variable, welche der Ausgabe dienen
-      double                                    Nullpose[6][1];
-      double                                    X;
-      double                                    Y;
-      double                                    Z;
-      double                                    RX;
-      double                                    RY;
-      double                                    RZ;
+          /*********************************************ffentliche Attribute*********************************************/
+          public:
+          // Variable, welche der Ausgabe dienen
+          double                                    Nullpose[6][1];
+          double                                    X;
+          double                                    Y;
+          double                                    Z;
+          double                                    RX;
+          double                                    RY;
+          double                                    RZ;
 
-      /*********************************************Private Attribute*********************************************/
-      private:
-      // Hilfsvariablen fr mathematische Operationen
-      double                                    URPose_Puffer[6][1];
-      double                                    HomogenePosenMatrixTempPuffer[4][4];
+          /*********************************************Private Attribute*********************************************/
+          private:
+          // Hilfsvariablen fr mathematische Operationen
+          double                                    URPose_Puffer[6][1];
+          double                                    HomogenePosenMatrixTempPuffer[4][4];
+        };
+      /************************************************** Klasse C_URPose **************************************************/
     };
-  /************************************************** Klasse C_URPose **************************************************/
-  }
+
 

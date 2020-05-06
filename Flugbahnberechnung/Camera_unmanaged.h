@@ -32,7 +32,7 @@ namespace nmsp_camera_unmanaged
 
       /**************************************************** Öffentliche Klassenobjekte ********************************************************/
       public:
-      c_tracking*                                               tracking;
+      c_tracking*                                               tracking_thread;
 
       std::thread*                                              camera_thread;
 
@@ -47,6 +47,8 @@ namespace nmsp_camera_unmanaged
       bool                                                      stop_statemachine;
       bool                                                      load_positioning;
       bool                                                      tracking_active;
+      s_tracking_data*                                          tracked_data;
+
 
       std::vector<nmsp_opencv_unmanaged::c_opencv_unmanaged*>   camera_vector;
 
@@ -78,13 +80,16 @@ namespace nmsp_camera_unmanaged
       /********************************************************* Öffentliche Klassenmethoden*******************************************************/
       public:
       void  move_camera_vector2temp                         (int camera_desired_id, int camera_current_id, std::vector<c_opencv_unmanaged*>& temp_CameraVector);
+
       void  move_camera_temp2vector                         (int cameras_in_use, std::vector<c_opencv_unmanaged*> temp_CameraVector);
 
-
+      
       void save_camera_calibration                          (int camera_id);
       void load_camera_calibration                          (int camera_id);
       void save_camera_positioning                          (std::vector<int> camera_list) const;
       void load_camera_positioning                          ();
+      void save_camera_cos                                  (int camera_id, C_AbsolutePose& WorldToCam_Param);
+      void load_camera_cos                                  (int camera_id, C_AbsolutePose& WorldToCam_Param);
       void init_camera_vectors                              (int cameras_in_use);
       void close_cameras                                    (int cameras_in_use);
 

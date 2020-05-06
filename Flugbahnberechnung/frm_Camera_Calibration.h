@@ -106,6 +106,11 @@ namespace NmSp_CamerCalibration_Single
     private: System::Windows::Forms::Button^  bt_take_photo;
     private: System::Windows::Forms::PictureBox^  pb_stereo_L;
     private: System::Windows::Forms::PictureBox^  pb_stereo_R;
+    private: System::Windows::Forms::Button^  bt_show_crop;
+
+
+
+
 
     private: System::ComponentModel::IContainer^  components;
 
@@ -148,6 +153,7 @@ namespace NmSp_CamerCalibration_Single
       this->bt_take_photo = (gcnew System::Windows::Forms::Button());
       this->pb_stereo_L = (gcnew System::Windows::Forms::PictureBox());
       this->pb_stereo_R = (gcnew System::Windows::Forms::PictureBox());
+      this->bt_show_crop = (gcnew System::Windows::Forms::Button());
       (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->nup_camera_id))->BeginInit();
       (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->pb_live_camera_picture))->BeginInit();
       (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->pb_taken_picture_1))->BeginInit();
@@ -161,6 +167,7 @@ namespace NmSp_CamerCalibration_Single
       // 
       // Taktgeber
       // 
+      this->Taktgeber->Interval = 25;
       this->Taktgeber->Tick += gcnew System::EventHandler(this, &C_frm_CameraCalibration_Single::Taktgeber_Tick);
       // 
       // txtb_counter
@@ -482,11 +489,24 @@ namespace NmSp_CamerCalibration_Single
       this->pb_stereo_R->TabStop = false;
       this->pb_stereo_R->Visible = false;
       // 
+      // bt_show_crop
+      // 
+      this->bt_show_crop->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 14.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+                                  static_cast<System::Byte>(0)));
+      this->bt_show_crop->Location = System::Drawing::Point(1323, 707);
+      this->bt_show_crop->Name = L"bt_show_crop";
+      this->bt_show_crop->Size = System::Drawing::Size(167, 73);
+      this->bt_show_crop->TabIndex = 30;
+      this->bt_show_crop->Text = L"Bild zuschneiden";
+      this->bt_show_crop->UseVisualStyleBackColor = true;
+      this->bt_show_crop->Click += gcnew System::EventHandler(this, &C_frm_CameraCalibration_Single::bt_show_crop_Click);
+      // 
       // C_frm_CameraCalibration_Single
       // 
       this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
       this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
       this->ClientSize = System::Drawing::Size(1862, 818);
+      this->Controls->Add(this->bt_show_crop);
       this->Controls->Add(this->pb_stereo_R);
       this->Controls->Add(this->pb_stereo_L);
       this->Controls->Add(this->bt_take_photo);
@@ -530,8 +550,8 @@ namespace NmSp_CamerCalibration_Single
       System::Void      C_frm_CameraCalibration_Single_Load                 (System::Object^  sender, System::EventArgs^  e);
 
 
-      System::Void      FillPicturebox                                      (System::Windows::Forms::PictureBox^ Picturebox, Int32 ColorImageCols, Int32 ColorImageRows, Int32 ColorImageStep, Int32 ColorImageType, System::IntPtr ColorImagePtr);
-      System::Void      FillMat2Picturebox                                  (System::Windows::Forms::PictureBox^ Picturebox, cv::Mat *colorImage);
+      System::Void  FillPicturebox                                     (System::Windows::Forms::PictureBox^ Picturebox, Int32 ColorImageCols, Int32 ColorImageRows, Int32 ColorImageStep, Int32 ColorImageType, System::IntPtr ColorImagePtr);
+      System::Void  FillMat2Picturebox                                 (System::Windows::Forms::PictureBox^ Picturebox, cv::Mat *colorImage);
 
       System::Void      bt_start_Click                                      (System::Object^  sender, System::EventArgs^  e);
 
@@ -541,5 +561,8 @@ namespace NmSp_CamerCalibration_Single
       System::Void      bt_take_photo_Click                                 (System::Object^  sender, System::EventArgs^  e);
       System::Void      sm_Single_camera_calibration                        ();
       System::Void      sm_Stereo_camera_calibration                        ();
-  };
+      System::Void      num_UD_resize_width_ValueChanged(System::Object^  sender, System::EventArgs^  e);
+      System::Void      num_UD_resize_height_ValueChanged(System::Object^  sender, System::EventArgs^  e);
+      System::Void      bt_show_crop_Click(System::Object^  sender, System::EventArgs^  e);
+};
 }

@@ -1,9 +1,10 @@
 #pragma once
 #include "posen.h"
+#include "GlobalObjects.h"
 #include <vector>
 
 using namespace nmsp_posen;
-
+using namespace nmsp_GlobalObjects;
 
 
 namespace nmsp_tracking
@@ -15,16 +16,22 @@ namespace nmsp_tracking
     bool              found_1;
     S_Positionsvektor Richtungsvektor_0;
     S_Positionsvektor Richtungsvektor_1;
+    int               ID_Cam_Links;
+    int               ID_Cam_Rechts;
+
     };
 
   class c_tracking
     {
       public:
-      c_tracking();
+      c_tracking(C_GlobalObjects* GlobalObject);
       ~c_tracking();
-
+      void init_posen ();
+    void load_posen ();
+    S_Positionsvektor*                       Positionsvektor_alt;
       private:
-      S_Positionsvektor*                       Positionsvektor_alt;
+      C_GlobalObjects*                         GlobalObjects;
+      std::vector<C_AbsolutePose>*              vec_WorldToCam_Poses; //AKA WORLD TO CAMERA POS
 
       public:
       //void                                    Get_Position_ObjectTracking                       (S_Positionsvektor&        Positionsvektor);

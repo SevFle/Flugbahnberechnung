@@ -57,6 +57,9 @@
     <ClCompile Include="posen.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="frm_Camera_Calibration_crop.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="frm_Main.h">
@@ -96,6 +99,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="posen.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="frm_Camera_Calibration_crop.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -15,23 +15,12 @@ namespace NmSp_frm_Main
   }
 using namespace NmSp_frm_Main;
   
-namespace NmSp_CamerCalibration_Menu
-  {
-  ref class C_frm_CameraCalibration_Menu;
-  }
-using namespace NmSp_CamerCalibration_Menu;
 
 namespace NmSp_CamerCalibration_Single
   {
   ref class C_frm_CameraCalibration_Single;
   }
 using namespace NmSp_CamerCalibration_Single;
-
-namespace NmSp_frm_CameraCalibration_Stereo
-  {
-  ref class C_frm_CameraCalibration_Stereo;
-  }
-  using namespace NmSp_frm_CameraCalibration_Stereo;
 
   namespace NmSp_frm_ObjectCalibration
     {
@@ -49,6 +38,12 @@ namespace nsmp_frm_object_tracking
   {
   ref class c_frm_Object_Tracking;
   } using namespace nsmp_frm_object_tracking;
+
+namespace nmsp_camera_calibration_crop
+  {
+  ref class c_frm_Camera_Calibration_crop;
+  }using namespace  nmsp_camera_calibration_crop;
+
 
 
   #pragma endregion
@@ -76,9 +71,8 @@ namespace nsmp_frm_object_tracking
 
       public:
       C_frm_Main^                       frm_Main;
-      C_frm_CameraCalibration_Menu^     frm_CameraCalibration_Menu;
       C_frm_CameraCalibration_Single^   frm_CameraCalibration_Single;
-      C_frm_CameraCalibration_Stereo^   frm_CameraCalibration_Stereo;
+      c_frm_Camera_Calibration_crop^    frm_CameraCalibration_crop;
       c_frm_object_calibration^         frm_ObjectCalibration;
       c_frm_Camera_Positioning^         frm_Camera_Positioning;
       c_frm_Object_Tracking^            frm_object_tracking;
@@ -91,6 +85,7 @@ namespace nsmp_frm_object_tracking
 
 #include "frm_Main.h"
 #include "frm_Camera_Calibration.h"
+ #include "frm_Camera_Calibration_crop.h"
 #include "frm_Object_Calibration.h"
 #include "frm_Camera_Positioning.h"
 #include "frm_Object_Tracking.h"

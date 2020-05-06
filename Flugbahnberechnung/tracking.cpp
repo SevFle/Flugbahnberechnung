@@ -1,11 +1,15 @@
 #include "tracking.h"
 
 using namespace nmsp_tracking;
+using namespace nmsp_GlobalObjects;
 
-c_tracking::c_tracking()
+c_tracking::c_tracking(C_GlobalObjects* GlobalObjects)
   {
-  auto* Positionsvektor_alt = new S_Positionsvektor;
-  }
+  this->Positionsvektor_alt = new S_Positionsvektor();
+  this->GlobalObjects         = GlobalObjects;
+  this->vec_WorldToCam_Poses = new std::vector<C_AbsolutePose>;
+
+ }
 
 
 c_tracking::~c_tracking()
@@ -13,10 +17,30 @@ c_tracking::~c_tracking()
   delete(Positionsvektor_alt);
   }
 
+
+
 void              c_tracking::Get_Position_ObjectTracking             (s_tracking_data&               StructofTrackingData)
 {
-  std::vector<C_AbsolutePose>    vec_TCP_Poses;
-  std::vector<C_AbsolutePose>    vec_WorldToTCP_Poses;
+  std::vector<C_AbsolutePose>             vec_TCP_Poses;
+  vec_TCP_Poses.resize(2);
+  C_AbsolutePose            abs_TCP_Pose_0;
+  C_AbsolutePose            abs_TCP_Pose_1;
+  vec_TCP_Poses[0] =        abs_TCP_Pose_0;
+  vec_TCP_Poses[1] =        abs_TCP_Pose_1;
+
+  for(int i = 0; i<GlobalObjects->cameras_in_use; i++)
+    {
+    C_AbsolutePose                  abs_WorldToCam;
+    
+    vec_WorldToCam_Poses->push_back(abs_WorldToCam);
+    }
+
+  //abs_WorldToCam_0.px(137.0);
+  //abs_WorldToCam_0.py(48.0);
+  //abs_WorldToCam_0.pz(111.0);
+  //abs_WorldToCam_1.px(137.0);
+  //abs_WorldToCam_1.py(-57.0);
+  //abs_WorldToCam_1.pz(111.0);
 
   // Kameradaten abholen
   std:: vector<bool>              vec_Object_Found;
@@ -32,12 +56,13 @@ void              c_tracking::Get_Position_ObjectTracking             (s_trackin
   this->Calc_RichtungsvektorenToWorld(vec_Richtungsvektoren, vec_Richtungsvektoren_World, vec_TCP_Poses);
 
   // Berechnung der Objektposition
+  // Die Enum Objecte werden nur zur Verhaltensbestimmung der Roboter verwendet. 
   //E_ObjectTracking enum_ObjectTracking_0;
   //E_ObjectTracking enum_ObjectTracking_1;
 
   if (vec_Object_Found[0] && vec_Object_Found[1])
     {
-    this->Calc_Position_ObjectTracking(StructofTrackingData.positionsvektor, vec_Richtungsvektoren_World, vec_WorldToTCP_Poses);
+    this->Calc_Position_ObjectTracking(StructofTrackingData.positionsvektor, vec_Richtungsvektoren_World, *vec_WorldToCam_Poses);
     Positionsvektor_alt = &StructofTrackingData.positionsvektor;
 
   //  enum_ObjectTracking_0     = E_ObjectTracking::Stereo_Object;
@@ -173,6 +198,10 @@ void              c_tracking::Calc_RichtungsvektorenToWorld           (std::vect
   for (int i = 0; i < Anzahl_Posen; i++)
     {
     S_Positionsvektor Richtungsvektor;
+    Richtungsvektor.X = 0.0;
+    Richtungsvektor.Y = 0.0;
+    Richtungsvektor.Z = 0.0;
+
     vec_Richtungsvektoren_World.push_back(Richtungsvektor);
 
     vec_Richtungsvektoren_World[i].X  = vec_TCP_Poses[i].nx() * vec_Richtungsvektoren[i].X

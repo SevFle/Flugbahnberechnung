@@ -101,10 +101,7 @@ System::Void				c_frm_object_calibration::Taktgeber_Tick			        (System::Obje
     FillMat2Picturebox(pb_original, *Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->cpu_src_img);
     FillMat2Picturebox(pb_gray,     *Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->cpu_hsv_filtered);
     FillMat2Picturebox(pb_filtered, *Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->cpu_masked_img);
-    if(this->Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->image_prepared)
-      {
-      FillMat2Picturebox(pb_tracked, *Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->cpu_contoured);
-      }
+    FillMat2Picturebox(pb_tracked, *Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->cpu_contoured);
     }
   }
 
@@ -477,6 +474,13 @@ System::Void          c_frm_object_calibration::get_camera_settings (int camera_
 
 System::Void          c_frm_object_calibration::bt_Tracking_MouseClick(System::Object^  sender, System::Windows::Forms::MouseEventArgs^  e)
   {
+  for(int i = 0; i< GlobalObjects->cameras_in_use; i++)
+    {
+    this->Main->camera_managed->camera_unmanaged->camera_vector[i]->idle              = false;
+    this->Main->camera_managed->camera_unmanaged->camera_vector[i]->show_cropped_image= false;
+    this->Main->camera_managed->camera_unmanaged->camera_vector[i]->undistord_active  = true;
+    this->Main->camera_managed->camera_unmanaged->camera_vector[i]->filtering_active  = true;
+    }
   this->Main->frm_object_tracking->Show();
   }
 
