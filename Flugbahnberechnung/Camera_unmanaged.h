@@ -9,7 +9,9 @@
 namespace std
   {
   class thread;
-  } using namespace std;
+  }
+
+using namespace std;
 
 using namespace nmsp_opencv_unmanaged;
 using namespace nmsp_tracking;
@@ -17,93 +19,84 @@ using namespace nmsp_posen;
 using namespace nmsp_GlobalObjects;
 
 
-
 namespace nmsp_camera_unmanaged
   {
   class c_camera_unmanaged
     {
-      
-      public:
-      /*************************************************************** Konstruktoren *************************************************************/
-      c_camera_unmanaged (int cameras_in_use, C_GlobalObjects* GlobalObjects);
-      /*************************************************************** Destruktor ****************************************************************/
-      ~c_camera_unmanaged ();
+    public:
+    /*************************************************************** Konstruktoren *************************************************************/
+    c_camera_unmanaged (int cameras_in_use, C_GlobalObjects* GlobalObjects);
+    /*************************************************************** Destruktor ****************************************************************/
+    ~c_camera_unmanaged ();
 
 
-      /**************************************************** Öffentliche Klassenobjekte ********************************************************/
-      public:
-      c_tracking*                                               tracking_thread;
+    /**************************************************** Öffentliche Klassenobjekte ********************************************************/
+    public:
+    c_tracking* tracking_thread;
 
-      std::thread*                                              camera_thread;
-
-
-      /**************************************************** Öffentliche Anwender-Attribute ********************************************************/
-      public:
-      int                                                       cameras_in_use;
-      int                                                       camera_id;
-
-      int**                                                     camera_referrence;
-
-      bool                                                      stop_statemachine;
-      bool                                                      load_positioning;
-      bool                                                      tracking_active;
-      s_tracking_data*                                          tracked_data;
+    std::thread* camera_thread;
 
 
-      std::vector<c_opencv_unmanaged*>                          camera_vector;
-      std::vector<C_AbsolutePose>*                              vec_WorldToCam_Poses; //AKA WORLD TO CAMERA POS
+    /**************************************************** Öffentliche Anwender-Attribute ********************************************************/
+    public:
+    int cameras_in_use;
+    int camera_id;
 
-      /*** Variablen zur Kamerakalibrierung ********************************************************/
+    int** camera_referrence;
 
-      public:
-      int                           numCornersWidth;
-      int                           numCornersHeight;
-      float                           SquareSize;
-      int                             numBoards_imgs;
-
-      private:
-      int                             Photo_ID;
+    bool             stop_statemachine;
+    bool             load_positioning;
+    bool             tracking_active;
+    s_tracking_data* tracked_data;
 
 
+    std::vector<c_opencv_unmanaged*> camera_vector;
+    std::vector<C_AbsolutePose>*     vec_WorldToCam_Poses; //AKA WORLD TO CAMERA POS
+
+    /*** Variablen zur Kamerakalibrierung ********************************************************/
+
+    public:
+    int   numCornersWidth;
+    int   numCornersHeight;
+    float SquareSize;
+    int   numBoards_imgs;
+
+    private:
+    int Photo_ID;
 
 
+    /******************************************** Nicht öffentliche private Anwender-Attribute **************************************************/
+    private:
+    C_GlobalObjects* GlobalObjects;
+    int              current_camera_id;
 
 
+    /********************************************************* Öffentliche Klassenmethoden*******************************************************/
+    public:
+    void move_camera_vector2temp (int camera_desired_id, int camera_current_id, std::vector<c_opencv_unmanaged*>& temp_CameraVector);
+
+    void move_camera_temp2vector (int cameras_in_use, std::vector<c_opencv_unmanaged*> temp_CameraVector);
 
 
-      /******************************************** Nicht öffentliche private Anwender-Attribute **************************************************/
-      private:
-      C_GlobalObjects*                                                     GlobalObjects;
-      int                                                                  current_camera_id;
+    void save_camera_calibration (int camera_id);
+    void load_camera_calibration (int camera_id);
+    void save_camera_positioning (std::vector<int> camera_list) const;
+    void load_camera_positioning ();
+    void save_camera_cos (int camera_id, C_AbsolutePose& WorldToCam_Param);
+    void load_camera_cos (int camera_id, C_AbsolutePose& WorldToCam_Param);
+    void init_camera_vectors (int cameras_in_use);
+    void close_cameras (int cameras_in_use);
 
-    
-      /********************************************************* Öffentliche Klassenmethoden*******************************************************/
-      public:
-      void  move_camera_vector2temp                         (int camera_desired_id, int camera_current_id, std::vector<c_opencv_unmanaged*>& temp_CameraVector);
+    void save_camera_settings (int camera_id);
+    void load_camera_settings (int camera_id);
 
-      void  move_camera_temp2vector                         (int cameras_in_use, std::vector<c_opencv_unmanaged*> temp_CameraVector);
-
-      
-      void save_camera_calibration                          (int camera_id);
-      void load_camera_calibration                          (int camera_id);
-      void save_camera_positioning                          (std::vector<int> camera_list) const;
-      void load_camera_positioning                          ();
-      void save_camera_cos                                  (int camera_id, C_AbsolutePose& WorldToCam_Param);
-      void load_camera_cos                                  (int camera_id, C_AbsolutePose& WorldToCam_Param);
-      void init_camera_vectors                              (int cameras_in_use);
-      void close_cameras                                    (int cameras_in_use);
-
-      void save_camera_settings                             (int camera_id);
-      void load_camera_settings                             (int camera_id);
-
-      void calibrate_single_camera                          (int current_camera_id);
-      void calibrate_stereo_camera                          (int current_camera_id);
-      void sm_object_tracking                               ();
+    void calibrate_single_camera (int current_camera_id);
+    void calibrate_stereo_camera (int current_camera_id);
+    void sm_object_tracking ();
 
 
     /******************************************************* Private Klassenmethoden***************************************************************/
-      private:
-      void start_camera_thread                         ();
+    private:
+    void start_camera_thread ();
     };// c_camera_unmanaged
   }//nmsp_c_camera_unmanaged
-

@@ -20,9 +20,11 @@
 /*********************************************************** Vorwärtsdeklarationen ************************************************************/
 namespace nmsp_posen
   {
-  class  C_RelativePose;
-  class  C_URPose;
-  }using namespace nmsp_posen;
+  class C_RelativePose;
+  class C_URPose;
+  }
+
+using namespace nmsp_posen;
 
 
 namespace nmsp_posen
@@ -213,220 +215,218 @@ namespace nmsp_posen
   /**************************************** Posenvektoren ****************************************/
   struct S_Positionsvektor
     {
-    double                    X;
-    double                    Y;
-    double                    Z;
+    double X;
+    double Y;
+    double Z;
     };
 
   struct S_Orientierungsvektor
     {
-    double                    RX;
-    double                    RY;
-    double                    RZ;
+    double RX;
+    double RY;
+    double RZ;
     };
 
   struct S_Posenvektor
     {
-    double                    X;
-    double                    Y;
-    double                    Z;
-    double                    RX;
-    double                    RY;
-    double                    RZ;
+    double X;
+    double Y;
+    double Z;
+    double RX;
+    double RY;
+    double RZ;
     };
-
-
 
 
   /*********************************************** Klasse C_AbsolutePose ***********************************************/
   class C_AbsolutePose
     {
     /********************************************* Kontruktoren / Destruktor *********************************************/
-      public:
-      C_AbsolutePose                                                  ();
-      C_AbsolutePose                                                  (const C_AbsolutePose&                  AbsolutePose);
-      ~C_AbsolutePose                                                 ();
+    public:
+    C_AbsolutePose ();
+    C_AbsolutePose (const C_AbsolutePose& AbsolutePose);
+    ~C_AbsolutePose ();
 
 
-      /********************************************* Öffentliche Methoden *********************************************/
-      public:
-      // Überladener Operator "="
-      void                    operator=                               (C_AbsolutePose                         AbsolutePose);
-      void                    operator=                               (S_PoseWerte&                           URPose);
-      void                    operator=                               (C_URPose                               URPose);
-      void                    operator=                               (double                                 (&NullposeMatrix)[4][4]);
+    /********************************************* Öffentliche Methoden *********************************************/
+    public:
+    // Überladener Operator "="
+    void operator= (C_AbsolutePose AbsolutePose);
+    void operator= (S_PoseWerte& URPose);
+    void operator= (C_URPose URPose);
+    void operator= (double (&NullposeMatrix)[4][4]);
 
-      // Überladener Operator "*"
-      C_AbsolutePose          operator*                               (C_RelativePose&                        RelativePose);
+    // Überladener Operator "*"
+    C_AbsolutePose operator* (C_RelativePose& RelativePose);
 
-      // Überladener Operator "*="
-      void                    operator*=                              (C_RelativePose&                        RelativePose);
+    // Überladener Operator "*="
+    void operator*= (C_RelativePose& RelativePose);
 
-      // Überladener Operator "/" (Rechtsmultiplikation)
-      C_AbsolutePose          operator/                               (C_RelativePose&                        RelativePose);
+    // Überladener Operator "/" (Rechtsmultiplikation)
+    C_AbsolutePose operator/ (C_RelativePose& RelativePose);
 
-      // Überladener Operator "/=" (Rechtsmultiplikation)
-      void                    operator/=                              (C_RelativePose&                        RelativePose);
+    // Überladener Operator "/=" (Rechtsmultiplikation)
+    void operator/= (C_RelativePose& RelativePose);
 
-      // Überladener Operator "|" statt "\" (Linksmultiplikation)
-      C_RelativePose          operator|                               (C_URPose&                              URPose);
-      C_RelativePose          operator|                               (C_AbsolutePose&                        AbsolutePose);
+    // Überladener Operator "|" statt "\" (Linksmultiplikation)
+    C_RelativePose operator| (C_URPose& URPose);
+    C_RelativePose operator| (C_AbsolutePose& AbsolutePose);
 
-      // Methoden zur Umwandlung von UR-nmsp_posen in homogene Koordinaten
-      void                    URPoseToHomogenousPose                  (S_PoseWerte&                           URPose, double   (&HomogenePoseMatrix)[4][4]);
-      void                    URPoseToHomogenousPose                  (C_URPose&                              URPose, double   (&HomogenePoseMatrix)[4][4]);
-      void                    URPoseToHomogenousPose                  (double                                 (&URPoseMatrix)[6][1], double   (&HomogenePoseMatrix)[4][4]);
+    // Methoden zur Umwandlung von UR-nmsp_posen in homogene Koordinaten
+    void URPoseToHomogenousPose (S_PoseWerte& URPose, double (&HomogenePoseMatrix)[4][4]);
+    void URPoseToHomogenousPose (C_URPose& URPose, double (&HomogenePoseMatrix)[4][4]);
+    void URPoseToHomogenousPose (double (&URPoseMatrix)[6][1], double (&HomogenePoseMatrix)[4][4]);
 
-      // Methode zur Berechnung einer inversen homogenen Posenmatrix
-      void                    InversHomogenousPose                    (C_AbsolutePose&                        HomogenePose_In, double   (&HomogenePoseMatrix_Out)[4][4]);
-      void                    InversHomogenousPose                    (C_RelativePose&                        HomogenePose_In, double   (&HomogenePoseMatrix_Out)[4][4]);
-      void                    InversHomogenousPose                    (double                                 (&HomogenePoseMatrix_In)[4][4], double   (&HomogenePoseMatrix_Out)[4][4]);
+    // Methode zur Berechnung einer inversen homogenen Posenmatrix
+    void InversHomogenousPose (C_AbsolutePose& HomogenePose_In, double (&HomogenePoseMatrix_Out)[4][4]);
+    void InversHomogenousPose (C_RelativePose& HomogenePose_In, double (&HomogenePoseMatrix_Out)[4][4]);
+    void InversHomogenousPose (double (&HomogenePoseMatrix_In)[4][4], double (&HomogenePoseMatrix_Out)[4][4]);
 
-      // Get und Set- Methoden zum befllen der Posenmatrix
-      double nx         (void)
-        {
-        return(this->HomogenePosenMatrix[0][0]);
-        }
-      void   nx         (double nx)
-        {
-        this->HomogenePosenMatrix[0][0] = nx;
-        }
-      double ny         (void)
-        {
-        return(this->HomogenePosenMatrix[1][0]);
-        }
-      void   ny         (double ny)
-        {
-        this->HomogenePosenMatrix[1][0] = ny;
-        }
-      double nz         (void)
-        {
-        return(this->HomogenePosenMatrix[2][0]);
-        }
-      void   nz         (double nz)
-        {
-        this->HomogenePosenMatrix[2][0] = nz;
-        }
-      double ox         (void)
-        {
-        return(this->HomogenePosenMatrix[0][1]);
-        }
-      void   ox         (double ox)
-        {
-        this->HomogenePosenMatrix[0][1] = ox;
-        }
-      double oy         (void)
-        {
-        return(this->HomogenePosenMatrix[1][1]);
-        }
-      void   oy         (double oy)
-        {
-        this->HomogenePosenMatrix[1][1] = oy;
-        }
-      double oz         (void)
-        {
-        return(this->HomogenePosenMatrix[2][1]);
-        }
-      void   oz         (double oz)
-        {
-        this->HomogenePosenMatrix[2][1] = oz;
-        }
-      double ax         (void)
-        {
-        return(this->HomogenePosenMatrix[0][2]);
-        }
-      void   ax         (double ax)
-        {
-        this->HomogenePosenMatrix[0][2] = ax;
-        }
-      double ay         (void)
-        {
-        return(this->HomogenePosenMatrix[1][2]);
-        }
-      void   ay         (double ay)
-        {
-        this->HomogenePosenMatrix[1][2] = ay;
-        }
-      double az         (void)
-        {
-        return(this->HomogenePosenMatrix[2][2]);
-        }
-      void   az         (double az)
-        {
-        this->HomogenePosenMatrix[2][2] = az;
-        }
-      double px         (void)
-        {
-        return(this->HomogenePosenMatrix[0][3]);
-        }
-      void   px         (double px)
-        {
-        this->HomogenePosenMatrix[0][3] = px;
-        }
-      double py         (void)
-        {
-        return(this->HomogenePosenMatrix[1][3]);
-        }
-      void   py         (double py)
-        {
-        this->HomogenePosenMatrix[1][3] = py;
-        }
-      double pz         (void)
-        {
-        return(this->HomogenePosenMatrix[2][3]);
-        }
-      void   pz         (double pz)
-        {
-        this->HomogenePosenMatrix[2][3] = pz;
-        }
+    // Get und Set- Methoden zum befllen der Posenmatrix
+    double nx (void)
+      {
+      return (this->HomogenePosenMatrix[0][0]);
+      }
+    void nx (double nx)
+      {
+      this->HomogenePosenMatrix[0][0] = nx;
+      }
+    double ny (void)
+      {
+      return (this->HomogenePosenMatrix[1][0]);
+      }
+    void ny (double ny)
+      {
+      this->HomogenePosenMatrix[1][0] = ny;
+      }
+    double nz (void)
+      {
+      return (this->HomogenePosenMatrix[2][0]);
+      }
+    void nz (double nz)
+      {
+      this->HomogenePosenMatrix[2][0] = nz;
+      }
+    double ox (void)
+      {
+      return (this->HomogenePosenMatrix[0][1]);
+      }
+    void ox (double ox)
+      {
+      this->HomogenePosenMatrix[0][1] = ox;
+      }
+    double oy (void)
+      {
+      return (this->HomogenePosenMatrix[1][1]);
+      }
+    void oy (double oy)
+      {
+      this->HomogenePosenMatrix[1][1] = oy;
+      }
+    double oz (void)
+      {
+      return (this->HomogenePosenMatrix[2][1]);
+      }
+    void oz (double oz)
+      {
+      this->HomogenePosenMatrix[2][1] = oz;
+      }
+    double ax (void)
+      {
+      return (this->HomogenePosenMatrix[0][2]);
+      }
+    void ax (double ax)
+      {
+      this->HomogenePosenMatrix[0][2] = ax;
+      }
+    double ay (void)
+      {
+      return (this->HomogenePosenMatrix[1][2]);
+      }
+    void ay (double ay)
+      {
+      this->HomogenePosenMatrix[1][2] = ay;
+      }
+    double az (void)
+      {
+      return (this->HomogenePosenMatrix[2][2]);
+      }
+    void az (double az)
+      {
+      this->HomogenePosenMatrix[2][2] = az;
+      }
+    double px (void)
+      {
+      return (this->HomogenePosenMatrix[0][3]);
+      }
+    void px (double px)
+      {
+      this->HomogenePosenMatrix[0][3] = px;
+      }
+    double py (void)
+      {
+      return (this->HomogenePosenMatrix[1][3]);
+      }
+    void py (double py)
+      {
+      this->HomogenePosenMatrix[1][3] = py;
+      }
+    double pz (void)
+      {
+      return (this->HomogenePosenMatrix[2][3]);
+      }
+    void pz (double pz)
+      {
+      this->HomogenePosenMatrix[2][3] = pz;
+      }
 
-      double Euler_Psi  (void)
-        {
-        return(atan2 (this->HomogenePosenMatrix[2][1], this->HomogenePosenMatrix[2][2]));
-        }
-      void   Euler_Psi  (double Euler_Psi)
-        {
-        this->BerechneExtrinsischRPY(Euler_Psi, this->Euler_Phi(), this->Euler_Chi());
-        }
-      double Euler_Phi  (void)
-        {
-        return(atan2 (-HomogenePosenMatrix[2][0], sqrt(1 - pow(HomogenePosenMatrix[2][0], 2))));
-        }
-      void   Euler_Phi  (double Euler_Phi)
-        {
-        this->BerechneExtrinsischRPY(this->Euler_Psi(), Euler_Phi, this->Euler_Chi());
-        }
-      double Euler_Chi  (void)
-        {
-        return(atan2 (this->HomogenePosenMatrix[1][0], this->HomogenePosenMatrix[0][0]));
-        }
-      void   Euler_Chi  (double Euler_Chi)
-        {
-        this->BerechneExtrinsischRPY(this->Euler_Psi(), this->Euler_Phi(), Euler_Chi);
-        }
+    double Euler_Psi (void)
+      {
+      return (atan2 (this->HomogenePosenMatrix[2][1],this->HomogenePosenMatrix[2][2]));
+      }
+    void Euler_Psi (double Euler_Psi)
+      {
+      this->BerechneExtrinsischRPY (Euler_Psi,this->Euler_Phi(),this->Euler_Chi());
+      }
+    double Euler_Phi (void)
+      {
+      return (atan2 (-HomogenePosenMatrix[2][0],sqrt (1 - pow (HomogenePosenMatrix[2][0],2))));
+      }
+    void Euler_Phi (double Euler_Phi)
+      {
+      this->BerechneExtrinsischRPY (this->Euler_Psi(),Euler_Phi,this->Euler_Chi());
+      }
+    double Euler_Chi (void)
+      {
+      return (atan2 (this->HomogenePosenMatrix[1][0],this->HomogenePosenMatrix[0][0]));
+      }
+    void Euler_Chi (double Euler_Chi)
+      {
+      this->BerechneExtrinsischRPY (this->Euler_Psi(),this->Euler_Phi(),Euler_Chi);
+      }
 
-      /************************************************Private Methoden************************************************/
-      private:
-      void                    BerechneExtrinsischRPY                  (double Euler_Psi, double Euler_Phi, double Euler_Chi);
+    /************************************************Private Methoden************************************************/
+    private:
+    void BerechneExtrinsischRPY (double Euler_Psi, double Euler_Phi, double Euler_Chi);
 
-      /*********************************************ffentliche Attribute*********************************************/
-      public:
-      // Variablen, welche der Ausgabe dienen
-      double                                       Nullpose[4][4];
-      double                                       HomogenePosenMatrix[4][4];
-      // Variablen fr interne Berechnungen, mssen public aufgrund von externen Zugriff sein
-      double                                       HomogenePosenMatrixTempPuffer_1[4][4];
-      double                                       HomogenePosenMatrixTempPuffer_2[4][4];
-      double                                       HomogenePosenMatrixTempPuffer_3[4][4];
+    /*********************************************ffentliche Attribute*********************************************/
+    public:
+    // Variablen, welche der Ausgabe dienen
+    double Nullpose[4][4];
+    double HomogenePosenMatrix[4][4];
+    // Variablen fr interne Berechnungen, mssen public aufgrund von externen Zugriff sein
+    double HomogenePosenMatrixTempPuffer_1[4][4];
+    double HomogenePosenMatrixTempPuffer_2[4][4];
+    double HomogenePosenMatrixTempPuffer_3[4][4];
 
-      /*********************************************Private Attribute*********************************************/
-      private:
-      // Hilfsvariablen fr mathematische Operationen
-      double                                       URPose_Puffer[6][1];
-      double                                       RX_normiert;
-      double                                       RY_normiert;
-      double                                       RZ_normiert;
-      double                                       Epsilon;
+    /*********************************************Private Attribute*********************************************/
+    private:
+    // Hilfsvariablen fr mathematische Operationen
+    double URPose_Puffer[6][1];
+    double RX_normiert;
+    double RY_normiert;
+    double RZ_normiert;
+    double Epsilon;
     };
   /*********************************************** Klasse C_AbsolutePose ***********************************************/
 
@@ -435,264 +435,262 @@ namespace nmsp_posen
   class C_RelativePose
     {
     /*********************************************Konstruktoren / Destruktor*********************************************/
-      public:
-      C_RelativePose                                                  ();
-      C_RelativePose                                                  (const C_RelativePose&                  RelativePose);
-      ~C_RelativePose                                                 ();
+    public:
+    C_RelativePose ();
+    C_RelativePose (const C_RelativePose& RelativePose);
+    ~C_RelativePose ();
 
 
-  //    /*********************************************ffentliche Methoden*********************************************/
-      public:
-      // berladener Operator "="
-      void                    operator=                               (C_RelativePose                         RelativePose);
-      void                    operator=                               (double                                 (&NullposeMatrix)[4][4]);
-      void                    operator=                               (C_URPose                               URPose);
+    //    /*********************************************ffentliche Methoden*********************************************/
+    public:
+    // berladener Operator "="
+    void operator= (C_RelativePose RelativePose);
+    void operator= (double (&NullposeMatrix)[4][4]);
+    void operator= (C_URPose URPose);
 
-      // berladener Operator "*"
-      C_RelativePose          operator*                               (C_RelativePose&                        RelativePose);
+    // berladener Operator "*"
+    C_RelativePose operator* (C_RelativePose& RelativePose);
 
-      // berladener Operator "*="
-      void                    operator*=                              (C_RelativePose&                        RelativePose);
+    // berladener Operator "*="
+    void operator*= (C_RelativePose& RelativePose);
 
-      // berladener Operator "/" (Rechtsmultiplikation)
-      C_RelativePose          operator/                               (C_RelativePose&                        RelativePose);
+    // berladener Operator "/" (Rechtsmultiplikation)
+    C_RelativePose operator/ (C_RelativePose& RelativePose);
 
-      // berladener Operator "/=" (Rechtsmultiplikation)
-      void                    operator/=                              (C_RelativePose&                        RelativePose);
+    // berladener Operator "/=" (Rechtsmultiplikation)
+    void operator/= (C_RelativePose& RelativePose);
 
-      // berladener Operator "|" statt "\" (Linksmultiplikation)
-      C_RelativePose          operator|                               (C_RelativePose&                        RelativePose);
+    // berladener Operator "|" statt "\" (Linksmultiplikation)
+    C_RelativePose operator| (C_RelativePose& RelativePose);
 
-      // berladener Operator "|=" statt "\=" (Linksmultiplikation)
-      void                    operator|=                              (C_RelativePose&                        RelativePose);
+    // berladener Operator "|=" statt "\=" (Linksmultiplikation)
+    void operator|= (C_RelativePose& RelativePose);
 
-      // Methoden zur Umwandlung von UR-nmsp_posen in homogene Koordinaten
-      void            URPoseToHomogenousPose                          (C_URPose&                              URPose, double   (&HomogenePoseMatrix)[4][4]);
-      void            URPoseToHomogenousPose                          (double                                 (&URPoseMatrix)[6][1], double   (&HomogenePoseMatrix)[4][4]);
+    // Methoden zur Umwandlung von UR-nmsp_posen in homogene Koordinaten
+    void URPoseToHomogenousPose (C_URPose& URPose, double (&HomogenePoseMatrix)[4][4]);
+    void URPoseToHomogenousPose (double (&URPoseMatrix)[6][1], double (&HomogenePoseMatrix)[4][4]);
 
-      // Methode zur Berechnung einer inversen homogenen Posenmatrix
-      void            InversHomogenousPose                            (C_AbsolutePose&                        HomogenePose_In, double   (&HomogenePoseMatrix_Out)[4][4]);
-      void            InversHomogenousPose                            (C_RelativePose&                        HomogenePose_In, double   (&HomogenePoseMatrix_Out)[4][4]);
-      void            InversHomogenousPose                            (double                                 (&HomogenePoseMatrix_In)[4][4], double   (&HomogenePoseMatrix_Out)[4][4]);
+    // Methode zur Berechnung einer inversen homogenen Posenmatrix
+    void InversHomogenousPose (C_AbsolutePose& HomogenePose_In, double (&HomogenePoseMatrix_Out)[4][4]);
+    void InversHomogenousPose (C_RelativePose& HomogenePose_In, double (&HomogenePoseMatrix_Out)[4][4]);
+    void InversHomogenousPose (double (&HomogenePoseMatrix_In)[4][4], double (&HomogenePoseMatrix_Out)[4][4]);
 
-      // Get und Set- Methoden zum befllen der Posenmatrix
-      double nx         (void)
-        {
-        return(this->HomogenePosenMatrix[0][0]);
-        }
-      void   nx         (double nx)
-        {
-        this->HomogenePosenMatrix[0][0] = nx;
-        }
-      double ny         (void)
-        {
-        return(this->HomogenePosenMatrix[1][0]);
-        }
-      void   ny         (double ny)
-        {
-        this->HomogenePosenMatrix[1][0] = ny;
-        }
-      double nz         (void)
-        {
-        return(this->HomogenePosenMatrix[2][0]);
-        }
-      void   nz         (double nz)
-        {
-        this->HomogenePosenMatrix[2][0] = nz;
-        }
-      double ox         (void)
-        {
-        return(this->HomogenePosenMatrix[0][1]);
-        }
-      void   ox         (double ox)
-        {
-        this->HomogenePosenMatrix[0][1] = ox;
-        }
-      double oy         (void)
-        {
-        return(this->HomogenePosenMatrix[1][1]);
-        }
-      void   oy         (double oy)
-        {
-        this->HomogenePosenMatrix[1][1] = oy;
-        }
-      double oz         (void)
-        {
-        return(this->HomogenePosenMatrix[2][1]);
-        }
-      void   oz         (double oz)
-        {
-        this->HomogenePosenMatrix[2][1] = oz;
-        }
-      double ax         (void)
-        {
-        return(this->HomogenePosenMatrix[0][2]);
-        }
-      void   ax         (double ax)
-        {
-        this->HomogenePosenMatrix[0][2] = ax;
-        }
-      double ay         (void)
-        {
-        return(this->HomogenePosenMatrix[1][2]);
-        }
-      void   ay         (double ay)
-        {
-        this->HomogenePosenMatrix[1][2] = ay;
-        }
-      double az         (void)
-        {
-        return(this->HomogenePosenMatrix[2][2]);
-        }
-      void   az         (double az)
-        {
-        this->HomogenePosenMatrix[2][2] = az;
-        }
-      double px         (void)
-        {
-        return(this->HomogenePosenMatrix[0][3]);
-        }
-      void   px         (double px)
-        {
-        this->HomogenePosenMatrix[0][3] = px;
-        }
-      double py         (void)
-        {
-        return(this->HomogenePosenMatrix[1][3]);
-        }
-      void   py         (double py)
-        {
-        this->HomogenePosenMatrix[1][3] = py;
-        }
-      double pz         (void)
-        {
-        return(this->HomogenePosenMatrix[2][3]);
-        }
-      void   pz         (double pz)
-        {
-        this->HomogenePosenMatrix[2][3] = pz;
-        }
+    // Get und Set- Methoden zum befllen der Posenmatrix
+    double nx (void)
+      {
+      return (this->HomogenePosenMatrix[0][0]);
+      }
+    void nx (double nx)
+      {
+      this->HomogenePosenMatrix[0][0] = nx;
+      }
+    double ny (void)
+      {
+      return (this->HomogenePosenMatrix[1][0]);
+      }
+    void ny (double ny)
+      {
+      this->HomogenePosenMatrix[1][0] = ny;
+      }
+    double nz (void)
+      {
+      return (this->HomogenePosenMatrix[2][0]);
+      }
+    void nz (double nz)
+      {
+      this->HomogenePosenMatrix[2][0] = nz;
+      }
+    double ox (void)
+      {
+      return (this->HomogenePosenMatrix[0][1]);
+      }
+    void ox (double ox)
+      {
+      this->HomogenePosenMatrix[0][1] = ox;
+      }
+    double oy (void)
+      {
+      return (this->HomogenePosenMatrix[1][1]);
+      }
+    void oy (double oy)
+      {
+      this->HomogenePosenMatrix[1][1] = oy;
+      }
+    double oz (void)
+      {
+      return (this->HomogenePosenMatrix[2][1]);
+      }
+    void oz (double oz)
+      {
+      this->HomogenePosenMatrix[2][1] = oz;
+      }
+    double ax (void)
+      {
+      return (this->HomogenePosenMatrix[0][2]);
+      }
+    void ax (double ax)
+      {
+      this->HomogenePosenMatrix[0][2] = ax;
+      }
+    double ay (void)
+      {
+      return (this->HomogenePosenMatrix[1][2]);
+      }
+    void ay (double ay)
+      {
+      this->HomogenePosenMatrix[1][2] = ay;
+      }
+    double az (void)
+      {
+      return (this->HomogenePosenMatrix[2][2]);
+      }
+    void az (double az)
+      {
+      this->HomogenePosenMatrix[2][2] = az;
+      }
+    double px (void)
+      {
+      return (this->HomogenePosenMatrix[0][3]);
+      }
+    void px (double px)
+      {
+      this->HomogenePosenMatrix[0][3] = px;
+      }
+    double py (void)
+      {
+      return (this->HomogenePosenMatrix[1][3]);
+      }
+    void py (double py)
+      {
+      this->HomogenePosenMatrix[1][3] = py;
+      }
+    double pz (void)
+      {
+      return (this->HomogenePosenMatrix[2][3]);
+      }
+    void pz (double pz)
+      {
+      this->HomogenePosenMatrix[2][3] = pz;
+      }
 
-      double Euler_Psi  (void)
-        {
-        return(atan2 (this->HomogenePosenMatrix[2][1], this->HomogenePosenMatrix[2][2]));
-        }
-      void   Euler_Psi  (double Euler_Psi)
-        {
-        this->BerechneExtrinsischRPY(Euler_Psi, this->Euler_Phi(), this->Euler_Chi());
-        }
-      double Euler_Phi  (void)
-        {
-        return(atan2 (-HomogenePosenMatrix[2][0], sqrt(1 - pow(HomogenePosenMatrix[2][0], 2))));
-        }
-      void   Euler_Phi  (double Euler_Phi)
-        {
-        this->BerechneExtrinsischRPY(this->Euler_Psi(), Euler_Phi, this->Euler_Chi());
-        }
-      double Euler_Chi  (void)
-        {
-        return(atan2 (this->HomogenePosenMatrix[1][0], this->HomogenePosenMatrix[0][0]));
-        }
-      void   Euler_Chi  (double Euler_Chi)
-        {
-        this->BerechneExtrinsischRPY(this->Euler_Psi(), this->Euler_Phi(), Euler_Chi);
-        }
+    double Euler_Psi (void)
+      {
+      return (atan2 (this->HomogenePosenMatrix[2][1],this->HomogenePosenMatrix[2][2]));
+      }
+    void Euler_Psi (double Euler_Psi)
+      {
+      this->BerechneExtrinsischRPY (Euler_Psi,this->Euler_Phi(),this->Euler_Chi());
+      }
+    double Euler_Phi (void)
+      {
+      return (atan2 (-HomogenePosenMatrix[2][0],sqrt (1 - pow (HomogenePosenMatrix[2][0],2))));
+      }
+    void Euler_Phi (double Euler_Phi)
+      {
+      this->BerechneExtrinsischRPY (this->Euler_Psi(),Euler_Phi,this->Euler_Chi());
+      }
+    double Euler_Chi (void)
+      {
+      return (atan2 (this->HomogenePosenMatrix[1][0],this->HomogenePosenMatrix[0][0]));
+      }
+    void Euler_Chi (double Euler_Chi)
+      {
+      this->BerechneExtrinsischRPY (this->Euler_Psi(),this->Euler_Phi(),Euler_Chi);
+      }
 
-  //    /************************************************Private Methoden************************************************/
-      private:
-      void                    BerechneExtrinsischRPY                  (double Euler_Psi, double Euler_Phi, double Euler_Chi);
+    //    /************************************************Private Methoden************************************************/
+    private:
+    void BerechneExtrinsischRPY (double Euler_Psi, double Euler_Phi, double Euler_Chi);
 
-  //    /*********************************************ffentliche Attribute*********************************************/
-      public:
-      // Variablen, welche der Ausgabe dienen
-      double                                       Nullpose[4][4];
-      double                                      HomogenePosenMatrix[4][4];
-      // Variablen fr interne Berechnungen, mssen public aufgrund von externen Zugriff sein
-      double                                       HomogenePosenMatrixTempPuffer_1[4][4];
-      double                                       HomogenePosenMatrixTempPuffer_2[4][4];
-      double                                       HomogenePosenMatrixTempPuffer_3[4][4];
+    //    /*********************************************ffentliche Attribute*********************************************/
+    public:
+    // Variablen, welche der Ausgabe dienen
+    double Nullpose[4][4];
+    double HomogenePosenMatrix[4][4];
+    // Variablen fr interne Berechnungen, mssen public aufgrund von externen Zugriff sein
+    double HomogenePosenMatrixTempPuffer_1[4][4];
+    double HomogenePosenMatrixTempPuffer_2[4][4];
+    double HomogenePosenMatrixTempPuffer_3[4][4];
 
 
-  //    /*********************************************Private Attribute*********************************************/
-      private:
-      // Hilfsvariablen fr mathematische Operationen
-      double                                       URPose_Puffer[6][1];
-      double                                       RX_normiert;
-      double                                       RY_normiert;
-      double                                       RZ_normiert;
-      double                                       Epsilon;
+    //    /*********************************************Private Attribute*********************************************/
+    private:
+    // Hilfsvariablen fr mathematische Operationen
+    double URPose_Puffer[6][1];
+    double RX_normiert;
+    double RY_normiert;
+    double RZ_normiert;
+    double Epsilon;
     };
   /*********************************************** Klasse C_RelativePose ***********************************************/
 
 
   /************************************************** Klasse C_URPose **************************************************/
   // Eine URPose wird immer als absolute Pose betrachtet!!!
-      class C_URPose
-        {
-        /*********************************************Konstruktoren / Destruktor*********************************************/
-          public:
-          C_URPose                                                        ();
-          C_URPose                                                        (const C_URPose& URPose);
-          ~C_URPose                                                       ();
+  class C_URPose
+    {
+    /*********************************************Konstruktoren / Destruktor*********************************************/
+    public:
+    C_URPose ();
+    C_URPose (const C_URPose& URPose);
+    ~C_URPose ();
 
 
-          /*********************************************ffentliche Methoden*********************************************/
-          public:
-          // berladener Operator "="
-          void                    operator=                               (C_URPose                                 URPose);
-          void                    operator=                               (S_PoseWerte&                             URPose);
-          void                    operator=                               (C_AbsolutePose                           AbsolutePose);
-          void                    operator=                               (C_RelativePose                           RelativePose);
-          void                    operator=                               (double                                   (&NullposeMatrix)[6][1]);
+    /*********************************************ffentliche Methoden*********************************************/
+    public:
+    // berladener Operator "="
+    void operator= (C_URPose URPose);
+    void operator= (S_PoseWerte& URPose);
+    void operator= (C_AbsolutePose AbsolutePose);
+    void operator= (C_RelativePose RelativePose);
+    void operator= (double (&NullposeMatrix)[6][1]);
 
-          // berladener Operator "*"
-          C_AbsolutePose          operator*                               (C_RelativePose&                          RelativePose);
+    // berladener Operator "*"
+    C_AbsolutePose operator* (C_RelativePose& RelativePose);
 
-          // berladener Operator "/" (Rechtsmultiplikation)
-          C_AbsolutePose          operator/                               (C_RelativePose&                          RelativePose);
+    // berladener Operator "/" (Rechtsmultiplikation)
+    C_AbsolutePose operator/ (C_RelativePose& RelativePose);
 
-          // berladener Operator "|" statt "\" (Linksmultiplikation)
-          C_RelativePose          operator|                               (C_AbsolutePose&                          AbsolutePose);
-          C_RelativePose          operator|                               (C_URPose&                                URPose);
+    // berladener Operator "|" statt "\" (Linksmultiplikation)
+    C_RelativePose operator| (C_AbsolutePose& AbsolutePose);
+    C_RelativePose operator| (C_URPose& URPose);
 
-      //    property double Drehwinkel
-      //      {
-      //      double        get  ()
-      //        {
-      //        return(Math::Sqrt(this->RX*this->RX + this->RY*this->RY + this->RZ*this->RZ));
-      //        }
-      //      void  set  (double Dummy)
-      //        {
-      //        // Hier soll nichts geschehen!
-      //        }
-      //      }
+    //    property double Drehwinkel
+    //      {
+    //      double        get  ()
+    //        {
+    //        return(Math::Sqrt(this->RX*this->RX + this->RY*this->RY + this->RZ*this->RZ));
+    //        }
+    //      void  set  (double Dummy)
+    //        {
+    //        // Hier soll nichts geschehen!
+    //        }
+    //      }
 
-          /*********************************************Private Methoden*********************************************/
-          private:
-          // Methoden zur Umwandlung von homogenen Koordinaten in UR-nmsp_posen
-          void          HomogenousPoseToURPose                            (C_AbsolutePose&                          AbsolutePose);
-          void          HomogenousPoseToURPose                            (C_RelativePose&                          RelativePose);
-          void          HomogenousPoseToURPose                            (double                                   (&HomogenePoseMatrix)[4][4]);
+    /*********************************************Private Methoden*********************************************/
+    private:
+    // Methoden zur Umwandlung von homogenen Koordinaten in UR-nmsp_posen
+    void HomogenousPoseToURPose (C_AbsolutePose& AbsolutePose);
+    void HomogenousPoseToURPose (C_RelativePose& RelativePose);
+    void HomogenousPoseToURPose (double (&HomogenePoseMatrix)[4][4]);
 
 
-          /*********************************************ffentliche Attribute*********************************************/
-          public:
-          // Variable, welche der Ausgabe dienen
-          double                                    Nullpose[6][1];
-          double                                    X;
-          double                                    Y;
-          double                                    Z;
-          double                                    RX;
-          double                                    RY;
-          double                                    RZ;
+    /*********************************************ffentliche Attribute*********************************************/
+    public:
+    // Variable, welche der Ausgabe dienen
+    double Nullpose[6][1];
+    double X;
+    double Y;
+    double Z;
+    double RX;
+    double RY;
+    double RZ;
 
-          /*********************************************Private Attribute*********************************************/
-          private:
-          // Hilfsvariablen fr mathematische Operationen
-          double                                    URPose_Puffer[6][1];
-          double                                    HomogenePosenMatrixTempPuffer[4][4];
-        };
-      /************************************************** Klasse C_URPose **************************************************/
+    /*********************************************Private Attribute*********************************************/
+    private:
+    // Hilfsvariablen fr mathematische Operationen
+    double URPose_Puffer[6][1];
+    double HomogenePosenMatrixTempPuffer[4][4];
     };
-
-
+  /************************************************** Klasse C_URPose **************************************************/
+  };
