@@ -1,4 +1,5 @@
 ﻿  opencv_unmanaged.cpp
+  .NETFramework,Version=v4.7.AssemblyAttributes.cpp
   App_Main.obj : MSIL module encountered; incremental linking is disabled for MSIL; performing full link
 CudaKernels.cu.obj : warning LNK4099: PDB 'vc141.pdb' was not found with 'CudaKernels.cu.obj' or at 'C:\Users\111162002.EDU\Documents\Projekte\ObjectTracking\x64\Debug\vc141.pdb'; linking object as if no debug info
 CudaKernels.cuh.obj : warning LNK4099: PDB 'vc141.pdb' was not found with 'CudaKernels.cuh.obj' or at 'C:\Users\111162002.EDU\Documents\Projekte\ObjectTracking\x64\Debug\vc141.pdb'; linking object as if no debug info

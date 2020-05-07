@@ -224,6 +224,8 @@ void c_camera_unmanaged::save_camera_calibration                        (int cam
 
   double  DistCoeffs[1][5];
   double  Intrinsic[3][3];
+  int     real_size_width = this->camera_vector[camera_id]->resize_width;
+  int     real_size_height = this->camera_vector[camera_id]->resize_height;
 
   this->camera_vector[camera_id]->get_calibration_parameter(DistCoeffs, Intrinsic);
   
@@ -245,6 +247,11 @@ void c_camera_unmanaged::save_camera_calibration                        (int cam
   this->GlobalObjects->csv_parameter_datei->Schreiben("Intrinsic 20", Intrinsic[2][0], "[Px]");
   this->GlobalObjects->csv_parameter_datei->Schreiben("Intrinsic 21", Intrinsic[2][1], "[Px]");
   this->GlobalObjects->csv_parameter_datei->Schreiben("Intrinsic 22", Intrinsic[2][2], "[Px]");
+  this->GlobalObjects->csv_parameter_datei->Schreiben("Intrinsic 21", Intrinsic[2][1], "[Px]");
+  this->GlobalObjects->csv_parameter_datei->Schreiben("Intrinsic 22", Intrinsic[2][2], "[Px]");
+  this->GlobalObjects->csv_parameter_datei->Schreiben("Resize Width", real_size_width, "[Px]");
+  this->GlobalObjects->csv_parameter_datei->Schreiben("Resize Height", real_size_height, "[Px]");
+
 
   std::cout <<"Camera " <<  camera_id << " Saved Distortion k1 " << to_string(DistCoeffs[0][0]) << endl;
   std::cout <<"Camera " <<  camera_id << " Saved Distortion k2 " << to_string(DistCoeffs[0][1]) << endl;
@@ -273,6 +280,8 @@ void c_camera_unmanaged::load_camera_calibration                        (int cam
   int     numBoards;
   double  DistCoeffs[1][5];
   double  Intrinsic[3][3];
+  int real_size_width;
+  int real_size_height;
 
   this->GlobalObjects->csv_parameter_datei->Oeffnen(Dateiname, Enum_CSV_Access::Read);
 
@@ -294,7 +303,8 @@ void c_camera_unmanaged::load_camera_calibration                        (int cam
     this->GlobalObjects->csv_parameter_datei->Lesen(Intrinsic[2][0]);
     this->GlobalObjects->csv_parameter_datei->Lesen(Intrinsic[2][1]);
     this->GlobalObjects->csv_parameter_datei->Lesen(Intrinsic[2][2]);
-
+    this->GlobalObjects->csv_parameter_datei->Lesen(real_size_width);
+    this->GlobalObjects->csv_parameter_datei->Lesen(real_size_height);
     this->GlobalObjects->csv_parameter_datei->Schliessen();
 
     }
@@ -319,6 +329,8 @@ void c_camera_unmanaged::load_camera_calibration                        (int cam
   }
 
   this->camera_vector[camera_id]->set_calibration_parameter(DistCoeffs, Intrinsic);
+  this->camera_vector[camera_id]->resize_height = real_size_height;
+  this->camera_vector[camera_id]->resize_width = real_size_width;
 
   std::cout << "Loaded Calibration for Camera " << camera_id <<"." <<endl;
 
@@ -385,7 +397,7 @@ void c_camera_unmanaged::load_camera_cos                                  (int c
   string  Dateityp;
   double nx, ny, nz, ox, oy, oz, ax, ay, az, px, py, pz;
   
-
+   //TODO Rotation der Kameras einfügen
   GlobalObjects->csv_parameter_datei->Oeffnen(Dateiname, Enum_CSV_Access::Read);
   if (GlobalObjects->csv_parameter_datei->IsOpen())
     {
@@ -582,6 +594,9 @@ void c_camera_unmanaged::calibrate_single_camera                        (int cur
   // Mit den gefundenen Ecken in 2D-Koordinaten und den vorgegebenen 3D-Koordinaten werden die intrinsischen Parameter (Camera-Matrix) und
   // die Koeffizienten der Verzerrung berechnet. Rvecs und Tvecs erhalten dabei die Orientierung und die Position der Transformationsmatrix
   // zwischen Kamerakoordinatensystem und Schachbrettkoordinatensystem.
+  //The intrinsic matrix contains 5 intrinsic parameters.These parameters encompass focal length, image format, and principal point.
+  //The parameters \alpha_{ x } = f \cdot m_{ x } and \alpha_{ y } = f \cdot m_{ y } represent focal length in terms of pixels, 
+  //where m_{ x } and m_{ y } are the scale factors relating pixels to distance and f is the focal length in terms of distance.
   std::cout << endl << "Calculating Intrinsic and DistCoeffs. This may take a while, please wait." << endl;
   cv::calibrateCamera(Object_Points, Image_Points, Originalbild.size(), intrinsic, distCoeffs, Rvecs, Tvecs);
 

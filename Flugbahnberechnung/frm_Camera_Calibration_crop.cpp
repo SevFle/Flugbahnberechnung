@@ -58,6 +58,7 @@ c_frm_Camera_Calibration_crop::c_frm_Camera_Calibration_crop(C_GlobalObjects* Gl
   System::Void c_frm_Camera_Calibration_crop::num_UD_resize_width_ValueChanged(System::Object^  sender, System::EventArgs^  e)
     {
     this->Taktgeber->Enabled = false;
+    this->bt_apply->Enabled = true;
     this->Timerwait = Zaehler+10;
     this->fitting_rect->width = static_cast<int>(this->num_UD_resize_width->Value);
     this->Main->camera_managed->camera_unmanaged->camera_vector[current_camera_id]->resize_width = static_cast<int>(this->num_UD_resize_width->Value);
@@ -67,6 +68,7 @@ c_frm_Camera_Calibration_crop::c_frm_Camera_Calibration_crop(C_GlobalObjects* Gl
   System::Void c_frm_Camera_Calibration_crop::num_UD_resize_height_ValueChanged(System::Object^  sender, System::EventArgs^  e)
     {
     this->Taktgeber->Enabled = false;
+    this->bt_apply->Enabled = true;
     this->Timerwait = Zaehler+10;
     this->fitting_rect->height = static_cast<int>(this->num_UD_resize_height->Value);
     this->Main->camera_managed->camera_unmanaged->camera_vector[current_camera_id]->resize_height = static_cast<int>(this->num_UD_resize_height->Value);
@@ -123,4 +125,9 @@ c_frm_Camera_Calibration_crop::c_frm_Camera_Calibration_crop(C_GlobalObjects* Gl
       this->Taktgeber->Enabled                = false;
       cv::destroyAllWindows();
       }
+  System::Void          c_frm_Camera_Calibration_crop::bt_apply_Click(System::Object^  sender, System::EventArgs^  e)
+        {
+    this->Main->camera_managed->camera_unmanaged->save_camera_calibration(current_camera_id);
+    this->bt_apply->Enabled = false;
+        }
 
