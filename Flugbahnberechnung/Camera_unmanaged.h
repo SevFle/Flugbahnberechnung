@@ -50,8 +50,8 @@ namespace nmsp_camera_unmanaged
       s_tracking_data*                                          tracked_data;
 
 
-      std::vector<nmsp_opencv_unmanaged::c_opencv_unmanaged*>   camera_vector;
-
+      std::vector<c_opencv_unmanaged*>                          camera_vector;
+      std::vector<C_AbsolutePose>*                              vec_WorldToCam_Poses; //AKA WORLD TO CAMERA POS
 
       /*** Variablen zur Kamerakalibrierung ********************************************************/
 

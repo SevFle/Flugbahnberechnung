@@ -14,6 +14,7 @@ c_camera_unmanaged::c_camera_unmanaged                                  (int cam
   this->cameras_in_use        = cameras_in_use;
   this->tracking_thread       = new c_tracking(GlobalObjects);
   this->tracked_data          = new nmsp_tracking::s_tracking_data();
+  this->vec_WorldToCam_Poses  = new std::vector<C_AbsolutePose>;
   stop_statemachine           = false;
   this->GlobalObjects         = GlobalObjects;
   load_positioning            = false;
@@ -38,6 +39,8 @@ c_camera_unmanaged::~c_camera_unmanaged                                 ()
   GlobalObjects               = nullptr;
   stop_statemachine           = false;
   cameras_in_use              = 0;
+  delete(this->vec_WorldToCam_Poses);
+  vec_WorldToCam_Poses               = nullptr;
   delete(this->tracked_data);
   tracked_data               = nullptr;
 
@@ -376,6 +379,48 @@ void c_camera_unmanaged::load_camera_positioning                        ()
 
   }
 
+void c_camera_unmanaged::load_camera_cos                                  (int camera_id, C_AbsolutePose& WorldToCam_Param)
+  {
+  string  Dateiname = "../Parameter/Pose_world_to_camera"  + to_string(camera_id)  + ".csv";
+  string  Dateityp;
+  double nx, ny, nz, ox, oy, oz, ax, ay, az, px, py, pz;
+  
+
+  GlobalObjects->csv_parameter_datei->Oeffnen(Dateiname, Enum_CSV_Access::Read);
+  if (GlobalObjects->csv_parameter_datei->IsOpen())
+    {
+    GlobalObjects->csv_parameter_datei->Lesen(Dateityp);
+    GlobalObjects->csv_parameter_datei->Lesen(nx);
+    GlobalObjects->csv_parameter_datei->Lesen(ny);
+    GlobalObjects->csv_parameter_datei->Lesen(nz);
+    GlobalObjects->csv_parameter_datei->Lesen(ox);
+    GlobalObjects->csv_parameter_datei->Lesen(oy);
+    GlobalObjects->csv_parameter_datei->Lesen(oz);
+    GlobalObjects->csv_parameter_datei->Lesen(ax);
+    GlobalObjects->csv_parameter_datei->Lesen(ay);
+    GlobalObjects->csv_parameter_datei->Lesen(az);
+    GlobalObjects->csv_parameter_datei->Lesen(px);
+    GlobalObjects->csv_parameter_datei->Lesen(py);
+    GlobalObjects->csv_parameter_datei->Lesen(pz);
+
+    WorldToCam_Param.nx(nx);
+    WorldToCam_Param.ny(ny);
+    WorldToCam_Param.nz(nz);
+    WorldToCam_Param.ox(ox);
+    WorldToCam_Param.oy(oy);
+    WorldToCam_Param.oz(oz);
+    WorldToCam_Param.ax(ax);
+    WorldToCam_Param.ay(ay);
+    WorldToCam_Param.az(az);
+    WorldToCam_Param.px(px);
+    WorldToCam_Param.py(py);
+    WorldToCam_Param.pz(pz);
+
+    }
+
+  }
+
+
 void c_camera_unmanaged::init_camera_vectors                            (int cameras_in_use)
 {
   //Create a camera object and start its according thread. The amount of objects equals the amount of cameras in use 
@@ -700,6 +745,16 @@ void c_camera_unmanaged::sm_object_tracking                             ()
     switch (statemachine_state)
       {
         case 0:
+          //Lade alle fest definierten Welt-Kamera Posen und erstelle einen Vektor mit allen Posen. Vektor[0] bezieht sich auf Kamera[0], usw.
+          for (int i = 0; i<GlobalObjects->cameras_in_use; i++)
+            {
+            C_AbsolutePose                  abs_WorldToCam;
+            load_camera_cos(i, abs_WorldToCam);
+            vec_WorldToCam_Poses->push_back(abs_WorldToCam);
+            }
+          statemachine_state = 1;
+          break;
+        case 1:
           //Überprüfe ob eine Kameras das Objekt gefunden hat. Gehe dazu durch die komplette linke Reihe (+2).
           //Hat eine Kamera (0) das Objekt gesichtet, wird es wahrscheinlich
           //auch von der gegenüberliegenden Kamera (1) auffindbar sein.
@@ -708,13 +763,13 @@ void c_camera_unmanaged::sm_object_tracking                             ()
              if (this->camera_vector[i]->contour_found)
                {
                object_found_camID = i;
-               statemachine_state = 1;
+               statemachine_state = 2;
                break;
                }
             }
           break;
 
-        case 1:
+        case 2:
           //Hole die 2D-Koordinaten des Objektes aus dem Kamerabild
           this->camera_vector[object_found_camID]->   get_objectPosition_2D_Pixel(tracked_data->found_0, tracked_data->Richtungsvektor_0);
           this->camera_vector[object_found_camID+1]-> get_objectPosition_2D_Pixel(tracked_data->found_1, tracked_data->Richtungsvektor_1);
@@ -722,17 +777,20 @@ void c_camera_unmanaged::sm_object_tracking                             ()
           //Validiere die Bedingung, dass ein Objekt gefunden wurde 
           if(!tracked_data->found_1 && tracked_data->found_0)
             {
-            statemachine_state = 0;
+            statemachine_state = 1;
             break;
             }
-          statemachine_state = 2;
+          statemachine_state = 3;
           break;
 
-        case 2:
-          this->tracking_thread->Get_Position_ObjectTracking(*tracked_data);
+        case 3:
+          this->tracking_thread->Get_Position_ObjectTracking(*tracked_data, *vec_WorldToCam_Poses);
 
           statemachine_state = 1;
+        case 4:
+          //cv::KalmanFilter()
           break;
       }
     }
   }
+

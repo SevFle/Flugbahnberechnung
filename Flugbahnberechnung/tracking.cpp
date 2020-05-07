@@ -7,7 +7,6 @@ c_tracking::c_tracking(C_GlobalObjects* GlobalObjects)
   {
   this->Positionsvektor_alt = new S_Positionsvektor();
   this->GlobalObjects         = GlobalObjects;
-  this->vec_WorldToCam_Poses = new std::vector<C_AbsolutePose>;
 
  }
 
@@ -19,8 +18,8 @@ c_tracking::~c_tracking()
 
 
 
-void              c_tracking::Get_Position_ObjectTracking             (s_tracking_data&               StructofTrackingData)
-{
+void              c_tracking::Get_Position_ObjectTracking             (s_tracking_data&               StructofTrackingData, std::vector<C_AbsolutePose>&              vec_WorldToCam_Poses)
+  {
   std::vector<C_AbsolutePose>             vec_TCP_Poses;
   vec_TCP_Poses.resize(2);
   C_AbsolutePose            abs_TCP_Pose_0;
@@ -28,19 +27,7 @@ void              c_tracking::Get_Position_ObjectTracking             (s_trackin
   vec_TCP_Poses[0] =        abs_TCP_Pose_0;
   vec_TCP_Poses[1] =        abs_TCP_Pose_1;
 
-  for(int i = 0; i<GlobalObjects->cameras_in_use; i++)
-    {
-    C_AbsolutePose                  abs_WorldToCam;
-    
-    vec_WorldToCam_Poses->push_back(abs_WorldToCam);
-    }
 
-  //abs_WorldToCam_0.px(137.0);
-  //abs_WorldToCam_0.py(48.0);
-  //abs_WorldToCam_0.pz(111.0);
-  //abs_WorldToCam_1.px(137.0);
-  //abs_WorldToCam_1.py(-57.0);
-  //abs_WorldToCam_1.pz(111.0);
 
   // Kameradaten abholen
   std:: vector<bool>              vec_Object_Found;
@@ -62,7 +49,7 @@ void              c_tracking::Get_Position_ObjectTracking             (s_trackin
 
   if (vec_Object_Found[0] && vec_Object_Found[1])
     {
-    this->Calc_Position_ObjectTracking(StructofTrackingData.positionsvektor, vec_Richtungsvektoren_World, *vec_WorldToCam_Poses);
+    this->Calc_Position_ObjectTracking(StructofTrackingData.positionsvektor, vec_Richtungsvektoren_World, vec_WorldToCam_Poses);
     Positionsvektor_alt = &StructofTrackingData.positionsvektor;
 
   //  enum_ObjectTracking_0     = E_ObjectTracking::Stereo_Object;
