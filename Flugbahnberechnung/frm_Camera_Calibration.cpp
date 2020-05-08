@@ -86,12 +86,12 @@ System::Void C_frm_CameraCalibration_Single::Taktgeber_Tick (System::Object^ sen
     switch (method)
       {
       case 0:
-        this->FillMat2Picturebox (pb_live_camera_picture,Main->camera_managed->camera_unmanaged->camera_vector[current_camera_id]->cpu_src_img);
+        this->FillMat2Picturebox (pb_live_camera_picture,Main->camera_managed->camera_unmanaged->camera_vector[current_camera_id]->get_cpu_src_img());
         break;
 
       case 1:
-        this->FillMat2Picturebox (pb_stereo_L,Main->camera_managed->camera_unmanaged->camera_vector[current_camera_id]->cpu_src_img);
-        this->FillMat2Picturebox (pb_stereo_R,Main->camera_managed->camera_unmanaged->camera_vector[current_camera_id + 1]->cpu_src_img);
+        this->FillMat2Picturebox (pb_stereo_L,Main->camera_managed->camera_unmanaged->camera_vector[current_camera_id]->get_cpu_src_img());
+        this->FillMat2Picturebox (pb_stereo_R,Main->camera_managed->camera_unmanaged->camera_vector[current_camera_id + 1]->get_cpu_src_img());
         break;
       }
     }
@@ -145,7 +145,7 @@ System::Void C_frm_CameraCalibration_Single::nup_camera_id_ValueChanged (System:
   if (nup_camera_id->Value > cameras_in_use) nup_camera_id->Value = static_cast<int> (nup_camera_id->Value) - 1;
   this->current_camera_id = static_cast<int> (nup_camera_id->Value);
 
-  Main->camera_managed->camera_unmanaged->camera_vector[current_camera_id]->idle = false;
+  Main->camera_managed->camera_unmanaged->camera_vector[current_camera_id]->set_idle (false);
   }
 
 System::Void C_frm_CameraCalibration_Single::camera_calibration_thread ()
@@ -183,8 +183,8 @@ System::Void C_frm_CameraCalibration_Single::bt_show_crop_Click (System::Object^
   this->Taktgeber->Enabled = false;
   for (int i = 0; i < cameras_in_use; i++)
     {
-    this->Main->camera_managed->camera_unmanaged->camera_vector[i]->idle             = false;
-    this->Main->camera_managed->camera_unmanaged->camera_vector[i]->undistord_active = true;
+    this->Main->camera_managed->camera_unmanaged->camera_vector[i]->set_idle             (false);
+    this->Main->camera_managed->camera_unmanaged->camera_vector[i]->set_undistord_active (true);
     }
   this->Main->frm_CameraCalibration_crop->ShowDialog();
   this->Taktgeber->Enabled = true;
@@ -241,7 +241,7 @@ System::Void C_frm_CameraCalibration_Single::sm_Single_camera_calibration ()
       this->Main->camera_managed->camera_unmanaged->numCornersWidth                                    = int::Parse (this->tb_single_corner_count_B->Text);
       this->Main->camera_managed->camera_unmanaged->camera_id                                          = this->current_camera_id;
       this->lbl_calibration_running->Visible                                                           = true;
-      this->Main->camera_managed->camera_unmanaged->camera_vector[current_camera_id]->undistord_active = false;
+      this->Main->camera_managed->camera_unmanaged->camera_vector[current_camera_id]->set_undistord_active(false);
 
       //Starte Hintergrund Thread zur Verarbeitung der aufgenommenen Bilder
       Thread^ calibrate = gcnew Thread (gcnew ThreadStart (this,&C_frm_CameraCalibration_Single::camera_calibration_thread));
@@ -298,7 +298,7 @@ System::Void C_frm_CameraCalibration_Single::sm_Stereo_camera_calibration ()
       this->Main->camera_managed->camera_unmanaged->numCornersWidth                                    = int::Parse (this->tb_single_corner_count_B->Text);
       this->Main->camera_managed->camera_unmanaged->camera_id                                          = this->current_camera_id;
       this->lbl_calibration_running->Visible                                                           = true;
-      this->Main->camera_managed->camera_unmanaged->camera_vector[current_camera_id]->undistord_active = false;
+      this->Main->camera_managed->camera_unmanaged->camera_vector[current_camera_id]->set_undistord_active (false);
 
       //Starte Hintergrund Thread zur Verarbeitung der aufgenommenen Bilder
       this->calibrate->Start();

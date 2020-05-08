@@ -152,7 +152,7 @@ System::Void c_frm_Camera_Positioning::c_frm_Camera_Positioning_FormClosing (Sys
   this->Taktgeber->Enabled = false;
   for (int i = 0; i < GlobalObjects->cameras_in_use; i++)
     {
-    Main->camera_managed->camera_unmanaged->camera_vector[i]->idle = true;
+    Main->camera_managed->camera_unmanaged->camera_vector[i]->set_idle (true);
     }
   }
 System::Void c_frm_Camera_Positioning::c_frm_Camera_Positioning_Load (System::Object^ sender, System::EventArgs^ e)

@@ -392,6 +392,689 @@ void c_opencv_unmanaged::set_framerate (int framerate)
   {
   this->cap->set (cv::CAP_PROP_FPS,framerate);
   }
+
+/********************************GETTER SETTER************/
+cv::Mat*& c_opencv_unmanaged::get_cpu_src_img ()
+  {
+  return cpu_src_img;
+  }
+void c_opencv_unmanaged::set_cpu_src_img (cv::Mat* cpu_src_img)
+  {
+  this->cpu_src_img = cpu_src_img;
+  }
+cv::Mat*& c_opencv_unmanaged::get_cpu_temp ()
+  {
+  return cpu_temp;
+  }
+void c_opencv_unmanaged::set_cpu_temp (cv::Mat* cpu_temp)
+  {
+  this->cpu_temp = cpu_temp;
+  }
+cv::Mat*& c_opencv_unmanaged::get_cpu_masked_img ()
+  {
+  return cpu_masked_img;
+  }
+void c_opencv_unmanaged::set_cpu_masked_img (cv::Mat* cpu_masked_img)
+  {
+  this->cpu_masked_img = cpu_masked_img;
+  }
+cv::Mat*& c_opencv_unmanaged::get_cpu_hsv_filtered ()
+  {
+  return cpu_hsv_filtered;
+  }
+void c_opencv_unmanaged::set_cpu_hsv_filtered (cv::Mat* cpu_hsv_filtered)
+  {
+  this->cpu_hsv_filtered = cpu_hsv_filtered;
+  }
+cv::Mat*& c_opencv_unmanaged::get_cpu_contoured ()
+  {
+  return cpu_contoured;
+  }
+void c_opencv_unmanaged::set_cpu_contoured (cv::Mat* cpu_contoured)
+  {
+  this->cpu_contoured = cpu_contoured;
+  }
+cv::Mat*& c_opencv_unmanaged::get_cpu_undistorted ()
+  {
+  return cpu_undistorted;
+  }
+void c_opencv_unmanaged::set_cpu_undistorted (cv::Mat* cpu_undistorted)
+  {
+  this->cpu_undistorted = cpu_undistorted;
+  }
+cv::Mat*& c_opencv_unmanaged::get_cpu_cropped_img ()
+  {
+  return cpu_cropped_img;
+  }
+void c_opencv_unmanaged::set_cpu_cropped_img (cv::Mat* cpu_cropped_img)
+  {
+  this->cpu_cropped_img = cpu_cropped_img;
+  }
+cv::Mat*& c_opencv_unmanaged::get_dist_coeffs ()
+  {
+  return DistCoeffs;
+  }
+void c_opencv_unmanaged::set_dist_coeffs (cv::Mat* dist_coeffs)
+  {
+  DistCoeffs = dist_coeffs;
+  }
+cv::Mat*& c_opencv_unmanaged::get_intrinsic ()
+  {
+  return Intrinsic;
+  }
+void c_opencv_unmanaged::set_intrinsic (cv::Mat* intrinsic)
+  {
+  Intrinsic = intrinsic;
+  }
+int& c_opencv_unmanaged::get_camera_id ()
+  {
+  return camera_id;
+  }
+void c_opencv_unmanaged::set_camera_id (int camera_id)
+  {
+  this->camera_id = camera_id;
+  }
+bool& c_opencv_unmanaged::is_thread_running ()
+  {
+  return thread_running;
+  }
+void c_opencv_unmanaged::set_thread_running (bool thread_running)
+  {
+  this->thread_running = thread_running;
+  }
+bool& c_opencv_unmanaged::is_filtering_active ()
+  {
+  return filtering_active;
+  }
+void c_opencv_unmanaged::set_filtering_active (bool filtering_active)
+  {
+  this->filtering_active = filtering_active;
+  }
+bool& c_opencv_unmanaged::is_filtering_hsv_active ()
+  {
+  return filtering_hsv_active;
+  }
+void c_opencv_unmanaged::set_filtering_hsv_active (bool filtering_hsv_active)
+  {
+  this->filtering_hsv_active = filtering_hsv_active;
+  }
+bool& c_opencv_unmanaged::is_filtering_bgr_active ()
+  {
+  return filtering_bgr_active;
+  }
+void c_opencv_unmanaged::set_filtering_bgr_active (bool filtering_bgr_active)
+  {
+  this->filtering_bgr_active = filtering_bgr_active;
+  }
+bool& c_opencv_unmanaged::is_filtering_gray_active ()
+  {
+  return filtering_gray_active;
+  }
+void c_opencv_unmanaged::set_filtering_gray_active (bool filtering_gray_active)
+  {
+  this->filtering_gray_active = filtering_gray_active;
+  }
+bool& c_opencv_unmanaged::is_contours_active ()
+  {
+  return contours_active;
+  }
+void c_opencv_unmanaged::set_contours_active (bool contours_active)
+  {
+  this->contours_active = contours_active;
+  }
+bool& c_opencv_unmanaged::is_undistord_active ()
+  {
+  return undistord_active;
+  }
+void c_opencv_unmanaged::set_undistord_active (bool undistord_active)
+  {
+  this->undistord_active = undistord_active;
+  }
+bool& c_opencv_unmanaged::is_contour_found ()
+  {
+  return contour_found;
+  }
+void c_opencv_unmanaged::set_contour_found (bool contour_found)
+  {
+  this->contour_found = contour_found;
+  }
+bool& c_opencv_unmanaged::is_image_prepared ()
+  {
+  return image_prepared;
+  }
+void c_opencv_unmanaged::set_image_prepared (bool image_prepared)
+  {
+  this->image_prepared = image_prepared;
+  }
+bool& c_opencv_unmanaged::is_show_cropped_image ()
+  {
+  return show_cropped_image;
+  }
+void c_opencv_unmanaged::set_show_cropped_image (bool show_cropped_image)
+  {
+  this->show_cropped_image = show_cropped_image;
+  }
+int& c_opencv_unmanaged::get_capture_api ()
+  {
+  return capture_api;
+  }
+void c_opencv_unmanaged::set_capture_api (int capture_api)
+  {
+  this->capture_api = capture_api;
+  }
+int& c_opencv_unmanaged::get_objekt_anzahl ()
+  {
+  return objekt_anzahl;
+  }
+void c_opencv_unmanaged::set_objekt_anzahl (int objekt_anzahl)
+  {
+  this->objekt_anzahl = objekt_anzahl;
+  }
+int& c_opencv_unmanaged::get_kontur_index ()
+  {
+  return KonturIndex;
+  }
+void c_opencv_unmanaged::set_kontur_index (int kontur_index)
+  {
+  KonturIndex = kontur_index;
+  }
+int& c_opencv_unmanaged::get_objekt_anzahl ()
+  {
+  return Objekt_Anzahl;
+  }
+void c_opencv_unmanaged::set_objekt_anzahl (int objekt_anzahl)
+  {
+  Objekt_Anzahl = objekt_anzahl;
+  }
+double& c_opencv_unmanaged::get_max_moment_m00 ()
+  {
+  return max_Moment_m00;
+  }
+void c_opencv_unmanaged::set_max_moment_m00 (double max_moment_m00)
+  {
+  max_Moment_m00 = max_moment_m00;
+  }
+double& c_opencv_unmanaged::get_ist_x ()
+  {
+  return Ist_x;
+  }
+void c_opencv_unmanaged::set_ist_x (double ist_x)
+  {
+  Ist_x = ist_x;
+  }
+double& c_opencv_unmanaged::get_ist_y ()
+  {
+  return Ist_y;
+  }
+void c_opencv_unmanaged::set_ist_y (double ist_y)
+  {
+  Ist_y = ist_y;
+  }
+double& c_opencv_unmanaged::get_soll_x ()
+  {
+  return Soll_x;
+  }
+void c_opencv_unmanaged::set_soll_x (double soll_x)
+  {
+  Soll_x = soll_x;
+  }
+double& c_opencv_unmanaged::get_soll_y ()
+  {
+  return Soll_y;
+  }
+void c_opencv_unmanaged::set_soll_y (double soll_y)
+  {
+  Soll_y = soll_y;
+  }
+double& c_opencv_unmanaged::get_delta_x ()
+  {
+  return Delta_x;
+  }
+void c_opencv_unmanaged::set_delta_x (double delta_x)
+  {
+  Delta_x = delta_x;
+  }
+double& c_opencv_unmanaged::get_delta_y ()
+  {
+  return Delta_y;
+  }
+void c_opencv_unmanaged::set_delta_y (double delta_y)
+  {
+  Delta_y = delta_y;
+  }
+double& c_opencv_unmanaged::get_moment_0_ordnung ()
+  {
+  return Moment_0_Ordnung;
+  }
+void c_opencv_unmanaged::set_moment_0_ordnung (double moment_0_ordnung)
+  {
+  Moment_0_Ordnung = moment_0_ordnung;
+  }
+double& c_opencv_unmanaged::get_moment_1_ordnung_x ()
+  {
+  return Moment_1_Ordnung_x;
+  }
+void c_opencv_unmanaged::set_moment_1_ordnung_x (double moment_1_ordnung_x)
+  {
+  Moment_1_Ordnung_x = moment_1_ordnung_x;
+  }
+double& c_opencv_unmanaged::get_moment_1_ordnung_y ()
+  {
+  return Moment_1_Ordnung_y;
+  }
+void c_opencv_unmanaged::set_moment_1_ordnung_y (double moment_1_ordnung_y)
+  {
+  Moment_1_Ordnung_y = moment_1_ordnung_y;
+  }
+double& c_opencv_unmanaged::get_schwerpunkt_x ()
+  {
+  return Schwerpunkt_x;
+  }
+void c_opencv_unmanaged::set_schwerpunkt_x (double schwerpunkt_x)
+  {
+  Schwerpunkt_x = schwerpunkt_x;
+  }
+double& c_opencv_unmanaged::get_schwerpunkt_y ()
+  {
+  return Schwerpunkt_y;
+  }
+void c_opencv_unmanaged::set_schwerpunkt_y (double schwerpunkt_y)
+  {
+  Schwerpunkt_y = schwerpunkt_y;
+  }
+double& c_opencv_unmanaged::get_mittelpunkt_x ()
+  {
+  return Mittelpunkt_x;
+  }
+void c_opencv_unmanaged::set_mittelpunkt_x (double mittelpunkt_x)
+  {
+  Mittelpunkt_x = mittelpunkt_x;
+  }
+double& c_opencv_unmanaged::get_mittelpunkt_y ()
+  {
+  return Mittelpunkt_y;
+  }
+void c_opencv_unmanaged::set_mittelpunkt_y (double mittelpunkt_y)
+  {
+  Mittelpunkt_y = mittelpunkt_y;
+  }
+double& c_opencv_unmanaged::get_x_kamera_ks ()
+  {
+  return x_Kamera_KS;
+  }
+void c_opencv_unmanaged::set_x_kamera_ks (double kamera_ks)
+  {
+  x_Kamera_KS = kamera_ks;
+  }
+double& c_opencv_unmanaged::get_y_kamera_ks ()
+  {
+  return y_Kamera_KS;
+  }
+void c_opencv_unmanaged::set_y_kamera_ks (double kamera_ks)
+  {
+  y_Kamera_KS = kamera_ks;
+  }
+double& c_opencv_unmanaged::get_cx ()
+  {
+  return cx;
+  }
+void c_opencv_unmanaged::set_cx (double cx)
+  {
+  this->cx = cx;
+  }
+double& c_opencv_unmanaged::get_cy ()
+  {
+  return cy;
+  }
+void c_opencv_unmanaged::set_cy (double cy)
+  {
+  this->cy = cy;
+  }
+double& c_opencv_unmanaged::get_fx ()
+  {
+  return fx;
+  }
+void c_opencv_unmanaged::set_fx (double fx)
+  {
+  this->fx = fx;
+  }
+double& c_opencv_unmanaged::get_fy ()
+  {
+  return fy;
+  }
+void c_opencv_unmanaged::set_fy (double fy)
+  {
+  this->fy = fy;
+  }
+double& c_opencv_unmanaged::get_f ()
+  {
+  return f;
+  }
+void c_opencv_unmanaged::set_f (double f)
+  {
+  this->f = f;
+  }
+double& c_opencv_unmanaged::get_vec_object_abs ()
+  {
+  return Vec_Object_Abs;
+  }
+void c_opencv_unmanaged::set_vec_object_abs (double vec_object_abs)
+  {
+  Vec_Object_Abs = vec_object_abs;
+  }
+float& c_opencv_unmanaged::get_radius ()
+  {
+  return Radius;
+  }
+void c_opencv_unmanaged::set_radius (float radius)
+  {
+  Radius = radius;
+  }
+cv::Moments& c_opencv_unmanaged::get_image_moments ()
+  {
+  return Image_Moments;
+  }
+void c_opencv_unmanaged::set_image_moments (const cv::Moments& image_moments)
+  {
+  Image_Moments = image_moments;
+  }
+cv::Point2f& c_opencv_unmanaged::get_center ()
+  {
+  return Center;
+  }
+void c_opencv_unmanaged::set_center (const cv::Point2f& center)
+  {
+  Center = center;
+  }
+std::string& c_opencv_unmanaged::get_s_x ()
+  {
+  return S_x;
+  }
+void c_opencv_unmanaged::set_s_x (const std::string& cs)
+  {
+  S_x = cs;
+  }
+std::string& c_opencv_unmanaged::get_s_y ()
+  {
+  return S_y;
+  }
+void c_opencv_unmanaged::set_s_y (const std::string& cs)
+  {
+  S_y = cs;
+  }
+std::string& c_opencv_unmanaged::get_delta_x_str ()
+  {
+  return Delta_x_str;
+  }
+void c_opencv_unmanaged::set_delta_x_str (const std::string& delta_x_str)
+  {
+  Delta_x_str = delta_x_str;
+  }
+std::string& c_opencv_unmanaged::get_delta_y_str ()
+  {
+  return Delta_y_str;
+  }
+void c_opencv_unmanaged::set_delta_y_str (const std::string& delta_y_str)
+  {
+  Delta_y_str = delta_y_str;
+  }
+cv::Rect& c_opencv_unmanaged::get_rect_roi ()
+  {
+  return rect_roi;
+  }
+void c_opencv_unmanaged::set_rect_roi (const cv::Rect& rect_roi)
+  {
+  this->rect_roi = rect_roi;
+  }
+uchar& c_opencv_unmanaged::get_hue_min ()
+  {
+  return hue_min;
+  }
+void c_opencv_unmanaged::set_hue_min (uchar hue_min)
+  {
+  this->hue_min = hue_min;
+  }
+uchar& c_opencv_unmanaged::get_hue_max ()
+  {
+  return hue_max;
+  }
+void c_opencv_unmanaged::set_hue_max (uchar hue_max)
+  {
+  this->hue_max = hue_max;
+  }
+uchar& c_opencv_unmanaged::get_saturation_min ()
+  {
+  return saturation_min;
+  }
+void c_opencv_unmanaged::set_saturation_min (uchar saturation_min)
+  {
+  this->saturation_min = saturation_min;
+  }
+uchar& c_opencv_unmanaged::get_saturation_max ()
+  {
+  return saturation_max;
+  }
+void c_opencv_unmanaged::set_saturation_max (uchar saturation_max)
+  {
+  this->saturation_max = saturation_max;
+  }
+uchar& c_opencv_unmanaged::get_value_min ()
+  {
+  return value_min;
+  }
+void c_opencv_unmanaged::set_value_min (uchar value_min)
+  {
+  this->value_min = value_min;
+  }
+uchar& c_opencv_unmanaged::get_value_max ()
+  {
+  return value_max;
+  }
+void c_opencv_unmanaged::set_value_max (uchar value_max)
+  {
+  this->value_max = value_max;
+  }
+int& c_opencv_unmanaged::get_erosion_iterations ()
+  {
+  return erosion_iterations;
+  }
+void c_opencv_unmanaged::set_erosion_iterations (int erosion_iterations)
+  {
+  this->erosion_iterations = erosion_iterations;
+  }
+int& c_opencv_unmanaged::get_dilation_iterations ()
+  {
+  return dilation_iterations;
+  }
+void c_opencv_unmanaged::set_dilation_iterations (int dilation_iterations)
+  {
+  this->dilation_iterations = dilation_iterations;
+  }
+int& c_opencv_unmanaged::get_opening_iterations ()
+  {
+  return opening_iterations;
+  }
+void c_opencv_unmanaged::set_opening_iterations (int opening_iterations)
+  {
+  this->opening_iterations = opening_iterations;
+  }
+int& c_opencv_unmanaged::get_closing_iterations ()
+  {
+  return closing_iterations;
+  }
+void c_opencv_unmanaged::set_closing_iterations (int closing_iterations)
+  {
+  this->closing_iterations = closing_iterations;
+  }
+int& c_opencv_unmanaged::get_morph_iterations ()
+  {
+  return morph_iterations;
+  }
+void c_opencv_unmanaged::set_morph_iterations (int morph_iterations)
+  {
+  this->morph_iterations = morph_iterations;
+  }
+int& c_opencv_unmanaged::get_erosion_kernel_size ()
+  {
+  return erosion_kernel_size;
+  }
+void c_opencv_unmanaged::set_erosion_kernel_size (int erosion_kernel_size)
+  {
+  this->erosion_kernel_size = erosion_kernel_size;
+  }
+int& c_opencv_unmanaged::get_dilation_kernel_size ()
+  {
+  return dilation_kernel_size;
+  }
+void c_opencv_unmanaged::set_dilation_kernel_size (int dilation_kernel_size)
+  {
+  this->dilation_kernel_size = dilation_kernel_size;
+  }
+int& c_opencv_unmanaged::get_bilateral_kernel_size ()
+  {
+  return bilateral_kernel_size;
+  }
+void c_opencv_unmanaged::set_bilateral_kernel_size (int bilateral_kernel_size)
+  {
+  this->bilateral_kernel_size = bilateral_kernel_size;
+  }
+int& c_opencv_unmanaged::get_opening_kernel_size ()
+  {
+  return opening_kernel_size;
+  }
+void c_opencv_unmanaged::set_opening_kernel_size (int opening_kernel_size)
+  {
+  this->opening_kernel_size = opening_kernel_size;
+  }
+int& c_opencv_unmanaged::get_closing_kernel_size ()
+  {
+  return closing_kernel_size;
+  }
+void c_opencv_unmanaged::set_closing_kernel_size (int closing_kernel_size)
+  {
+  this->closing_kernel_size = closing_kernel_size;
+  }
+int& c_opencv_unmanaged::get_morph_kernel_size ()
+  {
+  return morph_kernel_size;
+  }
+void c_opencv_unmanaged::set_morph_kernel_size (int morph_kernel_size)
+  {
+  this->morph_kernel_size = morph_kernel_size;
+  }
+int& c_opencv_unmanaged::get_gaussian_kernel_size ()
+  {
+  return gaussian_kernel_size;
+  }
+void c_opencv_unmanaged::set_gaussian_kernel_size (int gaussian_kernel_size)
+  {
+  this->gaussian_kernel_size = gaussian_kernel_size;
+  }
+int& c_opencv_unmanaged::get_resize_width ()
+  {
+  return resize_width;
+  }
+void c_opencv_unmanaged::set_resize_width (int resize_width)
+  {
+  this->resize_width = resize_width;
+  }
+int& c_opencv_unmanaged::get_resize_height ()
+  {
+  return resize_height;
+  }
+void c_opencv_unmanaged::set_resize_height (int resize_height)
+  {
+  this->resize_height = resize_height;
+  }
+double& c_opencv_unmanaged::get_gaussian_sigma ()
+  {
+  return gaussian_sigma;
+  }
+void c_opencv_unmanaged::set_gaussian_sigma (double gaussian_sigma)
+  {
+  this->gaussian_sigma = gaussian_sigma;
+  }
+double& c_opencv_unmanaged::get_object_size_min ()
+  {
+  return Object_Size_min;
+  }
+void c_opencv_unmanaged::set_object_size_min (double object_size_min)
+  {
+  Object_Size_min = object_size_min;
+  }
+double& c_opencv_unmanaged::get_object_size_max ()
+  {
+  return Object_Size_max;
+  }
+void c_opencv_unmanaged::set_object_size_max (double object_size_max)
+  {
+  Object_Size_max = object_size_max;
+  }
+float& c_opencv_unmanaged::get_bilateral_sigma_color ()
+  {
+  return bilateral_sigma_color;
+  }
+void c_opencv_unmanaged::set_bilateral_sigma_color (float bilateral_sigma_color)
+  {
+  this->bilateral_sigma_color = bilateral_sigma_color;
+  }
+float& c_opencv_unmanaged::get_bilateral_sigma_spatial ()
+  {
+  return bilateral_sigma_spatial;
+  }
+void c_opencv_unmanaged::set_bilateral_sigma_spatial (float bilateral_sigma_spatial)
+  {
+  this->bilateral_sigma_spatial = bilateral_sigma_spatial;
+  }
+bool& c_opencv_unmanaged::is_erode_active ()
+  {
+  return erode_active;
+  }
+void c_opencv_unmanaged::set_erode_active (bool erode_active)
+  {
+  this->erode_active = erode_active;
+  }
+bool& c_opencv_unmanaged::is_dilate_active ()
+  {
+  return dilate_active;
+  }
+void c_opencv_unmanaged::set_dilate_active (bool dilate_active)
+  {
+  this->dilate_active = dilate_active;
+  }
+bool& c_opencv_unmanaged::is_gaussian_active ()
+  {
+  return gaussian_active;
+  }
+void c_opencv_unmanaged::set_gaussian_active (bool gaussian_active)
+  {
+  this->gaussian_active = gaussian_active;
+  }
+bool& c_opencv_unmanaged::is_morph_active ()
+  {
+  return morph_active;
+  }
+void c_opencv_unmanaged::set_morph_active (bool morph_active)
+  {
+  this->morph_active = morph_active;
+  }
+bool& c_opencv_unmanaged::is_bilateral_active ()
+  {
+  return bilateral_active;
+  }
+void c_opencv_unmanaged::set_bilateral_active (bool bilateral_active)
+  {
+  this->bilateral_active = bilateral_active;
+  }
+bool& c_opencv_unmanaged::is_idle ()
+  {
+  return idle;
+  }
+void c_opencv_unmanaged::set_idle (bool idle)
+  {
+  this->idle = idle;
+  }
+
 /*************************************************************** Private Klassenmethoden*****************************************************/
 
 void c_opencv_unmanaged::init (int camera_id)
@@ -604,10 +1287,10 @@ void c_opencv_unmanaged::find_contours (cv::Mat* thresholded_source_image, cv::M
     Image_Moments    = moments (static_cast<cv::Mat> (contours[KonturIndex]));
     Moment_0_Ordnung = Image_Moments.m00;
 
-    //if (Object_Size_min > Moment_0_Ordnung ||Moment_0_Ordnung > Object_Size_max)
-    //  {
-    //  return;
-    //  }
+    if (Object_Size_min > Moment_0_Ordnung || Moment_0_Ordnung > Object_Size_max)
+      {
+      return;
+      }
 
     // Bestimme Flchenmoment 1. Ordnung (Flche * x bzw.Flche * y) zur Bestimmung des Flchenschwerpunktes: x_ = summe(m1) / summe(m0);
     Moment_1_Ordnung_x = Image_Moments.m10;

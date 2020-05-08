@@ -89,10 +89,10 @@ System::Void c_frm_Object_Tracking::c_frm_Object_Tracking_Load (System::Object^ 
   {
   this->Taktgeber->Enabled                                                         = true;
   this->TimerWait                                                                  = 60;
-  this->Main->camera_managed->camera_unmanaged->camera_vector[0]->undistord_active = true;
-  this->Main->camera_managed->camera_unmanaged->camera_vector[1]->undistord_active = true;
-  this->Main->camera_managed->camera_unmanaged->camera_vector[0]->filtering_active = true;
-  this->Main->camera_managed->camera_unmanaged->camera_vector[1]->filtering_active = true;
+  this->Main->camera_managed->camera_unmanaged->camera_vector[0]->set_undistord_active(true);
+  this->Main->camera_managed->camera_unmanaged->camera_vector[1]->set_undistord_active(true);
+  this->Main->camera_managed->camera_unmanaged->camera_vector[0]->set_filtering_active(true);
+  this->Main->camera_managed->camera_unmanaged->camera_vector[1]->set_filtering_active(true);
   }
 System::Void c_frm_Object_Tracking::c_frm_Object_Tracking_FormClosing (System::Object^ sender, System::Windows::Forms::FormClosingEventArgs^ e)
   {
