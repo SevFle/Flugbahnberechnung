@@ -735,6 +735,11 @@ void c_camera_unmanaged::sm_object_tracking ()
   this->tracked_data->positionsvektor.Z = 0.0;
   int object_found_camID                = 0;
 
+  int stateSize = 6;
+  int measSize  = 4;
+  int contrSize = 4;
+
+  unsigned int type = CV_32F;
 
   while (this->tracking_active)
     {
