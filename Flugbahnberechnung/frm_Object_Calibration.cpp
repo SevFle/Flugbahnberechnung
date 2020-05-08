@@ -117,7 +117,7 @@ System::Void c_frm_object_calibration::C_frm_ObjectCalibration_Load (System::Obj
   this->TimerWait                 = 50;
   this->numUD_cam_id->Maximum     = GlobalObjects->cameras_in_use;
   this->trb_hue_min->Value        = 0;
-  this->trb_hue_max->Value        = 179;
+  this->trb_hue_max->Value        = 50;
   this->trb_saturation_min->Value = 0;
   this->trb_saturation_max->Value = 255;
   this->trb_value_min->Value      = 0;

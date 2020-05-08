@@ -427,7 +427,7 @@ void c_camera_unmanaged::init_camera_vectors (int cameras_in_use)
   for (int i = 0; i < cameras_in_use; i++)
     {
     auto* opencv_unmanaged = new nmsp_opencv_unmanaged::c_opencv_unmanaged (i);
-    opencv_unmanaged->idle = true;
+    opencv_unmanaged->set_idle (true);
     camera_vector.push_back (opencv_unmanaged);
 
     std::cout << "Created " << i + 1 << " Camera Objects with according pointers" << std::endl;
@@ -453,7 +453,7 @@ void c_camera_unmanaged::close_cameras (int cameras_in_use)
   for (int i = 0; i < cameras_in_use; i++)
     {
     camera_vector[i]->cap->release();
-    camera_vector[i]->thread_running = false;
+    camera_vector[i]->set_thread_running (false);
     }
   }
 
@@ -595,7 +595,7 @@ void c_camera_unmanaged::calibrate_single_camera (int current_camera_id)
 
   //Reaktivierung der Bildentzerrung
   this->camera_vector[current_camera_id]->init_rectify_map();
-  this->camera_vector[current_camera_id]->undistord_active = true;
+  this->camera_vector[current_camera_id]->set_undistord_active (true);
   }
 void c_camera_unmanaged::calibrate_stereo_camera (int current_camera_id)
   {
@@ -756,7 +756,7 @@ void c_camera_unmanaged::sm_object_tracking ()
         //auch von der gegenüberliegenden Kamera (1) auffindbar sein.
         for (int i = 0; i < this->camera_vector.size(); i + 2)
           {
-          if (this->camera_vector[i]->contour_found)
+          if (this->camera_vector[i]->is_contour_found())
             {
             object_found_camID = i;
             statemachine_state = 2;

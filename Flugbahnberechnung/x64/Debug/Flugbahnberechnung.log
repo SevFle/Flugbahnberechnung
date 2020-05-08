@@ -1,20 +1,3 @@
-﻿  Camera_unmanaged.cpp
-d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\camera_unmanaged.cpp(430): error C2248: 'nmsp_opencv_unmanaged::c_opencv_unmanaged::idle': cannot access private member declared in class 'nmsp_opencv_unmanaged::c_opencv_unmanaged'
-  d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\opencv_unmanaged.h(155): note: see declaration of 'nmsp_opencv_unmanaged::c_opencv_unmanaged::idle'
-  d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\opencv_unmanaged.h(18): note: see declaration of 'nmsp_opencv_unmanaged::c_opencv_unmanaged'
-d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\camera_unmanaged.cpp(456): error C2248: 'nmsp_opencv_unmanaged::c_opencv_unmanaged::thread_running': cannot access private member declared in class 'nmsp_opencv_unmanaged::c_opencv_unmanaged'
-  d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\opencv_unmanaged.h(60): note: see declaration of 'nmsp_opencv_unmanaged::c_opencv_unmanaged::thread_running'
-  d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\opencv_unmanaged.h(18): note: see declaration of 'nmsp_opencv_unmanaged::c_opencv_unmanaged'
-d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\camera_unmanaged.cpp(598): error C2248: 'nmsp_opencv_unmanaged::c_opencv_unmanaged::undistord_active': cannot access private member declared in class 'nmsp_opencv_unmanaged::c_opencv_unmanaged'
-  d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\opencv_unmanaged.h(67): note: see declaration of 'nmsp_opencv_unmanaged::c_opencv_unmanaged::undistord_active'
-  d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\opencv_unmanaged.h(18): note: see declaration of 'nmsp_opencv_unmanaged::c_opencv_unmanaged'
-d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\camera_unmanaged.cpp(757): warning C4552: '+': result of expression not used
-d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\camera_unmanaged.cpp(759): error C2248: 'nmsp_opencv_unmanaged::c_opencv_unmanaged::contour_found': cannot access private member declared in class 'nmsp_opencv_unmanaged::c_opencv_unmanaged'
-  d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\opencv_unmanaged.h(68): note: see declaration of 'nmsp_opencv_unmanaged::c_opencv_unmanaged::contour_found'
-  d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\opencv_unmanaged.h(18): note: see declaration of 'nmsp_opencv_unmanaged::c_opencv_unmanaged'
-  opencv_unmanaged.cpp
-d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\opencv_unmanaged.cpp(582): error C2084: function 'int &nmsp_opencv_unmanaged::c_opencv_unmanaged::get_objekt_anzahl(void)' already has a body
-  d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\opencv_unmanaged.cpp(565): note: see previous definition of 'get_objekt_anzahl'
-d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\opencv_unmanaged.cpp(586): error C2084: function 'void nmsp_opencv_unmanaged::c_opencv_unmanaged::set_objekt_anzahl(int)' already has a body
-  d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\opencv_unmanaged.cpp(569): note: see previous definition of 'set_objekt_anzahl'
-  Generating Code...
+﻿  opencv_unmanaged.cpp
+  App_Main.obj : MSIL module encountered; incremental linking is disabled for MSIL; performing full link
+  Flugbahnberechnung.vcxproj -> D:\Projekte\VisualStudio\Flugbahnberechnung\x64\Debug\ObjectTracking.exe
