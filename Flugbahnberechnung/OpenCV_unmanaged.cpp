@@ -307,7 +307,7 @@ void c_opencv_unmanaged::camera_thread ()
         //gpu_filtered stellt das gefilterte HSV Bild dar.
         this->gpu_filtered->download (*cpu_hsv_filtered);
 
-        RoI = boundingRect (*cpu_hsv_filtered);
+        //RoI = boundingRect (*cpu_hsv_filtered);
 
         statemachine_state = 6;
         break;
@@ -317,7 +317,7 @@ void c_opencv_unmanaged::camera_thread ()
         this->cpu_undistorted->copyTo (*cpu_contoured);
 
         this->find_contours (cpu_hsv_filtered,cpu_contoured);
-        rectangle (*cpu_contoured,RoI,cv::Scalar (0,255,0),2,8,0);
+        //rectangle (*cpu_contoured,RoI,cv::Scalar (0,255,0),2,8,0);
         imshow ("contoured" + std::to_string (camera_id),*cpu_contoured);
         //Proceed to imshow
         statemachine_state = 8;
@@ -394,6 +394,7 @@ void c_opencv_unmanaged::set_framerate (int framerate)
   }
 
 /********************************GETTER SETTER************/
+#pragma region GETTER-SETTER
 cv::Mat*&   c_opencv_unmanaged::get_cpu_src_img ()
   {
   return cpu_src_img;
@@ -986,19 +987,19 @@ void        c_opencv_unmanaged::set_gaussian_sigma (double gaussian_sigma)
   {
   this->gaussian_sigma = gaussian_sigma;
   }
-double&     c_opencv_unmanaged::get_object_size_min ()
+int& c_opencv_unmanaged::get_object_size_min ()
   {
   return Object_Size_min;
   }
-void        c_opencv_unmanaged::set_object_size_min (double object_size_min)
+void        c_opencv_unmanaged::set_object_size_min (int object_size_min)
   {
   Object_Size_min = object_size_min;
   }
-double&     c_opencv_unmanaged::get_object_size_max ()
+int&        c_opencv_unmanaged::get_object_size_max ()
   {
   return Object_Size_max;
   }
-void        c_opencv_unmanaged::set_object_size_max (double object_size_max)
+void        c_opencv_unmanaged::set_object_size_max (int object_size_max)
   {
   Object_Size_max = object_size_max;
   }
@@ -1066,7 +1067,7 @@ void        c_opencv_unmanaged::set_idle (bool idle)
   {
   this->idle = idle;
   }
-
+#pragma endregion 
 /*************************************************************** Private Klassenmethoden*****************************************************/
 
 void c_opencv_unmanaged::init (int camera_id)
@@ -1187,9 +1188,9 @@ void c_opencv_unmanaged::get_gaussian_kernel ()
 
 void c_opencv_unmanaged::gpu_filter_hsv (cv::cuda::GpuMat* gpu_src, cv::cuda::GpuMat* gpu_dst)
   {
-  cv::cuda::cvtColor (*gpu_src,*gpu_temp,cv::COLOR_BGR2HSV);
+  gpu_gaussian_filter (gpu_src, gpu_temp);
 
-  gpu_gaussian_filter (gpu_temp,gpu_filtered);
+  cv::cuda::cvtColor (*gpu_temp, *gpu_filtered, cv::COLOR_BGR2HSV);
 
   cudaKernel::inRange_gpu (*gpu_filtered,cv::Scalar (this->hue_min,this->saturation_min,this->value_min),
                            cv::Scalar (this->hue_max,this->saturation_max,this->value_max),*gpu_color_threshold);
@@ -1226,7 +1227,7 @@ void c_opencv_unmanaged::find_contours (cv::Mat* thresholded_source_image, cv::M
 // Zeichne Bildmittelpunkt ein
   Mittelpunkt_x = dst_contoured_image->cols / 2;
   Mittelpunkt_y = dst_contoured_image->rows / 2;
-  circle (*dst_contoured_image,cv::Point (static_cast<int> (Mittelpunkt_x),static_cast<int> (Mittelpunkt_y)),15,cv::Scalar (0,255,0));
+  circle (*dst_contoured_image,cv::Point (static_cast<int> (Mittelpunkt_x),static_cast<int> (Mittelpunkt_y)),2,cv::Scalar (0,255,0));
 
   // Zeichne kalibrierten Bildmittelpunkt ein
   cx = this->Intrinsic->at<double> (0,2);
@@ -1237,13 +1238,13 @@ void c_opencv_unmanaged::find_contours (cv::Mat* thresholded_source_image, cv::M
   findContours (*thresholded_source_image,contours,hirarchy,cv::RETR_TREE,cv::CHAIN_APPROX_SIMPLE,cv::Point (0,0));
 
 
-  objekt_anzahl = static_cast<int> (hirarchy.size());
+  objekt_anzahl = hirarchy.size();
 
 
   if (objekt_anzahl > 0)
     {
     // Vorinitialisierung des Abstands des Konturschwerpunktes zum Bildmittelpunkt
-    Image_Moments = moments (static_cast<cv::Mat> (contours[0]));
+    cv:: Moments Image_Moments = moments (static_cast<cv::Mat> (contours[0]));
 
     KonturIndex    = 0;
     Ist_x          = 0.0;
@@ -1257,6 +1258,15 @@ void c_opencv_unmanaged::find_contours (cv::Mat* thresholded_source_image, cv::M
     Vec_Object[1]  = 0.0;
     Vec_Object[2]  = 0.0;
     max_Moment_m00 = 0.0;
+    Moment_0_Ordnung = 0.0;
+    Moment_1_Ordnung_x = 0.0;
+    Moment_1_Ordnung_y = 0.0;
+    Schwerpunkt_x = 0.0;
+    Schwerpunkt_y = 0.0;
+
+    cv::Point2f Center;
+    Radius = 0.0;
+
 
     // Größte Kontur anhand der Fläche suchen
     for (int i = 0; i < objekt_anzahl; i++)
@@ -1337,14 +1347,13 @@ void c_opencv_unmanaged::find_contours (cv::Mat* thresholded_source_image, cv::M
 
     // Zeichne eine Linie zwischen kalibriertem Bildmittelpunkt und dem Objektschwerpunkt
     line (*dst_contoured_image,cv::Point (static_cast<int> (Ist_x),static_cast<int> (Ist_y)),cv::Point (static_cast<int> (Soll_x),static_cast<int> (Soll_y)),cv::Scalar (0,0,255),4,8,0);
-    this->image_prepared = true;
     }
   else
     {
     contour_found       = false;
-    this->Vec_Object[0] = 0.0;
-    this->Vec_Object[1] = 0.0;
-    this->Vec_Object[2] = 0.0;
+    //this->Vec_Object[0] = 0.0;
+    //this->Vec_Object[1] = 0.0;
+    //this->Vec_Object[2] = 0.0;
     max_Moment_m00      = 0.0;
 
     putText (*dst_contoured_image,"S_x:     Object not found",cv::Point (0,20),1,1,cv::Scalar (255,255,255),2);

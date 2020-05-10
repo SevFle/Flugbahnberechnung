@@ -20,6 +20,7 @@ void c_tracking::Get_Position_ObjectTracking (s_tracking_data& StructofTrackingD
   {
   std::vector<C_AbsolutePose> vec_TCP_Poses;
   vec_TCP_Poses.resize (2);
+
   C_AbsolutePose abs_TCP_Pose_0;
   C_AbsolutePose abs_TCP_Pose_1;
   vec_TCP_Poses[0] = abs_TCP_Pose_0;

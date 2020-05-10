@@ -60,6 +60,9 @@
     <ClCompile Include="frm_Camera_Calibration_crop.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Kalmanfilter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="frm_Main.h">
@@ -104,6 +107,15 @@
     <ClInclude Include="frm_Camera_Calibration_crop.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Kalmanfilter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="kalman_cuda.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="point.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="frm_Main.resx">
@@ -121,12 +133,18 @@
     <EmbeddedResource Include="frm_Object_Tracking.resx">
       <Filter>Resource Files</Filter>
     </EmbeddedResource>
+    <EmbeddedResource Include="frm_Camera_Calibration_crop.resx">
+      <Filter>Resource Files</Filter>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="CudaKernels.cu">
       <Filter>Source Files</Filter>
     </CudaCompile>
     <CudaCompile Include="CudaKernels.cuh">
+      <Filter>Source Files</Filter>
+    </CudaCompile>
+    <CudaCompile Include="kalman.cu">
       <Filter>Source Files</Filter>
     </CudaCompile>
   </ItemGroup>

@@ -103,8 +103,8 @@ namespace nmsp_opencv_unmanaged
     float Radius;
 
 
-    cv::Moments Image_Moments;
-    cv::Point2f Center;
+    //cv::Moments Image_Moments;
+    //cv::Point2f Center;
     std::string S_x;
     std::string S_y;
     std::string Delta_x_str;
@@ -139,8 +139,8 @@ namespace nmsp_opencv_unmanaged
     int resize_height;
 
     double gaussian_sigma;
-    double Object_Size_min;
-    double Object_Size_max;
+    int Object_Size_min;
+    int Object_Size_max;
 
 
     float bilateral_sigma_color;
@@ -316,10 +316,10 @@ namespace nmsp_opencv_unmanaged
     void            set_resize_height (int resize_height);
     double&         get_gaussian_sigma ();
     void            set_gaussian_sigma (double gaussian_sigma);
-    double&         get_object_size_min ();
-    void            set_object_size_min (double object_size_min);
-    double&         get_object_size_max ();
-    void            set_object_size_max (double object_size_max);
+    int& get_object_size_min ();
+    void            set_object_size_min (int object_size_min);
+    int& get_object_size_max ();
+    void            set_object_size_max (int object_size_max);
     float&          get_bilateral_sigma_color ();
     void            set_bilateral_sigma_color (float bilateral_sigma_color);
     float&          get_bilateral_sigma_spatial ();

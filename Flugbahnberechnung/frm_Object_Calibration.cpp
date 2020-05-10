@@ -30,6 +30,12 @@ c_frm_object_calibration::c_frm_object_calibration (C_GlobalObjects* GlobalObjec
   trb_value_max->Minimum = 0;
   trb_value_max->Maximum = 255;
 
+  trb_ObjectSize_min->Minimum = 0;
+  trb_ObjectSize_min->Maximum = 479999;
+
+  trb_ObjectSize_max->Minimum = 0;
+  trb_ObjectSize_max->Maximum = 480000;
+
   numUD_erode_iterations->Minimum = 0;
   numUD_erode_iterations->Maximum = 10;
 
@@ -114,7 +120,7 @@ System::Void c_frm_object_calibration::C_frm_ObjectCalibration_Load (System::Obj
   this->Zaehler                   = 0;
   this->Taktgeber->Interval       = 25;
   this->Taktgeber->Enabled        = true;
-  this->TimerWait                 = 50;
+  this->TimerWait                 = 75;
   this->numUD_cam_id->Maximum     = GlobalObjects->cameras_in_use;
   this->trb_hue_min->Value        = 0;
   this->trb_hue_max->Value        = 50;
@@ -129,10 +135,12 @@ System::Void c_frm_object_calibration::C_frm_ObjectCalibration_Load (System::Obj
 #pragma region ValueChanged_Events
 System::Void c_frm_object_calibration::numUD_cam_id_ValueChanged (System::Object^ sender, System::EventArgs^ e)
   {
-  TimerWait                                                                                       = Zaehler + 30;
+  TimerWait                                                                                       = Zaehler + 100;
   this->camera_id_in_use                                                                          = static_cast<int> (numUD_cam_id->Value);
-  this->Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->set_idle             (false);
-  this->Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->set_filtering_active (true);
+  this->Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->set_idle              (false);
+  this->Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->set_show_cropped_image(false);
+  this->Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->set_undistord_active  (true);
+  this->Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->set_filtering_active  (true);
   this->get_camera_settings (camera_id_in_use);
   }
 
@@ -183,14 +191,14 @@ System::Void c_frm_object_calibration::trb_ObjectSize_min_ValueChanged (System::
   {
   if (this->trb_ObjectSize_min->Value > this->trb_ObjectSize_max->Value) this->trb_ObjectSize_min->Value = this->trb_ObjectSize_max->Value - 1;
 
-  Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->set_object_size_min (static_cast<uchar> (trb_ObjectSize_min->Value));
+  Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->set_object_size_min (static_cast<int> (trb_ObjectSize_min->Value));
   txb_objectsize_min->Text                                                                 = trb_ObjectSize_min->Value.ToString();
   }
 System::Void c_frm_object_calibration::trb_ObjectSize_max_ValueChanged (System::Object^ sender, System::EventArgs^ e)
   {
   if (this->trb_ObjectSize_min->Value > this->trb_ObjectSize_max->Value) this->trb_ObjectSize_max->Value = this->trb_ObjectSize_min->Value + 1;
 
-  Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->set_object_size_max  (static_cast<uchar> (trb_ObjectSize_max->Value));
+  Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->set_object_size_max  (static_cast<int> (trb_ObjectSize_max->Value));
   txb_objectsize_max->Text                                                                 = trb_ObjectSize_max->Value.ToString();
   }
 
@@ -409,6 +417,10 @@ System::Void c_frm_object_calibration::bt_apply_all_Click (System::Object^ sende
     this->Main->camera_managed->camera_unmanaged->camera_vector[i]->set_bilateral_sigma_spatial(static_cast<float> (this->numUD_bilateral_spatial->Value));
     this->Main->camera_managed->camera_unmanaged->camera_vector[i]->set_bilateral_kernel_size  (static_cast<int> (this->numUD_bilateral_kernelsize->Value));
 
+    this->Main->camera_managed->camera_unmanaged->camera_vector[i]->set_object_size_min         (static_cast<int> (this->trb_ObjectSize_min->Value));
+    this->Main->camera_managed->camera_unmanaged->camera_vector[i]->set_object_size_max         (static_cast<int> (this->trb_ObjectSize_min->Value));
+
+
     Main->camera_managed->camera_unmanaged->save_camera_settings (i);
     }
   }
@@ -449,6 +461,10 @@ System::Void c_frm_object_calibration::get_camera_settings (int camera_id)
   this->numUD_bilateral_kernelsize->Value = static_cast<Decimal> (this->Main->camera_managed->camera_unmanaged->camera_vector[camera_id]->get_bilateral_kernel_size());
   this->numUD_bilateral_spatial->Value    = static_cast<Decimal> (this->Main->camera_managed->camera_unmanaged->camera_vector[camera_id]->get_bilateral_sigma_spatial());
   this->numUD_bilateral_color->Value      = static_cast<Decimal> (this->Main->camera_managed->camera_unmanaged->camera_vector[camera_id]->get_bilateral_sigma_color());
+
+  this->trb_ObjectSize_min->Value         = this->Main->camera_managed->camera_unmanaged->camera_vector[camera_id]->get_object_size_min();
+  this->trb_ObjectSize_max->Value         = this->Main->camera_managed->camera_unmanaged->camera_vector[camera_id]->get_object_size_max();
+
   }
 
 System::Void c_frm_object_calibration::bt_Tracking_MouseClick (System::Object^ sender, System::Windows::Forms::MouseEventArgs^ e)

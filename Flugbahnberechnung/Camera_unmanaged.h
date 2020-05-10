@@ -49,6 +49,8 @@ namespace nmsp_camera_unmanaged
     bool             tracking_active;
     s_tracking_data* tracked_data;
 
+    cv::Mat           cpu_kalman_filterL;
+    cv::Mat           cpu_kalman_filterR;
 
     std::vector<c_opencv_unmanaged*> camera_vector;
     std::vector<C_AbsolutePose>*     vec_WorldToCam_Poses; //AKA WORLD TO CAMERA POS
