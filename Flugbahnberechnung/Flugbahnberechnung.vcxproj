@@ -187,7 +187,7 @@
     </ClInclude>
     <ClInclude Include="GlobalObjects.h" />
     <ClInclude Include="Kalmanfilter.h" />
-    <ClInclude Include="kalman_cuda.h" />
+    <ClInclude Include="kalman_cuda.cuh" />
     <ClInclude Include="point.h" />
     <ClInclude Include="posen.h" />
     <ClInclude Include="tracking.h" />

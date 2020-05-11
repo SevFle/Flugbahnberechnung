@@ -866,108 +866,105 @@ void c_camera_unmanaged::sm_object_tracking ()
 
           iteration++;
           cout << "Iteration "<< to_string(iteration) << endl;
-          double precTick = ticks;
-          ticks = (double)cv::getTickCount();
+          //double precTick = ticks;
+          //ticks = (double)cv::getTickCount();
 
-          double dT = (ticks - precTick) / cv::getTickFrequency(); //seconds
+          //double dT = (ticks - precTick) / cv::getTickFrequency(); //seconds
 
           this->camera_vector[object_found_camID]->cpu_contoured->copyTo (cpu_kalman_filterL);
           this->camera_vector[object_found_camID+1]->cpu_contoured->copyTo (cpu_kalman_filterR);
 
 
           foundball = tracked_data->found_0;
+          statemachine_state = 2;
+          break;
 
-          if (iteration == 11)
-            {
-            cout<< endl<< endl << "Measure matrix:" << endl << meas << endl;
-            cout << endl<< "State post:" << endl << state << endl;
-            cout << endl<< "dT:" << endl << dT << endl;
-            }
+        case 5:
 
-          if (foundball)
-            {
-            // >>>> Matrix A
-            kf.transitionMatrix.at<float>(4) = dT;
-            kf.transitionMatrix.at<float>(10) = dT;
-            kf.transitionMatrix.at<float>(17) = dT;
-            // <<<< Matrix A
+          //if (foundball)
+          //  {
+          //  // >>>> Matrix A
+          //  kf.transitionMatrix.at<float>(4) = dT;
+          //  kf.transitionMatrix.at<float>(10) = dT;
+          //  kf.transitionMatrix.at<float>(17) = dT;
+          //  // <<<< Matrix A
 
-            cout << "dT:" << endl << dT << endl;
+          //  cout << "dT:" << endl << dT << endl;
 
-            state = kf.predict();
-            cout << "State post:" << endl << state << endl;
+          //  state = kf.predict();
+          //  cout << "State post:" << endl << state << endl;
 
-            cv::Rect predRect;
-            predRect.width = state.at<float>(4);
-            predRect.height = state.at<float>(5);
-            predRect.x = state.at<float>(0) - predRect.width / 2;
-            predRect.y = state.at<float>(1) - predRect.height / 2;
+          //  cv::Rect predRect;
+          //  predRect.width = state.at<float>(4);
+          //  predRect.height = state.at<float>(5);
+          //  predRect.x = state.at<float>(0) - predRect.width / 2;
+          //  predRect.y = state.at<float>(1) - predRect.height / 2;
 
-            cv::Point center;
-            center.x = state.at<float>(0);
-            center.y = state.at<float>(1);
+          //  cv::Point center;
+          //  center.x = state.at<float>(0);
+          //  center.y = state.at<float>(1);
 
-            cv::circle(cpu_kalman_filterL, center, 2, CV_RGB(255, 0, 0), 2);
-            cv::circle(cpu_kalman_filterR, center, 2, CV_RGB(255, 0, 0), 2);
+          //  cv::circle(cpu_kalman_filterL, center, 2, CV_RGB(255, 0, 0), 2);
+          //  cv::circle(cpu_kalman_filterR, center, 2, CV_RGB(255, 0, 0), 2);
 
-            cv::rectangle(cpu_kalman_filterL, predRect, CV_RGB(255, 0, 0), 2);
-            cv::rectangle(cpu_kalman_filterR, predRect, CV_RGB(255, 0, 0), 2);
-            }
+          //  cv::rectangle(cpu_kalman_filterL, predRect, CV_RGB(255, 0, 0), 2);
+          //  cv::rectangle(cpu_kalman_filterR, predRect, CV_RGB(255, 0, 0), 2);
+          //  }
 
-          // >>>>> Kalman Update
-          if (camera_vector[object_found_camID]->get_objekt_anzahl() == 0)
-            {
-            notFoundCount++;
-            cout << "notFoundCount:" << notFoundCount << endl;
-            if (notFoundCount >= 100)
-              {
-              foundball = false;
-              }
-              /*else
-                  kf.statePost = state;*/
-            }
-          else
-            {
-            notFoundCount = 0;
+          //// >>>>> Kalman Update
+          //if (camera_vector[object_found_camID]->get_objekt_anzahl() == 0)
+          //  {
+          //  notFoundCount++;
+          //  cout << "notFoundCount:" << notFoundCount << endl;
+          //  if (notFoundCount >= 100)
+          //    {
+          //    foundball = false;
+          //    }
+          //    /*else
+          //        kf.statePost = state;*/
+          //  }
+          //else
+          //  {
+          //  notFoundCount = 0;
 
-            meas.at<float>(0) = tracked_data->positionsvektor.X;
-            meas.at<float>(1) = tracked_data->positionsvektor.Y;
-            meas.at<float>(2) = tracked_data->positionsvektor.Z;
+          //  meas.at<float>(0) = tracked_data->positionsvektor.X;
+          //  meas.at<float>(1) = tracked_data->positionsvektor.Y;
+          //  meas.at<float>(2) = tracked_data->positionsvektor.Z;
 
-            if (!foundball) // First detection!
-              {
-                  // >>>> Initialization
-              kf.errorCovPre.at<float>(0) = 1; // px
-              kf.errorCovPre.at<float>(7) = 1; // px
-              kf.errorCovPre.at<float>(14) = 1;
-              kf.errorCovPre.at<float>(21) = 1;
-              kf.errorCovPre.at<float>(28) = 1; // px
-              kf.errorCovPre.at<float>(35) = 1; // px
+          //  if (!foundball) // First detection!
+          //    {
+          //        // >>>> Initialization
+          //    kf.errorCovPre.at<float>(0) = 1; // px
+          //    kf.errorCovPre.at<float>(7) = 1; // px
+          //    kf.errorCovPre.at<float>(14) = 1;
+          //    kf.errorCovPre.at<float>(21) = 1;
+          //    kf.errorCovPre.at<float>(28) = 1; // px
+          //    kf.errorCovPre.at<float>(35) = 1; // px
 
-              state.at<float>(0) = meas.at<float>(0);
-              state.at<float>(1) = meas.at<float>(1);
-              state.at<float>(2) = 0;
-              state.at<float>(3) = 0;
-              state.at<float>(4) = meas.at<float>(2);
-              state.at<float>(5) = meas.at<float>(3);
-              // <<<< Initialization
+          //    state.at<float>(0) = meas.at<float>(0);
+          //    state.at<float>(1) = meas.at<float>(1);
+          //    state.at<float>(2) = 0;
+          //    state.at<float>(3) = 0;
+          //    state.at<float>(4) = meas.at<float>(2);
+          //    state.at<float>(5) = meas.at<float>(3);
+          //    // <<<< Initialization
 
-              kf.statePost = state;
+          //    kf.statePost = state;
 
-              foundball = true;
-              }
-            else
-              kf.correct(meas); // Kalman Correction
+          //    foundball = true;
+          //    }
+          //  else
+          //    kf.correct(meas); // Kalman Correction
 
-            cv::imshow ("kalman Links", cpu_kalman_filterL);
-            }
+          //  cv::imshow ("kalman Links", cpu_kalman_filterL);
+          //  }
 
 
-          cout << "Measure matrix:" << endl << meas << endl;
+          //cout << "Measure matrix:" << endl << meas << endl;
 
-          if (cv::waitKey (1) >= 0) break;
+          //if (cv::waitKey (1) >= 0) break;
 
-          statemachine_state = 1;
+          //statemachine_state = 1;
           break;
       }//switch(statemachine_state)
     }//while(tracking_active)

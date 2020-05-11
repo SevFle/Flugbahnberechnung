@@ -110,10 +110,10 @@
     <ClInclude Include="Kalmanfilter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="kalman_cuda.h">
+    <ClInclude Include="point.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="point.h">
+    <ClInclude Include="kalman_cuda.cuh">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

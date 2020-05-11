@@ -6,18 +6,7 @@
 //Created by Junkai Cheng, 2019/01/15
 //***********************************************************************************
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
-#include <cuda.h>
-#include <cstring>
-#include <math.h>
-#include <iostream>
-#include "cuda_runtime.h"
-#include "device_launch_parameters.h"
-#include "device_functions.h"
-#include "point.h"
-#include "kalman_cuda.h"
+#include "kalman_cuda.cuh"
 
 //A = STATEMATRIX
 //H= MEASUREMENT MATRIX

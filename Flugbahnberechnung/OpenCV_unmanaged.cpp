@@ -763,22 +763,6 @@ void        c_opencv_unmanaged::set_radius (float radius)
   {
   Radius = radius;
   }
-cv::Moments& c_opencv_unmanaged::get_image_moments ()
-  {
-  return Image_Moments;
-  }
-void        c_opencv_unmanaged::set_image_moments (const cv::Moments& image_moments)
-  {
-  Image_Moments = image_moments;
-  }
-cv::Point2f& c_opencv_unmanaged::get_center ()
-  {
-  return Center;
-  }
-void        c_opencv_unmanaged::set_center (const cv::Point2f& center)
-  {
-  Center = center;
-  }
 std::string& c_opencv_unmanaged::get_s_x ()
   {
   return S_x;
