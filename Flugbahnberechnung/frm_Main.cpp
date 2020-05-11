@@ -80,6 +80,7 @@ System::Void C_frm_Main::Taktgeber_Tick (System::Object^ sender, System::EventAr
         bt_ObjectCalibration->Enabled  = true;
         bt_CameraCalibration->Enabled  = true;
         bt_camera_positioning->Enabled = true;
+        bt_Kameraposen->Enabled        = true;
         state                          = 0;
         }
       break;
@@ -115,3 +116,10 @@ System::Void C_frm_Main::bt_apply_cameras_Click (System::Object^ sender, System:
     this->state = 1;
     }
   }
+ System::Void C_frm_Main::button1_Click(System::Object^  sender, System::EventArgs^  e)
+          {
+   Taktgeber->Enabled = false;
+   this->Main->frm_camera_positioning_pose->ShowDialog();
+   Taktgeber->Enabled = true;
+
+          }

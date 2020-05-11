@@ -63,6 +63,9 @@
     <ClCompile Include="Kalmanfilter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="frm_Camera_Positioning_Pose.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="frm_Main.h">
@@ -114,6 +117,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="kalman_cuda.cuh">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="frm_Camera_Positioning_Pose.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

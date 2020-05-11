@@ -1,6 +1,7 @@
   Flugbahnberechnung.frm_Camera_Calibration.resources - Embedded, ContainedInManifestFile, 
   Flugbahnberechnung.frm_Camera_Calibration_crop.resources - Embedded, ContainedInManifestFile, 
   Flugbahnberechnung.frm_Camera_Positioning.resources - Embedded, ContainedInManifestFile, 
+  Flugbahnberechnung.frm_Camera_Positioning_Pose.resources - Embedded, ContainedInManifestFile, 
   Flugbahnberechnung.frm_Main.resources - Embedded, ContainedInManifestFile, 
   Flugbahnberechnung.frm_Object_Calibration.resources - Embedded, ContainedInManifestFile, 
   Flugbahnberechnung.frm_Object_Tracking.resources - Embedded, ContainedInManifestFile, 
@@ -29,6 +30,7 @@ Class nmsp_Main.C_Main: AutoLayout, AnsiClass, Class, Public, BeforeFieldInit
     NmSp_frm_Main.C_frm_Main frm_Main : Public
     NmSp_CamerCalibration_Single.C_frm_CameraCalibration_Single frm_CameraCalibration_Single : Public
     nmsp_camera_calibration_crop.c_frm_Camera_Calibration_crop frm_CameraCalibration_crop : Public
+    nmsp_frm_camera_positioning_pose.c_frm_Camera_Positioning_Pose frm_camera_positioning_pose : Public
     NmSp_frm_ObjectCalibration.c_frm_object_calibration frm_ObjectCalibration : Public
     nmsp_frm_camera_positioning.c_frm_Camera_Positioning frm_Camera_Positioning : Public
     nsmp_frm_object_tracking.c_frm_Object_Tracking frm_object_tracking : Public
@@ -42,6 +44,9 @@ Class NmSp_CamerCalibration_Single.C_frm_CameraCalibration_Single: AutoLayout, A
   :System.Windows.Forms.Form
     Void .ctor(nmsp_GlobalObjects.C_GlobalObjects*, nmsp_Main.C_Main): PrivateScope, Public, HideBySig, SpecialName, RTSpecialName
 Class nmsp_camera_calibration_crop.c_frm_Camera_Calibration_crop: AutoLayout, AnsiClass, Class, Public, BeforeFieldInit
+  :System.Windows.Forms.Form
+    Void .ctor(nmsp_GlobalObjects.C_GlobalObjects*, nmsp_Main.C_Main): PrivateScope, Public, HideBySig, SpecialName, RTSpecialName
+Class nmsp_frm_camera_positioning_pose.c_frm_Camera_Positioning_Pose: AutoLayout, AnsiClass, Class, Public, BeforeFieldInit
   :System.Windows.Forms.Form
     Void .ctor(nmsp_GlobalObjects.C_GlobalObjects*, nmsp_Main.C_Main): PrivateScope, Public, HideBySig, SpecialName, RTSpecialName
 Class NmSp_frm_ObjectCalibration.c_frm_object_calibration: AutoLayout, AnsiClass, Class, Public, BeforeFieldInit

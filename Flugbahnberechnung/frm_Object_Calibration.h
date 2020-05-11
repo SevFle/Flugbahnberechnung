@@ -24,6 +24,7 @@ namespace NmSp_frm_ObjectCalibration
     UInt32 TimerWait;
 
 
+
     int hue_min;
     int hue_max;
     int saturation_min;

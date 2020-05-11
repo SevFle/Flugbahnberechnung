@@ -52,8 +52,13 @@ namespace nmsp_camera_calibration_crop
 
 using namespace nmsp_camera_calibration_crop;
 
+namespace nmsp_frm_camera_positioning_pose
+  {
+  ref class c_frm_Camera_Positioning_Pose;
+  }
 
-  #pragma endregion
+using namespace nmsp_frm_camera_positioning_pose;
+#pragma endregion
 
 /*********************************************************** Definition Namespace **************************************************************/
 namespace nmsp_Main
@@ -80,6 +85,7 @@ namespace nmsp_Main
     C_frm_Main^                     frm_Main;
     C_frm_CameraCalibration_Single^ frm_CameraCalibration_Single;
     c_frm_Camera_Calibration_crop^  frm_CameraCalibration_crop;
+    c_frm_Camera_Positioning_Pose^  frm_camera_positioning_pose;
     c_frm_object_calibration^       frm_ObjectCalibration;
     c_frm_Camera_Positioning^       frm_Camera_Positioning;
     c_frm_Object_Tracking^          frm_object_tracking;
@@ -90,7 +96,8 @@ namespace nmsp_Main
 
 #include "frm_Main.h"
 #include "frm_Camera_Calibration.h"
- #include "frm_Camera_Calibration_crop.h"
+#include "frm_Camera_Calibration_crop.h"
+#include "frm_Camera_Positioning_Pose.h"
 #include "frm_Object_Calibration.h"
 #include "frm_Camera_Positioning.h"
 #include "frm_Object_Tracking.h"

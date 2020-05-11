@@ -297,3 +297,8 @@ System::Void c_frm_Camera_Positioning::nup_Camera_R3_ValueChanged (System::Objec
   if (nup_Camera_R3->Value > cameras_in_use) nup_Camera_R3->Value = static_cast<int> (nup_Camera_R3->Value) - 1;
   bt_apply->Enabled = true;
   }
+
+System::Void c_frm_Camera_Positioning::bt_show_pose_Click(System::Object^  sender, System::EventArgs^  e)
+  {
+  this->Main->frm_camera_positioning_pose->Show();
+  }

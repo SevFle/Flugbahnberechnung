@@ -1,92 +1,20 @@
-﻿  Camera_unmanaged.cpp
-c:\users\111162002.edu\documents\projekte\objecttracking\flugbahnberechnung\camera_unmanaged.cpp(638): warning C4101: 'right_img': unreferenced local variable
-c:\users\111162002.edu\documents\projekte\objecttracking\flugbahnberechnung\camera_unmanaged.cpp(638): warning C4101: 'left_img': unreferenced local variable
-c:\users\111162002.edu\documents\projekte\objecttracking\flugbahnberechnung\camera_unmanaged.cpp(793): warning C4305: '=': truncation from 'double' to '_Tp'
-          with
-          [
-              _Tp=float
-          ]
-c:\users\111162002.edu\documents\projekte\objecttracking\flugbahnberechnung\camera_unmanaged.cpp(794): warning C4305: '=': truncation from 'double' to '_Tp'
-          with
-          [
-              _Tp=float
-          ]
-c:\users\111162002.edu\documents\projekte\objecttracking\flugbahnberechnung\camera_unmanaged.cpp(797): warning C4305: '=': truncation from 'double' to '_Tp'
-          with
-          [
-              _Tp=float
-          ]
-c:\users\111162002.edu\documents\projekte\objecttracking\flugbahnberechnung\camera_unmanaged.cpp(798): warning C4305: '=': truncation from 'double' to '_Tp'
-          with
-          [
-              _Tp=float
-          ]
-c:\users\111162002.edu\documents\projekte\objecttracking\flugbahnberechnung\camera_unmanaged.cpp(831): warning C4552: '+': result of expression not used
-c:\program files (x86)\microsoft visual studio\2017\professional\vc\tools\msvc\14.16.27023\include\xmemory0(881): warning C4244: 'argument': conversion from '_Ty' to '_Tp', possible loss of data
-          with
-          [
-              _Ty=int
-          ]
-          and
-          [
-              _Tp=float
-          ]
-  c:\program files (x86)\microsoft visual studio\2017\professional\vc\tools\msvc\14.16.27023\include\vector(902): note: see reference to function template instantiation 'void std::_Default_allocator_traits<_Alloc>::construct<_Ty,float,float,int>(_Alloc &,_Objty *const ,float &&,float &&,int &&)' being compiled
-          with
-          [
-              _Alloc=std::allocator<cv::Point3f>,
-              _Ty=cv::Point3_<float>,
-              _Objty=cv::Point3_<float>
-          ]
-  c:\program files (x86)\microsoft visual studio\2017\professional\vc\tools\msvc\14.16.27023\include\vector(902): note: see reference to function template instantiation 'void std::_Default_allocator_traits<_Alloc>::construct<_Ty,float,float,int>(_Alloc &,_Objty *const ,float &&,float &&,int &&)' being compiled
-          with
-          [
-              _Alloc=std::allocator<cv::Point3f>,
-              _Ty=cv::Point3_<float>,
-              _Objty=cv::Point3_<float>
-          ]
-  c:\program files (x86)\microsoft visual studio\2017\professional\vc\tools\msvc\14.16.27023\include\vector(919): note: see reference to function template instantiation 'void std::vector<cv::Point3f,std::allocator<_Ty>>::_Emplace_back_with_unused_capacity<float,float,int>(float &&,float &&,int &&)' being compiled
-          with
-          [
-              _Ty=cv::Point3f
-          ]
-  c:\users\111162002.edu\documents\projekte\objecttracking\flugbahnberechnung\camera_unmanaged.cpp(681): note: see reference to function template instantiation 'void std::vector<cv::Point3f,std::allocator<_Ty>>::emplace_back<float,float,int>(float &&,float &&,int &&)' being compiled
-          with
-          [
-              _Ty=cv::Point3f
-          ]
-c:\program files (x86)\microsoft visual studio\2017\professional\vc\tools\msvc\14.16.27023\include\xmemory0(881): warning C4244: 'argument': conversion from '_Ty' to '_Tp', possible loss of data
-          with
-          [
-              _Ty=double
-          ]
-          and
-          [
-              _Tp=float
-          ]
-  c:\program files (x86)\microsoft visual studio\2017\professional\vc\tools\msvc\14.16.27023\include\vector(902): note: see reference to function template instantiation 'void std::_Default_allocator_traits<_Alloc>::construct<_Ty,double,double>(_Alloc &,_Objty *const ,double &&,double &&)' being compiled
-          with
-          [
-              _Alloc=std::allocator<cv::Point2f>,
-              _Ty=cv::Point_<float>,
-              _Objty=cv::Point_<float>
-          ]
-  c:\program files (x86)\microsoft visual studio\2017\professional\vc\tools\msvc\14.16.27023\include\vector(902): note: see reference to function template instantiation 'void std::_Default_allocator_traits<_Alloc>::construct<_Ty,double,double>(_Alloc &,_Objty *const ,double &&,double &&)' being compiled
-          with
-          [
-              _Alloc=std::allocator<cv::Point2f>,
-              _Ty=cv::Point_<float>,
-              _Objty=cv::Point_<float>
-          ]
-  c:\program files (x86)\microsoft visual studio\2017\professional\vc\tools\msvc\14.16.27023\include\vector(919): note: see reference to function template instantiation 'void std::vector<cv::Point2f,std::allocator<_Ty>>::_Emplace_back_with_unused_capacity<double,double>(double &&,double &&)' being compiled
-          with
-          [
-              _Ty=cv::Point2f
-          ]
-  c:\users\111162002.edu\documents\projekte\objecttracking\flugbahnberechnung\camera_unmanaged.cpp(699): note: see reference to function template instantiation 'void std::vector<cv::Point2f,std::allocator<_Ty>>::emplace_back<double,double>(double &&,double &&)' being compiled
-          with
-          [
-              _Ty=cv::Point2f
-          ]
+﻿  frm_Camera_Positioning_Pose.cpp
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\main.h(92): warning C4677: 'camera_managed': signature of non-private member contains assembly private type 'nmsp_camera_managed::C_camera_managed'
+  d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\camera_managed.h(13): note: see declaration of 'nmsp_camera_managed::C_camera_managed'
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\frm_camera_positioning_pose.cpp(211): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\frm_camera_positioning_pose.cpp(220): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\frm_camera_positioning_pose.cpp(229): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\cuda.inl.hpp(105): warning C4793: 'cv::cuda::GpuMat::GpuMat': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\cuda.inl.hpp(395): warning C4793: 'cv::cuda::HostMem::HostMem': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\mat.inl.hpp(530): warning C4793: 'cv::Mat::Mat': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\mat.inl.hpp(850): warning C4793: 'cv::Mat::release': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\mat.inl.hpp(2181): warning C4793: 'cv::SparseMat::addref': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\mat.inl.hpp(3781): warning C4793: 'cv::UMat::addref': function compiled as native:
+  	Found an intrinsic not supported in managed code
   App_Main.obj : MSIL module encountered; incremental linking is disabled for MSIL; performing full link
-  Flugbahnberechnung.vcxproj -> C:\Users\111162002.EDU\Documents\Projekte\ObjectTracking\x64\Debug\ObjectTracking.exe
+  Flugbahnberechnung.vcxproj -> D:\Projekte\VisualStudio\Flugbahnberechnung\x64\Debug\ObjectTracking.exe

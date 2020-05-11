@@ -139,6 +139,7 @@
     <ClCompile Include="frm_Camera_Calibration.cpp" />
     <ClCompile Include="frm_Camera_Calibration_crop.cpp" />
     <ClCompile Include="frm_Camera_Positioning.cpp" />
+    <ClCompile Include="frm_Camera_Positioning_Pose.cpp" />
     <ClCompile Include="frm_Object_Calibration.cpp" />
     <ClCompile Include="Camera_managed.cpp" />
     <ClCompile Include="frm_Main.cpp" />
@@ -174,6 +175,9 @@
       <FileType>CppForm</FileType>
     </ClInclude>
     <ClInclude Include="frm_Camera_Positioning.h">
+      <FileType>CppForm</FileType>
+    </ClInclude>
+    <ClInclude Include="frm_Camera_Positioning_Pose.h">
       <FileType>CppForm</FileType>
     </ClInclude>
     <ClInclude Include="frm_Main.h">
@@ -212,6 +216,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="frm_Camera_Positioning.resx">
       <DependentUpon>frm_Camera_Positioning.h</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frm_Camera_Positioning_Pose.resx">
+      <DependentUpon>frm_Camera_Positioning_Pose.h</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="frm_Main.resx">
       <DependentUpon>frm_Main.h</DependentUpon>

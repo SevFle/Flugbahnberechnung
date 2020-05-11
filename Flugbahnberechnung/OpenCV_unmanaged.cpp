@@ -240,7 +240,7 @@ void c_opencv_unmanaged::camera_thread ()
       case 1:
         if (idle)
           {
-          std::this_thread::sleep_for (std::chrono::milliseconds (200));
+          std::this_thread::sleep_for (std::chrono::milliseconds (50));
           break;
           }
         statemachine_state = 2;

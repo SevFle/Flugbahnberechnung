@@ -393,6 +393,36 @@ void c_camera_unmanaged::load_camera_positioning ()
   std::cout << "Loaded Positioning." << endl;
   }
 
+void c_camera_unmanaged::save_camera_cos (int camera_id, C_AbsolutePose& WorldToCam_Param)
+  {
+  string Dateiname = "../Parameter/Pose_world_to_camera" + to_string (camera_id) + ".csv";
+  string Dateityp;
+  double nx, ny, nz, ox, oy, oz, ax, ay, az, px, py, pz;
+
+  //TODO Rotation der Kameras einfügen
+  GlobalObjects->csv_parameter_datei->Oeffnen (Dateiname, Enum_CSV_Access::Read);
+  if (GlobalObjects->csv_parameter_datei->IsOpen())
+    {
+    GlobalObjects->csv_parameter_datei->Schreiben ("Dateityp", Dateityp, "[1]");
+    GlobalObjects->csv_parameter_datei->Schreiben ("nx", WorldToCam_Param.nx(), "[1]");
+    GlobalObjects->csv_parameter_datei->Schreiben ("ny", WorldToCam_Param.ny(), "[1]");
+    GlobalObjects->csv_parameter_datei->Schreiben ("nz", WorldToCam_Param.nz(), "[1]");
+    GlobalObjects->csv_parameter_datei->Schreiben ("ox", WorldToCam_Param.ox(), "[1]");
+    GlobalObjects->csv_parameter_datei->Schreiben ("oy", WorldToCam_Param.oy(), "[1]");
+    GlobalObjects->csv_parameter_datei->Schreiben ("oz", WorldToCam_Param.oz(), "[1]");
+    GlobalObjects->csv_parameter_datei->Schreiben ("ax", WorldToCam_Param.ax(), "[1]");
+    GlobalObjects->csv_parameter_datei->Schreiben ("ay", WorldToCam_Param.ay(), "[1]");
+    GlobalObjects->csv_parameter_datei->Schreiben ("az", WorldToCam_Param.az(), "[1]");
+    GlobalObjects->csv_parameter_datei->Schreiben ("px", WorldToCam_Param.px(), "[mm]");
+    GlobalObjects->csv_parameter_datei->Schreiben ("py", WorldToCam_Param.py(), "[mm]");
+    GlobalObjects->csv_parameter_datei->Schreiben ("pz", WorldToCam_Param.pz(), "[mm]");
+
+
+    }
+  GlobalObjects->csv_parameter_datei->Schliessen();
+
+  }
+
 void c_camera_unmanaged::load_camera_cos (int camera_id, C_AbsolutePose& WorldToCam_Param)
   {
   string Dateiname = "../Parameter/Pose_world_to_camera" + to_string (camera_id) + ".csv";
@@ -430,6 +460,8 @@ void c_camera_unmanaged::load_camera_cos (int camera_id, C_AbsolutePose& WorldTo
     WorldToCam_Param.py (py);
     WorldToCam_Param.pz (pz);
     }
+  GlobalObjects->csv_parameter_datei->Schliessen();
+
   }
 
 
