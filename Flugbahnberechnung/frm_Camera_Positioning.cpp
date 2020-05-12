@@ -298,7 +298,7 @@ System::Void c_frm_Camera_Positioning::nup_Camera_R3_ValueChanged (System::Objec
   bt_apply->Enabled = true;
   }
 
-System::Void c_frm_Camera_Positioning::bt_show_pose_Click(System::Object^  sender, System::EventArgs^  e)
+System::Void c_frm_Camera_Positioning::bt_show_pose_Click (System::Object^ sender, System::EventArgs^ e)
   {
   this->Main->frm_camera_positioning_pose->Show();
   }

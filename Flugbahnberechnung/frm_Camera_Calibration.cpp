@@ -183,7 +183,7 @@ System::Void C_frm_CameraCalibration_Single::bt_show_crop_Click (System::Object^
   this->Taktgeber->Enabled = false;
   for (int i = 0; i < cameras_in_use; i++)
     {
-    this->Main->camera_managed->camera_unmanaged->camera_vector[i]->set_idle             (false);
+    this->Main->camera_managed->camera_unmanaged->camera_vector[i]->set_idle (false);
     this->Main->camera_managed->camera_unmanaged->camera_vector[i]->set_undistord_active (true);
     }
   this->Main->frm_CameraCalibration_crop->ShowDialog();
@@ -235,13 +235,13 @@ System::Void C_frm_CameraCalibration_Single::sm_Single_camera_calibration ()
       this->grB_options->Enabled = true;
       this->bt_start->Text       = "Start";
 
-      this->Main->camera_managed->camera_unmanaged->SquareSize                                         = static_cast<float> (double::Parse (this->tb_single_edge_length->Text));
-      this->Main->camera_managed->camera_unmanaged->numBoards_imgs                                     = this->photo_id;
-      this->Main->camera_managed->camera_unmanaged->numCornersHeight                                   = int::Parse (this->tb_single_corner_count_H->Text);
-      this->Main->camera_managed->camera_unmanaged->numCornersWidth                                    = int::Parse (this->tb_single_corner_count_B->Text);
-      this->Main->camera_managed->camera_unmanaged->camera_id                                          = this->current_camera_id;
-      this->lbl_calibration_running->Visible                                                           = true;
-      this->Main->camera_managed->camera_unmanaged->camera_vector[current_camera_id]->set_undistord_active(false);
+      this->Main->camera_managed->camera_unmanaged->SquareSize       = static_cast<float> (double::Parse (this->tb_single_edge_length->Text));
+      this->Main->camera_managed->camera_unmanaged->numBoards_imgs   = this->photo_id;
+      this->Main->camera_managed->camera_unmanaged->numCornersHeight = int::Parse (this->tb_single_corner_count_H->Text);
+      this->Main->camera_managed->camera_unmanaged->numCornersWidth  = int::Parse (this->tb_single_corner_count_B->Text);
+      this->Main->camera_managed->camera_unmanaged->camera_id        = this->current_camera_id;
+      this->lbl_calibration_running->Visible                         = true;
+      this->Main->camera_managed->camera_unmanaged->camera_vector[current_camera_id]->set_undistord_active (false);
 
       //Starte Hintergrund Thread zur Verarbeitung der aufgenommenen Bilder
       Thread^ calibrate = gcnew Thread (gcnew ThreadStart (this,&C_frm_CameraCalibration_Single::camera_calibration_thread));
@@ -292,12 +292,12 @@ System::Void C_frm_CameraCalibration_Single::sm_Stereo_camera_calibration ()
       this->grB_options->Enabled = true;
       this->bt_start->Text       = "Start";
 
-      this->Main->camera_managed->camera_unmanaged->SquareSize                                         = static_cast<float> (double::Parse (this->tb_single_edge_length->Text));
-      this->Main->camera_managed->camera_unmanaged->numBoards_imgs                                     = this->photo_id;
-      this->Main->camera_managed->camera_unmanaged->numCornersHeight                                   = int::Parse (this->tb_single_corner_count_H->Text);
-      this->Main->camera_managed->camera_unmanaged->numCornersWidth                                    = int::Parse (this->tb_single_corner_count_B->Text);
-      this->Main->camera_managed->camera_unmanaged->camera_id                                          = this->current_camera_id;
-      this->lbl_calibration_running->Visible                                                           = true;
+      this->Main->camera_managed->camera_unmanaged->SquareSize       = static_cast<float> (double::Parse (this->tb_single_edge_length->Text));
+      this->Main->camera_managed->camera_unmanaged->numBoards_imgs   = this->photo_id;
+      this->Main->camera_managed->camera_unmanaged->numCornersHeight = int::Parse (this->tb_single_corner_count_H->Text);
+      this->Main->camera_managed->camera_unmanaged->numCornersWidth  = int::Parse (this->tb_single_corner_count_B->Text);
+      this->Main->camera_managed->camera_unmanaged->camera_id        = this->current_camera_id;
+      this->lbl_calibration_running->Visible                         = true;
       this->Main->camera_managed->camera_unmanaged->camera_vector[current_camera_id]->set_undistord_active (false);
 
       //Starte Hintergrund Thread zur Verarbeitung der aufgenommenen Bilder

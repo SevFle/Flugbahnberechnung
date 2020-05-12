@@ -24,7 +24,6 @@ namespace NmSp_frm_ObjectCalibration
     UInt32 TimerWait;
 
 
-
     int hue_min;
     int hue_max;
     int saturation_min;
@@ -368,143 +367,171 @@ namespace NmSp_frm_ObjectCalibration
       this->bt_apply_all               = (gcnew System::Windows::Forms::Button());
       this->bt_Tracking                = (gcnew System::Windows::Forms::Button());
       (cli::
+      
       safe_cast<System::ComponentModel::ISupportInitialize^> (this->pb_original)
       )
       ->
       BeginInit();
       (cli::
+      
       safe_cast<System::ComponentModel::ISupportInitialize^> (this->pb_filtered)
       )
       ->
       BeginInit();
       (cli::
+      
       safe_cast<System::ComponentModel::ISupportInitialize^> (this->pb_tracked)
       )
       ->
       BeginInit();
       this->gb_farbfilter->SuspendLayout();
       (cli::
+      
       safe_cast<System::ComponentModel::ISupportInitialize^> (this->numUD_bilateral_color)
       )
       ->
       BeginInit();
       (cli::
+      
       safe_cast<System::ComponentModel::ISupportInitialize^> (this->numUD_gaussian_sigma)
       )
       ->
       BeginInit();
       (cli::
+      
       safe_cast<System::ComponentModel::ISupportInitialize^> (this->numUD_gaussian_kernel_size)
       )
       ->
       BeginInit();
       (cli::
+      
       safe_cast<System::ComponentModel::ISupportInitialize^> (this->numUD_dilation_kernelsize)
       )
       ->
       BeginInit();
       (cli::
+      
       safe_cast<System::ComponentModel::ISupportInitialize^> (this->numUD_morph_kernelsize)
       )
       ->
       BeginInit();
       (cli::
+      
       safe_cast<System::ComponentModel::ISupportInitialize^> (this->numUD_dilation_iterations)
       )
       ->
       BeginInit();
       (cli::
+      
       safe_cast<System::ComponentModel::ISupportInitialize^> (this->numUD_bilateral_kernelsize)
       )
       ->
       BeginInit();
       (cli::
+      
       safe_cast<System::ComponentModel::ISupportInitialize^> (this->numUD_morph_iterations)
       )
       ->
       BeginInit();
       (cli::
+      
       safe_cast<System::ComponentModel::ISupportInitialize^> (this->numUD_erode_iterations)
       )
       ->
       BeginInit();
       (cli::
+      
       safe_cast<System::ComponentModel::ISupportInitialize^> (this->numUD_bilateral_spatial)
       )
       ->
       BeginInit();
       (cli::
+      
       safe_cast<System::ComponentModel::ISupportInitialize^> (this->numUD_erode_kernelsize)
       )
       ->
       BeginInit();
       (cli::
+      
       safe_cast<System::ComponentModel::ISupportInitialize^> (this->numUD_closing_kernelsize)
       )
       ->
       BeginInit();
       (cli::
+      
       safe_cast<System::ComponentModel::ISupportInitialize^> (this->numUD_closing_iterations)
       )
       ->
       BeginInit();
       (cli::
+      
       safe_cast<System::ComponentModel::ISupportInitialize^> (this->numUD_opening_kernelsize)
       )
       ->
       BeginInit();
       (cli::
+      
       safe_cast<System::ComponentModel::ISupportInitialize^> (this->numUD_opening_iterations)
       )
       ->
       BeginInit();
       (cli::
+      
       safe_cast<System::ComponentModel::ISupportInitialize^> (this->numUD_cam_id)
       )
       ->
       BeginInit();
       (cli::
+      
       safe_cast<System::ComponentModel::ISupportInitialize^> (this->trb_hue_min)
       )
       ->
       BeginInit();
       (cli::
+      
       safe_cast<System::ComponentModel::ISupportInitialize^> (this->trb_hue_max)
       )
       ->
       BeginInit();
       this->groupBox1->SuspendLayout();
       (cli::
+      
       safe_cast<System::ComponentModel::ISupportInitialize^> (this->trb_ObjectSize_min)
       )
       ->
       BeginInit();
       (cli::
+      
       safe_cast<System::ComponentModel::ISupportInitialize^> (this->trb_ObjectSize_max)
       )
       ->
       BeginInit();
       (cli::
+      
       safe_cast<System::ComponentModel::ISupportInitialize^> (this->trb_value_min)
       )
       ->
       BeginInit();
       (cli::
+      
       safe_cast<System::ComponentModel::ISupportInitialize^> (this->trb_value_max)
       )
       ->
       BeginInit();
       (cli::
+      
       safe_cast<System::ComponentModel::ISupportInitialize^> (this->trb_saturation_min)
       )
       ->
       BeginInit();
       (cli::
+      
       safe_cast<System::ComponentModel::ISupportInitialize^> (this->trb_saturation_max)
       )
       ->
       BeginInit();
       (cli::
+      
       safe_cast<System::ComponentModel::ISupportInitialize^> (this->pb_gray)
       )
       ->
@@ -1429,16 +1456,19 @@ namespace NmSp_frm_ObjectCalibration
       this->FormClosing += gcnew System::Windows::Forms::FormClosingEventHandler (this,&c_frm_object_calibration::C_frm_ObjectCalibration_FormClosing);
       this->Load += gcnew System::EventHandler (this,&c_frm_object_calibration::C_frm_ObjectCalibration_Load);
       (cli::
+      
       safe_cast<System::ComponentModel::ISupportInitialize^> (this->pb_original)
       )
       ->
       EndInit();
       (cli::
+      
       safe_cast<System::ComponentModel::ISupportInitialize^> (this->pb_filtered)
       )
       ->
       EndInit();
       (cli::
+      
       safe_cast<System::ComponentModel::ISupportInitialize^> (this->pb_tracked)
       )
       ->
@@ -1446,91 +1476,109 @@ namespace NmSp_frm_ObjectCalibration
       this->gb_farbfilter->ResumeLayout (false);
       this->gb_farbfilter->PerformLayout();
       (cli::
+      
       safe_cast<System::ComponentModel::ISupportInitialize^> (this->numUD_bilateral_color)
       )
       ->
       EndInit();
       (cli::
+      
       safe_cast<System::ComponentModel::ISupportInitialize^> (this->numUD_gaussian_sigma)
       )
       ->
       EndInit();
       (cli::
+      
       safe_cast<System::ComponentModel::ISupportInitialize^> (this->numUD_gaussian_kernel_size)
       )
       ->
       EndInit();
       (cli::
+      
       safe_cast<System::ComponentModel::ISupportInitialize^> (this->numUD_dilation_kernelsize)
       )
       ->
       EndInit();
       (cli::
+      
       safe_cast<System::ComponentModel::ISupportInitialize^> (this->numUD_morph_kernelsize)
       )
       ->
       EndInit();
       (cli::
+      
       safe_cast<System::ComponentModel::ISupportInitialize^> (this->numUD_dilation_iterations)
       )
       ->
       EndInit();
       (cli::
+      
       safe_cast<System::ComponentModel::ISupportInitialize^> (this->numUD_bilateral_kernelsize)
       )
       ->
       EndInit();
       (cli::
+      
       safe_cast<System::ComponentModel::ISupportInitialize^> (this->numUD_morph_iterations)
       )
       ->
       EndInit();
       (cli::
+      
       safe_cast<System::ComponentModel::ISupportInitialize^> (this->numUD_erode_iterations)
       )
       ->
       EndInit();
       (cli::
+      
       safe_cast<System::ComponentModel::ISupportInitialize^> (this->numUD_bilateral_spatial)
       )
       ->
       EndInit();
       (cli::
+      
       safe_cast<System::ComponentModel::ISupportInitialize^> (this->numUD_erode_kernelsize)
       )
       ->
       EndInit();
       (cli::
+      
       safe_cast<System::ComponentModel::ISupportInitialize^> (this->numUD_closing_kernelsize)
       )
       ->
       EndInit();
       (cli::
+      
       safe_cast<System::ComponentModel::ISupportInitialize^> (this->numUD_closing_iterations)
       )
       ->
       EndInit();
       (cli::
+      
       safe_cast<System::ComponentModel::ISupportInitialize^> (this->numUD_opening_kernelsize)
       )
       ->
       EndInit();
       (cli::
+      
       safe_cast<System::ComponentModel::ISupportInitialize^> (this->numUD_opening_iterations)
       )
       ->
       EndInit();
       (cli::
+      
       safe_cast<System::ComponentModel::ISupportInitialize^> (this->numUD_cam_id)
       )
       ->
       EndInit();
       (cli::
+      
       safe_cast<System::ComponentModel::ISupportInitialize^> (this->trb_hue_min)
       )
       ->
       EndInit();
       (cli::
+      
       safe_cast<System::ComponentModel::ISupportInitialize^> (this->trb_hue_max)
       )
       ->
@@ -1538,36 +1586,43 @@ namespace NmSp_frm_ObjectCalibration
       this->groupBox1->ResumeLayout (false);
       this->groupBox1->PerformLayout();
       (cli::
+      
       safe_cast<System::ComponentModel::ISupportInitialize^> (this->trb_ObjectSize_min)
       )
       ->
       EndInit();
       (cli::
+      
       safe_cast<System::ComponentModel::ISupportInitialize^> (this->trb_ObjectSize_max)
       )
       ->
       EndInit();
       (cli::
+      
       safe_cast<System::ComponentModel::ISupportInitialize^> (this->trb_value_min)
       )
       ->
       EndInit();
       (cli::
+      
       safe_cast<System::ComponentModel::ISupportInitialize^> (this->trb_value_max)
       )
       ->
       EndInit();
       (cli::
+      
       safe_cast<System::ComponentModel::ISupportInitialize^> (this->trb_saturation_min)
       )
       ->
       EndInit();
       (cli::
+      
       safe_cast<System::ComponentModel::ISupportInitialize^> (this->trb_saturation_max)
       )
       ->
       EndInit();
       (cli::
+      
       safe_cast<System::ComponentModel::ISupportInitialize^> (this->pb_gray)
       )
       ->

@@ -6,8 +6,8 @@ namespace nmsp_kalman_filter
   class kalman_filter
     {
     protected:
-    kalman_filter();
-    ~kalman_filter();
+    kalman_filter ();
+    ~kalman_filter ();
 
     private:
     public:
@@ -15,8 +15,5 @@ namespace nmsp_kalman_filter
 
     private:
     public:
-
-
     };
   }
-

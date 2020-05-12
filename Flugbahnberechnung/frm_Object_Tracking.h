@@ -124,11 +124,13 @@ namespace nsmp_frm_object_tracking
       this->textBox3           = (gcnew System::Windows::Forms::TextBox());
       this->lbl_thread_running = (gcnew System::Windows::Forms::Label());
       (cli::
+      
       safe_cast<System::ComponentModel::ISupportInitialize^> (this->pb_cam_left)
       )
       ->
       BeginInit();
       (cli::
+      
       safe_cast<System::ComponentModel::ISupportInitialize^> (this->pb_cam_right)
       )
       ->
@@ -136,6 +138,7 @@ namespace nsmp_frm_object_tracking
       this->groupBox1->SuspendLayout();
       this->groupBox2->SuspendLayout();
       (cli::
+      
       safe_cast<System::ComponentModel::ISupportInitialize^> (this->numericUpDown1)
       )
       ->
@@ -439,11 +442,13 @@ namespace nsmp_frm_object_tracking
       this->FormClosing += gcnew System::Windows::Forms::FormClosingEventHandler (this,&c_frm_Object_Tracking::c_frm_Object_Tracking_FormClosing);
       this->Load += gcnew System::EventHandler (this,&c_frm_Object_Tracking::c_frm_Object_Tracking_Load);
       (cli::
+      
       safe_cast<System::ComponentModel::ISupportInitialize^> (this->pb_cam_left)
       )
       ->
       EndInit();
       (cli::
+      
       safe_cast<System::ComponentModel::ISupportInitialize^> (this->pb_cam_right)
       )
       ->
@@ -453,6 +458,7 @@ namespace nsmp_frm_object_tracking
       this->groupBox2->ResumeLayout (false);
       this->groupBox2->PerformLayout();
       (cli::
+      
       safe_cast<System::ComponentModel::ISupportInitialize^> (this->numericUpDown1)
       )
       ->

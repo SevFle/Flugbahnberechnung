@@ -116,26 +116,31 @@ namespace nmsp_camera_calibration_crop
       this->label8               = (gcnew System::Windows::Forms::Label());
       this->bt_apply             = (gcnew System::Windows::Forms::Button());
       (cli::
+      
       safe_cast<System::ComponentModel::ISupportInitialize^> (this->num_UD_resize_height)
       )
       ->
       BeginInit();
       (cli::
+      
       safe_cast<System::ComponentModel::ISupportInitialize^> (this->num_UD_resize_width)
       )
       ->
       BeginInit();
       (cli::
+      
       safe_cast<System::ComponentModel::ISupportInitialize^> (this->nup_camera_id)
       )
       ->
       BeginInit();
       (cli::
+      
       safe_cast<System::ComponentModel::ISupportInitialize^> (this->pb_uncropped_img)
       )
       ->
       BeginInit();
       (cli::
+      
       safe_cast<System::ComponentModel::ISupportInitialize^> (this->pb_cropped_img)
       )
       ->
@@ -466,26 +471,31 @@ namespace nmsp_camera_calibration_crop
       this->FormClosing += gcnew System::Windows::Forms::FormClosingEventHandler (this,&c_frm_Camera_Calibration_crop::c_frm_Camera_Calibration_crop_FormClosing);
       this->Load += gcnew System::EventHandler (this,&c_frm_Camera_Calibration_crop::c_frm_Camera_Calibration_crop_Load);
       (cli::
+      
       safe_cast<System::ComponentModel::ISupportInitialize^> (this->num_UD_resize_height)
       )
       ->
       EndInit();
       (cli::
+      
       safe_cast<System::ComponentModel::ISupportInitialize^> (this->num_UD_resize_width)
       )
       ->
       EndInit();
       (cli::
+      
       safe_cast<System::ComponentModel::ISupportInitialize^> (this->nup_camera_id)
       )
       ->
       EndInit();
       (cli::
+      
       safe_cast<System::ComponentModel::ISupportInitialize^> (this->pb_uncropped_img)
       )
       ->
       EndInit();
       (cli::
+      
       safe_cast<System::ComponentModel::ISupportInitialize^> (this->pb_cropped_img)
       )
       ->

@@ -9,7 +9,6 @@
 #define Time 0.007
 
 
-void predict_loop(int iteration_num, float* predict, float* cov, float* new_predict, float* new_cov, int point_num, float delta_t);
+void predict_loop (int iteration_num, float* predict, float* cov, float* new_predict, float* new_cov, int point_num, float delta_t);
 
-void printMatrix(float* a, int Width, int length);
-
+void printMatrix (float* a, int Width, int length);

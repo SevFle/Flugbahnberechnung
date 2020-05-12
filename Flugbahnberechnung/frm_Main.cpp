@@ -28,11 +28,11 @@ C_frm_Main::~C_frm_Main ()
 /**************************************************** WinForms Event-Handler *********************************************************/
 System::Void C_frm_Main::bt_ObjectCalibration_Click (System::Object^ sender, System::EventArgs^ e)
   {
-  this->Taktgeber->Enabled                                                           = false;
+  this->Taktgeber->Enabled = false;
   this->Main->camera_managed->camera_unmanaged->camera_vector[0]->set_idle (false);
-  this->Main->camera_managed->camera_unmanaged->camera_vector[0]->set_show_cropped_image(false);
-  this->Main->camera_managed->camera_unmanaged->camera_vector[0]->set_undistord_active(true);
-  this->Main->camera_managed->camera_unmanaged->camera_vector[0]->set_filtering_active(true);
+  this->Main->camera_managed->camera_unmanaged->camera_vector[0]->set_show_cropped_image (false);
+  this->Main->camera_managed->camera_unmanaged->camera_vector[0]->set_undistord_active (true);
+  this->Main->camera_managed->camera_unmanaged->camera_vector[0]->set_filtering_active (true);
 
   this->Main->frm_ObjectCalibration->ShowDialog();
   this->Taktgeber->Enabled = true;
@@ -40,9 +40,9 @@ System::Void C_frm_Main::bt_ObjectCalibration_Click (System::Object^ sender, Sys
 
 System::Void C_frm_Main::bt_CameraCalibration_Click (System::Object^ sender, System::EventArgs^ e)
   {
-  this->Taktgeber->Enabled                                                         = false;
-  this->Main->camera_managed->camera_unmanaged->camera_vector[0]->set_idle(false);
-  this->Main->camera_managed->camera_unmanaged->camera_vector[0]->set_undistord_active(true);
+  this->Taktgeber->Enabled = false;
+  this->Main->camera_managed->camera_unmanaged->camera_vector[0]->set_idle (false);
+  this->Main->camera_managed->camera_unmanaged->camera_vector[0]->set_undistord_active (true);
 
   this->Main->frm_CameraCalibration_Single->ShowDialog();
   this->Taktgeber->Enabled = true;
@@ -92,8 +92,8 @@ System::Void C_frm_Main::bt_camera_positioning_MouseClick (System::Object^ sende
   this->Taktgeber->Enabled = false;
   for (int i = 0; i < GlobalObjects->cameras_in_use; i++)
     {
-    Main->camera_managed->camera_unmanaged->camera_vector[i]->set_idle             (false);
-    Main->camera_managed->camera_unmanaged->camera_vector[i]->set_undistord_active ( false);
+    Main->camera_managed->camera_unmanaged->camera_vector[i]->set_idle (false);
+    Main->camera_managed->camera_unmanaged->camera_vector[i]->set_undistord_active (false);
     }
   this->Main->frm_Camera_Positioning->ShowDialog();
   this->Taktgeber->Enabled = true;
@@ -116,10 +116,9 @@ System::Void C_frm_Main::bt_apply_cameras_Click (System::Object^ sender, System:
     this->state = 1;
     }
   }
- System::Void C_frm_Main::button1_Click(System::Object^  sender, System::EventArgs^  e)
-          {
-   Taktgeber->Enabled = false;
-   this->Main->frm_camera_positioning_pose->ShowDialog();
-   Taktgeber->Enabled = true;
-
-          }
+System::Void C_frm_Main::button1_Click (System::Object^ sender, System::EventArgs^ e)
+  {
+  Taktgeber->Enabled = false;
+  this->Main->frm_camera_positioning_pose->ShowDialog();
+  Taktgeber->Enabled = true;
+  }

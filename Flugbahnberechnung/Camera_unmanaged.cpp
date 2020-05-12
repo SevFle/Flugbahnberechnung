@@ -103,9 +103,8 @@ void c_camera_unmanaged::save_camera_settings (int camera_id)
     GlobalObjects->csv_parameter_datei->Schreiben ("Morph_Active",to_string (camera_vector[camera_id]->is_morph_active()),"[1]");
     GlobalObjects->csv_parameter_datei->Schreiben ("Bilateral_Active",to_string (camera_vector[camera_id]->is_bilateral_active()),"[1]");
 
-    GlobalObjects->csv_parameter_datei->Schreiben ("Object_size_min", to_string (camera_vector[camera_id]->get_object_size_min()), "[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben ("Object_size_max", to_string (camera_vector[camera_id]->get_object_size_max()), "[1]");
-
+    GlobalObjects->csv_parameter_datei->Schreiben ("Object_size_min",to_string (camera_vector[camera_id]->get_object_size_min()),"[1]");
+    GlobalObjects->csv_parameter_datei->Schreiben ("Object_size_max",to_string (camera_vector[camera_id]->get_object_size_max()),"[1]");
     }
   this->GlobalObjects->csv_parameter_datei->Schliessen();
   }
@@ -145,8 +144,8 @@ void c_camera_unmanaged::load_camera_settings (int camera_id)
   bool morph_active     = false;
   bool bilateral_active = false;
 
-  int object_size_min   = 0;
-  int object_size_max   = 0;
+  int object_size_min = 0;
+  int object_size_max = 0;
 
   GlobalObjects->csv_parameter_datei->Oeffnen (Dateiname,Enum_CSV_Access::Read);
 
@@ -189,39 +188,39 @@ void c_camera_unmanaged::load_camera_settings (int camera_id)
     GlobalObjects->csv_parameter_datei->Lesen (object_size_max);
 
 
-    camera_vector[camera_id]->set_hue_min       (hue_min);
-    camera_vector[camera_id]->set_hue_max       (hue_max);
-    camera_vector[camera_id]->set_saturation_min(saturation_min);
-    camera_vector[camera_id]->set_saturation_max(saturation_max);
-    camera_vector[camera_id]->set_value_min     (value_min);
-    camera_vector[camera_id]->set_value_max     (value_max);
+    camera_vector[camera_id]->set_hue_min (hue_min);
+    camera_vector[camera_id]->set_hue_max (hue_max);
+    camera_vector[camera_id]->set_saturation_min (saturation_min);
+    camera_vector[camera_id]->set_saturation_max (saturation_max);
+    camera_vector[camera_id]->set_value_min (value_min);
+    camera_vector[camera_id]->set_value_max (value_max);
 
     camera_vector[camera_id]->set_erosion_iterations (erosion_iterations);
-    camera_vector[camera_id]->set_dilation_iterations(dilation_iterations);
+    camera_vector[camera_id]->set_dilation_iterations (dilation_iterations);
     camera_vector[camera_id]->set_opening_iterations (opening_iterations);
     camera_vector[camera_id]->set_closing_iterations (closing_iterations);
-    camera_vector[camera_id]->set_morph_iterations   (morph_iterations);
+    camera_vector[camera_id]->set_morph_iterations (morph_iterations);
 
-    camera_vector[camera_id]->set_erosion_kernel_size  (erosion_kernel_size);
+    camera_vector[camera_id]->set_erosion_kernel_size (erosion_kernel_size);
     camera_vector[camera_id]->set_dilation_kernel_size (dilation_kernel_size);
-    camera_vector[camera_id]->set_opening_kernel_size  (opening_kernel_size);
-    camera_vector[camera_id]->set_closing_kernel_size  (closing_kernel_size);
-    camera_vector[camera_id]->set_morph_kernel_size    (morph_kernel_size);
+    camera_vector[camera_id]->set_opening_kernel_size (opening_kernel_size);
+    camera_vector[camera_id]->set_closing_kernel_size (closing_kernel_size);
+    camera_vector[camera_id]->set_morph_kernel_size (morph_kernel_size);
     camera_vector[camera_id]->set_gaussian_kernel_size (gaussian_kernel_size);
-    camera_vector[camera_id]->set_bilateral_kernel_size(bilateral_kernel_size);
+    camera_vector[camera_id]->set_bilateral_kernel_size (bilateral_kernel_size);
 
-    camera_vector[camera_id]->set_gaussian_sigma(gaussian_sigma);
+    camera_vector[camera_id]->set_gaussian_sigma (gaussian_sigma);
 
-    camera_vector[camera_id]->set_bilateral_sigma_color  (bilateral_sigma_color);
-    camera_vector[camera_id]->set_bilateral_sigma_spatial(bilateral_sigma_spatial);
+    camera_vector[camera_id]->set_bilateral_sigma_color (bilateral_sigma_color);
+    camera_vector[camera_id]->set_bilateral_sigma_spatial (bilateral_sigma_spatial);
 
-    camera_vector[camera_id]->set_dilate_active   (dilation_active);
-    camera_vector[camera_id]->set_erode_active    (erode_active);
-    camera_vector[camera_id]->set_morph_active    (morph_active);
-    camera_vector[camera_id]->set_bilateral_active(bilateral_active);
+    camera_vector[camera_id]->set_dilate_active (dilation_active);
+    camera_vector[camera_id]->set_erode_active (erode_active);
+    camera_vector[camera_id]->set_morph_active (morph_active);
+    camera_vector[camera_id]->set_bilateral_active (bilateral_active);
 
-    camera_vector[camera_id]->set_object_size_min    (object_size_min);
-    camera_vector[camera_id]->set_object_size_max   (object_size_max);
+    camera_vector[camera_id]->set_object_size_min (object_size_min);
+    camera_vector[camera_id]->set_object_size_max (object_size_max);
     }
   std::cout << "Loaded Settings for Camera " << camera_id << "." << endl;
   }
@@ -337,7 +336,7 @@ void c_camera_unmanaged::load_camera_calibration (int camera_id)
 
   this->camera_vector[camera_id]->set_calibration_parameter (DistCoeffs,Intrinsic);
   this->camera_vector[camera_id]->set_resize_height (real_size_height);
-  this->camera_vector[camera_id]->set_resize_width  (real_size_width);
+  this->camera_vector[camera_id]->set_resize_width (real_size_width);
 
   std::cout << "Loaded Calibration for Camera " << camera_id << "." << endl;
   }
@@ -400,27 +399,24 @@ void c_camera_unmanaged::save_camera_cos (int camera_id, C_AbsolutePose& WorldTo
   double nx, ny, nz, ox, oy, oz, ax, ay, az, px, py, pz;
 
   //TODO Rotation der Kameras einfügen
-  GlobalObjects->csv_parameter_datei->Oeffnen (Dateiname, Enum_CSV_Access::Read);
+  GlobalObjects->csv_parameter_datei->Oeffnen (Dateiname,Enum_CSV_Access::Read);
   if (GlobalObjects->csv_parameter_datei->IsOpen())
     {
-    GlobalObjects->csv_parameter_datei->Schreiben ("Dateityp", Dateityp, "[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben ("nx", WorldToCam_Param.nx(), "[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben ("ny", WorldToCam_Param.ny(), "[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben ("nz", WorldToCam_Param.nz(), "[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben ("ox", WorldToCam_Param.ox(), "[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben ("oy", WorldToCam_Param.oy(), "[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben ("oz", WorldToCam_Param.oz(), "[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben ("ax", WorldToCam_Param.ax(), "[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben ("ay", WorldToCam_Param.ay(), "[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben ("az", WorldToCam_Param.az(), "[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben ("px", WorldToCam_Param.px(), "[mm]");
-    GlobalObjects->csv_parameter_datei->Schreiben ("py", WorldToCam_Param.py(), "[mm]");
-    GlobalObjects->csv_parameter_datei->Schreiben ("pz", WorldToCam_Param.pz(), "[mm]");
-
-
+    GlobalObjects->csv_parameter_datei->Schreiben ("Dateityp",Dateityp,"[1]");
+    GlobalObjects->csv_parameter_datei->Schreiben ("nx",WorldToCam_Param.nx(),"[1]");
+    GlobalObjects->csv_parameter_datei->Schreiben ("ny",WorldToCam_Param.ny(),"[1]");
+    GlobalObjects->csv_parameter_datei->Schreiben ("nz",WorldToCam_Param.nz(),"[1]");
+    GlobalObjects->csv_parameter_datei->Schreiben ("ox",WorldToCam_Param.ox(),"[1]");
+    GlobalObjects->csv_parameter_datei->Schreiben ("oy",WorldToCam_Param.oy(),"[1]");
+    GlobalObjects->csv_parameter_datei->Schreiben ("oz",WorldToCam_Param.oz(),"[1]");
+    GlobalObjects->csv_parameter_datei->Schreiben ("ax",WorldToCam_Param.ax(),"[1]");
+    GlobalObjects->csv_parameter_datei->Schreiben ("ay",WorldToCam_Param.ay(),"[1]");
+    GlobalObjects->csv_parameter_datei->Schreiben ("az",WorldToCam_Param.az(),"[1]");
+    GlobalObjects->csv_parameter_datei->Schreiben ("px",WorldToCam_Param.px(),"[mm]");
+    GlobalObjects->csv_parameter_datei->Schreiben ("py",WorldToCam_Param.py(),"[mm]");
+    GlobalObjects->csv_parameter_datei->Schreiben ("pz",WorldToCam_Param.pz(),"[mm]");
     }
   GlobalObjects->csv_parameter_datei->Schliessen();
-
   }
 
 void c_camera_unmanaged::load_camera_cos (int camera_id, C_AbsolutePose& WorldToCam_Param)
@@ -461,7 +457,6 @@ void c_camera_unmanaged::load_camera_cos (int camera_id, C_AbsolutePose& WorldTo
     WorldToCam_Param.pz (pz);
     }
   GlobalObjects->csv_parameter_datei->Schliessen();
-
   }
 
 
@@ -709,8 +704,7 @@ void c_camera_unmanaged::calibrate_stereo_camera (int current_camera_id)
     cv::imwrite ("../Parameter/Bilder/Camera_Stereo_Calibration_" + std::to_string (camera_id + 1) + "_Gray_DrawCorners_" + std::to_string (this->Photo_ID) + ".png",gray2);
 
     vector<cv::Point3f> obj;
-    for (int i = 0; i < this->numCornersHeight; i++)
-      for (int j = 0; j < this->numCornersWidth; j++) obj.emplace_back (static_cast<float> (j) * SquareSize,static_cast<float> (i) * SquareSize,0);
+    for (int i = 0; i < this->numCornersHeight; i++) for (int j = 0; j < this->numCornersWidth; j++) obj.emplace_back (static_cast<float> (j) * SquareSize,static_cast<float> (i) * SquareSize,0);
 
     if (found1 && found2)
       {
@@ -786,11 +780,11 @@ void c_camera_unmanaged::sm_object_tracking ()
 
   bool found = false;
 
-  unsigned int type = CV_32F;
-  cv::KalmanFilter kf(stateSize, measSize, contrSize, type);
-  cv::Mat state(stateSize, 1, type);  // [x,y,z, v_x,v_y,v_z]
+  unsigned int     type = CV_32F;
+  cv::KalmanFilter kf (stateSize,measSize,contrSize,type);
+  cv::Mat          state (stateSize,1,type);  // [x,y,z, v_x,v_y,v_z]
 
-  cv::Mat meas(measSize, 1, type);    // [z_x,z_y,z_z]
+  cv::Mat meas (measSize,1,type);    // [z_x,z_y,z_z]
   //cv::Mat procNoise(stateSize, 1, type)
   // [E_x,E_y,E_v_x,E_v_y,E_w,E_h]
 
@@ -803,16 +797,16 @@ void c_camera_unmanaged::sm_object_tracking ()
   // [ 0 0 0  1  0 0 ]
   // [ 0 0 0  0  1 0 ]
   // [ 0 0 0  0  0 1 ]
-  cv::setIdentity(kf.transitionMatrix);
+  cv::setIdentity (kf.transitionMatrix);
 
   // Measure Matrix H
   // [ 1 0 0 0 0 0 ]
   // [ 0 1 0 0 0 0 ]
   // [ 0 0 1 0 0 0 ]
-  kf.measurementMatrix = cv::Mat::zeros(measSize, stateSize, type);
-  kf.measurementMatrix.at<float>(0) = 1.0f;
-  kf.measurementMatrix.at<float>(7) = 1.0f;
-  kf.measurementMatrix.at<float>(14) = 1.0f;
+  kf.measurementMatrix                = cv::Mat::zeros (measSize,stateSize,type);
+  kf.measurementMatrix.at<float> (0)  = 1.0f;
+  kf.measurementMatrix.at<float> (7)  = 1.0f;
+  kf.measurementMatrix.at<float> (14) = 1.0f;
 
   // Process Noise Covariance Matrix Q
   // [ Ex   0   0     0     0    0  ]
@@ -822,20 +816,20 @@ void c_camera_unmanaged::sm_object_tracking ()
   // [ 0    0   0     0     Ew   0  ]
   // [ 0    0   0     0     0    Eh ]
   //cv::setIdentity(kf.processNoiseCov, cv::Scalar(1e-2));
-  kf.processNoiseCov.at<float>(0) = 1e-2;
-  kf.processNoiseCov.at<float>(7) = 1e-2;
-  kf.processNoiseCov.at<float>(14) = 5.0f;
-  kf.processNoiseCov.at<float>(21) = 5.0f;
-  kf.processNoiseCov.at<float>(28) = 1e-2;
-  kf.processNoiseCov.at<float>(35) = 1e-2;
+  kf.processNoiseCov.at<float> (0)  = 1e-2;
+  kf.processNoiseCov.at<float> (7)  = 1e-2;
+  kf.processNoiseCov.at<float> (14) = 5.0f;
+  kf.processNoiseCov.at<float> (21) = 5.0f;
+  kf.processNoiseCov.at<float> (28) = 1e-2;
+  kf.processNoiseCov.at<float> (35) = 1e-2;
 
   // Measures Noise Covariance Matrix R
-  cv::setIdentity(kf.measurementNoiseCov, cv::Scalar(1e-1));
+  cv::setIdentity (kf.measurementNoiseCov,cv::Scalar (1e-1));
 
   char ch = 0;
 
-  double ticks = 0;
-  bool foundball = false;
+  double ticks     = 0;
+  bool   foundball = false;
 
   int notFoundCount = 0;
 
@@ -843,162 +837,161 @@ void c_camera_unmanaged::sm_object_tracking ()
     {
     switch (statemachine_state)
       {
-        case 0:
-          //Lade alle fest definierten Welt-Kamera Posen und erstelle einen Vektor mit allen Posen. Vektor[0] bezieht sich auf Kamera[0], usw.
-          for (int i = 0; i < GlobalObjects->cameras_in_use; i++)
+      case 0:
+        //Lade alle fest definierten Welt-Kamera Posen und erstelle einen Vektor mit allen Posen. Vektor[0] bezieht sich auf Kamera[0], usw.
+        for (int i = 0; i < GlobalObjects->cameras_in_use; i++)
+          {
+          C_AbsolutePose abs_WorldToCam;
+          load_camera_cos (i,abs_WorldToCam);
+          vec_WorldToCam_Poses->push_back (abs_WorldToCam);
+          }
+
+        statemachine_state = 1;
+        cout << "Tracking Thread state 0 finished" << endl;
+
+        break;
+      case 1:
+        //Überprüfe ob eine Kameras das Objekt gefunden hat. Gehe dazu durch die komplette linke Reihe (+2).
+        //Hat eine Kamera (0) das Objekt gesichtet, wird es wahrscheinlich
+        //auch von der gegenüberliegenden Kamera (1) auffindbar sein.
+        for (int i = 0; i < this->camera_vector.size(); i + 2)
+          {
+          if (this->camera_vector[i]->is_contour_found() == true)
             {
-            C_AbsolutePose abs_WorldToCam;
-            load_camera_cos (i, abs_WorldToCam);
-            vec_WorldToCam_Poses->push_back (abs_WorldToCam);
+            object_found_camID = i;
+            statemachine_state = 2;
+            cout << "Tracking Thread state 1 finished" << endl;
+            break;
             }
+          }
+        break;
 
-          statemachine_state = 1;
-          cout << "Tracking Thread state 0 finished" << endl;
+      case 2:
+        //Hole die 2D-Koordinaten des Objektes aus dem Kamerabild
+        this->camera_vector[object_found_camID]->get_objectPosition_2D_Pixel (tracked_data->found_0,tracked_data->Richtungsvektor_0);
+        this->camera_vector[object_found_camID + 1]->get_objectPosition_2D_Pixel (tracked_data->found_1,tracked_data->Richtungsvektor_1);
 
-          break;
-        case 1:
-          //Überprüfe ob eine Kameras das Objekt gefunden hat. Gehe dazu durch die komplette linke Reihe (+2).
-          //Hat eine Kamera (0) das Objekt gesichtet, wird es wahrscheinlich
-          //auch von der gegenüberliegenden Kamera (1) auffindbar sein.
-          for (int i = 0; i < this->camera_vector.size(); i + 2)
-            {
-            if (this->camera_vector[i]->is_contour_found() == true)
-              {
-              object_found_camID = i;
-              statemachine_state = 2;
-              cout << "Tracking Thread state 1 finished" << endl;
-              break;
-              }
-            }
-          break;
+        //Validiere die Bedingung, dass ein Objekt gefunden wurde 
+        //if (!tracked_data->found_1 && tracked_data->found_0)
+        //  {
+        //  statemachine_state = 1;
+        //  break;
+        //  }
+        statemachine_state = 3;
+        cout << "Tracking Thread state 2 finished" << endl;
+        break;
 
-        case 2:
-          //Hole die 2D-Koordinaten des Objektes aus dem Kamerabild
-          this->camera_vector[object_found_camID]->get_objectPosition_2D_Pixel (tracked_data->found_0, tracked_data->Richtungsvektor_0);
-          this->camera_vector[object_found_camID + 1]->get_objectPosition_2D_Pixel (tracked_data->found_1, tracked_data->Richtungsvektor_1);
+      case 3:
+        this->tracking_thread->Get_Position_ObjectTracking (*tracked_data,*vec_WorldToCam_Poses);
 
-          //Validiere die Bedingung, dass ein Objekt gefunden wurde 
-          //if (!tracked_data->found_1 && tracked_data->found_0)
-          //  {
-          //  statemachine_state = 1;
-          //  break;
-          //  }
-          statemachine_state = 3;
-          cout << "Tracking Thread state 2 finished" << endl;
-          break;
+        statemachine_state = 4;
+        cout << "Tracking Thread state 3 finished" << endl;
 
-        case 3:
-          this->tracking_thread->Get_Position_ObjectTracking (*tracked_data, *vec_WorldToCam_Poses);
+        break;
+      case 4:
 
-          statemachine_state = 4;
-          cout << "Tracking Thread state 3 finished" << endl;
+        iteration++;
+        cout << "Iteration " << to_string (iteration) << endl;
+        //double precTick = ticks;
+        //ticks = (double)cv::getTickCount();
 
-          break;
-        case 4:
+        //double dT = (ticks - precTick) / cv::getTickFrequency(); //seconds
 
-          iteration++;
-          cout << "Iteration "<< to_string(iteration) << endl;
-          //double precTick = ticks;
-          //ticks = (double)cv::getTickCount();
-
-          //double dT = (ticks - precTick) / cv::getTickFrequency(); //seconds
-
-          this->camera_vector[object_found_camID]->cpu_contoured->copyTo (cpu_kalman_filterL);
-          this->camera_vector[object_found_camID+1]->cpu_contoured->copyTo (cpu_kalman_filterR);
+        this->camera_vector[object_found_camID]->cpu_contoured->copyTo (cpu_kalman_filterL);
+        this->camera_vector[object_found_camID + 1]->cpu_contoured->copyTo (cpu_kalman_filterR);
 
 
-          foundball = tracked_data->found_0;
-          statemachine_state = 2;
-          break;
+        foundball          = tracked_data->found_0;
+        statemachine_state = 2;
+        break;
 
-        case 5:
+      case 5:
 
-          //if (foundball)
-          //  {
-          //  // >>>> Matrix A
-          //  kf.transitionMatrix.at<float>(4) = dT;
-          //  kf.transitionMatrix.at<float>(10) = dT;
-          //  kf.transitionMatrix.at<float>(17) = dT;
-          //  // <<<< Matrix A
+        //if (foundball)
+        //  {
+        //  // >>>> Matrix A
+        //  kf.transitionMatrix.at<float>(4) = dT;
+        //  kf.transitionMatrix.at<float>(10) = dT;
+        //  kf.transitionMatrix.at<float>(17) = dT;
+        //  // <<<< Matrix A
 
-          //  cout << "dT:" << endl << dT << endl;
+        //  cout << "dT:" << endl << dT << endl;
 
-          //  state = kf.predict();
-          //  cout << "State post:" << endl << state << endl;
+        //  state = kf.predict();
+        //  cout << "State post:" << endl << state << endl;
 
-          //  cv::Rect predRect;
-          //  predRect.width = state.at<float>(4);
-          //  predRect.height = state.at<float>(5);
-          //  predRect.x = state.at<float>(0) - predRect.width / 2;
-          //  predRect.y = state.at<float>(1) - predRect.height / 2;
+        //  cv::Rect predRect;
+        //  predRect.width = state.at<float>(4);
+        //  predRect.height = state.at<float>(5);
+        //  predRect.x = state.at<float>(0) - predRect.width / 2;
+        //  predRect.y = state.at<float>(1) - predRect.height / 2;
 
-          //  cv::Point center;
-          //  center.x = state.at<float>(0);
-          //  center.y = state.at<float>(1);
+        //  cv::Point center;
+        //  center.x = state.at<float>(0);
+        //  center.y = state.at<float>(1);
 
-          //  cv::circle(cpu_kalman_filterL, center, 2, CV_RGB(255, 0, 0), 2);
-          //  cv::circle(cpu_kalman_filterR, center, 2, CV_RGB(255, 0, 0), 2);
+        //  cv::circle(cpu_kalman_filterL, center, 2, CV_RGB(255, 0, 0), 2);
+        //  cv::circle(cpu_kalman_filterR, center, 2, CV_RGB(255, 0, 0), 2);
 
-          //  cv::rectangle(cpu_kalman_filterL, predRect, CV_RGB(255, 0, 0), 2);
-          //  cv::rectangle(cpu_kalman_filterR, predRect, CV_RGB(255, 0, 0), 2);
-          //  }
+        //  cv::rectangle(cpu_kalman_filterL, predRect, CV_RGB(255, 0, 0), 2);
+        //  cv::rectangle(cpu_kalman_filterR, predRect, CV_RGB(255, 0, 0), 2);
+        //  }
 
-          //// >>>>> Kalman Update
-          //if (camera_vector[object_found_camID]->get_objekt_anzahl() == 0)
-          //  {
-          //  notFoundCount++;
-          //  cout << "notFoundCount:" << notFoundCount << endl;
-          //  if (notFoundCount >= 100)
-          //    {
-          //    foundball = false;
-          //    }
-          //    /*else
-          //        kf.statePost = state;*/
-          //  }
-          //else
-          //  {
-          //  notFoundCount = 0;
+        //// >>>>> Kalman Update
+        //if (camera_vector[object_found_camID]->get_objekt_anzahl() == 0)
+        //  {
+        //  notFoundCount++;
+        //  cout << "notFoundCount:" << notFoundCount << endl;
+        //  if (notFoundCount >= 100)
+        //    {
+        //    foundball = false;
+        //    }
+        //    /*else
+        //        kf.statePost = state;*/
+        //  }
+        //else
+        //  {
+        //  notFoundCount = 0;
 
-          //  meas.at<float>(0) = tracked_data->positionsvektor.X;
-          //  meas.at<float>(1) = tracked_data->positionsvektor.Y;
-          //  meas.at<float>(2) = tracked_data->positionsvektor.Z;
+        //  meas.at<float>(0) = tracked_data->positionsvektor.X;
+        //  meas.at<float>(1) = tracked_data->positionsvektor.Y;
+        //  meas.at<float>(2) = tracked_data->positionsvektor.Z;
 
-          //  if (!foundball) // First detection!
-          //    {
-          //        // >>>> Initialization
-          //    kf.errorCovPre.at<float>(0) = 1; // px
-          //    kf.errorCovPre.at<float>(7) = 1; // px
-          //    kf.errorCovPre.at<float>(14) = 1;
-          //    kf.errorCovPre.at<float>(21) = 1;
-          //    kf.errorCovPre.at<float>(28) = 1; // px
-          //    kf.errorCovPre.at<float>(35) = 1; // px
+        //  if (!foundball) // First detection!
+        //    {
+        //        // >>>> Initialization
+        //    kf.errorCovPre.at<float>(0) = 1; // px
+        //    kf.errorCovPre.at<float>(7) = 1; // px
+        //    kf.errorCovPre.at<float>(14) = 1;
+        //    kf.errorCovPre.at<float>(21) = 1;
+        //    kf.errorCovPre.at<float>(28) = 1; // px
+        //    kf.errorCovPre.at<float>(35) = 1; // px
 
-          //    state.at<float>(0) = meas.at<float>(0);
-          //    state.at<float>(1) = meas.at<float>(1);
-          //    state.at<float>(2) = 0;
-          //    state.at<float>(3) = 0;
-          //    state.at<float>(4) = meas.at<float>(2);
-          //    state.at<float>(5) = meas.at<float>(3);
-          //    // <<<< Initialization
+        //    state.at<float>(0) = meas.at<float>(0);
+        //    state.at<float>(1) = meas.at<float>(1);
+        //    state.at<float>(2) = 0;
+        //    state.at<float>(3) = 0;
+        //    state.at<float>(4) = meas.at<float>(2);
+        //    state.at<float>(5) = meas.at<float>(3);
+        //    // <<<< Initialization
 
-          //    kf.statePost = state;
+        //    kf.statePost = state;
 
-          //    foundball = true;
-          //    }
-          //  else
-          //    kf.correct(meas); // Kalman Correction
+        //    foundball = true;
+        //    }
+        //  else
+        //    kf.correct(meas); // Kalman Correction
 
-          //  cv::imshow ("kalman Links", cpu_kalman_filterL);
-          //  }
+        //  cv::imshow ("kalman Links", cpu_kalman_filterL);
+        //  }
 
 
-          //cout << "Measure matrix:" << endl << meas << endl;
+        //cout << "Measure matrix:" << endl << meas << endl;
 
-          //if (cv::waitKey (1) >= 0) break;
+        //if (cv::waitKey (1) >= 0) break;
 
-          //statemachine_state = 1;
-          break;
+        //statemachine_state = 1;
+        break;
       }//switch(statemachine_state)
     }//while(tracking_active)
   }//void sm_object_tracking
-

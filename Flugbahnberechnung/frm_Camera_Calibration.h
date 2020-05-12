@@ -162,26 +162,31 @@ namespace NmSp_CamerCalibration_Single
       this->pb_stereo_R              = (gcnew System::Windows::Forms::PictureBox());
       this->bt_show_crop             = (gcnew System::Windows::Forms::Button());
       (cli::
+      
       safe_cast<System::ComponentModel::ISupportInitialize^> (this->nup_camera_id)
       )
       ->
       BeginInit();
       (cli::
+      
       safe_cast<System::ComponentModel::ISupportInitialize^> (this->pb_live_camera_picture)
       )
       ->
       BeginInit();
       (cli::
+      
       safe_cast<System::ComponentModel::ISupportInitialize^> (this->pb_taken_picture_1)
       )
       ->
       BeginInit();
       (cli::
+      
       safe_cast<System::ComponentModel::ISupportInitialize^> (this->pb_taken_picture_2)
       )
       ->
       BeginInit();
       (cli::
+      
       safe_cast<System::ComponentModel::ISupportInitialize^> (this->pb_taken_picture_3)
       )
       ->
@@ -189,11 +194,13 @@ namespace NmSp_CamerCalibration_Single
       this->grB_options->SuspendLayout();
       this->groupBox3->SuspendLayout();
       (cli::
+      
       safe_cast<System::ComponentModel::ISupportInitialize^> (this->pb_stereo_L)
       )
       ->
       BeginInit();
       (cli::
+      
       safe_cast<System::ComponentModel::ISupportInitialize^> (this->pb_stereo_R)
       )
       ->
@@ -562,26 +569,31 @@ namespace NmSp_CamerCalibration_Single
       this->Text = L"frm_CameraCalibration_Single";
       this->Load += gcnew System::EventHandler (this,&C_frm_CameraCalibration_Single::C_frm_CameraCalibration_Single_Load);
       (cli::
+      
       safe_cast<System::ComponentModel::ISupportInitialize^> (this->nup_camera_id)
       )
       ->
       EndInit();
       (cli::
+      
       safe_cast<System::ComponentModel::ISupportInitialize^> (this->pb_live_camera_picture)
       )
       ->
       EndInit();
       (cli::
+      
       safe_cast<System::ComponentModel::ISupportInitialize^> (this->pb_taken_picture_1)
       )
       ->
       EndInit();
       (cli::
+      
       safe_cast<System::ComponentModel::ISupportInitialize^> (this->pb_taken_picture_2)
       )
       ->
       EndInit();
       (cli::
+      
       safe_cast<System::ComponentModel::ISupportInitialize^> (this->pb_taken_picture_3)
       )
       ->
@@ -591,11 +603,13 @@ namespace NmSp_CamerCalibration_Single
       this->groupBox3->ResumeLayout (false);
       this->groupBox3->PerformLayout();
       (cli::
+      
       safe_cast<System::ComponentModel::ISupportInitialize^> (this->pb_stereo_L)
       )
       ->
       EndInit();
       (cli::
+      
       safe_cast<System::ComponentModel::ISupportInitialize^> (this->pb_stereo_R)
       )
       ->

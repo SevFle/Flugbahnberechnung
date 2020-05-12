@@ -16,7 +16,7 @@ C_Main::C_Main (C_GlobalObjects* GlobalObjects)
   this->frm_CameraCalibration_crop   = gcnew c_frm_Camera_Calibration_crop (GlobalObjects,this);
   this->frm_ObjectCalibration        = gcnew c_frm_object_calibration (GlobalObjects,this);
   this->frm_Camera_Positioning       = gcnew c_frm_Camera_Positioning (GlobalObjects,this);
-  this->frm_camera_positioning_pose  = gcnew c_frm_Camera_Positioning_Pose(GlobalObjects, this);
+  this->frm_camera_positioning_pose  = gcnew c_frm_Camera_Positioning_Pose (GlobalObjects,this);
   this->frm_object_tracking          = gcnew c_frm_Object_Tracking (GlobalObjects,this);
   }
 
