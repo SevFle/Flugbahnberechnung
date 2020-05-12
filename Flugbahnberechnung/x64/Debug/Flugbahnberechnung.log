@@ -1,8 +1,98 @@
-﻿  App_Main.cpp
+﻿  Compiling CUDA source file CudaKernels.cuh...
+  Compiling CUDA source file kalman.cu...
+  Compiling CUDA source file CudaKernels.cu...
+  
+  D:\Projekte\VisualStudio\Flugbahnberechnung\Flugbahnberechnung>"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.1\bin\nvcc.exe" -gencode=arch=compute_35,code=\"sm_35,compute_35\" --use-local-env -ccbin "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Tools\MSVC\14.16.27023\bin\HostX86\x64" -x cu  -I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.1\include" -I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.1\include"  -G   --keep-dir x64\Debug -maxrregcount=0  --machine 64 --compile -cudart static  -g   -D_DEBUG -D_UNICODE -DUNICODE -Xcompiler "/EHsc /W3 /nologo /Od /Fdx64\Debug\vc141.pdb /FS /Zi  /MDd " -o x64\Debug\CudaKernels.cuh.obj "D:\Projekte\VisualStudio\Flugbahnberechnung\Flugbahnberechnung\CudaKernels.cuh" 
+  
+  D:\Projekte\VisualStudio\Flugbahnberechnung\Flugbahnberechnung>"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.1\bin\nvcc.exe" -gencode=arch=compute_35,code=\"sm_35,compute_35\" --use-local-env -ccbin "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Tools\MSVC\14.16.27023\bin\HostX86\x64" -x cu  -I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.1\include" -I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.1\include"  -G   --keep-dir x64\Debug -maxrregcount=0  --machine 64 --compile -cudart static  -g   -D_DEBUG -D_UNICODE -DUNICODE -Xcompiler "/EHsc /W3 /nologo /Od /Fdx64\Debug\vc141.pdb /FS /Zi  /MDd " -o x64\Debug\kalman.cu.obj "D:\Projekte\VisualStudio\Flugbahnberechnung\Flugbahnberechnung\kalman.cu" 
+  
+  D:\Projekte\VisualStudio\Flugbahnberechnung\Flugbahnberechnung>"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.1\bin\nvcc.exe" -gencode=arch=compute_35,code=\"sm_35,compute_35\" --use-local-env -ccbin "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Tools\MSVC\14.16.27023\bin\HostX86\x64" -x cu  -I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.1\include" -I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.1\include"  -G   --keep-dir x64\Debug -maxrregcount=0  --machine 64 --compile -cudart static  -g   -D_DEBUG -D_UNICODE -DUNICODE -Xcompiler "/EHsc /W3 /nologo /Od /Fdx64\Debug\vc141.pdb /FS /Zi  /MDd " -o x64\Debug\CudaKernels.cu.obj "D:\Projekte\VisualStudio\Flugbahnberechnung\Flugbahnberechnung\CudaKernels.cu" 
+C:\libraries\opencv\4_2_0\install\include\opencv2/stitching/detail/warpers.hpp(213): warning : overloaded virtual function "cv::detail::PlaneWarper::buildMaps" is only partially overridden in class "cv::detail::AffineWarper"
+  
+C:\libraries\opencv\4_2_0\install\include\opencv2/stitching/detail/warpers.hpp(213): warning : overloaded virtual function "cv::detail::PlaneWarper::warp" is only partially overridden in class "cv::detail::AffineWarper"
+  
+C:\libraries\opencv\4_2_0\install\include\opencv2/stitching/detail/warpers.hpp(213): warning : overloaded virtual function "cv::detail::PlaneWarper::buildMaps" is only partially overridden in class "cv::detail::AffineWarper"
+  
+C:\libraries\opencv\4_2_0\install\include\opencv2/stitching/detail/warpers.hpp(213): warning : overloaded virtual function "cv::detail::PlaneWarper::warp" is only partially overridden in class "cv::detail::AffineWarper"
+  
+C:\libraries\opencv\4_2_0\install\include\opencv2/stitching/detail/blenders.hpp(100): warning : overloaded virtual function "cv::detail::Blender::prepare" is only partially overridden in class "cv::detail::FeatherBlender"
+  
+C:\libraries\opencv\4_2_0\install\include\opencv2/stitching/detail/blenders.hpp(100): warning : overloaded virtual function "cv::detail::Blender::prepare" is only partially overridden in class "cv::detail::FeatherBlender"
+  
+C:\libraries\opencv\4_2_0\install\include\opencv2/stitching/detail/blenders.hpp(127): warning : overloaded virtual function "cv::detail::Blender::prepare" is only partially overridden in class "cv::detail::MultiBandBlender"
+  
+C:\libraries\opencv\4_2_0\install\include\opencv2/stitching/detail/blenders.hpp(127): warning : overloaded virtual function "cv::detail::Blender::prepare" is only partially overridden in class "cv::detail::MultiBandBlender"
+  
+  kalman.cu
+C:\libraries\opencv\4_2_0\install\include\opencv2/videostab/motion_stabilizing.hpp(106): warning : function "cv::videostab::IMotionStabilizer::stabilize(int, const std::vector<cv::Mat, std::allocator<cv::Mat>> &, std::pair<int, int>, cv::Mat *)" is hidden by "cv::videostab::GaussianMotionFilter::stabilize" -- virtual function override intended?
+  
+C:\libraries\opencv\4_2_0\install\include\opencv2/videostab/motion_stabilizing.hpp(106): warning : function "cv::videostab::IMotionStabilizer::stabilize(int, const std::vector<cv::Mat, std::allocator<cv::Mat>> &, std::pair<int, int>, cv::Mat *)" is hidden by "cv::videostab::GaussianMotionFilter::stabilize" -- virtual function override intended?
+  
+  device_functions.h is an internal header file and must not be used directly.  This file will be removed in a future CUDA release.  Please use cuda_runtime_api.h or cuda_runtime.h instead.
+  device_functions.h is an internal header file and must not be used directly.  This file will be removed in a future CUDA release.  Please use cuda_runtime_api.h or cuda_runtime.h instead.
+C:\libraries\opencv\4_2_0\install\include\opencv2/stitching/detail/warpers.hpp(213): warning : overloaded virtual function "cv::detail::PlaneWarper::buildMaps" is only partially overridden in class "cv::detail::AffineWarper"
+  
+C:\libraries\opencv\4_2_0\install\include\opencv2/stitching/detail/warpers.hpp(213): warning : overloaded virtual function "cv::detail::PlaneWarper::warp" is only partially overridden in class "cv::detail::AffineWarper"
+  
+C:\libraries\opencv\4_2_0\install\include\opencv2/stitching/detail/warpers.hpp(213): warning : overloaded virtual function "cv::detail::PlaneWarper::buildMaps" is only partially overridden in class "cv::detail::AffineWarper"
+  
+C:\libraries\opencv\4_2_0\install\include\opencv2/stitching/detail/warpers.hpp(213): warning : overloaded virtual function "cv::detail::PlaneWarper::warp" is only partially overridden in class "cv::detail::AffineWarper"
+  
+C:\libraries\opencv\4_2_0\install\include\opencv2/stitching/detail/blenders.hpp(100): warning : overloaded virtual function "cv::detail::Blender::prepare" is only partially overridden in class "cv::detail::FeatherBlender"
+  
+C:\libraries\opencv\4_2_0\install\include\opencv2/stitching/detail/blenders.hpp(127): warning : overloaded virtual function "cv::detail::Blender::prepare" is only partially overridden in class "cv::detail::MultiBandBlender"
+  
+C:\libraries\opencv\4_2_0\install\include\opencv2/stitching/detail/blenders.hpp(100): warning : overloaded virtual function "cv::detail::Blender::prepare" is only partially overridden in class "cv::detail::FeatherBlender"
+  
+C:\libraries\opencv\4_2_0\install\include\opencv2/stitching/detail/blenders.hpp(127): warning : overloaded virtual function "cv::detail::Blender::prepare" is only partially overridden in class "cv::detail::MultiBandBlender"
+  
+C:\libraries\opencv\4_2_0\install\include\opencv2/videostab/motion_stabilizing.hpp(106): warning : function "cv::videostab::IMotionStabilizer::stabilize(int, const std::vector<cv::Mat, std::allocator<cv::Mat>> &, std::pair<int, int>, cv::Mat *)" is hidden by "cv::videostab::GaussianMotionFilter::stabilize" -- virtual function override intended?
+  
+C:\libraries\opencv\4_2_0\install\include\opencv2/videostab/motion_stabilizing.hpp(106): warning : function "cv::videostab::IMotionStabilizer::stabilize(int, const std::vector<cv::Mat, std::allocator<cv::Mat>> &, std::pair<int, int>, cv::Mat *)" is hidden by "cv::videostab::GaussianMotionFilter::stabilize" -- virtual function override intended?
+  
+  CudaKernels.cuh
+  CudaKernels.cu
+D:/Projekte/VisualStudio/Flugbahnberechnung/Flugbahnberechnung/CudaKernels.cu(28): warning C4244: 'argument': conversion from 'float' to 'unsigned int', possible loss of data
+D:/Projekte/VisualStudio/Flugbahnberechnung/Flugbahnberechnung/CudaKernels.cu(31): warning C4244: 'argument': conversion from '_Tp' to 'int', possible loss of data
+          with
+          [
+              _Tp=double
+          ]
+  App_Main.cpp
 d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\main.h(92): warning C4677: 'camera_managed': signature of non-private member contains assembly private type 'nmsp_camera_managed::C_camera_managed'
   d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\camera_managed.h(13): note: see declaration of 'nmsp_camera_managed::C_camera_managed'
 d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\frm_camera_positioning_pose.h(4): warning C4005: 'PI': macro redefinition
   d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\posen.h(13): note: see previous definition of 'PI'
+  CSV_Datei.cpp
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\csv_datei.cpp(79): warning C4101: 'e': unreferenced local variable
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\csv_datei.cpp(90): warning C4101: 'e': unreferenced local variable
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\csv_datei.cpp(714): warning C4244: 'argument': conversion from 'std::streamoff' to 'int', possible loss of data
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\csv_datei.cpp(726): warning C4244: 'argument': conversion from 'std::streamoff' to 'int', possible loss of data
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\csv_datei.cpp(738): warning C4244: 'argument': conversion from 'std::streamoff' to 'int', possible loss of data
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\csv_datei.cpp(750): warning C4244: 'argument': conversion from 'std::streamoff' to 'int', possible loss of data
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\csv_datei.cpp(762): warning C4244: 'argument': conversion from 'std::streamoff' to 'int', possible loss of data
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\csv_datei.cpp(774): warning C4244: 'argument': conversion from 'std::streamoff' to 'int', possible loss of data
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\csv_datei.cpp(786): warning C4244: 'argument': conversion from 'std::streamoff' to 'int', possible loss of data
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\csv_datei.cpp(798): warning C4244: 'argument': conversion from 'std::streamoff' to 'int', possible loss of data
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\csv_datei.cpp(810): warning C4244: 'argument': conversion from 'std::streamoff' to 'int', possible loss of data
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\csv_datei.cpp(822): warning C4244: 'argument': conversion from 'std::streamoff' to 'int', possible loss of data
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\csv_datei.cpp(834): warning C4244: 'argument': conversion from 'std::streamoff' to 'int', possible loss of data
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\csv_datei.cpp(846): warning C4244: 'argument': conversion from 'std::streamoff' to 'int', possible loss of data
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\csv_datei.cpp(859): warning C4244: 'argument': conversion from 'std::streamoff' to 'int', possible loss of data
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\csv_datei.cpp(871): warning C4244: 'argument': conversion from 'std::streamoff' to 'int', possible loss of data
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\csv_datei.cpp(883): warning C4244: 'argument': conversion from 'std::streamoff' to 'int', possible loss of data
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\csv_datei.cpp(895): warning C4244: 'argument': conversion from 'std::streamoff' to 'int', possible loss of data
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\csv_datei.cpp(907): warning C4244: 'argument': conversion from 'std::streamoff' to 'int', possible loss of data
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\csv_datei.cpp(919): warning C4244: 'argument': conversion from 'std::streamoff' to 'int', possible loss of data
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\csv_datei.cpp(931): warning C4244: 'argument': conversion from 'std::streamoff' to 'int', possible loss of data
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\csv_datei.cpp(943): warning C4244: 'argument': conversion from 'std::streamoff' to 'int', possible loss of data
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\csv_datei.cpp(955): warning C4244: 'argument': conversion from 'std::streamoff' to 'int', possible loss of data
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\csv_datei.cpp(967): warning C4244: 'argument': conversion from 'std::streamoff' to 'int', possible loss of data
+  Camera_managed.cpp
+  GlobalObjects.cpp
+  Kalmanfilter.cpp
+  device_functions.h is an internal header file and must not be used directly.  This file will be removed in a future CUDA release.  Please use cuda_runtime_api.h or cuda_runtime.h instead.
+  device_functions.h is an internal header file and must not be used directly.  This file will be removed in a future CUDA release.  Please use cuda_runtime_api.h or cuda_runtime.h instead.
   Main.cpp
 d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\main.h(92): warning C4677: 'camera_managed': signature of non-private member contains assembly private type 'nmsp_camera_managed::C_camera_managed'
   d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\camera_managed.h(13): note: see declaration of 'nmsp_camera_managed::C_camera_managed'
@@ -35,10 +125,10 @@ d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\main.h(92): warni
   d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\camera_managed.h(13): note: see declaration of 'nmsp_camera_managed::C_camera_managed'
 d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\frm_camera_positioning_pose.h(4): warning C4005: 'PI': macro redefinition
   d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\posen.h(13): note: see previous definition of 'PI'
-d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\frm_camera_positioning_pose.cpp(199): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
-d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\frm_camera_positioning_pose.cpp(208): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
-d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\frm_camera_positioning_pose.cpp(217): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
-d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\frm_camera_positioning_pose.cpp(167): warning C4101: 'temp': unreferenced local variable
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\frm_camera_positioning_pose.cpp(192): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\frm_camera_positioning_pose.cpp(201): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\frm_camera_positioning_pose.cpp(210): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\frm_camera_positioning_pose.cpp(160): warning C4101: 'temp': unreferenced local variable
   frm_Main.cpp
 d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\main.h(92): warning C4677: 'camera_managed': signature of non-private member contains assembly private type 'nmsp_camera_managed::C_camera_managed'
   d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\camera_managed.h(13): note: see declaration of 'nmsp_camera_managed::C_camera_managed'
@@ -56,6 +146,8 @@ d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\main.h(92): warni
 d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\frm_camera_positioning_pose.h(4): warning C4005: 'PI': macro redefinition
   d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\posen.h(13): note: see previous definition of 'PI'
 d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\frm_object_tracking.cpp(81): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+  posen.cpp
+  tracking.cpp
   Generating Code...
 c:\libraries\opencv\4_2_0\install\include\opencv2\core\cuda.inl.hpp(105): warning C4793: 'cv::cuda::GpuMat::GpuMat': function compiled as native:
   	Found an intrinsic not supported in managed code
@@ -165,5 +257,122 @@ c:\libraries\opencv\4_2_0\install\include\opencv2\core\mat.inl.hpp(2181): warnin
   	Found an intrinsic not supported in managed code
 c:\libraries\opencv\4_2_0\install\include\opencv2\core\mat.inl.hpp(3781): warning C4793: 'cv::UMat::addref': function compiled as native:
   	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\cuda.inl.hpp(105): warning C4793: 'cv::cuda::GpuMat::GpuMat': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\cuda.inl.hpp(395): warning C4793: 'cv::cuda::HostMem::HostMem': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\mat.inl.hpp(530): warning C4793: 'cv::Mat::Mat': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\mat.inl.hpp(850): warning C4793: 'cv::Mat::release': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\mat.inl.hpp(2181): warning C4793: 'cv::SparseMat::addref': function compiled as native:
+  	Found an intrinsic not supported in managed code
+c:\libraries\opencv\4_2_0\install\include\opencv2\core\mat.inl.hpp(3781): warning C4793: 'cv::UMat::addref': function compiled as native:
+  	Found an intrinsic not supported in managed code
+  Camera_unmanaged.cpp
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\camera_unmanaged.cpp(399): warning C4101: 'ox': unreferenced local variable
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\camera_unmanaged.cpp(399): warning C4101: 'nx': unreferenced local variable
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\camera_unmanaged.cpp(399): warning C4101: 'ax': unreferenced local variable
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\camera_unmanaged.cpp(399): warning C4101: 'ny': unreferenced local variable
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\camera_unmanaged.cpp(399): warning C4101: 'py': unreferenced local variable
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\camera_unmanaged.cpp(399): warning C4101: 'ay': unreferenced local variable
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\camera_unmanaged.cpp(399): warning C4101: 'pz': unreferenced local variable
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\camera_unmanaged.cpp(399): warning C4101: 'az': unreferenced local variable
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\camera_unmanaged.cpp(399): warning C4101: 'nz': unreferenced local variable
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\camera_unmanaged.cpp(399): warning C4101: 'px': unreferenced local variable
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\camera_unmanaged.cpp(399): warning C4101: 'oz': unreferenced local variable
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\camera_unmanaged.cpp(399): warning C4101: 'oy': unreferenced local variable
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\camera_unmanaged.cpp(665): warning C4101: 'right_img': unreferenced local variable
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\camera_unmanaged.cpp(665): warning C4101: 'left_img': unreferenced local variable
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\camera_unmanaged.cpp(819): warning C4305: '=': truncation from 'double' to '_Tp'
+          with
+          [
+              _Tp=float
+          ]
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\camera_unmanaged.cpp(820): warning C4305: '=': truncation from 'double' to '_Tp'
+          with
+          [
+              _Tp=float
+          ]
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\camera_unmanaged.cpp(823): warning C4305: '=': truncation from 'double' to '_Tp'
+          with
+          [
+              _Tp=float
+          ]
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\camera_unmanaged.cpp(824): warning C4305: '=': truncation from 'double' to '_Tp'
+          with
+          [
+              _Tp=float
+          ]
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\camera_unmanaged.cpp(857): warning C4552: '+': result of expression not used
+c:\program files (x86)\microsoft visual studio\2017\enterprise\vc\tools\msvc\14.16.27023\include\xmemory0(881): warning C4244: 'argument': conversion from '_Ty' to '_Tp', possible loss of data
+          with
+          [
+              _Ty=int
+          ]
+          and
+          [
+              _Tp=float
+          ]
+  c:\program files (x86)\microsoft visual studio\2017\enterprise\vc\tools\msvc\14.16.27023\include\vector(902): note: see reference to function template instantiation 'void std::_Default_allocator_traits<_Alloc>::construct<_Ty,float,float,int>(_Alloc &,_Objty *const ,float &&,float &&,int &&)' being compiled
+          with
+          [
+              _Alloc=std::allocator<cv::Point3f>,
+              _Ty=cv::Point3_<float>,
+              _Objty=cv::Point3_<float>
+          ]
+  c:\program files (x86)\microsoft visual studio\2017\enterprise\vc\tools\msvc\14.16.27023\include\vector(902): note: see reference to function template instantiation 'void std::_Default_allocator_traits<_Alloc>::construct<_Ty,float,float,int>(_Alloc &,_Objty *const ,float &&,float &&,int &&)' being compiled
+          with
+          [
+              _Alloc=std::allocator<cv::Point3f>,
+              _Ty=cv::Point3_<float>,
+              _Objty=cv::Point3_<float>
+          ]
+  c:\program files (x86)\microsoft visual studio\2017\enterprise\vc\tools\msvc\14.16.27023\include\vector(919): note: see reference to function template instantiation 'void std::vector<cv::Point3f,std::allocator<_Ty>>::_Emplace_back_with_unused_capacity<float,float,int>(float &&,float &&,int &&)' being compiled
+          with
+          [
+              _Ty=cv::Point3f
+          ]
+  d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\camera_unmanaged.cpp(707): note: see reference to function template instantiation 'void std::vector<cv::Point3f,std::allocator<_Ty>>::emplace_back<float,float,int>(float &&,float &&,int &&)' being compiled
+          with
+          [
+              _Ty=cv::Point3f
+          ]
+c:\program files (x86)\microsoft visual studio\2017\enterprise\vc\tools\msvc\14.16.27023\include\xmemory0(881): warning C4244: 'argument': conversion from '_Ty' to '_Tp', possible loss of data
+          with
+          [
+              _Ty=double
+          ]
+          and
+          [
+              _Tp=float
+          ]
+  c:\program files (x86)\microsoft visual studio\2017\enterprise\vc\tools\msvc\14.16.27023\include\vector(902): note: see reference to function template instantiation 'void std::_Default_allocator_traits<_Alloc>::construct<_Ty,double,double>(_Alloc &,_Objty *const ,double &&,double &&)' being compiled
+          with
+          [
+              _Alloc=std::allocator<cv::Point2f>,
+              _Ty=cv::Point_<float>,
+              _Objty=cv::Point_<float>
+          ]
+  c:\program files (x86)\microsoft visual studio\2017\enterprise\vc\tools\msvc\14.16.27023\include\vector(902): note: see reference to function template instantiation 'void std::_Default_allocator_traits<_Alloc>::construct<_Ty,double,double>(_Alloc &,_Objty *const ,double &&,double &&)' being compiled
+          with
+          [
+              _Alloc=std::allocator<cv::Point2f>,
+              _Ty=cv::Point_<float>,
+              _Objty=cv::Point_<float>
+          ]
+  c:\program files (x86)\microsoft visual studio\2017\enterprise\vc\tools\msvc\14.16.27023\include\vector(919): note: see reference to function template instantiation 'void std::vector<cv::Point2f,std::allocator<_Ty>>::_Emplace_back_with_unused_capacity<double,double>(double &&,double &&)' being compiled
+          with
+          [
+              _Ty=cv::Point2f
+          ]
+  d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\camera_unmanaged.cpp(725): note: see reference to function template instantiation 'void std::vector<cv::Point2f,std::allocator<_Ty>>::emplace_back<double,double>(double &&,double &&)' being compiled
+          with
+          [
+              _Ty=cv::Point2f
+          ]
+  opencv_unmanaged.cpp
+d:\projekte\visualstudio\flugbahnberechnung\flugbahnberechnung\opencv_unmanaged.cpp(1225): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+  Generating Code...
   App_Main.obj : MSIL module encountered; incremental linking is disabled for MSIL; performing full link
   Flugbahnberechnung.vcxproj -> D:\Projekte\VisualStudio\Flugbahnberechnung\x64\Debug\ObjectTracking.exe
