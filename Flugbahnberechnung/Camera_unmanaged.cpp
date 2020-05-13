@@ -398,27 +398,42 @@ void c_camera_unmanaged::save_camera_cos (int camera_id, C_AbsolutePose& WorldTo
   string Dateityp;
   double nx, ny, nz, ox, oy, oz, ax, ay, az, px, py, pz;
 
+  nx = WorldToCam_Param.nx();
+  ny = WorldToCam_Param.ny();
+  nz = WorldToCam_Param.nz();
+
+  ox = WorldToCam_Param.ox();
+  oy = WorldToCam_Param.oy();
+  oz = WorldToCam_Param.oz();
+
+  ax = WorldToCam_Param.ax();
+  ay = WorldToCam_Param.ay();
+  az = WorldToCam_Param.az();
+
+  px = WorldToCam_Param.px();
+  py = WorldToCam_Param.py();
+  pz = WorldToCam_Param.pz();
+
   //TODO Rotation der Kameras einfügen
   GlobalObjects->csv_parameter_datei->Oeffnen (Dateiname,Enum_CSV_Access::Read);
   if (GlobalObjects->csv_parameter_datei->IsOpen())
     {
     GlobalObjects->csv_parameter_datei->Schreiben ("Dateityp",Dateityp,"[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben ("nx",WorldToCam_Param.nx(),"[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben ("ny",WorldToCam_Param.ny(),"[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben ("nz",WorldToCam_Param.nz(),"[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben ("ox",WorldToCam_Param.ox(),"[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben ("oy",WorldToCam_Param.oy(),"[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben ("oz",WorldToCam_Param.oz(),"[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben ("ax",WorldToCam_Param.ax(),"[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben ("ay",WorldToCam_Param.ay(),"[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben ("az",WorldToCam_Param.az(),"[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben ("px",WorldToCam_Param.px(),"[mm]");
-    GlobalObjects->csv_parameter_datei->Schreiben ("py",WorldToCam_Param.py(),"[mm]");
-    GlobalObjects->csv_parameter_datei->Schreiben ("pz",WorldToCam_Param.pz(),"[mm]");
+    GlobalObjects->csv_parameter_datei->Schreiben ("nx",nx,"[1]");
+    GlobalObjects->csv_parameter_datei->Schreiben ("ny",ny,"[1]");
+    GlobalObjects->csv_parameter_datei->Schreiben ("nz",nz,"[1]");
+    GlobalObjects->csv_parameter_datei->Schreiben ("ox",ox,"[1]");
+    GlobalObjects->csv_parameter_datei->Schreiben ("oy",oy,"[1]");
+    GlobalObjects->csv_parameter_datei->Schreiben ("oz",oz,"[1]");
+    GlobalObjects->csv_parameter_datei->Schreiben ("ax",ax,"[1]");
+    GlobalObjects->csv_parameter_datei->Schreiben ("ay",ay,"[1]");
+    GlobalObjects->csv_parameter_datei->Schreiben ("az",az,"[1]");
+    GlobalObjects->csv_parameter_datei->Schreiben ("px",px,"[mm]");
+    GlobalObjects->csv_parameter_datei->Schreiben ("py",py,"[mm]");
+    GlobalObjects->csv_parameter_datei->Schreiben ("pz",pz,"[mm]");
     }
   GlobalObjects->csv_parameter_datei->Schliessen();
   }
-
 void c_camera_unmanaged::load_camera_cos (int camera_id, C_AbsolutePose& WorldToCam_Param)
   {
   string Dateiname = "../Parameter/Pose_world_to_camera" + to_string (camera_id) + ".csv";
@@ -767,6 +782,8 @@ void c_camera_unmanaged::calibrate_stereo_camera (int current_camera_id)
 
 void c_camera_unmanaged::sm_object_tracking ()
   {
+  #pragma region Initializer
+
   int statemachine_state                = 0;
   int iteration                         = 0;
   this->tracked_data->positionsvektor.X = 0.0;
@@ -832,7 +849,7 @@ void c_camera_unmanaged::sm_object_tracking ()
   bool   foundball = false;
 
   int notFoundCount = 0;
-
+  #pragma endregion
   while (this->tracking_active)
     {
     switch (statemachine_state)
@@ -897,11 +914,11 @@ void c_camera_unmanaged::sm_object_tracking ()
 
         //double dT = (ticks - precTick) / cv::getTickFrequency(); //seconds
 
-        this->camera_vector[object_found_camID]->cpu_contoured->copyTo (cpu_kalman_filterL);
-        this->camera_vector[object_found_camID + 1]->cpu_contoured->copyTo (cpu_kalman_filterR);
+        //this->camera_vector[object_found_camID]->cpu_contoured->copyTo (cpu_kalman_filterL);
+        //this->camera_vector[object_found_camID + 1]->cpu_contoured->copyTo (cpu_kalman_filterR);
 
 
-        foundball          = tracked_data->found_0;
+        //foundball          = tracked_data->found_0;
         statemachine_state = 2;
         break;
 

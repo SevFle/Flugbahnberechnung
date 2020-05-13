@@ -38,7 +38,7 @@ void c_tracking::Get_Position_ObjectTracking (s_tracking_data& StructofTrackingD
 
   // Richtungsvektoren der Objekt-Lichtstrahlen auf das Welt-KS transformieren
   std::vector<S_Positionsvektor> vec_Richtungsvektoren_World;
-  this->Calc_RichtungsvektorenToWorld (vec_Richtungsvektoren,vec_Richtungsvektoren_World,vec_TCP_Poses);
+  this->Calc_RichtungsvektorenToWorld (vec_Richtungsvektoren,vec_Richtungsvektoren_World,vec_WorldToCam_Poses);
 
   // Berechnung der Objektposition
   // Die Enum Objecte werden nur zur Verhaltensbestimmung der Roboter verwendet. 
@@ -171,6 +171,8 @@ void c_tracking::Calc_Position_ObjectTracking (S_Positionsvektor& Positionsvekto
   Positionsvektor.Y = (Matrix_y[1][0] - Matrix_L_T[1][2] * Positionsvektor.Z) / Matrix_L_T[1][1];
   Positionsvektor.X = (Matrix_y[0][0] - Matrix_L_T[0][1] * Positionsvektor.Y - Matrix_L_T[0][2] * Positionsvektor.Z) / Matrix_L_T[0][0];
   }
+
+//TODO TCP_Pose = Kamera-pose 1/2/n
 void c_tracking::Calc_RichtungsvektorenToWorld (std::vector<S_Positionsvektor> vec_Richtungsvektoren, std::vector<S_Positionsvektor>& vec_Richtungsvektoren_World, std::vector<C_AbsolutePose> vec_TCP_Poses)
   {
   // Die Orientierung von Welt- und Roboter-KS sind identisch. Es gilt:

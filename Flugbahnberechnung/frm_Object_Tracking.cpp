@@ -41,6 +41,8 @@ System::Void c_frm_Object_Tracking::bt_start_Click (System::Object^ sender, Syst
   }
 System::Void c_frm_Object_Tracking::bt_exit_Click (System::Object^ sender, System::EventArgs^ e)
   {
+  this->Main->camera_managed->camera_unmanaged->tracking_active = false;
+  this->tracking->Join();
   this->Close();
   }
 

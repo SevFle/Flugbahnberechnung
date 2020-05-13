@@ -230,7 +230,7 @@ System::Void c_frm_Camera_Positioning::set_numUD_value ()
   }//set_numUD_value
 System::Void c_frm_Camera_Positioning::set_numUD_value (std::vector<int> camera_list)
   {
-  Int32 maximum                = static_cast<Int32> (cameras_in_use);
+  Int32 maximum                = static_cast<Int32> (cameras_in_use)-1;
   this->nup_Camera_L1->Maximum = maximum;
   this->nup_Camera_R1->Maximum = maximum;
   this->nup_Camera_L2->Maximum = maximum;
