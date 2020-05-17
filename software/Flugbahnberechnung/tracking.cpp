@@ -172,7 +172,6 @@ void c_tracking::Calc_Position_ObjectTracking (S_Positionsvektor& Positionsvekto
   Positionsvektor.X = (Matrix_y[0][0] - Matrix_L_T[0][1] * Positionsvektor.Y - Matrix_L_T[0][2] * Positionsvektor.Z) / Matrix_L_T[0][0];
   }
 
-//TODO TCP_Pose = Kamera-pose 1/2/n
 void c_tracking::Calc_RichtungsvektorenToWorld (std::vector<S_Positionsvektor> vec_Richtungsvektoren, std::vector<S_Positionsvektor>& vec_Richtungsvektoren_World, std::vector<C_AbsolutePose> vec_TCP_Poses)
   {
   // Die Orientierung von Welt- und Roboter-KS sind identisch. Es gilt:

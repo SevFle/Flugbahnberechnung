@@ -414,7 +414,6 @@ void c_camera_unmanaged::save_camera_cos (int camera_id, C_AbsolutePose& WorldTo
   py = WorldToCam_Param.py();
   pz = WorldToCam_Param.pz();
 
-  //TODO Rotation der Kameras einfügen
   GlobalObjects->csv_parameter_datei->Oeffnen (Dateiname,Enum_CSV_Access::Read);
   if (GlobalObjects->csv_parameter_datei->IsOpen())
     {
@@ -440,7 +439,6 @@ void c_camera_unmanaged::load_camera_cos (int camera_id, C_AbsolutePose& WorldTo
   string Dateityp;
   double nx, ny, nz, ox, oy, oz, ax, ay, az, px, py, pz;
 
-  //TODO Rotation der Kameras einfügen
   GlobalObjects->csv_parameter_datei->Oeffnen (Dateiname,Enum_CSV_Access::Read);
   if (GlobalObjects->csv_parameter_datei->IsOpen())
     {

@@ -61,6 +61,8 @@ c_opencv_unmanaged::c_opencv_unmanaged (int camera_id)
 
   idle = false;
 
+  show_contoured = false;
+
   undistord_active = true;
 
 
@@ -161,7 +163,7 @@ c_opencv_unmanaged::~c_opencv_unmanaged ()
   camera_id   = 0;
 
   thread_running = true;
-
+  show_contoured = false;
   idle = false;
 
 
@@ -216,7 +218,10 @@ c_opencv_unmanaged::~c_opencv_unmanaged ()
   Radius        = 0.0f;
   }
 
+
+
 /************************************************************* Öffentliche Klassenmethoden*************************************************/
+
 
 void c_opencv_unmanaged::camera_thread ()
   {
@@ -248,6 +253,7 @@ void c_opencv_unmanaged::camera_thread ()
 
         //STEP2: Grab a new frame from Videocapture object
       case 2:
+        this->t0 = Clock::now();
         this->cpu_grab_frame (cpu_src_img);
 
         if (undistord_active == true)
@@ -318,7 +324,10 @@ void c_opencv_unmanaged::camera_thread ()
 
         this->find_contours (cpu_hsv_filtered,cpu_contoured);
         //rectangle (*cpu_contoured,RoI,cv::Scalar (0,255,0),2,8,0);
-        imshow ("contoured" + std::to_string (camera_id),*cpu_contoured);
+        if (show_contoured == true)
+          {
+          imshow ("contoured" + std::to_string (camera_id), *cpu_contoured);
+          }
         //Proceed to imshow
         statemachine_state = 8;
         break;
@@ -327,6 +336,10 @@ void c_opencv_unmanaged::camera_thread ()
         if (cv::waitKey (1) >= 0) break;
 
         statemachine_state = 1;
+        this->t1 = Clock::now();
+        this->frametime = std::chrono::duration_cast<milliseconds>(t1 - t0);
+        this->fps = 1000.0/frametime.count();
+        std::cout << "Frametime Camera "<< std::to_string(camera_id) <<": " << frametime.count() << " ms" << std::endl;
         }
       }
     }
@@ -755,6 +768,15 @@ void c_opencv_unmanaged::set_vec_object_abs (double vec_object_abs)
   {
   Vec_Object_Abs = vec_object_abs;
   }
+c_opencv_unmanaged::milliseconds c_opencv_unmanaged::get_frametime() const
+  {
+  return frametime;
+  }
+
+double c_opencv_unmanaged::get_fps() const
+  {
+  return fps;
+  }
 float& c_opencv_unmanaged::get_radius ()
   {
   return Radius;
@@ -1043,6 +1065,15 @@ void c_opencv_unmanaged::set_bilateral_active (bool bilateral_active)
   {
   this->bilateral_active = bilateral_active;
   }
+bool& c_opencv_unmanaged::is_show_contoured_active ()
+  {
+  return show_contoured;
+  }
+void c_opencv_unmanaged::set_show_contoured_active (bool show_contoured)
+  {
+  this->show_contoured = show_contoured;
+  }
+
 bool& c_opencv_unmanaged::is_idle ()
   {
   return idle;
@@ -1123,6 +1154,12 @@ void c_opencv_unmanaged::init_rectify_map ()
   this->gpu_map2->upload (cpu_map2);
   }
 
+void c_opencv_unmanaged::gpu_filter_background()
+{
+//  cv::cuda::BackgroundSubtractorMOG2 gpu_subtractor();
+
+}
+
 void c_opencv_unmanaged::gpu_erode (cv::cuda::GpuMat* gpu_src, cv::cuda::GpuMat* gpu_dst, int borderType)  //
   {
   cv::Mat                   erode_structuring_element = getStructuringElement (cv::MORPH_ELLIPSE,cv::Size (2 * erosion_kernel_size,2 * erosion_kernel_size));
@@ -1196,7 +1233,6 @@ void c_opencv_unmanaged::gpu_filter_gray (cv::cuda::GpuMat* gpu_src, cv::cuda::G
   {
   }
 
-//TODO Add Objectsize threshold
 void c_opencv_unmanaged::find_contours (cv::Mat* thresholded_source_image, cv::Mat* dst_contoured_image)
   {
   objekt_anzahl = 0;
@@ -1273,6 +1309,8 @@ void c_opencv_unmanaged::find_contours (cv::Mat* thresholded_source_image, cv::M
     Image_Moments    = moments (static_cast<cv::Mat> (contours[KonturIndex]));
     Moment_0_Ordnung = Image_Moments.m00;
 
+
+    //std::cout << "Objektgröße "<< std::to_string(Moment_0_Ordnung) << std::endl << std::endl;
     if (Object_Size_min > Moment_0_Ordnung || Moment_0_Ordnung > Object_Size_max)
       {
       return;

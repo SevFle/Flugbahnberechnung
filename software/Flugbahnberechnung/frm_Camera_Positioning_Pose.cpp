@@ -156,7 +156,6 @@ System::Void c_frm_Camera_Positioning_Pose::get_textbox_data ()
   {
   double temp;
 
-  //TODO Input PHI, PSI, Theta -> Deg oder rad?
   if (this->txb_phi->Text == "" || this->txb_phi->Text == "-")
     {
     this->phi = 0.0;

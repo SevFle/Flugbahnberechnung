@@ -33,7 +33,7 @@ System::Void C_frm_Main::bt_ObjectCalibration_Click (System::Object^ sender, Sys
   this->Main->camera_managed->camera_unmanaged->camera_vector[0]->set_show_cropped_image (false);
   this->Main->camera_managed->camera_unmanaged->camera_vector[0]->set_undistord_active (true);
   this->Main->camera_managed->camera_unmanaged->camera_vector[0]->set_filtering_active (true);
-
+  this->Main->camera_managed->camera_unmanaged->camera_vector[0]->set_show_contoured_active(true);
   this->Main->frm_ObjectCalibration->ShowDialog();
   this->Taktgeber->Enabled = true;
   }

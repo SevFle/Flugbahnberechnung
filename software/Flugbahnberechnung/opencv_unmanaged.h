@@ -4,6 +4,7 @@
 #include <opencv2/highgui.hpp>
 //#include <ipp.h>
 #include "CudaKernels.cuh"
+#include <chrono>
 
 //#include "posen.h"
 
@@ -71,6 +72,20 @@ namespace nmsp_opencv_unmanaged
 
     /******************************************** Nicht öffentliche private Anwender-Attribute **************************************************/
     int capture_api;
+
+    /******************************************************************************Zeit Management**********************************************/
+    typedef std::chrono::high_resolution_clock Clock;
+    typedef std::chrono::milliseconds milliseconds;
+    milliseconds frametime;
+  public:
+    milliseconds get_frametime() const;
+    double get_fps() const;
+  private:
+    Clock::time_point t0;
+    Clock::time_point t1;
+    double fps;
+
+
     /******************************Find_Contours**********************************************/
     int objekt_anzahl;
     int KonturIndex;
@@ -151,6 +166,8 @@ namespace nmsp_opencv_unmanaged
     bool gaussian_active;
     bool morph_active;
     bool bilateral_active;
+
+    bool show_contoured;
 
     bool idle;
 
@@ -334,6 +351,8 @@ namespace nmsp_opencv_unmanaged
     void         set_morph_active (bool morph_active);
     bool&        is_bilateral_active ();
     void         set_bilateral_active (bool bilateral_active);
+    bool& is_show_contoured_active();
+    void set_show_contoured_active(bool show_contoured);
     bool&        is_idle ();
     void         set_idle (bool idle);
 
@@ -342,6 +361,7 @@ namespace nmsp_opencv_unmanaged
     void set_framerate (int framerate);
 
     void init_rectify_map ();
+    void gpu_filter_background();
     void save_picture (int camera_id, int photo_id, std::string definition);
     void crop_image (cv::Mat* undistorted_img, cv::Mat* crop_undist_img);
 

@@ -91,8 +91,11 @@ System::Void c_frm_object_calibration::bt_exit_Click (System::Object^ sender, Sy
     this->Main->camera_managed->camera_unmanaged->camera_vector[i]->set_idle (true);
     this->Main->camera_managed->camera_unmanaged->camera_vector[i]->set_undistord_active (false);
     this->Main->camera_managed->camera_unmanaged->camera_vector[i]->set_filtering_active (false);
+    this->Main->camera_managed->camera_unmanaged->camera_vector[i]->set_show_cropped_image(false);
+    this->Main->camera_managed->camera_unmanaged->camera_vector[i]->set_show_contoured_active(false);
     }
-  cv::destroyAllWindows();
+  //TODO Implement proper cv windows handling
+  //cv::destroyAllWindows();
   this->Close();
   }
 
@@ -108,6 +111,8 @@ System::Void c_frm_object_calibration::Taktgeber_Tick (System::Object^ sender, S
     FillMat2Picturebox (pb_filtered,*Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->cpu_masked_img);
     FillMat2Picturebox (pb_tracked,*Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->cpu_contoured);
     }
+  this->txb_fps->Text         = this->Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->get_fps().ToString();
+  this->txb_frametime->Text   = this->Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->get_frametime().count().ToString();
   }
 
 System::Void c_frm_object_calibration::C_frm_ObjectCalibration_FormClosing (System::Object^ sender, System::Windows::Forms::FormClosingEventArgs^ e)
@@ -141,6 +146,8 @@ System::Void c_frm_object_calibration::numUD_cam_id_ValueChanged (System::Object
   this->Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->set_show_cropped_image (false);
   this->Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->set_undistord_active (true);
   this->Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->set_filtering_active (true);
+  this->Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->set_show_contoured_active (true);
+
   this->get_camera_settings (camera_id_in_use);
   }
 
@@ -157,7 +164,7 @@ System::Void c_frm_object_calibration::trb_hue_max_ValueChanged (System::Object^
 
   Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->set_hue_max (this->trb_hue_max->Value);
   this->txb_hue_max->Text = System::String::Format ("{0:0}",this->trb_hue_max->Value);
-  }//TODO complete the rest of ValueChanged methods
+  }
 System::Void c_frm_object_calibration::trb_saturation_min_ValueChanged (System::Object^ sender, System::EventArgs^ e)
   {
   if (this->trb_saturation_min->Value > this->trb_saturation_max->Value) this->trb_saturation_min->Value = this->trb_saturation_max->Value - 1;
