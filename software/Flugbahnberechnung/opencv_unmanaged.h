@@ -81,8 +81,11 @@ namespace nmsp_opencv_unmanaged
     milliseconds get_frametime() const;
     double get_fps() const;
   private:
-    Clock::time_point t0;
-    Clock::time_point t1;
+    Clock::time_point start;
+    Clock::time_point start_alt;
+
+    Clock::time_point end;
+    Clock::time_point end_alt;
     double fps;
 
 
@@ -125,6 +128,9 @@ namespace nmsp_opencv_unmanaged
     std::string Delta_x_str;
     std::string Delta_y_str;
     cv::Rect    rect_roi;
+
+  //Background subtractor object für die spätere verwendung. Lernendes Modul, deswegen muss es frühzeitig und scopebasiert initialisiert werden.
+    cv::Ptr<cv::BackgroundSubtractor> background_subtractor_gpu;
 
 
     /*********************************************************** Öffentliche OpenCV-Variablen  **************************************************/

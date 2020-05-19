@@ -253,7 +253,7 @@ void c_opencv_unmanaged::camera_thread ()
 
         //STEP2: Grab a new frame from Videocapture object
       case 2:
-        this->t0 = Clock::now();
+        this->start = Clock::now();
         this->cpu_grab_frame (cpu_src_img);
 
         if (undistord_active == true)
@@ -336,8 +336,8 @@ void c_opencv_unmanaged::camera_thread ()
         if (cv::waitKey (1) >= 0) break;
 
         statemachine_state = 1;
-        this->t1 = Clock::now();
-        this->frametime = std::chrono::duration_cast<milliseconds>(t1 - t0);
+        this->end = Clock::now();
+        this->frametime = std::chrono::duration_cast<milliseconds>(end - start);
         this->fps = 1000.0/frametime.count();
         std::cout << "Frametime Camera "<< std::to_string(camera_id) <<": " << frametime.count() << " ms" << std::endl;
         }
@@ -1117,6 +1117,8 @@ void c_opencv_unmanaged::init (int camera_id)
   cpu_contoured->create (600,800, CV_8UC3);
 
   this->init_rectify_map();
+
+
   }
 void c_opencv_unmanaged::cpu_grab_frame (cv::Mat* cpu_dst_img)
   {
@@ -1156,7 +1158,8 @@ void c_opencv_unmanaged::init_rectify_map ()
 
 void c_opencv_unmanaged::gpu_filter_background()
 {
-//  cv::cuda::BackgroundSubtractorMOG2 gpu_subtractor();
+  background_subtractor_gpu = cv::cuda::createBackgroundSubtractorMOG2(120, 250., true);
+  background_subtractor_gpu->apply();
 
 }
 
