@@ -42,8 +42,10 @@ System::Void C_frm_Main::bt_CameraCalibration_Click (System::Object^ sender, Sys
   {
   this->Taktgeber->Enabled = false;
   this->Main->camera_managed->camera_unmanaged->camera_vector[0]->set_idle (false);
-  this->Main->camera_managed->camera_unmanaged->camera_vector[0]->set_undistord_active (true);
-
+  this->Main->camera_managed->camera_unmanaged->camera_vector[0]->set_show_cropped_image (false);
+  this->Main->camera_managed->camera_unmanaged->camera_vector[0]->set_undistord_active (false);
+  this->Main->camera_managed->camera_unmanaged->camera_vector[0]->set_filtering_active (false);
+  this->Main->camera_managed->camera_unmanaged->camera_vector[0]->set_show_contoured_active(false);
   this->Main->frm_CameraCalibration_Single->ShowDialog();
   this->Taktgeber->Enabled = true;
   }

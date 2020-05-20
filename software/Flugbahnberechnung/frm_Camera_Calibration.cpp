@@ -46,7 +46,6 @@ System::Void C_frm_CameraCalibration_Single::C_frm_CameraCalibration_Single_Load
   this->cameras_in_use      = GlobalObjects->cameras_in_use;
   this->current_camera_id   = 0;
   this->Timerwait           = 50;
-  //Main->camera_managed->camera_unmanaged->camera_vector[0]->set_aspect_ratio(1080, 1920);
   }
 
 System::Void C_frm_CameraCalibration_Single::rb_single_calibration_Click (System::Object^ sender, System::EventArgs^ e)
@@ -204,7 +203,7 @@ System::Void C_frm_CameraCalibration_Single::sm_Single_camera_calibration ()
   switch (this->sm_calibration_state)
     {
     case 0:
-      this->Main->camera_managed->camera_unmanaged->camera_vector[current_camera_id]->cap->set (cv::CAP_PROP_XI_AEAG,false);
+      //this->Main->camera_managed->camera_unmanaged->camera_vector[current_camera_id]->cap->set (cv::CAP_PROP_XI_AEAG,false);
       this->current_camera_id = static_cast<int> (this->nup_camera_id->Value);
       this->photo_id          = 0;
       //this->photo_interval            =   int::Parse(tb_photo_interval->Text)*10;

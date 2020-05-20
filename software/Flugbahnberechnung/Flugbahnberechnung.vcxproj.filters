@@ -66,6 +66,9 @@
     <ClCompile Include="frm_Camera_Positioning_Pose.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="object.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="frm_Main.h">
@@ -122,6 +125,9 @@
     <ClInclude Include="frm_Camera_Positioning_Pose.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="object.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="frm_Main.resx">
@@ -140,6 +146,9 @@
       <Filter>Resource Files</Filter>
     </EmbeddedResource>
     <EmbeddedResource Include="frm_Camera_Calibration_crop.resx">
+      <Filter>Resource Files</Filter>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frm_Camera_Positioning_Pose.resx">
       <Filter>Resource Files</Filter>
     </EmbeddedResource>
   </ItemGroup>

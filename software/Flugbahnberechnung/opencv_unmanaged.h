@@ -94,7 +94,11 @@ namespace nmsp_opencv_unmanaged
     int KonturIndex;
     int Objekt_Anzahl;
 
-    double Vec_Object[3];
+    cv::Rect RoI;
+
+    double  Vec_Object[3];
+    int offset[2];
+    
     double max_Moment_m00;
     double Ist_x;
     double Ist_y;
@@ -158,6 +162,9 @@ namespace nmsp_opencv_unmanaged
 
     int resize_width;
     int resize_height;
+
+    int frame_width;
+    int frame_height;
 
     double gaussian_sigma;
     int    Object_Size_min;
@@ -392,7 +399,7 @@ namespace nmsp_opencv_unmanaged
     void gpu_filter_bgr (cv::cuda::GpuMat* gpu_src, cv::cuda::GpuMat* gpu_dst);
     void gpu_filter_gray (cv::cuda::GpuMat* gpu_src, cv::cuda::GpuMat* gpu_dst);
 
-    void find_contours (cv::Mat* thresholded_source_image, cv::Mat* dst_contoured_image);
+    void find_contours (cv::Mat* thresholded_source_image, cv::Mat* dst_contoured_image, int offset[2]);
 
     void undistord_img (cv::Mat* cpu_src, cv::Mat* cpu_dst);
     };

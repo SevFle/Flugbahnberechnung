@@ -151,6 +151,7 @@
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</CompileAsManaged>
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsManaged>
     </ClCompile>
+    <ClCompile Include="object.cpp" />
     <ClCompile Include="opencv_unmanaged.cpp">
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</CompileAsManaged>
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsManaged>
@@ -192,6 +193,7 @@
     <ClInclude Include="GlobalObjects.h" />
     <ClInclude Include="Kalmanfilter.h" />
     <ClInclude Include="kalman_cuda.cuh" />
+    <ClInclude Include="object.h" />
     <ClInclude Include="point.h" />
     <ClInclude Include="posen.h" />
     <ClInclude Include="tracking.h" />

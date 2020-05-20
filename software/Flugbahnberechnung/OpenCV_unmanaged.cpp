@@ -32,6 +32,12 @@ c_opencv_unmanaged::c_opencv_unmanaged (int camera_id)
   bilateral_sigma_color   = 0;
   bilateral_sigma_spatial = 0;
 
+  offset[0] = 0;
+  offset[1] = 0;
+
+  frame_height =0;
+  frame_width  =0;
+
   fx              = 0;
   fy              = 0;
   f               = 0;
@@ -226,7 +232,10 @@ c_opencv_unmanaged::~c_opencv_unmanaged ()
 void c_opencv_unmanaged::camera_thread ()
   {
   int      statemachine_state = 0;
-  cv::Rect RoI;
+
+  int breite = 0;
+  int hoehe = 0;
+
 
   while (thread_running == true)
     {
@@ -256,6 +265,7 @@ void c_opencv_unmanaged::camera_thread ()
         this->start = Clock::now();
         this->cpu_grab_frame (cpu_src_img);
 
+
         if (undistord_active == true)
           {
           statemachine_state = 3;
@@ -267,7 +277,9 @@ void c_opencv_unmanaged::camera_thread ()
 
         //STEP 3: Undistort and remap the source image if needed. Remaping via GPU
       case 3:
-        this->undistord_img (this->cpu_src_img,this->cpu_undistorted);
+        this->undistord_img (this->cpu_src_img,this->cpu_temp);
+        *cpu_undistorted = cpu_temp->operator()(RoI);
+
         this->image_prepared = false;
         statemachine_state   = 4;
         break;
@@ -315,6 +327,7 @@ void c_opencv_unmanaged::camera_thread ()
 
         //RoI = boundingRect (*cpu_hsv_filtered);
 
+
         statemachine_state = 6;
         break;
 
@@ -322,15 +335,100 @@ void c_opencv_unmanaged::camera_thread ()
       case 6:
         this->cpu_undistorted->copyTo (*cpu_contoured);
 
-        this->find_contours (cpu_hsv_filtered,cpu_contoured);
-        //rectangle (*cpu_contoured,RoI,cv::Scalar (0,255,0),2,8,0);
+        this->find_contours (cpu_hsv_filtered,cpu_contoured, offset);
+
         if (show_contoured == true)
           {
           imshow ("contoured" + std::to_string (camera_id), *cpu_contoured);
           }
         //Proceed to imshow
+        statemachine_state = 7;
+        break;
+
+      case 7:
+
+        if (contour_found)
+          {
+
+          offset[0] = Ist_x-Radius*2;
+          offset[1] = Ist_y-Radius*2;
+
+          breite = Radius*4;
+          hoehe = Radius*4;
+
+          if ((offset[0] >= 0 && offset[1] >= 0) && (offset[0]+breite <= frame_width && offset[1] + hoehe <= frame_height ))
+            {
+            RoI.x = offset[0];
+            RoI.y = offset[1];
+            RoI.width = Radius*4;
+            RoI.height = Radius*4;
+
+            gpu_src2color->cols = RoI.width;
+            gpu_src2color->rows = RoI.height;
+
+            gpu_color_threshold->cols = RoI.width;
+            gpu_color_threshold->rows = RoI.height;
+
+            cpu_contoured->cols = RoI.width;
+            cpu_contoured->rows = RoI.height;
+
+
+
+            }
+          else
+            {
+            offset[0] = 0;
+            offset[1] = 0;
+
+            RoI.x = 0;
+            RoI.y = 0;
+
+            RoI.width =   frame_width;
+            RoI.height =  frame_height;
+
+            gpu_src2color->cols = frame_width;
+            gpu_src2color->rows = frame_height;
+
+            gpu_color_threshold->cols = frame_width;
+            gpu_color_threshold->rows = frame_height;
+
+            cpu_contoured->cols = frame_width;
+            cpu_contoured->rows = frame_height;
+
+            }
+          
+
+    
+
+          std::cout << "contour found" << std::endl;
+          }
+        else
+          {
+          offset[0] = 0;
+          offset[1] = 0;
+
+          RoI.x = 0;
+          RoI.y = 0;
+
+          RoI.width =   frame_width;
+          RoI.height =  frame_height;
+
+          gpu_src2color->cols = frame_width;
+          gpu_src2color->rows = frame_height;
+
+          gpu_color_threshold->cols = frame_width;
+          gpu_color_threshold->rows = frame_height;
+
+          cpu_contoured->cols = frame_width;
+          cpu_contoured->rows = frame_height;
+
+
+
+          std::cout << "contour not found" << std::endl;
+          }
         statemachine_state = 8;
         break;
+
 
       case 8:
         if (cv::waitKey (1) >= 0) break;
@@ -1092,11 +1190,15 @@ void c_opencv_unmanaged::init (int camera_id)
   //  800X600   MJPEG 30fps
   //  640X480   MJPEG 30fps
 
-  cap->set (cv::CAP_PROP_FRAME_HEIGHT,600);
-  cap->set (cv::CAP_PROP_FRAME_WIDTH,800);
-  cap->set (cv::CAP_PROP_FPS,30);
-  cap->set (cv::CAP_PROP_BUFFERSIZE,3);
-  cap->open (camera_id,capture_api);
+  frame_height = 600;
+  frame_width = 800;
+  cap->open (camera_id, capture_api);
+
+  cap->set (cv::CAP_PROP_FRAME_HEIGHT, frame_height);
+  cap->set (cv::CAP_PROP_FRAME_WIDTH, frame_width);
+  cap->set (cv::CAP_PROP_FPS, 30);
+  //cap->set (cv::CAP_PROP_BUFFERSIZE, 3);
+
 
   //+--------+----+----+----+----+------+------+------+------+
   //  |        | C1 | C2 | C3 | C4 | C(5) | C(6) | C(7) | C(8) |
@@ -1111,10 +1213,17 @@ void c_opencv_unmanaged::init (int camera_id)
   //  +--------+----+----+----+----+------+------+------+------+
 
   //Redifinition der zwei GpuMat Arrays für die Verwendung in der Cuda-InRange Funktion. 
-  gpu_src2color->create (600,800, CV_8UC1);
-  gpu_color_threshold->create (600,800, CV_8UC1);
-  cpu_undistorted->create (600,800, CV_32FC1);
-  cpu_contoured->create (600,800, CV_8UC3);
+  gpu_src2color->create (frame_height, frame_width, CV_8UC1);
+  gpu_color_threshold->create (frame_height, frame_width, CV_8UC1);
+  cpu_undistorted->create (frame_height, frame_width, CV_32FC1);
+  cpu_contoured->create (frame_height, frame_width, CV_8UC3);
+
+  this->RoI.width = frame_width;
+  this->RoI.height = frame_height;
+
+  this->RoI.x = 0;
+  this->RoI.y = 0;
+
 
   this->init_rectify_map();
 
@@ -1155,13 +1264,6 @@ void c_opencv_unmanaged::init_rectify_map ()
   this->gpu_map1->upload (cpu_map1);
   this->gpu_map2->upload (cpu_map2);
   }
-
-void c_opencv_unmanaged::gpu_filter_background()
-{
-  background_subtractor_gpu = cv::cuda::createBackgroundSubtractorMOG2(120, 250., true);
-  background_subtractor_gpu->apply();
-
-}
 
 void c_opencv_unmanaged::gpu_erode (cv::cuda::GpuMat* gpu_src, cv::cuda::GpuMat* gpu_dst, int borderType)  //
   {
@@ -1236,7 +1338,7 @@ void c_opencv_unmanaged::gpu_filter_gray (cv::cuda::GpuMat* gpu_src, cv::cuda::G
   {
   }
 
-void c_opencv_unmanaged::find_contours (cv::Mat* thresholded_source_image, cv::Mat* dst_contoured_image)
+void c_opencv_unmanaged::find_contours (cv::Mat* thresholded_source_image, cv::Mat* dst_contoured_image, int offset[2])
   {
   objekt_anzahl = 0;
   std::vector<std::vector<cv::Point>> contours;
@@ -1258,7 +1360,7 @@ void c_opencv_unmanaged::find_contours (cv::Mat* thresholded_source_image, cv::M
   circle (*dst_contoured_image,cv::Point (static_cast<int> (cx),static_cast<int> (cy)),15,cv::Scalar (255,255,0));
 
 
-  findContours (*thresholded_source_image,contours,hirarchy,cv::RETR_TREE,cv::CHAIN_APPROX_SIMPLE,cv::Point (0,0));
+  findContours (*thresholded_source_image,contours,hirarchy,cv::RETR_TREE,cv::CHAIN_APPROX_SIMPLE,cv::Point (offset[0],offset[1]));
 
 
   objekt_anzahl = hirarchy.size();
