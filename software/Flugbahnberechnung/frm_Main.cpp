@@ -77,7 +77,7 @@ System::Void C_frm_Main::Taktgeber_Tick (System::Object^ sender, System::EventAr
       break;
     case 1:
       this->txtb_counter->Text = System::String::Format ("{0:0}",this->Zaehler++);
-      if (Zaehler > timerwait)
+      if (this->Main->camera_managed->camera_unmanaged->camera_vector[GlobalObjects->cameras_in_use-1]->is_thread_ready())
         {
         bt_ObjectCalibration->Enabled  = true;
         bt_CameraCalibration->Enabled  = true;

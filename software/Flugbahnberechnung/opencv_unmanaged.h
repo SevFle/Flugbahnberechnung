@@ -2,10 +2,9 @@
 
 #include <opencv2/opencv.hpp>
 #include <opencv2/highgui.hpp>
-#include <ipp.h>
 #include "CudaKernels.cuh"
 #include <chrono>
-
+#include "ipp.h"
 //#include "posen.h"
 
 
@@ -59,6 +58,7 @@ namespace nmsp_opencv_unmanaged
     private:
     int  camera_id;
     bool thread_running;
+    bool thread_ready;
 
     bool filtering_active;
     bool filtering_hsv_active;
@@ -220,6 +220,8 @@ namespace nmsp_opencv_unmanaged
     void         set_camera_id (int camera_id);
     bool&        is_thread_running ();
     void         set_thread_running (bool thread_running);
+    bool&        is_thread_ready ();
+    void          set_thread_ready (bool thread_ready);
     bool&        is_filtering_active ();
     void         set_filtering_active (bool filtering_active);
     bool&        is_filtering_hsv_active ();

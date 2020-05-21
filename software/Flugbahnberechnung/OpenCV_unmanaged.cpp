@@ -66,6 +66,8 @@ c_opencv_unmanaged::c_opencv_unmanaged (int camera_id)
 
 
   idle = false;
+  thread_ready = false;
+
 
   show_contoured = false;
 
@@ -233,6 +235,8 @@ void c_opencv_unmanaged::camera_thread ()
   {
   int      statemachine_state = 0;
 
+
+
   int breite = 0;
   int hoehe = 0;
 
@@ -248,6 +252,7 @@ void c_opencv_unmanaged::camera_thread ()
 
 
         statemachine_state = 1;
+        thread_ready = true;
         break;
 
         //used for keeping Threads in idle mode. Increases CPU usage to max through switching too fast in the statemachine.
@@ -278,6 +283,7 @@ void c_opencv_unmanaged::camera_thread ()
         //STEP 3: Undistort and remap the source image if needed. Remaping via GPU
       case 3:
         this->undistord_img (this->cpu_src_img,this->cpu_temp);
+
         *cpu_undistorted = cpu_temp->operator()(RoI);
 
         this->image_prepared = false;
@@ -288,7 +294,7 @@ void c_opencv_unmanaged::camera_thread ()
       case 4:
         //cv::resize(*cpu_undistorted, *cpu_temp, cpu_src_img->size(),0,0, cv::INTER_CUBIC);
         //this->crop_image (cpu_undistorted,cpu_cropped_img);
-        if (show_cropped_image) imshow ("cropped" + std::to_string (camera_id),*cpu_cropped_img);
+        //if (show_cropped_image) imshow ("cropped" + std::to_string (camera_id),*cpu_cropped_img);
 
         if (filtering_active)
           {
@@ -363,14 +369,17 @@ void c_opencv_unmanaged::camera_thread ()
             RoI.width = Radius*4;
             RoI.height = Radius*4;
 
-            gpu_src2color->cols = RoI.width;
-            gpu_src2color->rows = RoI.height;
+            //gpu_src_img->cols = RoI.width;
+            //gpu_src_img->rows = RoI.height;
 
-            gpu_color_threshold->cols = RoI.width;
-            gpu_color_threshold->rows = RoI.height;
+            //gpu_src2color->cols = RoI.width;
+            //gpu_src2color->rows = RoI.height;
 
-            cpu_contoured->cols = RoI.width;
-            cpu_contoured->rows = RoI.height;
+            //gpu_color_threshold->cols = RoI.width;
+            //gpu_color_threshold->rows = RoI.height;
+
+            //cpu_contoured->cols = RoI.width;
+            //cpu_contoured->rows = RoI.height;
 
 
 
@@ -386,14 +395,17 @@ void c_opencv_unmanaged::camera_thread ()
             RoI.width =   frame_width;
             RoI.height =  frame_height;
 
-            gpu_src2color->cols = frame_width;
-            gpu_src2color->rows = frame_height;
+            //gpu_src_img->cols = frame_width;
+            //gpu_src_img->rows = frame_width;
 
-            gpu_color_threshold->cols = frame_width;
-            gpu_color_threshold->rows = frame_height;
+            //gpu_src2color->cols = frame_width;
+            //gpu_src2color->rows = frame_height;
 
-            cpu_contoured->cols = frame_width;
-            cpu_contoured->rows = frame_height;
+            //gpu_color_threshold->cols = frame_width;
+            //gpu_color_threshold->rows = frame_height;
+
+            //cpu_contoured->cols = frame_width;
+            //cpu_contoured->rows = frame_height;
 
             }
           
@@ -413,14 +425,17 @@ void c_opencv_unmanaged::camera_thread ()
           RoI.width =   frame_width;
           RoI.height =  frame_height;
 
-          gpu_src2color->cols = frame_width;
-          gpu_src2color->rows = frame_height;
+          //gpu_src_img->cols = frame_width;
+          //gpu_src_img->rows = frame_width;
 
-          gpu_color_threshold->cols = frame_width;
-          gpu_color_threshold->rows = frame_height;
+          //gpu_src2color->cols = frame_width;
+          //gpu_src2color->rows = frame_height;
 
-          cpu_contoured->cols = frame_width;
-          cpu_contoured->rows = frame_height;
+          //gpu_color_threshold->cols = frame_width;
+          //gpu_color_threshold->rows = frame_height;
+
+          //cpu_contoured->cols = frame_width;
+          //cpu_contoured->rows = frame_height;
 
 
 
@@ -625,6 +640,14 @@ bool& c_opencv_unmanaged::is_filtering_gray_active ()
 void c_opencv_unmanaged::set_filtering_gray_active (bool filtering_gray_active)
   {
   this->filtering_gray_active = filtering_gray_active;
+  }
+bool& c_opencv_unmanaged::is_thread_ready ()
+  {
+  return thread_ready;
+  }
+void c_opencv_unmanaged::set_thread_ready (bool thread_ready)
+  {
+  this->thread_ready = thread_ready;
   }
 bool& c_opencv_unmanaged::is_contours_active ()
   {
@@ -1196,8 +1219,8 @@ void c_opencv_unmanaged::init (int camera_id)
 
   cap->set (cv::CAP_PROP_FRAME_HEIGHT, frame_height);
   cap->set (cv::CAP_PROP_FRAME_WIDTH, frame_width);
-  cap->set (cv::CAP_PROP_FPS, 30);
-  cap->set (cv::CAP_PROP_BUFFERSIZE, 0);
+  //cap->set (cv::CAP_PROP_FPS, 60);
+  cap->set (cv::CAP_PROP_BUFFERSIZE, 10);
 
 
   //+--------+----+----+----+----+------+------+------+------+

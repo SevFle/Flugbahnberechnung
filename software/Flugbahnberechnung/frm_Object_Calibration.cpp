@@ -104,13 +104,13 @@ System::Void c_frm_object_calibration::Taktgeber_Tick (System::Object^ sender, S
   this->txtb_counter->Text = System::String::Format ("{0:0}",this->Zaehler++);
 
   //Initial Wait um das abgreifen nicht vorhandener Bilder zu verhindern
-  if (Zaehler > TimerWait)
-    {
-    FillMat2Picturebox (pb_original,*Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->cpu_src_img);
-    FillMat2Picturebox (pb_gray,*Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->cpu_hsv_filtered);
-    FillMat2Picturebox (pb_filtered,*Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->cpu_masked_img);
-    FillMat2Picturebox (pb_tracked,*Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->cpu_contoured);
-    }
+  //if (Zaehler > TimerWait && !this->Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->is_contour_found())
+  //  {
+  //  FillMat2Picturebox (pb_original,*Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->cpu_src_img);
+  //  FillMat2Picturebox (pb_gray,*Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->cpu_hsv_filtered);
+  //  FillMat2Picturebox (pb_filtered,*Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->cpu_masked_img);
+  //  FillMat2Picturebox (pb_tracked,*Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->cpu_contoured);
+  //  }
   this->txb_fps->Text         = this->Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->get_fps().ToString();
   this->txb_frametime->Text   = this->Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->get_frametime().count().ToString();
   }
