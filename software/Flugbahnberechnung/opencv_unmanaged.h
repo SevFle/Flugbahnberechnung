@@ -2,7 +2,7 @@
 
 #include <opencv2/opencv.hpp>
 #include <opencv2/highgui.hpp>
-//#include <ipp.h>
+#include <ipp.h>
 #include "CudaKernels.cuh"
 #include <chrono>
 

@@ -287,7 +287,7 @@ void c_opencv_unmanaged::camera_thread ()
         //STEP 4: Crop image to remove black corners
       case 4:
         //cv::resize(*cpu_undistorted, *cpu_temp, cpu_src_img->size(),0,0, cv::INTER_CUBIC);
-        this->crop_image (cpu_undistorted,cpu_cropped_img);
+        //this->crop_image (cpu_undistorted,cpu_cropped_img);
         if (show_cropped_image) imshow ("cropped" + std::to_string (camera_id),*cpu_cropped_img);
 
         if (filtering_active)
@@ -1197,7 +1197,7 @@ void c_opencv_unmanaged::init (int camera_id)
   cap->set (cv::CAP_PROP_FRAME_HEIGHT, frame_height);
   cap->set (cv::CAP_PROP_FRAME_WIDTH, frame_width);
   cap->set (cv::CAP_PROP_FPS, 30);
-  //cap->set (cv::CAP_PROP_BUFFERSIZE, 3);
+  cap->set (cv::CAP_PROP_BUFFERSIZE, 0);
 
 
   //+--------+----+----+----+----+------+------+------+------+
@@ -1257,7 +1257,6 @@ void c_opencv_unmanaged::init_rectify_map ()
   {
   cv::Mat cpu_map1;
   cv::Mat cpu_map2;
-
 
   initUndistortRectifyMap (*Intrinsic,*DistCoeffs,cv::Mat(),*Intrinsic,cv::Size (cpu_undistorted->cols,cpu_undistorted->rows), CV_32FC1,cpu_map1,cpu_map2);
 
@@ -1492,14 +1491,12 @@ void c_opencv_unmanaged::find_contours (cv::Mat* thresholded_source_image, cv::M
 
 void c_opencv_unmanaged::undistord_img (cv::Mat* cpu_src, cv::Mat* cpu_dst)
   {
-  cv::cuda::GpuMat gpu_temp1;
-  cv::cuda::GpuMat gpu_temp2;
 
-  gpu_temp1.upload (*cpu_src);
+  gpu_src_img->upload (*cpu_src);
 
-  cv::cuda::remap (gpu_temp1,gpu_temp2,*gpu_map1,*gpu_map2,cv::INTER_NEAREST,cv::BORDER_CONSTANT,0);
+  cv::cuda::remap (*gpu_src_img,*gpu_temp,*gpu_map1,*gpu_map2,cv::INTER_NEAREST,cv::BORDER_CONSTANT,0);
 
-  gpu_temp2.download (*cpu_dst);
+  gpu_temp->download (*cpu_dst);
   }
 
 void c_opencv_unmanaged::save_picture (int camera_id, int photo_id, std::string definition)
