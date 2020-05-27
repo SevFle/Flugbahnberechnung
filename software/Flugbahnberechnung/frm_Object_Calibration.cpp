@@ -11,7 +11,6 @@ c_frm_object_calibration::c_frm_object_calibration (C_GlobalObjects* GlobalObjec
   this->Main          = Main;
 
   camera_id_in_use = 0;
-
   trb_hue_min->Minimum = 0;
   trb_hue_min->Maximum = 179;
 
@@ -48,24 +47,28 @@ c_frm_object_calibration::c_frm_object_calibration (C_GlobalObjects* GlobalObjec
   numUD_bilateral_color->Minimum = 0;
   numUD_bilateral_color->Maximum = 10;
 
-  numUD_morph_iterations->Minimum = 1;
+  numUD_morph_iterations->Minimum = 0;
   numUD_morph_iterations->Maximum = 10;
 
 
-  numUD_erode_kernelsize->Minimum = 1;
-  numUD_erode_kernelsize->Maximum = 10;
+  numUD_erode_kernelsize->Minimum = static_cast<Int32>(1);
+  numUD_erode_kernelsize->Maximum = static_cast<Int32>(10);
 
-  numUD_dilation_kernelsize->Minimum = 1;
-  numUD_dilation_kernelsize->Maximum = 10;
+  numUD_dilation_kernelsize->Minimum = static_cast<Int32>(1);
+  numUD_dilation_kernelsize->Maximum = static_cast<Int32>(10);
 
-  numUD_opening_kernelsize->Minimum = 1;
-  numUD_opening_kernelsize->Maximum = 10;
+  numUD_opening_kernelsize->Minimum = static_cast<Int32>(1);
+  numUD_opening_kernelsize->Maximum = static_cast<Int32>(10);
 
-  numUD_bilateral_kernelsize->Minimum = 1;
-  numUD_bilateral_kernelsize->Maximum = 10;
+  numUD_closing_kernelsize->Minimum = static_cast<Int32>(1);
+  numUD_closing_kernelsize->Maximum = static_cast<Int32>(10);
 
-  numUD_morph_kernelsize->Minimum = 1;
-  numUD_morph_kernelsize->Maximum = 10;
+  numUD_bilateral_kernelsize->Minimum = static_cast<Int32>(1);
+  numUD_bilateral_kernelsize->Maximum = static_cast<Int32>(10);
+
+  numUD_morph_kernelsize->Minimum = static_cast<Int32> (1);
+  numUD_morph_kernelsize->Maximum = static_cast<Int32>(10);
+
 
   TimerWait        = 0;
   camera_id_in_use = 0;
@@ -104,15 +107,19 @@ System::Void c_frm_object_calibration::Taktgeber_Tick (System::Object^ sender, S
   this->txtb_counter->Text = System::String::Format ("{0:0}",this->Zaehler++);
 
   //Initial Wait um das abgreifen nicht vorhandener Bilder zu verhindern
-  if (this->Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->is_thread_ready())
-    {
-    FillMat2Picturebox (pb_original,*Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->cpu_src_img);
-    FillMat2Picturebox (pb_gray,*Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->cpu_hsv_filtered);
-    FillMat2Picturebox (pb_filtered,*Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->cpu_masked_img);
-    FillMat2Picturebox (pb_tracked,*Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->cpu_contoured);
-    }
+  //if (this->Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->is_thread_ready())
+  //  {
+  //  FillMat2Picturebox (pb_original,*Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->cpu_src_img);
+  //  FillMat2Picturebox (pb_gray,*Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->cpu_hsv_filtered);
+  //  FillMat2Picturebox (pb_filtered,*Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->cpu_masked_img);
+  //  FillMat2Picturebox (pb_tracked,*Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->cpu_contoured);
+  //  }
   this->txb_fps->Text         = this->Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->get_fps().ToString();
   this->txb_frametime->Text   = this->Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->get_frametime().count().ToString();
+  this->txb_deltax->Text         = this->Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->get_delta_x().ToString();
+  this->txb_deltay->Text   = this->Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->get_delta_y().ToString();
+  this->txb_sx->Text         = this->Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->get_schwerpunkt_x().ToString();
+  this->txb_sy->Text   = this->Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->get_schwerpunkt_y().ToString();
   }
 
 System::Void c_frm_object_calibration::C_frm_ObjectCalibration_FormClosing (System::Object^ sender, System::Windows::Forms::FormClosingEventArgs^ e)
@@ -135,6 +142,65 @@ System::Void c_frm_object_calibration::C_frm_ObjectCalibration_Load (System::Obj
   this->trb_value_min->Value      = 0;
   this->trb_value_max->Value      = 255;
   numUD_cam_id->Maximum           = static_cast<Int32> (GlobalObjects->cameras_in_use)-1;
+
+  trb_hue_min->Minimum = 0;
+  trb_hue_min->Maximum = 179;
+
+  trb_hue_max->Minimum = 0;
+  trb_hue_max->Maximum = 179;
+
+  trb_saturation_min->Minimum = 0;
+  trb_saturation_min->Maximum = 255;
+
+  trb_saturation_max->Minimum = 0;
+  trb_saturation_max->Maximum = 255;
+
+  trb_value_min->Minimum = 0;
+  trb_value_min->Maximum = 255;
+
+  trb_value_max->Minimum = 0;
+  trb_value_max->Maximum = 255;
+
+  trb_ObjectSize_min->Minimum = 0;
+  trb_ObjectSize_min->Maximum = 479999;
+
+  trb_ObjectSize_max->Minimum = 0;
+  trb_ObjectSize_max->Maximum = 480000;
+
+  numUD_erode_iterations->Minimum = 0;
+  numUD_erode_iterations->Maximum = 10;
+
+  numUD_dilation_iterations->Minimum = 0;
+  numUD_dilation_iterations->Maximum = 10;
+
+  numUD_opening_iterations->Minimum = 0;
+  numUD_opening_iterations->Maximum = 10;
+
+  numUD_bilateral_color->Minimum = 0;
+  numUD_bilateral_color->Maximum = 10;
+
+  numUD_morph_iterations->Minimum = 0;
+  numUD_morph_iterations->Maximum = 10;
+
+
+  numUD_erode_kernelsize->Minimum = static_cast<Int32>(1);
+  numUD_erode_kernelsize->Maximum = static_cast<Int32>(10);
+
+  numUD_dilation_kernelsize->Minimum = static_cast<Int32>(1);
+  numUD_dilation_kernelsize->Maximum = static_cast<Int32>(10);
+
+  numUD_opening_kernelsize->Minimum = static_cast<Int32>(1);
+  numUD_opening_kernelsize->Maximum = static_cast<Int32>(10);
+
+  numUD_closing_kernelsize->Minimum = static_cast<Int32>(1);
+  numUD_closing_kernelsize->Maximum = static_cast<Int32>(10);
+
+  numUD_bilateral_kernelsize->Minimum = static_cast<Int32>(1);
+  numUD_bilateral_kernelsize->Maximum = static_cast<Int32>(10);
+
+  numUD_morph_kernelsize->Minimum = static_cast<Int32> (1);
+  numUD_morph_kernelsize->Maximum = static_cast<Int32>(10);
+
 
   this->get_camera_settings (0);
   }
@@ -355,7 +421,7 @@ System::Void c_frm_object_calibration::FillPicturebox (System::Windows::Forms::P
       delete (graphics);
       }
       break;
-    case CV_8UC1: // grayscale images are incorrectly displayed here 
+    case CV_8UC1: // grayscale images are correctly displayed here 
       {
       System::Drawing::Graphics^  graphics = Picturebox->CreateGraphics();
       System::Drawing::Bitmap     bitmap (ColorImageCols,ColorImageRows,(int)ColorImageStep,System::Drawing::Imaging::PixelFormat::Format8bppIndexed,ColorImagePtr);

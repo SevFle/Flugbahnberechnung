@@ -267,7 +267,6 @@ void c_opencv_unmanaged::camera_thread ()
           break;
           }
         statemachine_state = 2;
-        thread_ready = false;
         break;
 
         //STEP2: Grab a new frame from Videocapture object
@@ -339,7 +338,7 @@ void c_opencv_unmanaged::camera_thread ()
 
         //gpu_filtered stellt das gefilterte HSV Bild dar.
         this->gpu_filtered->download (*cpu_hsv_filtered);
-
+        cv::imshow("filtered", *cpu_hsv_filtered);
         //RoI = boundingRect (*cpu_hsv_filtered);
 
 
@@ -1427,10 +1426,10 @@ void c_opencv_unmanaged::find_contours (cv::Mat* thresholded_source_image, cv::M
     circle (*dst_contoured_image,Center,static_cast<int> (Radius),cv::Scalar (0,255,255));
 
     // Schwerpunktkoordinaten als Text im Bild darstellen
-    S_x = std::to_string (Schwerpunkt_x);
-    S_y = std::to_string (Schwerpunkt_y);
-    putText (*dst_contoured_image,"S_x: " + S_x,cv::Point (0,20),1,1,cv::Scalar (255,255,255),2);
-    putText (*dst_contoured_image,"S_y: " + S_y,cv::Point (0,50),1,1,cv::Scalar (255,255,255),2);
+    //S_x = std::to_string (Schwerpunkt_x);
+    //S_y = std::to_string (Schwerpunkt_y);
+    //putText (*dst_contoured_image,"S_x: " + S_x,cv::Point (0,20),1,1,cv::Scalar (255,255,255),2);
+    //putText (*dst_contoured_image,"S_y: " + S_y,cv::Point (0,50),1,1,cv::Scalar (255,255,255),2);
 
     // Bestimme den Abstand des Mittelpunktes der gefundenen Kontur zum Bildmittelpunkt
     contour_found = true;
@@ -1457,10 +1456,10 @@ void c_opencv_unmanaged::find_contours (cv::Mat* thresholded_source_image, cv::M
 
 
     // Schreibe die Delta-Werte auf das Bild
-    Delta_x_str = std::to_string (Delta_x);
-    Delta_y_str = std::to_string (Delta_y);
-    putText (*dst_contoured_image,"Delta_x: " + Delta_x_str,cv::Point (0,80),1,1,cv::Scalar (255,255,255),2);
-    putText (*dst_contoured_image,"Delta_y: " + Delta_y_str,cv::Point (0,110),1,1,cv::Scalar (255,255,255),2);
+    //Delta_x_str = std::to_string (Delta_x);
+    //Delta_y_str = std::to_string (Delta_y);
+    //putText (*dst_contoured_image,"Delta_x: " + Delta_x_str,cv::Point (0,80),1,1,cv::Scalar (255,255,255),2);
+    //putText (*dst_contoured_image,"Delta_y: " + Delta_y_str,cv::Point (0,110),1,1,cv::Scalar (255,255,255),2);
 
     // Zeichne eine Linie zwischen kalibriertem Bildmittelpunkt und dem Objektschwerpunkt
     line (*dst_contoured_image,cv::Point (static_cast<int> (Ist_x),static_cast<int> (Ist_y)),cv::Point (static_cast<int> (Soll_x),static_cast<int> (Soll_y)),cv::Scalar (0,0,255),4,8,0);
@@ -1473,10 +1472,10 @@ void c_opencv_unmanaged::find_contours (cv::Mat* thresholded_source_image, cv::M
     //this->Vec_Object[2] = 0.0;
     max_Moment_m00 = 0.0;
 
-    putText (*dst_contoured_image,"S_x:     Object not found",cv::Point (0,20),1,1,cv::Scalar (255,255,255),2);
-    putText (*dst_contoured_image,"S_y:     Object not found",cv::Point (0,50),1,1,cv::Scalar (255,255,255),2);
-    putText (*dst_contoured_image,"Delta_x: Object not found",cv::Point (0,80),1,1,cv::Scalar (255,255,255),2);
-    putText (*dst_contoured_image,"Delta_y: Object not found",cv::Point (0,110),1,1,cv::Scalar (255,255,255),2);
+    //putText (*dst_contoured_image,"S_x:     Object not found",cv::Point (0,20),1,1,cv::Scalar (255,255,255),2);
+    //putText (*dst_contoured_image,"S_y:     Object not found",cv::Point (0,50),1,1,cv::Scalar (255,255,255),2);
+    //putText (*dst_contoured_image,"Delta_x: Object not found",cv::Point (0,80),1,1,cv::Scalar (255,255,255),2);
+    //putText (*dst_contoured_image,"Delta_y: Object not found",cv::Point (0,110),1,1,cv::Scalar (255,255,255),2);
     }
   }
 
