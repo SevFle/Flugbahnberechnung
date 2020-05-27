@@ -267,13 +267,13 @@ void c_opencv_unmanaged::camera_thread ()
           break;
           }
         statemachine_state = 2;
+        thread_ready = false;
         break;
 
         //STEP2: Grab a new frame from Videocapture object
       case 2:
         this->start = Clock::now();
         this->cpu_grab_frame (cpu_src_img);
-
 
         if (undistord_active == true)
           {
@@ -419,6 +419,8 @@ void c_opencv_unmanaged::camera_thread ()
         this->end = Clock::now();
         this->frametime = std::chrono::duration_cast<milliseconds>(end - start);
         this->fps = 1000.0/frametime.count();
+        thread_ready = true;
+
         }
       }
     }

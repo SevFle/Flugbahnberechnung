@@ -104,13 +104,13 @@ System::Void c_frm_object_calibration::Taktgeber_Tick (System::Object^ sender, S
   this->txtb_counter->Text = System::String::Format ("{0:0}",this->Zaehler++);
 
   //Initial Wait um das abgreifen nicht vorhandener Bilder zu verhindern
-  //if (Zaehler > TimerWait && !this->Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->is_contour_found())
-  //  {
-  //  FillMat2Picturebox (pb_original,*Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->cpu_src_img);
-  //  FillMat2Picturebox (pb_gray,*Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->cpu_hsv_filtered);
-  //  FillMat2Picturebox (pb_filtered,*Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->cpu_masked_img);
-  //  FillMat2Picturebox (pb_tracked,*Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->cpu_contoured);
-  //  }
+  if (this->Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->is_thread_ready())
+    {
+    FillMat2Picturebox (pb_original,*Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->cpu_src_img);
+    FillMat2Picturebox (pb_gray,*Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->cpu_hsv_filtered);
+    FillMat2Picturebox (pb_filtered,*Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->cpu_masked_img);
+    FillMat2Picturebox (pb_tracked,*Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->cpu_contoured);
+    }
   this->txb_fps->Text         = this->Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->get_fps().ToString();
   this->txb_frametime->Text   = this->Main->camera_managed->camera_unmanaged->camera_vector[camera_id_in_use]->get_frametime().count().ToString();
   }
@@ -118,6 +118,7 @@ System::Void c_frm_object_calibration::Taktgeber_Tick (System::Object^ sender, S
 System::Void c_frm_object_calibration::C_frm_ObjectCalibration_FormClosing (System::Object^ sender, System::Windows::Forms::FormClosingEventArgs^ e)
   {
   this->Taktgeber->Enabled = false;
+  cv::destroyAllWindows();
   }
 
 System::Void c_frm_object_calibration::C_frm_ObjectCalibration_Load (System::Object^ sender, System::EventArgs^ e)
@@ -133,6 +134,7 @@ System::Void c_frm_object_calibration::C_frm_ObjectCalibration_Load (System::Obj
   this->trb_saturation_max->Value = 255;
   this->trb_value_min->Value      = 0;
   this->trb_value_max->Value      = 255;
+  numUD_cam_id->Maximum           = static_cast<Int32> (GlobalObjects->cameras_in_use)-1;
 
   this->get_camera_settings (0);
   }
