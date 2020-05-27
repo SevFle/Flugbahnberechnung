@@ -235,19 +235,12 @@ c_opencv_unmanaged::~c_opencv_unmanaged ()
   Radius        = 0.0f;
   }
 
-
-
 /************************************************************* Öffentliche Klassenmethoden*************************************************/
 
 
 void c_opencv_unmanaged::camera_thread ()
   {
   int      statemachine_state = 0;
-
-  cv::Mat test;
-
-
-
   int breite = 0;
   int hoehe = 0;
 
@@ -300,7 +293,7 @@ void c_opencv_unmanaged::camera_thread ()
 
         *cpu_undistorted = cpu_temp->operator()(RoI);
 
-        cv::imshow("roi", *cpu_undistorted);
+        //cv::imshow("roi", *cpu_undistorted);
 
         this->image_prepared = false;
         statemachine_state   = 4;
@@ -327,8 +320,8 @@ void c_opencv_unmanaged::camera_thread ()
         {
         if (filtering_hsv_active)
           {
-          gpu_src_img->upload (*cpu_undistorted);
-          gpu_filter_hsv (gpu_src_img,gpu_thresholded);
+          this->gpu_src_img->upload (*cpu_undistorted);
+          this->gpu_filter_hsv (this->gpu_src_img, this->gpu_thresholded);
           }
         if (filtering_bgr_active)
           {
@@ -337,7 +330,7 @@ void c_opencv_unmanaged::camera_thread ()
           }
         if (filtering_gray_active)
           {
-          gpu_src_img->upload (*cpu_undistorted);
+          this->gpu_src_img->upload (*cpu_undistorted);
           gpu_filter_gray (gpu_src_img,gpu_thresholded);
           }
 
@@ -355,13 +348,13 @@ void c_opencv_unmanaged::camera_thread ()
 
         //STEP 5: Find Contours and draw them onto cpu_contoured
       case 6:
-        this->cpu_undistorted->copyTo (*cpu_contoured);
+        //this->cpu_undistorted->copyTo (*cpu_contoured);
 
-        this->find_contours (cpu_hsv_filtered,cpu_contoured, offset);
+        this->find_contours (cpu_hsv_filtered, cpu_undistorted, offset);
 
         if (show_contoured == true)
           {
-          imshow ("contoured" + std::to_string (camera_id), *cpu_contoured);
+          imshow ("contoured" + std::to_string (camera_id), *cpu_undistorted);
           }
         //Proceed to imshow
         statemachine_state = 7;
@@ -369,62 +362,51 @@ void c_opencv_unmanaged::camera_thread ()
 
       case 7:
 
-        if (contour_found)
+        if (this->contour_found)
           {
 
-          offset[0] = Ist_x-Radius*2;
-          offset[1] = Ist_y-Radius*2;
+          this->offset[0] = this->Ist_x-Radius*2;
+          this->offset[1] = this->Ist_y-Radius*2;
 
           breite = Radius*4;
           hoehe = Radius*4;
 
-          if ((offset[0] >= 0 && offset[1] >= 0) && (offset[0]+breite <= frame_width && offset[1] + hoehe <= frame_height ))
+          if ((this->offset[0] >= 0 && this->offset[1] >= 0) && (this->offset[0]+breite <= this->frame_width && this->offset[1] + hoehe <= this->frame_height ))
             {
-            RoI.x = offset[0];
-            RoI.y = offset[1];
-            RoI.width = Radius*4;
-            RoI.height = Radius*4;
+            this->RoI.x = this->offset[0];
+            this->RoI.y = this->offset[1];
 
-            fit_to_roi(RoI.width, RoI.height);
+            this->RoI.width = this->Radius*4;
+            this->RoI.height = this->Radius*4;
 
-
-
+            this->fit_to_roi(this->RoI.width, this->RoI.height);
             }
           else
             {
-            offset[0] = 0;
-            offset[1] = 0;
+            this->offset[0] = 0;
+            this->offset[1] = 0;
 
-            RoI.x = 0;
-            RoI.y = 0;
+            this->RoI.x = 0;
+            this->RoI.y = 0;
 
-            RoI.width =   frame_width;
-            RoI.height =  frame_height;
+            this->RoI.width =   this->frame_width;
+            this->RoI.height =  this->frame_height;
 
-            fit_to_roi(frame_width, frame_height);
+            this->fit_to_roi(this->frame_width, this->frame_height);
             }
-          
-
-    
-
-          std::cout << "contour found" << std::endl;
           }
         else
           {
-          offset[0] = 0;
-          offset[1] = 0;
+          this->offset[0] = 0;
+          this->offset[1] = 0;
 
-          RoI.x = 0;
-          RoI.y = 0;
+          this->RoI.x = 0;
+          this->RoI.y = 0;
 
-          RoI.width =   frame_width;
-          RoI.height =  frame_height;
+          this->RoI.width =   this->frame_width;
+          this->RoI.height =  this->frame_height;
 
-          fit_to_roi(frame_width, frame_height);
-
-
-
-          std::cout << "contour not found" << std::endl;
+          this->fit_to_roi(this->frame_width, this->frame_height);
           }
         statemachine_state = 8;
         break;
@@ -437,7 +419,6 @@ void c_opencv_unmanaged::camera_thread ()
         this->end = Clock::now();
         this->frametime = std::chrono::duration_cast<milliseconds>(end - start);
         this->fps = 1000.0/frametime.count();
-        std::cout << "Frametime Camera "<< std::to_string(camera_id) <<": " << frametime.count() << " ms" << std::endl;
         }
       }
     }
