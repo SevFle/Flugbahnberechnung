@@ -95,6 +95,10 @@ c_opencv_unmanaged::c_opencv_unmanaged (int camera_id)
   this->cpu_undistorted  = new cv::Mat();
   this->cpu_cropped_img  = new cv::Mat();
 
+  this->cpu_test1 = new cv::Mat();
+  this->cpu_test2 = new cv::Mat();
+  this->cpu_test3 = new cv::Mat();
+
 
   this->DistCoeffs = new cv::Mat (cv::Mat_<double> (1,5));
   this->Intrinsic  = new cv::Mat (cv::Mat_<double> (3,3));
@@ -186,6 +190,11 @@ c_opencv_unmanaged::~c_opencv_unmanaged ()
   delete (gpu_map1);
   delete (gpu_map2);
 
+  delete (cpu_test1);
+  delete (cpu_test2);
+  delete (cpu_test3);
+
+
   delete (cpu_src_img);
   delete (cpu_temp);
   delete (cpu_masked_img);
@@ -235,6 +244,8 @@ void c_opencv_unmanaged::camera_thread ()
   {
   int      statemachine_state = 0;
 
+  cv::Mat test;
+
 
 
   int breite = 0;
@@ -282,9 +293,14 @@ void c_opencv_unmanaged::camera_thread ()
 
         //STEP 3: Undistort and remap the source image if needed. Remaping via GPU
       case 3:
-        this->undistord_img (this->cpu_src_img,this->cpu_temp);
+        //cpu_temp->cols = frame_width;
+        //cpu_temp->rows = frame_height;
+
+         this->undistord_img (this->cpu_src_img, cpu_temp);
 
         *cpu_undistorted = cpu_temp->operator()(RoI);
+
+        cv::imshow("roi", *cpu_undistorted);
 
         this->image_prepared = false;
         statemachine_state   = 4;
@@ -369,17 +385,7 @@ void c_opencv_unmanaged::camera_thread ()
             RoI.width = Radius*4;
             RoI.height = Radius*4;
 
-            //gpu_src_img->cols = RoI.width;
-            //gpu_src_img->rows = RoI.height;
-
-            //gpu_src2color->cols = RoI.width;
-            //gpu_src2color->rows = RoI.height;
-
-            //gpu_color_threshold->cols = RoI.width;
-            //gpu_color_threshold->rows = RoI.height;
-
-            //cpu_contoured->cols = RoI.width;
-            //cpu_contoured->rows = RoI.height;
+            fit_to_roi(RoI.width, RoI.height);
 
 
 
@@ -395,18 +401,7 @@ void c_opencv_unmanaged::camera_thread ()
             RoI.width =   frame_width;
             RoI.height =  frame_height;
 
-            //gpu_src_img->cols = frame_width;
-            //gpu_src_img->rows = frame_width;
-
-            //gpu_src2color->cols = frame_width;
-            //gpu_src2color->rows = frame_height;
-
-            //gpu_color_threshold->cols = frame_width;
-            //gpu_color_threshold->rows = frame_height;
-
-            //cpu_contoured->cols = frame_width;
-            //cpu_contoured->rows = frame_height;
-
+            fit_to_roi(frame_width, frame_height);
             }
           
 
@@ -425,17 +420,7 @@ void c_opencv_unmanaged::camera_thread ()
           RoI.width =   frame_width;
           RoI.height =  frame_height;
 
-          //gpu_src_img->cols = frame_width;
-          //gpu_src_img->rows = frame_width;
-
-          //gpu_src2color->cols = frame_width;
-          //gpu_src2color->rows = frame_height;
-
-          //gpu_color_threshold->cols = frame_width;
-          //gpu_color_threshold->rows = frame_height;
-
-          //cpu_contoured->cols = frame_width;
-          //cpu_contoured->rows = frame_height;
+          fit_to_roi(frame_width, frame_height);
 
 
 
@@ -1349,7 +1334,7 @@ void c_opencv_unmanaged::gpu_filter_hsv (cv::cuda::GpuMat* gpu_src, cv::cuda::Gp
 
   cv::cuda::cvtColor (*gpu_filtered,*gpu_temp,cv::COLOR_GRAY2BGR);
 
-  bitwise_and (*gpu_src_img,*gpu_temp,*gpu_dst);
+  bitwise_and (*gpu_src,*gpu_temp,*gpu_dst);
   }
 
 void c_opencv_unmanaged::gpu_filter_bgr (cv::cuda::GpuMat* gpu_src, cv::cuda::GpuMat* gpu_dst)
@@ -1538,4 +1523,26 @@ void c_opencv_unmanaged::crop_image (cv::Mat* undistorted_img, cv::Mat* crop_und
   auto cropped = temp (cropped_region);
 
   cropped.copyTo (*crop_undist_img);
+  }
+
+void c_opencv_unmanaged::fit_to_roi (int width, int height)
+  {
+  //gpu_src_img->cols = width;
+  //gpu_src_img->rows = height;
+
+  gpu_src2color->cols = width;
+  gpu_src2color->rows = height;
+
+  gpu_color_threshold->cols = width;
+  gpu_color_threshold->rows = height;
+
+  gpu_thresholded->cols = width;
+  gpu_thresholded->rows = height;
+
+  //gpu_temp->cols = width;
+  //gpu_temp->rows = height;
+
+  cpu_contoured->cols = width;
+  cpu_contoured->rows = height;
+
   }

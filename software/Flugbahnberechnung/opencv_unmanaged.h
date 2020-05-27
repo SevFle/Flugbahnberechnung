@@ -44,6 +44,10 @@ namespace nmsp_opencv_unmanaged
     cv::VideoCapture* cap;
     cv::Mat*          cpu_src_img;
     cv::Mat*          cpu_temp;
+    cv::Mat*          cpu_test1;
+    cv::Mat*          cpu_test2;
+    cv::Mat*          cpu_test3;
+
     cv::Mat*          cpu_masked_img;
     cv::Mat*          cpu_hsv_filtered;
     cv::Mat*          cpu_contoured;
@@ -404,5 +408,7 @@ namespace nmsp_opencv_unmanaged
     void find_contours (cv::Mat* thresholded_source_image, cv::Mat* dst_contoured_image, int offset[2]);
 
     void undistord_img (cv::Mat* cpu_src, cv::Mat* cpu_dst);
+    void c_opencv_unmanaged::fit_to_roi (int width, int height);
+
     };
   }
