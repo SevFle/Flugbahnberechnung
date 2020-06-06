@@ -86,6 +86,9 @@ namespace nmsp_opencv_unmanaged
     double get_fps() const;
   private:
     Clock::time_point start;
+	Clock::time_point timestamp_frame;
+
+
     Clock::time_point start_alt;
 
     Clock::time_point end;
@@ -201,7 +204,7 @@ namespace nmsp_opencv_unmanaged
     void get_calibration_parameter (double (&DistCoeffs)[1][5], double (&Intrinsic)[3][3]) const;
     void get_camera_settings ();
 
-    void         get_objectPosition_2D_Pixel (bool& Contour_Found, nmsp_posen::S_Positionsvektor& Vec_Object);
+    void         get_objectPosition_2D_Pixel (bool& Contour_Found, nmsp_posen::S_Positionsvektor& Vec_Object, double& timestamp);
     cv::Mat*&    get_cpu_src_img ();
     void         set_cpu_src_img (cv::Mat* cpu_src_img);
     cv::Mat*&    get_cpu_temp ();
@@ -380,7 +383,6 @@ namespace nmsp_opencv_unmanaged
     void set_framerate (int framerate);
 
     void init_rectify_map ();
-    void gpu_filter_background();
     void save_picture (int camera_id, int photo_id, std::string definition);
     void crop_image (cv::Mat* undistorted_img, cv::Mat* crop_undist_img);
 

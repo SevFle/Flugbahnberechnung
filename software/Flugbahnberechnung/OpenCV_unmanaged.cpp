@@ -273,6 +273,7 @@ void c_opencv_unmanaged::camera_thread ()
       case 2:
         this->start = Clock::now();
         this->cpu_grab_frame (cpu_src_img);
+		this->timestamp_frame = Clock::now();
 
         if (undistord_active == true)
           {

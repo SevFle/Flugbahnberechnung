@@ -793,6 +793,9 @@ void c_camera_unmanaged::sm_object_tracking ()
   int measSize  = 3;
   int contrSize = 4;
 
+  double temp1 = 0;
+  double temp2 = 0;
+
   bool found = false;
 
   std::vector<S_Positionsvektor> v_positions;
@@ -821,7 +824,7 @@ void c_camera_unmanaged::sm_object_tracking ()
           if (this->camera_vector[0]->is_contour_found() == true)
             {
 			  auto detected_object = new C_object();
-			  v_objects.push_back(detected_object);
+			  this->v_objects.push_back(detected_object);
 			  object_found_camID = 0;
             statemachine_state = 2;
             break;
@@ -830,8 +833,13 @@ void c_camera_unmanaged::sm_object_tracking ()
 
       case 2:
         //Hole die 2D-Koordinaten des Objektes aus dem Kamerabild
-        this->camera_vector[object_found_camID]->get_objectPosition_2D_Pixel (tracked_data->found_0,tracked_data->Richtungsvektor_0);
-        this->camera_vector[object_found_camID + 1]->get_objectPosition_2D_Pixel (tracked_data->found_1,tracked_data->Richtungsvektor_1);
+		for (auto it = std::begin(v_objects); it != std::end(v_objects); it++)
+		{
+			this->camera_vector[v_objects(it)->ID_Cam_Links]->get_objectPosition_2D_Pixel (tracked_data->found_0, tracked_data->Richtungsvektor_0, temp1);
+			this->camera_vector[object_found_camID + 1]->get_objectPosition_2D_Pixel (tracked_data->found_1, tracked_data->Richtungsvektor_1, temp2);
+			this->tracked_data->timestamp = (temp1 + temp2) / 2;
+			
+		}
 
         statemachine_state = 3;
         break;

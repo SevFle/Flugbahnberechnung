@@ -18,6 +18,7 @@ namespace nmsp_tracking
     S_Positionsvektor Richtungsvektor_1;
     int               ID_Cam_Links;
     int               ID_Cam_Rechts;
+	double			  timestamp;
     };
 
   class c_tracking
