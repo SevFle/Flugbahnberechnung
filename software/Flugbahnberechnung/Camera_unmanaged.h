@@ -4,6 +4,7 @@
 
 #include "opencv_unmanaged.h"
 #include "tracking.h"
+#include "object.h"
 #include "GlobalObjects.h"
 
 namespace std
@@ -15,6 +16,7 @@ using namespace std;
 
 using namespace nmsp_opencv_unmanaged;
 using namespace nmsp_tracking;
+using namespace object;
 using namespace nmsp_posen;
 using namespace nmsp_GlobalObjects;
 
@@ -48,11 +50,14 @@ namespace nmsp_camera_unmanaged
     bool             load_positioning;
     bool             tracking_active;
     s_tracking_data* tracked_data;
+	C_object*			object;
+  	
 
     cv::Mat cpu_kalman_filterL;
     cv::Mat cpu_kalman_filterR;
-
-    std::vector<c_opencv_unmanaged*> camera_vector;
+  	
+	std::vector<C_object*> v_objects;
+	std::vector<c_opencv_unmanaged*> camera_vector;
     std::vector<C_AbsolutePose>*     vec_WorldToCam_Poses; //AKA WORLD TO CAMERA POS
 
     /*** Variablen zur Kamerakalibrierung ********************************************************/

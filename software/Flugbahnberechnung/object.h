@@ -6,7 +6,7 @@ namespace object
   class C_object
     {
       public:
-      C_object(int objekt_id);
+      C_object();
       ~C_object();
 
       int objekt_id;
