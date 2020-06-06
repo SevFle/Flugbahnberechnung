@@ -112,6 +112,8 @@ System::Void c_frm_Object_Tracking::c_frm_Object_Tracking_Load (System::Object^ 
   this->Main->camera_managed->camera_unmanaged->camera_vector[1]->set_undistord_active (true);
   this->Main->camera_managed->camera_unmanaged->camera_vector[0]->set_filtering_active (true);
   this->Main->camera_managed->camera_unmanaged->camera_vector[1]->set_filtering_active (true);
+  numericUpDown1->Maximum           = static_cast<Int32> (GlobalObjects->cameras_in_use)-1;
+
   }
 System::Void c_frm_Object_Tracking::c_frm_Object_Tracking_FormClosing (System::Object^ sender, System::Windows::Forms::FormClosingEventArgs^ e)
   {

@@ -2,10 +2,9 @@
 
 #include <opencv2/opencv.hpp>
 #include <opencv2/highgui.hpp>
-#include <ipp.h>
 #include "CudaKernels.cuh"
 #include <chrono>
-
+#include "ipp.h"
 //#include "posen.h"
 
 
@@ -45,6 +44,10 @@ namespace nmsp_opencv_unmanaged
     cv::VideoCapture* cap;
     cv::Mat*          cpu_src_img;
     cv::Mat*          cpu_temp;
+    cv::Mat*          cpu_test1;
+    cv::Mat*          cpu_test2;
+    cv::Mat*          cpu_test3;
+
     cv::Mat*          cpu_masked_img;
     cv::Mat*          cpu_hsv_filtered;
     cv::Mat*          cpu_contoured;
@@ -59,6 +62,7 @@ namespace nmsp_opencv_unmanaged
     private:
     int  camera_id;
     bool thread_running;
+    bool thread_ready;
 
     bool filtering_active;
     bool filtering_hsv_active;
@@ -220,6 +224,8 @@ namespace nmsp_opencv_unmanaged
     void         set_camera_id (int camera_id);
     bool&        is_thread_running ();
     void         set_thread_running (bool thread_running);
+    bool&        is_thread_ready ();
+    void          set_thread_ready (bool thread_ready);
     bool&        is_filtering_active ();
     void         set_filtering_active (bool filtering_active);
     bool&        is_filtering_hsv_active ();
@@ -402,5 +408,7 @@ namespace nmsp_opencv_unmanaged
     void find_contours (cv::Mat* thresholded_source_image, cv::Mat* dst_contoured_image, int offset[2]);
 
     void undistord_img (cv::Mat* cpu_src, cv::Mat* cpu_dst);
+    void c_opencv_unmanaged::fit_to_roi (int width, int height);
+
     };
   }

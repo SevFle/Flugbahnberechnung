@@ -80,7 +80,7 @@ System::Void C_frm_CameraCalibration_Single::rb_stereo_calibration_Click (System
 System::Void C_frm_CameraCalibration_Single::Taktgeber_Tick (System::Object^ sender, System::EventArgs^ e)
   {
   this->txtb_counter->Text = System::String::Format ("{0:0}",this->Zaehler++);
-  if (Zaehler > this->Timerwait)
+  if (this->Main->camera_managed->camera_unmanaged->camera_vector[current_camera_id]->is_thread_ready())
     {
     switch (method)
       {
@@ -141,7 +141,6 @@ System::Void C_frm_CameraCalibration_Single::FillMat2Picturebox (System::Windows
 System::Void C_frm_CameraCalibration_Single::nup_camera_id_ValueChanged (System::Object^ sender, System::EventArgs^ e)
   {
   Timerwait = Zaehler + 8;
-  if (nup_camera_id->Value > cameras_in_use) nup_camera_id->Value = static_cast<int> (nup_camera_id->Value) - 1;
   this->current_camera_id = static_cast<int> (nup_camera_id->Value);
 
   Main->camera_managed->camera_unmanaged->camera_vector[current_camera_id]->set_idle (false);
@@ -149,7 +148,6 @@ System::Void C_frm_CameraCalibration_Single::nup_camera_id_ValueChanged (System:
 
 System::Void C_frm_CameraCalibration_Single::camera_calibration_thread ()
   {
-  //lbl_calibration_running->Invoke(gcnew Action<bool>(lbl_calibration_running->Visible, true));
   switch (method)
     {
     case 0:
@@ -160,9 +158,6 @@ System::Void C_frm_CameraCalibration_Single::camera_calibration_thread ()
       this->Main->camera_managed->camera_unmanaged->calibrate_stereo_camera (this->current_camera_id);
       break;
     }
-  //this->lbl_calibration_running->ForeColor = System::Drawing::Color::Green;
-  //this->lbl_calibration_running->Text = "Kalibrierung beendet";
-  //terminate();
   }
 System::Void C_frm_CameraCalibration_Single::bt_take_photo_Click (System::Object^ sender, System::EventArgs^ e)
   {

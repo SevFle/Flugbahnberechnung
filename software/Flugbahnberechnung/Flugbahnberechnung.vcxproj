@@ -84,16 +84,18 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\Program Files %28x86%29\IntelSWTools\compilers_and_libraries_2019.5.281\windows\tbb\include;C:\libraries\opencv\4_2_0\install\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.1\lib\x64;C:\Program Files %28x86%29\IntelSWTools\compilers_and_libraries_2019.5.281\windows\tbb\lib\intel64_win\vc14;C:\libraries\opencv\4_2_0\install\x64\vc15\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Program Files %28x86%29\IntelSWTools\compilers_and_libraries_2019.5.281\windows\tbb\include;C:\libraries\opencv\4_2_0\install\include;C:\Program Files (x86)\IntelSWTools\compilers_and_libraries\windows\ipp\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Program Files %28x86%29\IntelSWTools\compilers_and_libraries_2019.5.281\windows\compiler\lib\intel64_win;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.1\lib\x64;C:\Program Files %28x86%29\IntelSWTools\compilers_and_libraries_2019.5.281\windows\tbb\lib\intel64_win\vc14;C:\libraries\opencv\4_2_0\install\x64\vc15\lib;C:\Program Files (x86)\IntelSWTools\compilers_and_libraries_2019.5.281\windows\ipp\lib\intel64;$(LibraryPath)</LibraryPath>
+    <ExecutablePath>C:\Program Files %28x86%29\IntelSWTools\compilers_and_libraries_2019.5.281\windows\redist\intel64_win\ipp;$(ExecutablePath)</ExecutablePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.1\include;C:\Program Files %28x86%29\IntelSWTools\compilers_and_libraries_2019.5.281\windows\tbb\include;C:\libraries\opencv\4_2_0\install\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.1\lib\x64;C:\Program Files %28x86%29\IntelSWTools\compilers_and_libraries_2019.5.281\windows\tbb\lib\intel64_win\vc14;C:\libraries\opencv\4_2_0\install\x64\vc15\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Program Files %28x86%29\IntelSWTools\compilers_and_libraries_2019.5.281\windows\compiler\lib\intel64_win;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.1\include;C:\Program Files %28x86%29\IntelSWTools\compilers_and_libraries_2019.5.281\windows\tbb\include;C:\libraries\opencv\4_2_0\install\include;C:\Program Files (x86)\IntelSWTools\compilers_and_libraries\windows\ipp\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.1\lib\x64;C:\Program Files %28x86%29\IntelSWTools\compilers_and_libraries_2019.5.281\windows\tbb\lib\intel64_win\vc14;C:\libraries\opencv\4_2_0\install\x64\vc15\lib;C:\Program Files (x86)\IntelSWTools\compilers_and_libraries_2019.5.281\windows\ipp\lib\intel64;$(LibraryPath)</LibraryPath>
+    <ExecutablePath>C:\Program Files %28x86%29\IntelSWTools\compilers_and_libraries_2019.5.281\windows\redist\intel64_win\ipp;$(ExecutablePath)</ExecutablePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -112,7 +114,7 @@
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>tbb_debug.lib;opencv_world420d.lib;cuda.lib;cudart.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>tbb_debug.lib;opencv_world420d.lib;cuda.lib;cudart.lib;ippi.lib;ipps.lib;ippcore.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -130,7 +132,7 @@
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>tbb.lib;opencv_world420.lib;cuda.lib;cudart.lib</AdditionalDependencies>
+      <AdditionalDependencies>tbb.lib;opencv_world420.lib;cuda.lib;cudart.lib;ippi.lib;ipps.lib;ippcore.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
