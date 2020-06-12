@@ -1,0 +1,3 @@
+/home/severin/CLionProjects/Flugbahnberechnung/software/Linux/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/home/severin/CLionProjects/Flugbahnberechnung/software/Linux/cmake-build-debug/CMakeFiles/edit_cache.dir
+/home/severin/CLionProjects/Flugbahnberechnung/software/Linux/cmake-build-debug/CMakeFiles/Linux.dir

@@ -382,8 +382,8 @@ MigrationBackup/
 *.out
 *.app
 
-software/Parameter/Bilder/*
+software/Windows/Parameter/Bilder/*
 
 software/x64/*
-software/Flugbahnberechnung/Debug/*
-software/Flugbahnberechnung/x64/*
+software/Windows/Flugbahnberechnung/Debug/*
+software/Windows/Flugbahnberechnung/x64/*
