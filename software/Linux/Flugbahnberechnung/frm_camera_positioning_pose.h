@@ -7,16 +7,31 @@ namespace Ui {
 class frm_camera_positioning_pose;
 }
 
-class frm_camera_positioning_pose : public QDialog
+class C_frm_camera_positioning_pose : public QDialog
 {
     Q_OBJECT
 
 public:
-    explicit frm_camera_positioning_pose(QWidget *parent = nullptr);
-    ~frm_camera_positioning_pose();
+    explicit C_frm_camera_positioning_pose(QWidget *parent = nullptr);
+    ~C_frm_camera_positioning_pose();
 
 private:
-    Ui::frm_camera_positioning_pose *ui;
+  Ui::C_frm_camera_positioning_pose* Ui;
+
+
+
+  C_GlobalObjects* GlobalObjects;
+  C_Main*         Main;
+  int Zaehler;
+  QTimer*         Taktgeber;
+  int             Taktgeber_Intervall;
+
+
+private:
+  void showEvent (QShowEvent* ShowEvent) override;
+  void closeEvent (QCloseEvent* CloseEvent) override;
+  bool eventFilter (QObject* Object, QEvent* Event) override;
+
 };
 
 #endif // FRM_CAMERA_POSITIONING_POSE_H

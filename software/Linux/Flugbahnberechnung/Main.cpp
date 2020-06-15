@@ -1,37 +1,40 @@
-#pragma once
-
 #include "Main.h"
 
-using namespace nmsp_Main;
+using namespace Main;
 
-C_Main::C_Main (C_GlobalObjects* GlobalObjects)
-  {
-  this->GlobalObjects  = GlobalObjects;
-  this->camera_managed = gcnew C_camera_managed (GlobalObjects);
+C_Main::C_Main(C_GlobalObjects* GlobalObjects)
+{
+this->Camera_manager = new c_camera_unmanaged(GlobalObjects);
+this->frm_Main = new C_frm_Main(GlobalObjects, this);
+this->frm_Object_Tracking = new C_frm_Object_Tracking(GlobalObjects, this);
+    this->frm_Camera_Calibration = new frm_camera_calibration(GlobalObjects, this);
+    this->frm_Camera_Positioning = new frm_Camera_Positioning(GlobalObjects, this);
+    this->frm_Object_Calibration = new frm_Object_Calibration(GlobalObjects, this);
+    this->frm_Camera_Positoning_Pose = new frm_Camera_Positoning_Pose(GlobalObjects, this);
+    this->frm_Camera_Calibration_Crop = new frm_Camera_Calibration_Crop(GlobalObjects, this);
+    this->GlobalObjects = GlobalObjects;
+}
 
-  this->frm_Main = gcnew C_frm_Main (GlobalObjects,this);
-  this->frm_Main->Show();
+C_Main::~C_Main()
+{
+    this->GlobalObjects = nullptr;
+            delete(frm_Camera_Calibration_Crop);
+    delete(frm_Camera_Positoning_Pose);
+    delete (frm_Object_Calibration);
+    delete (frm_Camera_Positioning);
+    delete (frm_Camera_Calibration);
 
-  this->frm_CameraCalibration_Single = gcnew C_frm_CameraCalibration_Single (GlobalObjects,this);
-  this->frm_CameraCalibration_crop   = gcnew c_frm_Camera_Calibration_crop (GlobalObjects,this);
-  this->frm_ObjectCalibration        = gcnew c_frm_object_calibration (GlobalObjects,this);
-  this->frm_Camera_Positioning       = gcnew c_frm_Camera_Positioning (GlobalObjects,this);
-  this->frm_camera_positioning_pose  = gcnew c_frm_Camera_Positioning_Pose (GlobalObjects,this);
-  this->frm_object_tracking          = gcnew c_frm_Object_Tracking (GlobalObjects,this);
-  }
+    delete (frm_Object_Tracking);
+    delete (frm_Main);
+    delete (Camera_manager);
 
-C_Main::~C_Main ()
-  {
-  delete (this->frm_object_tracking);
-  delete (this->frm_Camera_Positioning);
-  delete (this->frm_CameraCalibration_Single);
-  delete (this->frm_Main);
-  delete (this->camera_managed);
-  this->GlobalObjects = nullptr;
-  }
+}
 
-//
-//#include "frm_Main.cpp"
-//#include "frm_CameraCalibration_Menu.cpp"
-//#include "frm_CameraCalibration_Single.cpp"
-//#include "frm_CameraCalibration_Stereo.cpp"
+
+#include "frm_main.cpp"
+#include "frm_object_calibration.cpp"
+#include "frm_object_tracking.cpp"
+#include "frm_camera_calibration.cpp"
+#include "frm_camera_calibration_crop.cpp"
+#include "frm_camera_positioning.cpp"
+#include "frm_camera_positioning_pose.cpp"

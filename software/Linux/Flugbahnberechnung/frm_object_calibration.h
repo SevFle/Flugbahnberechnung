@@ -16,7 +16,22 @@ public:
     ~frm_object_calibration();
 
 private:
-    Ui::frm_object_calibration *ui;
+  Ui::C_frm_Main* Ui;
+  QMessageBox* MsgBox;
+
+
+
+  C_GlobalObjects* GlobalObjects;
+  C_Main*         Main;
+  int Zaehler;
+  QTimer*         Taktgeber;
+  int             Taktgeber_Intervall;
+
+
+private:
+  void showEvent (QShowEvent* ShowEvent) override;
+  void closeEvent (QCloseEvent* CloseEvent) override;
+  bool eventFilter (QObject* Object, QEvent* Event) override;
 };
 
 #endif // FRM_OBJECT_CALIBRATION_H

@@ -27,7 +27,7 @@ namespace nmsp_camera_unmanaged
     {
     public:
     /*************************************************************** Konstruktoren *************************************************************/
-    c_camera_unmanaged (int cameras_in_use, C_GlobalObjects* GlobalObjects);
+    c_camera_unmanaged ( C_GlobalObjects* GlobalObjects);
     /*************************************************************** Destruktor ****************************************************************/
     ~c_camera_unmanaged ();
 
@@ -89,7 +89,7 @@ namespace nmsp_camera_unmanaged
     void load_camera_positioning ();
     void save_camera_cos (int camera_id, C_AbsolutePose& WorldToCam_Param);
     void load_camera_cos (int camera_id, C_AbsolutePose& WorldToCam_Param);
-    void init_camera_vectors (int cameras_in_use);
+    void init_camera_vectors ();
     void close_cameras (int cameras_in_use);
 
     void save_camera_settings (int camera_id);

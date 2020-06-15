@@ -1,103 +1,84 @@
-#pragma once
+#ifndef C_MAIN_H
+#define C_MAIN_H
 
-#include "GlobalObjects.h"
-#include "Camera_managed.h"
+#include "Code/GlobalObjects.h"
+#include "Code/Camera_unmanaged.h"
 
-using namespace nmsp_camera_managed;
 using namespace nmsp_GlobalObjects;
+using namespace nmsp_camera_unmanaged;
 
-
-/*********************************************************** Vorwärtsdeklarationen ********************************************************/
-#pragma region Vorwärtsdeklarationen
-namespace NmSp_frm_Main
+namespace frm_Main
   {
-  ref class C_frm_Main;
+  class C_frm_Main;
   }
+using namespace frm_Main;
 
-using namespace NmSp_frm_Main;
-
-
-namespace NmSp_CamerCalibration_Single
+namespace frm_ObjectCalibration
   {
-  ref class C_frm_CameraCalibration_Single;
+  class C_frm_Object_Calibration;
   }
+using namespace frm_ObjectCalibration;
 
-using namespace NmSp_CamerCalibration_Single;
-
-namespace NmSp_frm_ObjectCalibration
+namespace frm_Object_Tracking
   {
-  ref class c_frm_object_calibration;
+  class C_frm_Object_Tracking;
   }
+using namespace frm_Object_Tracking;
 
-using namespace NmSp_frm_ObjectCalibration;
-
-namespace nmsp_frm_camera_positioning
+namespace frm_Camera_Calibration
   {
-  ref class c_frm_Camera_Positioning;
+   class C_frm_Camera_Calibration;
   }
+using namespace frm_Camera_Calibration;
 
-using namespace nmsp_frm_camera_positioning;
-
-namespace nsmp_frm_object_tracking
+namespace frm_Camera_Calibration_Crop
   {
-  ref class c_frm_Object_Tracking;
+  class C_frm_Camera_Calibration_Crop;
   }
+using namespace frm_Camera_Calibration_Crop;
 
-using namespace nsmp_frm_object_tracking;
-
-namespace nmsp_camera_calibration_crop
+namespace frm_Camera_Positioning
   {
-  ref class c_frm_Camera_Calibration_crop;
+  class C_frm_Camera_Positioning;
   }
+using namespace frm_Camera_Positioning;
 
-using namespace nmsp_camera_calibration_crop;
-
-namespace nmsp_frm_camera_positioning_pose
+namespace frm_Camera_Positioning_Pose
   {
-  ref class c_frm_Camera_Positioning_Pose;
+  class C_frm_Camera_Positioning_Pose;
   }
+using namespace frm_Camera_Positioning_Pose;
 
-using namespace nmsp_frm_camera_positioning_pose;
-#pragma endregion
-
-/*********************************************************** Definition Namespace **************************************************************/
-namespace nmsp_Main
+namespace Main
   {
-  using namespace System;
-  using namespace System::ComponentModel;
-  using namespace System::Collections;
-  using namespace System::Windows::Forms;
-  using namespace System::Data;
-  using namespace System::Drawing;
-  using namespace System::Threading;
-  /******************************************************** Klasse C_main **********************************************************************/
-  public ref class C_Main
+  class C_Main
     {
     public:
-    C_Main (C_GlobalObjects* GlobalObjects);
+    C_Main(C_GlobalObjects* GlobalObjects);
+    ~C_Main();
 
-    ~C_Main ();
+    c_camera_unmanaged* Camera_manager;
+    C_frm_Main* frm_Main;
+    C_frm_Object_Calibration* frm_Object_Calibration;
+    C_frm_Object_Tracking*  frm_Object_Tracking;
+    C_frm_Camera_Calibration*   frm_Camera_Calibration;
+    C_frm_Camera_Calibration_Crop*  frm_Camera_Calibration_Crop;
+    C_frm_Camera_Positioning*       frm_Camera_Positioning;
+    C_frm_Camera_Positioning_Pose*  frm_Camera_Positoning_Pose;
 
-    private:
     C_GlobalObjects* GlobalObjects;
 
-    public:
-    C_frm_Main^                     frm_Main;
-    C_frm_CameraCalibration_Single^ frm_CameraCalibration_Single;
-    c_frm_Camera_Calibration_crop^  frm_CameraCalibration_crop;
-    c_frm_Camera_Positioning_Pose^  frm_camera_positioning_pose;
-    c_frm_object_calibration^       frm_ObjectCalibration;
-    c_frm_Camera_Positioning^       frm_Camera_Positioning;
-    c_frm_Object_Tracking^          frm_object_tracking;
-    C_camera_managed^               camera_managed;
-    };//ref class C_Main
-  }//namespace nmsp_Main
+    };
+  }
+
+#include "frm_main.h"
+#include "frm_object_calibration.h"
+#include "frm_object_tracking.h"
+#include "frm_camera_calibration.h"
+#include "frm_camera_calibration_crop.h"
+#include "frm_camera_positioning.h"
+#include "frm_camera_positioning_pose.h"
 
 
-#include "frm_Main.h"
-#include "frm_Camera_Calibration.h"
-#include "frm_Camera_Calibration_crop.h"
-#include "frm_Camera_Positioning_Pose.h"
-#include "frm_Object_Calibration.h"
-#include "frm_Camera_Positioning.h"
-#include "frm_Object_Tracking.h"
+#endif // C_MAIN_H
+

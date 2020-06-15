@@ -7,16 +7,30 @@ namespace Ui {
 class frm_camera_calibration_crop;
 }
 
-class frm_camera_calibration_crop : public QDialog
+class C_frm_camera_calibration_crop : public QDialog
 {
     Q_OBJECT
 
 public:
-    explicit frm_camera_calibration_crop(QWidget *parent = nullptr);
-    ~frm_camera_calibration_crop();
+    explicit C_frm_camera_calibration_crop(QWidget *parent = nullptr);
+    ~C_frm_camera_calibration_crop();
 
 private:
-    Ui::frm_camera_calibration_crop *ui;
+  Ui::C_frm_camera_calibration_crop* Ui;
+
+
+
+  C_GlobalObjects* GlobalObjects;
+  C_Main*         Main;
+  int Zaehler;
+  QTimer*         Taktgeber;
+  int             Taktgeber_Intervall;
+
+
+private:
+  void showEvent (QShowEvent* ShowEvent) override;
+  void closeEvent (QCloseEvent* CloseEvent) override;
+  bool eventFilter (QObject* Object, QEvent* Event) override;
 };
 
 #endif // FRM_CAMERA_CALIBRATION_CROP_H

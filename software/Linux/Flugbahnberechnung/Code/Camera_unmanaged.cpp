@@ -9,9 +9,8 @@ using namespace nmsp_camera_unmanaged;
 using namespace nmsp_GlobalObjects;
 
 /*************************************************************** Konstruktoren **************************************************************/
-c_camera_unmanaged::c_camera_unmanaged (int cameras_in_use, C_GlobalObjects* GlobalObjects)
+c_camera_unmanaged::c_camera_unmanaged ( C_GlobalObjects* GlobalObjects)
   {
-  this->cameras_in_use       = cameras_in_use;
   this->tracking_thread      = new c_tracking (GlobalObjects);
   this->tracked_data         = new nmsp_tracking::s_tracking_data();
   this->vec_WorldToCam_Poses = new std::vector<C_AbsolutePose>;
@@ -473,8 +472,9 @@ void c_camera_unmanaged::load_camera_cos (int camera_id, C_AbsolutePose& WorldTo
   }
 
 
-void c_camera_unmanaged::init_camera_vectors (int cameras_in_use)
+void c_camera_unmanaged::init_camera_vectors ()
   {
+    int cameras_in_use = GlobalObjects->cameras_in_use;
   //Create a camera object and start its according thread. The amount of objects equals the amount of cameras in use 
   for (int i = 0; i < cameras_in_use; i++)
     {

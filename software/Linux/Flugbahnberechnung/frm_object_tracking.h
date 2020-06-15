@@ -7,16 +7,30 @@ namespace Ui {
 class frm_object_tracking;
 }
 
-class frm_object_tracking : public QDialog
+class C_frm_object_tracking : public QDialog
 {
     Q_OBJECT
 
 public:
-    explicit frm_object_tracking(QWidget *parent = nullptr);
-    ~frm_object_tracking();
+    explicit C_frm_object_tracking(QWidget *parent = nullptr);
+    ~C_frm_object_tracking();
 
 private:
-    Ui::frm_object_tracking *ui;
+  Ui::C_frm_object_tracking* Ui;
+
+
+
+  C_GlobalObjects* GlobalObjects;
+  C_Main*         Main;
+  int Zaehler;
+  QTimer*         Taktgeber;
+  int             Taktgeber_Intervall;
+
+
+private:
+  void showEvent (QShowEvent* ShowEvent) override;
+  void closeEvent (QCloseEvent* CloseEvent) override;
+  bool eventFilter (QObject* Object, QEvent* Event) override;
 };
 
 #endif // FRM_OBJECT_TRACKING_H
