@@ -3,20 +3,21 @@
 
 #include <QDialog>
 
-namespace Ui {
-class frm_object_calibration;
-}
 
-class frm_object_calibration : public QDialog
+#include "Main.h"
+#include "ui_frm_object_calibration.h"
+
+class C_frm_object_calibration : public QDialog
 {
-    Q_OBJECT
+Q_OBJECT
 
 public:
-    explicit frm_object_calibration(QWidget *parent = nullptr);
-    ~frm_object_calibration();
+C_frm_object_calibration(C_GlobalObjects* GlobalObjects, C_Main* Main, QWidget *parent = nullptr);
+
+~C_frm_object_calibration();
 
 private:
-  Ui::C_frm_Main* Ui;
+  Ui::C_frm_object_calibration* Ui;
   QMessageBox* MsgBox;
 
 

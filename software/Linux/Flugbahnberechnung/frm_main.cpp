@@ -82,25 +82,6 @@ void ::C_frm_Main::on_bt_exit_clicked()
 this->close();
 }
 
-void ::C_frm_Main::on_bt_apply_clicked()
-{
-
-    if (this->Ui->num_cameras->value() % 2 != 0)
-      {
-      //MessageBox::Show ("Es muss eine gerade Anzahl an Kameras verwendet werden","Fehler",MessageBoxButtons::OK,MessageBoxIcon::Error);
-      this->MsgBox->setText("Es muss eine gerade Anzahl an Kameras verwendet werden");
-      this->MsgBox->setIcon(QMessageBox::Critical);
-      }
-    else
-      {
-      GlobalObjects->cameras_in_use = this->Ui->num_cameras->value();
-      this->Ui->num_cameras->setEnabled(false);
-      this->Ui->bt_apply->setEnabled     (false);
-
-      this->Main->Camera_manager->init_camera_vectors ();
-      this->state = 1;
-}
-}
 
 void C_frm_Main::Taktgeber_Tick()
 {
@@ -123,6 +104,25 @@ void C_frm_Main::Taktgeber_Tick()
 }
 }
 
+void ::C_frm_Main::on_bt_apply_clicked()
+{
+
+    if (this->Ui->num_cameras->value() % 2 != 0)
+      {
+      //MessageBox::Show ("Es muss eine gerade Anzahl an Kameras verwendet werden","Fehler",MessageBoxButtons::OK,MessageBoxIcon::Error);
+      this->MsgBox->setText("Es muss eine gerade Anzahl an Kameras verwendet werden");
+      this->MsgBox->setIcon(QMessageBox::Critical);
+      }
+    else
+      {
+      GlobalObjects->cameras_in_use = this->Ui->num_cameras->value();
+      this->Ui->num_cameras->setEnabled(false);
+      this->Ui->bt_apply->setEnabled     (false);
+
+      this->Main->Camera_manager->init_camera_vectors ();
+      this->state = 1;
+}
+}
 void frm_Main::C_frm_Main::on_bt_tracking_clicked()
 {
   this->Main->frm_Object_Calibration->setWindowModality(Qt::ApplicationModal);

@@ -3,16 +3,16 @@
 
 #include <QDialog>
 
-namespace Ui {
-class frm_object_tracking;
-}
+#include "Main.h"
+
+#include "ui_frm_object_tracking.h"
 
 class C_frm_object_tracking : public QDialog
 {
     Q_OBJECT
 
 public:
-    explicit C_frm_object_tracking(QWidget *parent = nullptr);
+    C_frm_object_tracking(C_GlobalObjects* GlobalObjects, C_Main* Main, QWidget *parent = nullptr);
     ~C_frm_object_tracking();
 
 private:

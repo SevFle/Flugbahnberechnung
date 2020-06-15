@@ -2,17 +2,15 @@
 #define FRM_CAMERA_CALIBRATION_H
 
 #include <QDialog>
-
-namespace Ui {
-class frm_camera_calibration;
-}
+#include "Main.h"
+#include "ui_frm_camera_calibration.h"
 
 class C_frm_camera_calibration : public QDialog
 {
     Q_OBJECT
 
 public:
-    explicit C_frm_camera_calibration(QWidget *parent = nullptr);
+    explicit C_frm_camera_calibration(C_GlobalObjects* GlobalObjects, C_Main* Main, QWidget *parent = nullptr);
     ~C_frm_camera_calibration();
 
 private:

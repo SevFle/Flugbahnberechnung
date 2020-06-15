@@ -88,6 +88,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 INCLUDEPATH += /usr/include/opencv/4_2_0/install/include
+LIBS += -L"/usr/include/opencv/4_2_0/install/x64/vc15/lib" -lopencv_world420d
 
 
 

@@ -2,17 +2,16 @@
 #define FRM_CAMERA_POSITIONING_H
 
 #include <QDialog>
+#include "Main.h"
+#include "ui_frm_camera_positioning.h"
 
-namespace Ui {
-class frm_camera_positioning;
-}
 
 class C_frm_camera_positioning : public QDialog
 {
     Q_OBJECT
 
 public:
-    explicit C_frm_camera_positioning(QWidget *parent = nullptr);
+    explicit C_frm_camera_positioning(C_GlobalObjects* GlobalObjects, C_Main* Main, QWidget *parent = nullptr);
     ~C_frm_camera_positioning();
 
 private:
