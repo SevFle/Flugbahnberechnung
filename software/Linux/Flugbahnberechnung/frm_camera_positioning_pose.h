@@ -31,6 +31,8 @@ private:
   void showEvent (QShowEvent* ShowEvent) override;
   void closeEvent (QCloseEvent* CloseEvent) override;
   bool eventFilter (QObject* Object, QEvent* Event) override;
+private slots:
+  void Taktgeber_Tick();
 
 };
 

@@ -2,7 +2,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#include <cuda.h>
 #include <cstring>
 #include <math.h>
 #include <iostream>

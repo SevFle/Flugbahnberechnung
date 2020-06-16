@@ -86,11 +86,14 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 INCLUDEPATH += /usr/include/opencv/4_2_0/install/include
+INCLUDEPATH += /usr/local/cuda-10.1/include
+
 
 LIBS += -L"/usr/include/opencv/4_2_0/install/x64/vc15/lib"
 LIBS += -lopencv_world420d
 
-LIBS += -L$$CUDA_DIR/lib64 -lcuda -lcudart
+LIBS += -L$CUDA_DIR/lib64 -lcuda -lcudart
+
 
 
 

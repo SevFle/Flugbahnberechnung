@@ -27,11 +27,25 @@ private:
   QTimer*         Taktgeber;
   int             Taktgeber_Intervall;
 
+  int cameras_in_use;
+  int Timerwait;
+
+  bool calibration_running;
+  int  photo_interval;
+  int  intervall;
+  int  photo_count;
+  int  photo_id;
+  int  method;
+  int  current_camera_id;
+  int  sm_calibration_state;
+  int photocount_user_input;
 
 private:
   void showEvent (QShowEvent* ShowEvent) override;
   void closeEvent (QCloseEvent* CloseEvent) override;
   bool eventFilter (QObject* Object, QEvent* Event) override;
+private slots:
+  void Taktgeber_Tick();
 };
 }
 

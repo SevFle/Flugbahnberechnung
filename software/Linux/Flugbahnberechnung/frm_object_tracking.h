@@ -29,22 +29,25 @@ private slots:
 private:
   Ui::C_frm_object_tracking* Ui;
 
-
-
   C_GlobalObjects* GlobalObjects;
   C_Main*         Main;
   std::thread*    Tracking;
 
-  int Zaehler;
   QTimer*         Taktgeber;
+
   int             Taktgeber_Intervall;
   int             TimerWait;
-
+  int Zaehler;
 
 private:
   void showEvent (QShowEvent* ShowEvent) override;
   void closeEvent (QCloseEvent* CloseEvent) override;
   bool eventFilter (QObject* Object, QEvent* Event) override;
+private slots:
+  void Taktgeber_Tick();
+  void Fill_Mat_2_Lbl(cv::Mat& img, QLabel* label);
+
+
 };
 
 }

@@ -68,9 +68,9 @@
   <widget class="QGroupBox" name="groupBox">
    <property name="geometry">
     <rect>
-     <x>40</x>
+     <x>20</x>
      <y>320</y>
-     <width>321</width>
+     <width>341</width>
      <height>441</height>
     </rect>
    </property>
@@ -80,7 +80,7 @@
    <widget class="QSpinBox" name="num_opening_iterations">
     <property name="geometry">
      <rect>
-      <x>110</x>
+      <x>130</x>
       <y>70</y>
       <width>51</width>
       <height>31</height>
@@ -95,7 +95,7 @@
    <widget class="QSpinBox" name="num_closing_iterations">
     <property name="geometry">
      <rect>
-      <x>110</x>
+      <x>130</x>
       <y>110</y>
       <width>51</width>
       <height>31</height>
@@ -107,10 +107,10 @@
      </font>
     </property>
    </widget>
-   <widget class="QSpinBox" name="num_closing_iterations_2">
+   <widget class="QSpinBox" name="num_erode_iterations">
     <property name="geometry">
      <rect>
-      <x>110</x>
+      <x>130</x>
       <y>150</y>
       <width>51</width>
       <height>31</height>
@@ -122,10 +122,10 @@
      </font>
     </property>
    </widget>
-   <widget class="QSpinBox" name="num_closing_iterations_3">
+   <widget class="QSpinBox" name="num_dilate_iterations">
     <property name="geometry">
      <rect>
-      <x>110</x>
+      <x>130</x>
       <y>190</y>
       <width>51</width>
       <height>31</height>
@@ -137,10 +137,10 @@
      </font>
     </property>
    </widget>
-   <widget class="QSpinBox" name="num_closing_iterations_4">
+   <widget class="QSpinBox" name="num_morph_iterations">
     <property name="geometry">
      <rect>
-      <x>110</x>
+      <x>130</x>
       <y>230</y>
       <width>51</width>
       <height>31</height>
@@ -155,7 +155,7 @@
    <widget class="QSpinBox" name="num_morph_kernelsize">
     <property name="geometry">
      <rect>
-      <x>230</x>
+      <x>250</x>
       <y>230</y>
       <width>51</width>
       <height>31</height>
@@ -170,7 +170,7 @@
    <widget class="QSpinBox" name="num_dilate_kernelsize">
     <property name="geometry">
      <rect>
-      <x>230</x>
+      <x>250</x>
       <y>190</y>
       <width>51</width>
       <height>31</height>
@@ -185,7 +185,7 @@
    <widget class="QSpinBox" name="num_erode_kernelsize">
     <property name="geometry">
      <rect>
-      <x>230</x>
+      <x>250</x>
       <y>150</y>
       <width>51</width>
       <height>31</height>
@@ -200,7 +200,7 @@
    <widget class="QSpinBox" name="num_closing_kernelsize">
     <property name="geometry">
      <rect>
-      <x>230</x>
+      <x>250</x>
       <y>110</y>
       <width>51</width>
       <height>31</height>
@@ -215,7 +215,7 @@
    <widget class="QSpinBox" name="num_opening_kernelsize">
     <property name="geometry">
      <rect>
-      <x>230</x>
+      <x>250</x>
       <y>70</y>
       <width>51</width>
       <height>31</height>
@@ -230,7 +230,7 @@
    <widget class="QLabel" name="label">
     <property name="geometry">
      <rect>
-      <x>210</x>
+      <x>230</x>
       <y>40</y>
       <width>101</width>
       <height>20</height>
@@ -248,7 +248,7 @@
    <widget class="QLabel" name="label_4">
     <property name="geometry">
      <rect>
-      <x>100</x>
+      <x>120</x>
       <y>40</y>
       <width>91</width>
       <height>20</height>
@@ -266,7 +266,7 @@
    <widget class="QLabel" name="label_5">
     <property name="geometry">
      <rect>
-      <x>20</x>
+      <x>40</x>
       <y>80</y>
       <width>91</width>
       <height>20</height>
@@ -284,7 +284,7 @@
    <widget class="QLabel" name="label_6">
     <property name="geometry">
      <rect>
-      <x>20</x>
+      <x>40</x>
       <y>120</y>
       <width>91</width>
       <height>20</height>
@@ -302,7 +302,7 @@
    <widget class="QLabel" name="label_7">
     <property name="geometry">
      <rect>
-      <x>20</x>
+      <x>40</x>
       <y>160</y>
       <width>61</width>
       <height>20</height>
@@ -320,7 +320,7 @@
    <widget class="QLabel" name="label_8">
     <property name="geometry">
      <rect>
-      <x>20</x>
+      <x>40</x>
       <y>200</y>
       <width>51</width>
       <height>20</height>
@@ -338,7 +338,7 @@
    <widget class="QLabel" name="label_9">
     <property name="geometry">
      <rect>
-      <x>20</x>
+      <x>40</x>
       <y>240</y>
       <width>61</width>
       <height>20</height>
@@ -356,7 +356,7 @@
    <widget class="QLabel" name="label_10">
     <property name="geometry">
      <rect>
-      <x>110</x>
+      <x>130</x>
       <y>270</y>
       <width>61</width>
       <height>20</height>
@@ -374,7 +374,7 @@
    <widget class="QLabel" name="label_11">
     <property name="geometry">
      <rect>
-      <x>20</x>
+      <x>40</x>
       <y>310</y>
       <width>81</width>
       <height>20</height>
@@ -392,7 +392,7 @@
    <widget class="QSpinBox" name="num_gaussian_sigma">
     <property name="geometry">
      <rect>
-      <x>110</x>
+      <x>130</x>
       <y>300</y>
       <width>51</width>
       <height>31</height>
@@ -404,10 +404,10 @@
      </font>
     </property>
    </widget>
-   <widget class="QSpinBox" name="num_sigma_kernelsize">
+   <widget class="QSpinBox" name="num_gaussian_kernelsize">
     <property name="geometry">
      <rect>
-      <x>230</x>
+      <x>250</x>
       <y>300</y>
       <width>51</width>
       <height>31</height>
@@ -422,7 +422,7 @@
    <widget class="QSpinBox" name="num_bilateral_kernelsize">
     <property name="geometry">
      <rect>
-      <x>230</x>
+      <x>250</x>
       <y>390</y>
       <width>51</width>
       <height>31</height>
@@ -437,7 +437,7 @@
    <widget class="QSpinBox" name="num_bilateral_spatial">
     <property name="geometry">
      <rect>
-      <x>160</x>
+      <x>180</x>
       <y>390</y>
       <width>51</width>
       <height>31</height>
@@ -452,7 +452,7 @@
    <widget class="QSpinBox" name="num_bilateral_color">
     <property name="geometry">
      <rect>
-      <x>100</x>
+      <x>120</x>
       <y>390</y>
       <width>51</width>
       <height>31</height>
@@ -467,7 +467,7 @@
    <widget class="QLabel" name="label_12">
     <property name="geometry">
      <rect>
-      <x>100</x>
+      <x>120</x>
       <y>370</y>
       <width>51</width>
       <height>20</height>
@@ -485,7 +485,7 @@
    <widget class="QLabel" name="label_13">
     <property name="geometry">
      <rect>
-      <x>160</x>
+      <x>180</x>
       <y>370</y>
       <width>61</width>
       <height>20</height>
@@ -503,7 +503,7 @@
    <widget class="QLabel" name="label_14">
     <property name="geometry">
      <rect>
-      <x>20</x>
+      <x>40</x>
       <y>400</y>
       <width>81</width>
       <height>20</height>
@@ -516,6 +516,114 @@
     </property>
     <property name="text">
      <string>Bilateral</string>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="chkb_erode">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>160</y>
+      <width>21</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>14</pointsize>
+     </font>
+    </property>
+    <property name="toolTipDuration">
+     <number>-6</number>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="iconSize">
+     <size>
+      <width>19</width>
+      <height>19</height>
+     </size>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="chkb_dilate">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>200</y>
+      <width>21</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>14</pointsize>
+     </font>
+    </property>
+    <property name="toolTipDuration">
+     <number>-6</number>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="iconSize">
+     <size>
+      <width>19</width>
+      <height>19</height>
+     </size>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="chkb_morph">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>240</y>
+      <width>21</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>14</pointsize>
+     </font>
+    </property>
+    <property name="toolTipDuration">
+     <number>-6</number>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="iconSize">
+     <size>
+      <width>19</width>
+      <height>19</height>
+     </size>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="chkb_bilateral">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>400</y>
+      <width>21</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>14</pointsize>
+     </font>
+    </property>
+    <property name="toolTipDuration">
+     <number>-6</number>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="iconSize">
+     <size>
+      <width>19</width>
+      <height>19</height>
+     </size>
     </property>
    </widget>
   </widget>
@@ -1320,6 +1428,59 @@
     <bool>true</bool>
    </property>
   </widget>
+  <widget class="QPushButton" name="bt_apply_all">
+   <property name="geometry">
+    <rect>
+     <x>1260</x>
+     <y>750</y>
+     <width>141</width>
+     <height>71</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Apply all</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="bt_apply">
+   <property name="geometry">
+    <rect>
+     <x>1110</x>
+     <y>750</y>
+     <width>141</width>
+     <height>71</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Apply</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="bt_tracking">
+   <property name="geometry">
+    <rect>
+     <x>1410</x>
+     <y>530</y>
+     <width>141</width>
+     <height>71</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Tracking</string>
+   </property>
+  </widget>
+  <zorder>bt_apply</zorder>
+  <zorder>lbl_src_img</zorder>
+  <zorder>label_2</zorder>
+  <zorder>label_3</zorder>
+  <zorder>lbl_img_contoured</zorder>
+  <zorder>groupBox</zorder>
+  <zorder>groupBox_2</zorder>
+  <zorder>groupBox_3</zorder>
+  <zorder>num_camera</zorder>
+  <zorder>label_32</zorder>
+  <zorder>bt_exit</zorder>
+  <zorder>txb_zaehler</zorder>
+  <zorder>bt_apply_all</zorder>
+  <zorder>bt_tracking</zorder>
  </widget>
  <resources/>
  <connections/>

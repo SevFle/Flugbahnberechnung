@@ -3,8 +3,8 @@
 #include <opencv2/opencv.hpp>
 #include <opencv2/highgui.hpp>
 #include "CudaKernels.cuh"
+#include <thread>
 #include <chrono>
-#include "ipp.h"
 //#include "posen.h"
 
 

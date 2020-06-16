@@ -6,34 +6,64 @@ C_frm_Camera_Calibration::C_frm_Camera_Calibration(C_GlobalObjects* GlobalObject
 {
     this->Ui = new Ui::C_frm_camera_calibration();
     Ui->setupUi(this);
+    this->GlobalObjects         = GlobalObjects;
+    this->Main                  = Main;
+    this->Zaehler               = 0;
+    this->cameras_in_use        = 0;
+    this->calibration_running   = false;
+    this->photo_interval        = 0;
+    this->photo_count           = 0;
+    this->photo_id              = 0;
+    this->intervall             = 0;
+    this->photocount_user_input = 3;
+
 }
 
 C_frm_Camera_Calibration::~C_frm_Camera_Calibration()
 {
+    this->cameras_in_use        = 0;
+    this->photocount_user_input = 3;
+    this->intervall             = 0;
+    this->photo_id              = 0;
+    this->photo_interval        = 0;
+    this->calibration_running   = false;
+    this->cameras_in_use        = 0;
+    this->Zaehler               = 0;
+
+    this->Main          = nullptr;
+    this->GlobalObjects = nullptr;
+
+
     delete Ui;
 }
 
 
 /************************************** QT-Events******************************/
-void C_frm_Main::showEvent(QShowEvent* ShowEvent)
+void C_frm_Camera_Calibration::showEvent(QShowEvent* ShowEvent)
 {
 Q_UNUSED(ShowEvent)
 this->Zaehler = 0;
-connect(this->Taktgeber, &QTimer::timeout, this, &C_frm_Main::Taktgeber_Tick);
+connect(this->Taktgeber, &QTimer::timeout, this, &C_frm_Camera_Calibration::Taktgeber_Tick);
 this->Taktgeber->start(this->Taktgeber_Intervall);
 this->installEventFilter(this);
+
+this->Zaehler             = 0;
+this->cameras_in_use      = GlobalObjects->cameras_in_use;
+this->current_camera_id   = 0;
+this->Timerwait           = 50;
+
 }
 
-void C_frm_Main::closeEvent(QCloseEvent* CloseEvent)
+void C_frm_Camera_Calibration::closeEvent(QCloseEvent* CloseEvent)
 {
  Q_UNUSED(CloseEvent);
  this->removeEventFilter(this);
  this->Taktgeber->stop();
- disconnect(this->Taktgeber, &QTimer::timeout, this, &C_frm_Main::Taktgeber_Tick);
+ disconnect(this->Taktgeber, &QTimer::timeout, this, &C_frm_Camera_Calibration::Taktgeber_Tick);
  this->Zaehler = 0;
  }
 
-bool               C_frm_Main::eventFilter                                       (QObject* Object, QEvent* Event)
+bool               C_frm_Camera_Calibration::eventFilter                                       (QObject* Object, QEvent* Event)
   {
   if (Object == this)
     {

@@ -125,8 +125,8 @@ void ::C_frm_Main::on_bt_apply_clicked()
 }
 void frm_Main::C_frm_Main::on_bt_tracking_clicked()
 {
-  this->Main->
-  this->Main->frm_Object_Calibration->show();
+  //this->Main->
+  //this->Main->frm_Object_Calibration->show();
 
 
 }

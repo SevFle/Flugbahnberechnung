@@ -19,6 +19,62 @@ C_frm_Object_Calibration(C_GlobalObjects* GlobalObjects, C_Main* Main, QWidget* 
 
 ~C_frm_Object_Calibration();
 
+C_GlobalObjects* GlobalObjects;
+C_Main*         Main;
+int Zaehler;
+QTimer*         Taktgeber;
+int             Taktgeber_Intervall;
+
+int camera_id_in_use;
+int TimerWait;
+
+
+int hue_min;
+int hue_max;
+int saturation_min;
+int saturation_max;
+int value_min;
+int value_max;
+int target_size_width;     //Resizing the image to the wanted width Values
+int target_size_height;     //Resizing the image to the wanted height Values
+
+
+int erosion_iterations;
+int dilation_iterations;
+int opening_iterations;
+int closing_iterations;
+
+int erosion_kernel_size;
+int dilation_kernel_size;
+int bilateral_kernel_size;
+int opening_kernel_size;
+int closing_kernel_size;
+int morph_kernel_size;
+int gaussian_kernel_size;
+
+int ksize;
+
+int bordertype;
+
+int numBoards;
+int numCornersHor;
+int numcornersVer;
+
+int prior_selection;
+
+double gaussian_sigma;
+
+
+float bilateral_sigma_color;
+float bilateral_sigma_space;
+
+bool erode_active;
+bool dilate_active;
+bool open_active;
+bool close_active;
+bool bilateral_active;
+bool morph_active;
+
 private slots:
 void on_num_sigma_kernelsize_valueChanged(int arg1);
 
@@ -76,17 +132,27 @@ private:
 
 
 
-  C_GlobalObjects* GlobalObjects;
-  C_Main*         Main;
-  int Zaehler;
-  QTimer*         Taktgeber;
-  int             Taktgeber_Intervall;
 
 
 private:
   void showEvent (QShowEvent* ShowEvent) override;
   void closeEvent (QCloseEvent* CloseEvent) override;
   bool eventFilter (QObject* Object, QEvent* Event) override;
+private slots:
+  void Taktgeber_Tick();
+  void on_num_dilate_iterations_4_valueChanged(int arg1);
+  void on_num_dilate_iterations_valueChanged(int arg1);
+  void on_num_erode_iterations_valueChanged(int arg1);
+  void on_num_morp_iterations_valueChanged(int arg1);
+  void on_num_morph_iterations_valueChanged(int arg1);
+  void on_num_gaussian_kernelsize_valueChanged(int arg1);
+  void on_bt_apply_all_clicked();
+  void on_bt_apply_clicked();
+  void on_chkb_dilate_stateChanged(int arg1);
+  void on_chkb_morph_stateChanged(int arg1);
+  void on_chkb_erode_stateChanged(int arg1);
+  void on_bt_tracking_clicked();
+  void on_chkb_bilateral_stateChanged(int arg1);
 };
 
 }

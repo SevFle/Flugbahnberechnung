@@ -19,11 +19,11 @@ namespace object
 
     bool active;
 
-	S_Positionsvektor positionsvektor;
+    //S_Positionsvektor positionsvektor;
 	bool              found_0;
 	bool              found_1;
-	S_Positionsvektor Richtungsvektor_0;
-	S_Positionsvektor Richtungsvektor_1;
+    //S_Positionsvektor Richtungsvektor_0;
+    //S_Positionsvektor Richtungsvektor_1;
 	int               ID_Cam_Links;
 	int               ID_Cam_Rechts;
 	double			  timestamp;
