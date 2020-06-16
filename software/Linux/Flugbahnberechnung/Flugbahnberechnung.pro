@@ -22,7 +22,6 @@ SOURCES += \
     Code/Camera_unmanaged.cpp \
     Code/GlobalObjects.cpp \
     Code/Kalmanfilter.cpp \
-    Code/Main.cpp \
     Code/OpenCV_unmanaged.cpp \
     Code/frm_Camera_Calibration.cpp \
     Code/frm_Camera_Calibration_crop.cpp \
@@ -50,7 +49,6 @@ HEADERS += \
     Code/CudaKernels.cuh \
     Code/GlobalObjects.h \
     Code/Kalmanfilter.h \
-    Code/Main.h \
     Code/frm_Camera_Calibration.h \
     Code/frm_Camera_Calibration_crop.h \
     Code/frm_Camera_Positioning.h \
@@ -88,7 +86,11 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 INCLUDEPATH += /usr/include/opencv/4_2_0/install/include
-LIBS += -L"/usr/include/opencv/4_2_0/install/x64/vc15/lib" -lopencv_world420d
+
+LIBS += -L"/usr/include/opencv/4_2_0/install/x64/vc15/lib"
+LIBS += -lopencv_world420d
+
+LIBS += -L$$CUDA_DIR/lib64 -lcuda -lcudart
 
 
 

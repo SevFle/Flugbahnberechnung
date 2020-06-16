@@ -1,17 +1,20 @@
 #ifndef FRM_CAMERA_CALIBRATION_CROP_H
 #define FRM_CAMERA_CALIBRATION_CROP_H
 
-#include <QDialog>
+#include <QMainWindow>
+#include <QTimer>
 #include "Main.h"
 #include "ui_frm_camera_calibration_crop.h"
 
-class C_frm_camera_calibration_crop : public QDialog
+namespace frm_Camera_Calibration_Crop
+{
+class C_frm_Camera_Calibration_Crop : public QDialog
 {
     Q_OBJECT
 
 public:
-    explicit C_frm_camera_calibration_crop(C_GlobalObjects* GlobalObjects, C_Main* Main, QWidget *parent = nullptr);
-    ~C_frm_camera_calibration_crop();
+     C_frm_Camera_Calibration_Crop(C_GlobalObjects* GlobalObjects, C_Main* Main, QWidget* parent = Q_NULLPTR);
+    ~C_frm_Camera_Calibration_Crop();
 
 private:
   Ui::C_frm_camera_calibration_crop* Ui;
@@ -30,5 +33,7 @@ private:
   void closeEvent (QCloseEvent* CloseEvent) override;
   bool eventFilter (QObject* Object, QEvent* Event) override;
 };
+
+}
 
 #endif // FRM_CAMERA_CALIBRATION_CROP_H

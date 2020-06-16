@@ -1,15 +1,23 @@
 #include "frm_object_tracking.h"
-#include "ui_frm_object_tracking.h"
+using namespace frm_Object_Tracking;
 
-C_frm_object_tracking::C_frm_object_tracking(C_GlobalObjects* GlobalObjects, C_Main* Main, QWidget *parent) :
+C_frm_Object_Tracking::C_frm_Object_Tracking(C_GlobalObjects* GlobalObjects, C_Main* Main, QWidget *parent) :
     QDialog(parent)
 {
     this->Ui = new Ui::C_frm_object_tracking();
     Ui->setupUi(this);
+    this->GlobalObjects = GlobalObjects;
+    this->Main          = Main;
+    this->Zaehler       = 0;
+    this->TimerWait     = 0;
+
+
 }
 
-C_frm_object_tracking::~C_frm_object_tracking()
+C_frm_Object_Tracking::~C_frm_Object_Tracking()
 {
+    this->Main          = nullptr;
+    this->GlobalObjects = nullptr;
     delete Ui;
 }
 
@@ -89,4 +97,36 @@ void C_frm_Main::Taktgeber_Tick()
         break;
 
 }
+}
+
+void frm_Object_Tracking::C_frm_Object_Tracking::on_bt_start_clicked()
+{
+    this->TimerWait = Zaehler + 30;
+    if (!this->Main->Camera_manager->tracking_active)
+      {
+      this->Main->Camera_manager->tracking_active = true;
+      this->Ui->lbl_thread_running->setEnabled(true);
+      this->Tracking = new std::thread;
+
+
+      this->bt_start->Text = "Stop Tracking";
+      }
+    else
+      {
+      this->lbl_thread_running->Enabled                             = false;
+      this->Main->camera_managed->camera_unmanaged->tracking_active = false;
+      this->Trac
+      this->bt_start->Text = "Start Tracking";
+      }
+
+}
+
+void frm_Object_Tracking::C_frm_Object_Tracking::on_bt_exit_clicked()
+{
+
+}
+
+void frm_Object_Tracking::C_frm_Object_Tracking::on_num_camera_id_valueChanged(int arg1)
+{
+
 }

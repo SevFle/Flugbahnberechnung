@@ -1,14 +1,14 @@
 #include "frm_camera_calibration.h"
-#include "ui_frm_camera_calibration.h"
+using namespace frm_Camera_Calibration;
 
-C_frm_camera_calibration::C_frm_camera_calibration(C_GlobalObjects* GlobalObjects, C_Main* Main, QWidget *parent) :
+C_frm_Camera_Calibration::C_frm_Camera_Calibration(C_GlobalObjects* GlobalObjects, C_Main* Main, QWidget *parent) :
     QDialog(parent)
 {
     this->Ui = new Ui::C_frm_camera_calibration();
     Ui->setupUi(this);
 }
 
-C_frm_camera_calibration::~C_frm_camera_calibration()
+C_frm_Camera_Calibration::~C_frm_Camera_Calibration()
 {
     delete Ui;
 }

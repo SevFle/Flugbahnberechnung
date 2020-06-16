@@ -32,7 +32,7 @@ public:
     QLabel *lbl_img_left;
     QLabel *lbl_img_right;
     QPushButton *bt_start;
-    QSpinBox *spinBox;
+    QSpinBox *num_camera_id;
     QGroupBox *groupBox_2;
     QTextEdit *txb_position_z;
     QTextEdit *txb_position_x;
@@ -47,6 +47,7 @@ public:
     QTextEdit *txb_velocity_x;
     QTextEdit *txb_velocity_y;
     QLabel *label_7;
+    QLabel *lbl_thread_running;
 
     void setupUi(QDialog *C_frm_object_tracking)
     {
@@ -71,12 +72,12 @@ public:
         bt_start = new QPushButton(C_frm_object_tracking);
         bt_start->setObjectName(QStringLiteral("bt_start"));
         bt_start->setGeometry(QRect(10, 660, 141, 71));
-        spinBox = new QSpinBox(C_frm_object_tracking);
-        spinBox->setObjectName(QStringLiteral("spinBox"));
-        spinBox->setGeometry(QRect(170, 690, 71, 41));
+        num_camera_id = new QSpinBox(C_frm_object_tracking);
+        num_camera_id->setObjectName(QStringLiteral("num_camera_id"));
+        num_camera_id->setGeometry(QRect(170, 690, 71, 41));
         QFont font;
         font.setPointSize(14);
-        spinBox->setFont(font);
+        num_camera_id->setFont(font);
         groupBox_2 = new QGroupBox(C_frm_object_tracking);
         groupBox_2->setObjectName(QStringLiteral("groupBox_2"));
         groupBox_2->setGeometry(QRect(280, 580, 551, 151));
@@ -126,6 +127,10 @@ public:
         label_7->setObjectName(QStringLiteral("label_7"));
         label_7->setGeometry(QRect(170, 660, 101, 21));
         label_7->setFont(font);
+        lbl_thread_running = new QLabel(C_frm_object_tracking);
+        lbl_thread_running->setObjectName(QStringLiteral("lbl_thread_running"));
+        lbl_thread_running->setGeometry(QRect(10, 620, 141, 31));
+        lbl_thread_running->setFont(font);
 
         retranslateUi(C_frm_object_tracking);
 
@@ -148,6 +153,7 @@ public:
         label_5->setText(QApplication::translate("C_frm_object_tracking", "Velocity [X]", Q_NULLPTR));
         label_6->setText(QApplication::translate("C_frm_object_tracking", "Velocity [Z]", Q_NULLPTR));
         label_7->setText(QApplication::translate("C_frm_object_tracking", "Kamera", Q_NULLPTR));
+        lbl_thread_running->setText(QApplication::translate("C_frm_object_tracking", "Thread running", Q_NULLPTR));
     } // retranslateUi
 
 };

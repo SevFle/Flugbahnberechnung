@@ -1,14 +1,14 @@
 #include "frm_camera_calibration_crop.h"
-#include "ui_frm_camera_calibration_crop.h"
+using namespace frm_Camera_Calibration_Crop;
 
-C_frm_camera_calibration_crop::C_frm_camera_calibration_crop(C_GlobalObjects* GlobalObjects, C_Main* Main, QWidget *parent) :
+C_frm_Camera_Calibration_Crop::C_frm_Camera_Calibration_Crop(C_GlobalObjects* GlobalObjects, C_Main* Main, QWidget *parent) :
     QDialog(parent)
 {
     this->Ui = new Ui::C_frm_camera_calibration_crop();
     Ui->setupUi(this);
 }
 
-C_frm_camera_calibration_crop::~C_frm_camera_calibration_crop()
+C_frm_Camera_Calibration_Crop::~C_frm_Camera_Calibration_Crop()
 {
     delete Ui;
 }

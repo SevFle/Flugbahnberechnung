@@ -3,30 +3,42 @@
 using namespace Main;
 
 C_Main::C_Main(C_GlobalObjects* GlobalObjects)
-{
-this->Camera_manager = new c_camera_unmanaged(GlobalObjects);
-this->frm_Main = new C_frm_Main(GlobalObjects, this);
-this->frm_Object_Tracking = new C_frm_Object_Tracking(GlobalObjects, this);
-    this->frm_Camera_Calibration = new frm_camera_calibration(GlobalObjects, this);
-    this->frm_Camera_Positioning = new frm_Camera_Positioning(GlobalObjects, this);
-    this->frm_Object_Calibration = new frm_Object_Calibration(GlobalObjects, this);
-    this->frm_Camera_Positoning_Pose = new frm_Camera_Positoning_Pose(GlobalObjects, this);
-    this->frm_Camera_Calibration_Crop = new frm_Camera_Calibration_Crop(GlobalObjects, this);
-    this->GlobalObjects = GlobalObjects;
+  {
+  this->Camera_manager = new c_camera_unmanaged(GlobalObjects);
+
+  this->frm_Main = new C_frm_Main(GlobalObjects, this);
+  this->frm_Main->show();
+
+  this->frm_Camera_Calibration          = new C_frm_Camera_Calibration(GlobalObjects, this);
+  this->frm_Camera_Calibration_Crop     = new C_frm_Camera_Calibration_Crop(GlobalObjects, this);
+
+  this->frm_Camera_Positioning          = new C_frm_Camera_Positioning(GlobalObjects, this);
+  this->frm_Camera_Positioning_Pose     = new C_frm_Camera_Positioning_Pose(GlobalObjects, this);
+
+  this->frm_Object_Calibration          = new C_frm_Object_Calibration(GlobalObjects, this);
+  this->frm_Object_Tracking             = new C_frm_Object_Tracking(GlobalObjects, this);
+
+  this->GlobalObjects                   = GlobalObjects;
 }
+
+
 
 C_Main::~C_Main()
 {
     this->GlobalObjects = nullptr;
-            delete(frm_Camera_Calibration_Crop);
-    delete(frm_Camera_Positoning_Pose);
-    delete (frm_Object_Calibration);
-    delete (frm_Camera_Positioning);
-    delete (frm_Camera_Calibration);
 
-    delete (frm_Object_Tracking);
-    delete (frm_Main);
-    delete (Camera_manager);
+    delete  (frm_Object_Tracking);
+    delete  (frm_Object_Calibration);
+
+    delete  (frm_Camera_Positioning_Pose);
+    delete  (frm_Camera_Positioning);
+
+
+    delete  (frm_Camera_Calibration_Crop);
+    delete  (frm_Camera_Calibration);
+
+    delete  (frm_Main);
+    delete  (Camera_manager);
 
 }
 

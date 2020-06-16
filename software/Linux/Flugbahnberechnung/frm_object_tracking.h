@@ -1,19 +1,30 @@
 #ifndef FRM_OBJECT_TRACKING_H
 #define FRM_OBJECT_TRACKING_H
 
-#include <QDialog>
-
+#include <QMainWindow>
+#include <QTimer>
 #include "Main.h"
 
 #include "ui_frm_object_tracking.h"
 
-class C_frm_object_tracking : public QDialog
+namespace frm_Object_Tracking
+{
+class C_frm_Object_Tracking : public QDialog
 {
     Q_OBJECT
 
 public:
-    C_frm_object_tracking(C_GlobalObjects* GlobalObjects, C_Main* Main, QWidget *parent = nullptr);
-    ~C_frm_object_tracking();
+    C_frm_Object_Tracking(C_GlobalObjects* GlobalObjects, C_Main* Main, QWidget* parent = Q_NULLPTR);
+    ~C_frm_Object_Tracking();
+
+private slots:
+    void on_bt_start_clicked();
+
+    void on_spinBox_valueChanged(int arg1);
+
+    void on_bt_exit_clicked();
+
+    void on_num_camera_id_valueChanged(int arg1);
 
 private:
   Ui::C_frm_object_tracking* Ui;
@@ -22,9 +33,12 @@ private:
 
   C_GlobalObjects* GlobalObjects;
   C_Main*         Main;
+  std::thread*    Tracking;
+
   int Zaehler;
   QTimer*         Taktgeber;
   int             Taktgeber_Intervall;
+  int             TimerWait;
 
 
 private:
@@ -32,5 +46,7 @@ private:
   void closeEvent (QCloseEvent* CloseEvent) override;
   bool eventFilter (QObject* Object, QEvent* Event) override;
 };
+
+}
 
 #endif // FRM_OBJECT_TRACKING_H

@@ -1,14 +1,14 @@
 #include "frm_object_calibration.h"
-#include "ui_frm_object_calibration.h"
+using namespace frm_Object_Calibration;
 
-C_frm_object_calibration::C_frm_object_calibration(C_GlobalObjects* GlobalObjects, C_Main* Main, QWidget *parent) :
+C_frm_Object_Calibration::C_frm_Object_Calibration(C_GlobalObjects* GlobalObjects, C_Main* Main, QWidget *parent) :
     QDialog(parent)
 {
     this->Ui = new Ui::C_frm_object_calibration();
     Ui->setupUi(this);
 }
 
-C_frm_object_calibration::~C_frm_object_calibration()
+C_frm_Object_Calibration::~C_frm_Object_Calibration()
 {
     delete Ui;
 }
@@ -89,4 +89,129 @@ void C_frm_Main::Taktgeber_Tick()
         break;
 
 }
+}
+
+void frm_Object_Calibration::C_frm_Object_Calibration::on_num_sigma_kernelsize_valueChanged(int arg1)
+{
+
+}
+
+void frm_Object_Calibration::C_frm_Object_Calibration::on_num_opening_iterations_valueChanged(int arg1)
+{
+
+}
+
+void frm_Object_Calibration::C_frm_Object_Calibration::on_num_opening_kernelsize_valueChanged(int arg1)
+{
+
+}
+
+void frm_Object_Calibration::C_frm_Object_Calibration::on_num_closing_iterations_valueChanged(int arg1)
+{
+
+}
+
+void frm_Object_Calibration::C_frm_Object_Calibration::on_num_closing_kernelsize_valueChanged(int arg1)
+{
+
+}
+
+void frm_Object_Calibration::C_frm_Object_Calibration::on_num_closing_iterations_2_valueChanged(int arg1)
+{
+
+}
+
+void frm_Object_Calibration::C_frm_Object_Calibration::on_num_erode_kernelsize_valueChanged(int arg1)
+{
+
+}
+
+void frm_Object_Calibration::C_frm_Object_Calibration::on_num_closing_iterations_3_valueChanged(int arg1)
+{
+
+}
+
+void frm_Object_Calibration::C_frm_Object_Calibration::on_num_dilate_kernelsize_valueChanged(int arg1)
+{
+
+}
+
+void frm_Object_Calibration::C_frm_Object_Calibration::on_num_closing_iterations_4_valueChanged(int arg1)
+{
+
+}
+
+void frm_Object_Calibration::C_frm_Object_Calibration::on_num_morph_kernelsize_valueChanged(int arg1)
+{
+
+}
+
+void frm_Object_Calibration::C_frm_Object_Calibration::on_num_gaussian_sigma_valueChanged(int arg1)
+{
+
+}
+
+void frm_Object_Calibration::C_frm_Object_Calibration::on_num_bilateral_color_valueChanged(int arg1)
+{
+
+}
+
+void frm_Object_Calibration::C_frm_Object_Calibration::on_num_bilateral_spatial_valueChanged(int arg1)
+{
+
+}
+
+void frm_Object_Calibration::C_frm_Object_Calibration::on_num_bilateral_kernelsize_valueChanged(int arg1)
+{
+
+}
+
+void frm_Object_Calibration::C_frm_Object_Calibration::on_sld_hue_min_valueChanged(int value)
+{
+
+}
+
+void frm_Object_Calibration::C_frm_Object_Calibration::on_sld_hue_max_valueChanged(int value)
+{
+
+}
+
+void frm_Object_Calibration::C_frm_Object_Calibration::on_sld_saturation_min_valueChanged(int value)
+{
+
+}
+
+void frm_Object_Calibration::C_frm_Object_Calibration::on_sld_saturation_max_valueChanged(int value)
+{
+
+}
+
+void frm_Object_Calibration::C_frm_Object_Calibration::on_sld_value_min_valueChanged(int value)
+{
+
+}
+
+void frm_Object_Calibration::C_frm_Object_Calibration::on_sld_value_max_valueChanged(int value)
+{
+
+}
+
+void frm_Object_Calibration::C_frm_Object_Calibration::on_sld_objectsize_min_valueChanged(int value)
+{
+
+}
+
+void frm_Object_Calibration::C_frm_Object_Calibration::on_sld_objectsize_max_valueChanged(int value)
+{
+
+}
+
+void frm_Object_Calibration::C_frm_Object_Calibration::on_num_camera_valueChanged(int arg1)
+{
+
+}
+
+void frm_Object_Calibration::C_frm_Object_Calibration::on_bt_exit_clicked()
+{
+
 }

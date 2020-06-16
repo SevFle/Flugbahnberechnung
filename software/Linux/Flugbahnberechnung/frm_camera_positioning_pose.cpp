@@ -1,14 +1,14 @@
 #include "frm_camera_positioning_pose.h"
-#include "ui_frm_camera_positioning_pose.h"
+using namespace frm_Camera_Positioning_Pose;
 
-C_frm_camera_positioning_pose::C_frm_camera_positioning_pose(C_GlobalObjects* GlobalObjects, C_Main* Main, QWidget *parent) :
+C_frm_Camera_Positioning_Pose::C_frm_Camera_Positioning_Pose(C_GlobalObjects* GlobalObjects, C_Main* Main, QWidget *parent) :
     QDialog(parent)
 {
     this->Ui = new Ui::C_frm_camera_positioning_pose();
     Ui->setupUi(this);
 }
 
-C_frm_camera_positioning_pose::~C_frm_camera_positioning_pose()
+C_frm_Camera_Positioning_Pose::~C_frm_Camera_Positioning_Pose()
 {
     delete Ui;
 }

@@ -5,13 +5,15 @@
 #include "Main.h"
 #include "ui_frm_camera_positioning_pose.h"
 
-class C_frm_camera_positioning_pose : public QDialog
+namespace frm_Camera_Positioning_Pose
+{
+class C_frm_Camera_Positioning_Pose : public QDialog
 {
     Q_OBJECT
 
 public:
-    explicit C_frm_camera_positioning_pose(C_GlobalObjects* GlobalObjects, C_Main* Main, QWidget *parent = nullptr);
-    ~C_frm_camera_positioning_pose();
+     C_frm_Camera_Positioning_Pose(C_GlobalObjects* GlobalObjects, C_Main* Main, QWidget* parent = Q_NULLPTR);
+    ~C_frm_Camera_Positioning_Pose();
 
 private:
   Ui::C_frm_camera_positioning_pose* Ui;
@@ -31,5 +33,7 @@ private:
   bool eventFilter (QObject* Object, QEvent* Event) override;
 
 };
+
+}
 
 #endif // FRM_CAMERA_POSITIONING_POSE_H
