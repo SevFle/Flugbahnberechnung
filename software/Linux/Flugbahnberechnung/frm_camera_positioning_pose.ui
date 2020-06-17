@@ -725,7 +725,7 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;0&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
     </widget>
-    <widget class="QTextEdit" name="textEdit_13">
+    <widget class="QTextEdit" name="txb_p0">
      <property name="geometry">
       <rect>
        <x>350</x>
@@ -748,7 +748,7 @@ p, li { white-space: pre-wrap; }
       <string>1</string>
      </property>
     </widget>
-    <widget class="QTextEdit" name="textEdit_14">
+    <widget class="QTextEdit" name="txb_a0">
      <property name="geometry">
       <rect>
        <x>240</x>
@@ -771,7 +771,7 @@ p, li { white-space: pre-wrap; }
       <string>0</string>
      </property>
     </widget>
-    <widget class="QTextEdit" name="textEdit_15">
+    <widget class="QTextEdit" name="txb_n0">
      <property name="geometry">
       <rect>
        <x>20</x>
@@ -794,7 +794,7 @@ p, li { white-space: pre-wrap; }
       <string>0</string>
      </property>
     </widget>
-    <widget class="QTextEdit" name="textEdit_16">
+    <widget class="QTextEdit" name="txb_o0">
      <property name="geometry">
       <rect>
        <x>130</x>
