@@ -150,6 +150,7 @@ public:
         rb_tait_extrinsic_zyx->setObjectName(QStringLiteral("rb_tait_extrinsic_zyx"));
         rb_tait_extrinsic_zyx->setGeometry(QRect(20, 70, 161, 23));
         rb_tait_extrinsic_zyx->setFont(font);
+        rb_tait_extrinsic_zyx->setAutoExclusive(false);
         label = new QLabel(groupBox_3);
         label->setObjectName(QStringLiteral("label"));
         label->setGeometry(QRect(20, 40, 171, 16));
@@ -158,14 +159,17 @@ public:
         rb_tait_intrinisc_zyx->setObjectName(QStringLiteral("rb_tait_intrinisc_zyx"));
         rb_tait_intrinisc_zyx->setGeometry(QRect(20, 100, 161, 23));
         rb_tait_intrinisc_zyx->setFont(font);
+        rb_tait_intrinisc_zyx->setAutoExclusive(false);
         rb_euler_intrinsic_zyz = new QRadioButton(groupBox_3);
         rb_euler_intrinsic_zyz->setObjectName(QStringLiteral("rb_euler_intrinsic_zyz"));
         rb_euler_intrinsic_zyz->setGeometry(QRect(220, 100, 161, 23));
         rb_euler_intrinsic_zyz->setFont(font);
+        rb_euler_intrinsic_zyz->setAutoExclusive(false);
         rb_euler_extrinsic_zyz = new QRadioButton(groupBox_3);
         rb_euler_extrinsic_zyz->setObjectName(QStringLiteral("rb_euler_extrinsic_zyz"));
         rb_euler_extrinsic_zyz->setGeometry(QRect(220, 70, 161, 23));
         rb_euler_extrinsic_zyz->setFont(font);
+        rb_euler_extrinsic_zyz->setAutoExclusive(false);
         label_2 = new QLabel(groupBox_3);
         label_2->setObjectName(QStringLiteral("label_2"));
         label_2->setGeometry(QRect(220, 40, 171, 16));
@@ -177,10 +181,12 @@ public:
         rb_unit_grad->setObjectName(QStringLiteral("rb_unit_grad"));
         rb_unit_grad->setGeometry(QRect(20, 50, 112, 23));
         rb_unit_grad->setFont(font);
+        rb_unit_grad->setAutoExclusive(false);
         rb_unit_radiant = new QRadioButton(groupBox_4);
         rb_unit_radiant->setObjectName(QStringLiteral("rb_unit_radiant"));
         rb_unit_radiant->setGeometry(QRect(220, 50, 112, 23));
         rb_unit_radiant->setFont(font);
+        rb_unit_radiant->setAutoExclusive(false);
         groupBox_5 = new QGroupBox(centralwidget);
         groupBox_5->setObjectName(QStringLiteral("groupBox_5"));
         groupBox_5->setGeometry(QRect(30, 170, 571, 261));

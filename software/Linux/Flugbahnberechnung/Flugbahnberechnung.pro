@@ -18,7 +18,6 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
     App_main.cpp \
     Code/CSV_Datei.cpp \
-    Code/Camera_managed.cpp \
     Code/Camera_unmanaged.cpp \
     Code/GlobalObjects.cpp \
     Code/Kalmanfilter.cpp \
@@ -44,7 +43,6 @@ SOURCES += \
 
 HEADERS += \
     Code/CSV_Datei.h \
-    Code/Camera_managed.h \
     Code/Camera_unmanaged.h \
     Code/CudaKernels.cuh \
     Code/GlobalObjects.h \

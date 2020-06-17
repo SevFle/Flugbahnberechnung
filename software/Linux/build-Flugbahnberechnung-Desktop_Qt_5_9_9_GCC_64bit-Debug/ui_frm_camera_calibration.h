@@ -19,6 +19,7 @@
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QRadioButton>
+#include <QtWidgets/QSpinBox>
 #include <QtWidgets/QTableView>
 #include <QtWidgets/QTextEdit>
 #include <QtWidgets/QWidget>
@@ -56,6 +57,8 @@ public:
     QLabel *lbl_img_stereo_right;
     QPushButton *bt_start;
     QLabel *lbl_calibration_running;
+    QSpinBox *num_camera_id;
+    QPushButton *bt_photo;
 
     void setupUi(QMainWindow *C_frm_camera_calibration)
     {
@@ -152,12 +155,19 @@ public:
         lbl_img_stereo_right->setGeometry(QRect(1120, 10, 441, 441));
         bt_start = new QPushButton(centralwidget);
         bt_start->setObjectName(QStringLiteral("bt_start"));
-        bt_start->setGeometry(QRect(660, 750, 141, 71));
+        bt_start->setGeometry(QRect(1320, 760, 141, 71));
         lbl_calibration_running = new QLabel(centralwidget);
         lbl_calibration_running->setObjectName(QStringLiteral("lbl_calibration_running"));
         lbl_calibration_running->setEnabled(false);
         lbl_calibration_running->setGeometry(QRect(810, 780, 361, 31));
         lbl_calibration_running->setFont(font);
+        num_camera_id = new QSpinBox(centralwidget);
+        num_camera_id->setObjectName(QStringLiteral("num_camera_id"));
+        num_camera_id->setGeometry(QRect(660, 715, 71, 31));
+        num_camera_id->setFont(font);
+        bt_photo = new QPushButton(centralwidget);
+        bt_photo->setObjectName(QStringLiteral("bt_photo"));
+        bt_photo->setGeometry(QRect(650, 750, 141, 71));
         C_frm_camera_calibration->setCentralWidget(centralwidget);
 
         retranslateUi(C_frm_camera_calibration);
@@ -192,6 +202,7 @@ public:
         lbl_img_stereo_right->setText(QApplication::translate("C_frm_camera_calibration", "TextLabel", Q_NULLPTR));
         bt_start->setText(QApplication::translate("C_frm_camera_calibration", "Start", Q_NULLPTR));
         lbl_calibration_running->setText(QApplication::translate("C_frm_camera_calibration", "Calibration being calculated. Please wait.", Q_NULLPTR));
+        bt_photo->setText(QApplication::translate("C_frm_camera_calibration", "Bild aufnehmen", Q_NULLPTR));
     } // retranslateUi
 
 };

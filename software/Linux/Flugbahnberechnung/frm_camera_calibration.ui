@@ -14,300 +14,275 @@
    <string>Dialog</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-  <widget class="QTextEdit" name="txb_zaehler">
-   <property name="geometry">
-    <rect>
-     <x>1470</x>
-     <y>720</y>
-     <width>141</width>
-     <height>31</height>
-    </rect>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="bt_exit">
-   <property name="geometry">
-    <rect>
-     <x>1470</x>
-     <y>760</y>
-     <width>141</width>
-     <height>71</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Exit</string>
-   </property>
-  </widget>
-  <widget class="QGroupBox" name="groupBox">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>0</y>
-     <width>321</width>
-     <height>821</height>
-    </rect>
-   </property>
-   <property name="title">
-    <string>Aufgenommene Bilder</string>
-   </property>
-   <widget class="QLabel" name="label">
+   <widget class="QTextEdit" name="txb_zaehler">
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>110</y>
-      <width>301</width>
-      <height>191</height>
+      <x>1470</x>
+      <y>720</y>
+      <width>141</width>
+      <height>31</height>
      </rect>
-    </property>
-    <property name="text">
-     <string>TextLabel</string>
     </property>
    </widget>
-   <widget class="QLabel" name="label_2">
+   <widget class="QPushButton" name="bt_exit">
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>330</y>
-      <width>301</width>
-      <height>191</height>
+      <x>1470</x>
+      <y>760</y>
+      <width>141</width>
+      <height>71</height>
      </rect>
     </property>
     <property name="text">
-     <string>TextLabel</string>
+     <string>Exit</string>
     </property>
    </widget>
-   <widget class="QLabel" name="label_3">
+   <widget class="QGroupBox" name="groupBox">
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>550</y>
-      <width>301</width>
-      <height>191</height>
+      <y>0</y>
+      <width>321</width>
+      <height>821</height>
      </rect>
     </property>
-    <property name="text">
-     <string>TextLabel</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_4">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>40</y>
-      <width>201</width>
-      <height>17</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>14</pointsize>
-     </font>
-    </property>
-    <property name="text">
+    <property name="title">
      <string>Aufgenommene Bilder</string>
     </property>
+    <widget class="QLabel" name="label">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>110</y>
+       <width>301</width>
+       <height>191</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>TextLabel</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_2">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>330</y>
+       <width>301</width>
+       <height>191</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>TextLabel</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_3">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>550</y>
+       <width>301</width>
+       <height>191</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>TextLabel</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_4">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>40</y>
+       <width>201</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>14</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>Aufgenommene Bilder</string>
+     </property>
+    </widget>
+    <widget class="QTextEdit" name="txb_img_count">
+     <property name="geometry">
+      <rect>
+       <x>210</x>
+       <y>30</y>
+       <width>104</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="placeholderText">
+      <string>0</string>
+     </property>
+    </widget>
    </widget>
-   <widget class="QTextEdit" name="txb_img_count">
+   <widget class="QGroupBox" name="groupBox_2">
     <property name="geometry">
      <rect>
-      <x>210</x>
-      <y>30</y>
-      <width>104</width>
-      <height>31</height>
+      <x>340</x>
+      <y>0</y>
+      <width>271</width>
+      <height>361</height>
      </rect>
     </property>
-    <property name="placeholderText">
-     <string>0</string>
+    <property name="title">
+     <string>Parameter</string>
     </property>
+    <widget class="QRadioButton" name="rb_single_calibration">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>30</y>
+       <width>191</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>14</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>Single Calibration</string>
+     </property>
+    </widget>
+    <widget class="QRadioButton" name="rb_stereo_calibration">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>60</y>
+       <width>201</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>14</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>Stereo Calibration</string>
+     </property>
+    </widget>
+    <widget class="QTextEdit" name="txb_count_images_to_take">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>130</y>
+       <width>104</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="placeholderText">
+      <string>0</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_5">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>100</y>
+       <width>251</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>14</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>Anzahl  Kalibrierungsbilder</string>
+     </property>
+    </widget>
+    <widget class="QTextEdit" name="txb_edge_length">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>200</y>
+       <width>104</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="placeholderText">
+      <string>mm</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_6">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>170</y>
+       <width>251</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>14</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>Kantenlänge</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_7">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>230</y>
+       <width>251</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>14</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>Anzahl Kanten (B x H)</string>
+     </property>
+    </widget>
+    <widget class="QTextEdit" name="txb_edge_width">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>260</y>
+       <width>104</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="placeholderText">
+      <string>Breite</string>
+     </property>
+    </widget>
+    <widget class="QTextEdit" name="txb_edge_height">
+     <property name="geometry">
+      <rect>
+       <x>130</x>
+       <y>260</y>
+       <width>104</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="placeholderText">
+      <string>Höhe</string>
+     </property>
+    </widget>
    </widget>
-  </widget>
-  <widget class="QGroupBox" name="groupBox_2">
-   <property name="geometry">
-    <rect>
-     <x>340</x>
-     <y>0</y>
-     <width>271</width>
-     <height>361</height>
-    </rect>
-   </property>
-   <property name="title">
-    <string>Parameter</string>
-   </property>
-   <widget class="QRadioButton" name="rb_single_calibration">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>30</y>
-      <width>191</width>
-      <height>23</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>14</pointsize>
-     </font>
-    </property>
-    <property name="text">
-     <string>Single Calibration</string>
-    </property>
-   </widget>
-   <widget class="QRadioButton" name="rb_stereo_calibration">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>60</y>
-      <width>201</width>
-      <height>23</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>14</pointsize>
-     </font>
-    </property>
-    <property name="text">
-     <string>Stereo Calibration</string>
-    </property>
-   </widget>
-   <widget class="QTextEdit" name="txb_count_images_to_take">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>130</y>
-      <width>104</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="placeholderText">
-     <string>0</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_5">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>100</y>
-      <width>251</width>
-      <height>21</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>14</pointsize>
-     </font>
-    </property>
-    <property name="text">
-     <string>Anzahl  Kalibrierungsbilder</string>
-    </property>
-   </widget>
-   <widget class="QTextEdit" name="txb_edge_length">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>200</y>
-      <width>104</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="placeholderText">
-     <string>mm</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_6">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>170</y>
-      <width>251</width>
-      <height>21</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>14</pointsize>
-     </font>
-    </property>
-    <property name="text">
-     <string>Kantenlänge</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_7">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>230</y>
-      <width>251</width>
-      <height>21</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>14</pointsize>
-     </font>
-    </property>
-    <property name="text">
-     <string>Anzahl Kanten (B x H)</string>
-    </property>
-   </widget>
-   <widget class="QTextEdit" name="txb_edge_width">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>260</y>
-      <width>104</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="placeholderText">
-     <string>Breite</string>
-    </property>
-   </widget>
-   <widget class="QTextEdit" name="txb_edge_height">
-    <property name="geometry">
-     <rect>
-      <x>130</x>
-      <y>260</y>
-      <width>104</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="placeholderText">
-     <string>Höhe</string>
-    </property>
-   </widget>
-  </widget>
-  <widget class="QGroupBox" name="grpb_single_output">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="geometry">
-    <rect>
-     <x>340</x>
-     <y>360</y>
-     <width>271</width>
-     <height>461</height>
-    </rect>
-   </property>
-   <property name="title">
-    <string>Output</string>
-   </property>
-   <widget class="QTableView" name="tblv_single_parameters">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>30</y>
-      <width>251</width>
-      <height>421</height>
-     </rect>
-    </property>
-   </widget>
-   <widget class="QGroupBox" name="grpb_stereo_output">
+   <widget class="QGroupBox" name="grpb_single_output">
     <property name="enabled">
      <bool>false</bool>
     </property>
     <property name="geometry">
      <rect>
-      <x>0</x>
-      <y>0</y>
+      <x>340</x>
+      <y>360</y>
       <width>271</width>
       <height>461</height>
      </rect>
@@ -315,7 +290,7 @@
     <property name="title">
      <string>Output</string>
     </property>
-    <widget class="QTableView" name="tblv_stereo_output">
+    <widget class="QTableView" name="tblv_single_parameters">
      <property name="geometry">
       <rect>
        <x>10</x>
@@ -325,85 +300,138 @@
       </rect>
      </property>
     </widget>
+    <widget class="QGroupBox" name="grpb_stereo_output">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>0</y>
+       <width>271</width>
+       <height>461</height>
+      </rect>
+     </property>
+     <property name="title">
+      <string>Output</string>
+     </property>
+     <widget class="QTableView" name="tblv_stereo_output">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>30</y>
+        <width>251</width>
+        <height>421</height>
+       </rect>
+      </property>
+     </widget>
+    </widget>
+   </widget>
+   <widget class="QLabel" name="lbl_img_single_calibration">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>650</x>
+      <y>20</y>
+      <width>771</width>
+      <height>681</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>TextLabel</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lbl_img_stereo_left">
+    <property name="geometry">
+     <rect>
+      <x>650</x>
+      <y>10</y>
+      <width>441</width>
+      <height>441</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>TextLabel</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lbl_img_stereo_right">
+    <property name="geometry">
+     <rect>
+      <x>1120</x>
+      <y>10</y>
+      <width>441</width>
+      <height>441</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>TextLabel</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="bt_start">
+    <property name="geometry">
+     <rect>
+      <x>1320</x>
+      <y>760</y>
+      <width>141</width>
+      <height>71</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Start</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lbl_calibration_running">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>810</x>
+      <y>780</y>
+      <width>361</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>14</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>Calibration being calculated. Please wait.</string>
+    </property>
+   </widget>
+   <widget class="QSpinBox" name="num_camera_id">
+    <property name="geometry">
+     <rect>
+      <x>660</x>
+      <y>715</y>
+      <width>71</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>14</pointsize>
+     </font>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="bt_photo">
+    <property name="geometry">
+     <rect>
+      <x>650</x>
+      <y>750</y>
+      <width>141</width>
+      <height>71</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Bild aufnehmen</string>
+    </property>
    </widget>
   </widget>
-  <widget class="QLabel" name="lbl_img_single_calibration">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="geometry">
-    <rect>
-     <x>650</x>
-     <y>20</y>
-     <width>771</width>
-     <height>681</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>TextLabel</string>
-   </property>
-  </widget>
-  <widget class="QLabel" name="lbl_img_stereo_left">
-   <property name="geometry">
-    <rect>
-     <x>650</x>
-     <y>10</y>
-     <width>441</width>
-     <height>441</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>TextLabel</string>
-   </property>
-  </widget>
-  <widget class="QLabel" name="lbl_img_stereo_right">
-   <property name="geometry">
-    <rect>
-     <x>1120</x>
-     <y>10</y>
-     <width>441</width>
-     <height>441</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>TextLabel</string>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="bt_start">
-   <property name="geometry">
-    <rect>
-     <x>660</x>
-     <y>750</y>
-     <width>141</width>
-     <height>71</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Start</string>
-   </property>
-  </widget>
-  <widget class="QLabel" name="lbl_calibration_running">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="geometry">
-    <rect>
-     <x>810</x>
-     <y>780</y>
-     <width>361</width>
-     <height>31</height>
-    </rect>
-   </property>
-   <property name="font">
-    <font>
-     <pointsize>14</pointsize>
-    </font>
-   </property>
-   <property name="text">
-    <string>Calibration being calculated. Please wait.</string>
-   </property>
-  </widget>
-</widget>
  </widget>
  <resources/>
  <connections/>

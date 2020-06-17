@@ -48,6 +48,17 @@ private slots:
   void Taktgeber_Tick();
   void Fill_Mat_2_Lbl(cv::Mat& img, QLabel* label);
 
+  void camera_calibration_thread ();
+  void sm_Single_camera_calibration ();
+  void sm_Stereo_camera_calibration ();
+
+
+  void on_bt_start_clicked();
+  void on_bt_exit_clicked();
+  void on_num_camera_id_valueChanged(int arg1);
+  void on_rb_single_calibration_clicked();
+  void on_rb_stereo_calibration_clicked();
+  void on_bt_photo_clicked();
 };
 }
 
