@@ -153,6 +153,8 @@ private slots:
   void on_chkb_erode_stateChanged(int arg1);
   void on_bt_tracking_clicked();
   void on_chkb_bilateral_stateChanged(int arg1);
+  void get_camera_settings (int camera_id);
+
 };
 
 }
