@@ -7,7 +7,7 @@
 
 namespace frm_Camera_Positioning_Pose
 {
-class C_frm_Camera_Positioning_Pose : public QDialog
+class C_frm_Camera_Positioning_Pose : public QMainWindow
 {
     Q_OBJECT
 
@@ -34,6 +34,8 @@ private:
 private slots:
   void Taktgeber_Tick();
 
+
+  void Fill_Mat_2_Lbl(cv::Mat& img, QLabel* label);
 };
 
 }

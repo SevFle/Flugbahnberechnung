@@ -2,7 +2,7 @@
 using namespace frm_Camera_Positioning_Pose;
 
 C_frm_Camera_Positioning_Pose::C_frm_Camera_Positioning_Pose(C_GlobalObjects* GlobalObjects, C_Main* Main, QWidget *parent) :
-    QDialog(parent)
+    QMainWindow(parent)
 {
     this->Ui = new Ui::C_frm_camera_positioning_pose();
     Ui->setupUi(this);
