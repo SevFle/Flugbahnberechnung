@@ -40,6 +40,7 @@ this->Zaehler = 0;
 connect(this->Taktgeber, &QTimer::timeout, this, &C_frm_Camera_Positioning_Pose::Taktgeber_Tick);
 this->Taktgeber->start(this->Taktgeber_Intervall);
 this->installEventFilter(this);
+
 }
 
 void C_frm_Camera_Positioning_Pose::closeEvent(QCloseEvent* CloseEvent)
@@ -82,14 +83,17 @@ bool               C_frm_Camera_Positioning_Pose::eventFilter                   
     }
   }
 /************************************** Nicht öffentliche QT-Slots******************************/
-void ::C_frm_Camera_Positioning_Pose::on_bt_exit_clicked()
-{
-this->close();
-}
 
 
 void C_frm_Camera_Positioning_Pose::Taktgeber_Tick()
 {
+    this->Ui->txb_zaehler->setText(QString::number(this->Zaehler++));
+
+    this->get_textbox_data();
+    calculation_method();
+    if (convert_to_degree_active) convert_rad_to_degree();
+    set_textbox_data();
+
 }
 void C_frm_Camera_Positioning_Pose::tait_extrinsic_zyx ()
   {
@@ -268,7 +272,7 @@ void C_frm_Camera_Positioning_Pose::get_textbox_data ()
     }
 }
 
- void C_frm_Camera_Positioning_Pose::set_textbox_data ()
+void C_frm_Camera_Positioning_Pose::set_textbox_data ()
   {
 
   this->Ui->txb_nx->setText(QString::number(pose_->nx()));
@@ -317,3 +321,95 @@ void C_frm_Camera_Positioning_Pose::convert_degree_to_rad ()
   ay = ay / (180.0 * 3.141592653589793238463);
   az = az / (180.0 * 3.141592653589793238463);
   }
+
+void frm_Camera_Positioning_Pose::C_frm_Camera_Positioning_Pose::on_rb_tait_extrinsic_zyx_clicked()
+{
+    this->Ui->lbl_phi_rot->setText("Rot(z, phi)");
+    this->Ui->lbl_theta_rot->setText("Rot(y, theta)");
+    this->Ui->lbl_theta_rot->setText("Rot(x, psi)");
+
+    this->Ui->rb_tait_extrinsic_zyx->setChecked(true);
+    this->Ui->rb_tait_intrinisc_zyx->setChecked(false);
+    this->Ui->rb_euler_extrinsic_zyz->setChecked(false);
+    this->Ui->rb_euler_intrinsic_zyz->setChecked(false);
+
+    this->method = 1;
+
+
+}
+
+void frm_Camera_Positioning_Pose::C_frm_Camera_Positioning_Pose::on_rb_euler_extrinsic_zyz_clicked()
+{
+    this->Ui->lbl_phi_rot->setText("Rot(z, phi)");
+    this->Ui->lbl_theta_rot->setText ("Rot(y', theta)");
+    this->Ui->lbl_psi_rot->setText   ("Rot(z'', psi)");
+
+    this->Ui->rb_tait_extrinsic_zyx->setChecked(false);
+    this->Ui->rb_tait_intrinisc_zyx->setChecked(false);
+    this->Ui->rb_euler_extrinsic_zyz->setChecked(true);
+    this->Ui->rb_euler_intrinsic_zyz->setChecked(false);
+
+
+    this->method = 3;
+
+}
+
+void frm_Camera_Positioning_Pose::C_frm_Camera_Positioning_Pose::on_rb_tait_intrinisc_zyx_clicked()
+{
+    this->Ui->lbl_phi_rot->setText("Rot(z, phi)");
+    this->Ui->lbl_theta_rot->setText( "Rot(y, theta)");
+    this->Ui->lbl_theta_rot->setText( "Rot(x, psi)");
+
+    this->Ui->rb_tait_extrinsic_zyx->setChecked(false);
+    this->Ui->rb_tait_intrinisc_zyx->setChecked(true);
+    this->Ui->rb_euler_extrinsic_zyz->setChecked(false);
+    this->Ui->rb_euler_intrinsic_zyz->setChecked(false);
+    this->method = 2;
+
+}
+
+void frm_Camera_Positioning_Pose::C_frm_Camera_Positioning_Pose::on_rb_euler_intrinsic_zyz_clicked()
+{
+    this->Ui->lbl_phi_rot->setText ("Rot(z, phi)");
+    this->Ui->lbl_theta_rot->setText("Rot(y', theta)");
+    this->Ui->lbl_theta_rot->setText("Rot(x'', psi)");
+
+    this->Ui->rb_tait_extrinsic_zyx->setChecked(false);
+    this->Ui->rb_tait_intrinisc_zyx->setChecked(false);
+    this->Ui->rb_euler_extrinsic_zyz->setChecked(false);
+    this->Ui->rb_euler_intrinsic_zyz->setChecked(true);
+
+    this->method = 4;
+
+}
+
+void frm_Camera_Positioning_Pose::C_frm_Camera_Positioning_Pose::on_rb_unit_grad_clicked()
+{
+    this->Ui->rb_unit_grad->setChecked(true);
+    this->Ui->rb_unit_radiant->setChecked(false);
+    this->convert_to_degree_active = true;
+
+}
+
+void frm_Camera_Positioning_Pose::C_frm_Camera_Positioning_Pose::on_rb_unit_radiant_clicked()
+{
+    this->Ui->rb_unit_grad->setChecked(false);
+    this->Ui->rb_unit_radiant->setChecked(true);
+    this->convert_to_degree_active = true;
+
+}
+
+void frm_Camera_Positioning_Pose::C_frm_Camera_Positioning_Pose::on_bt_exit_clicked()
+{
+ this->close();
+}
+
+void frm_Camera_Positioning_Pose::C_frm_Camera_Positioning_Pose::on_bt_appy_clicked()
+{
+    this->Main->Camera_manager->save_camera_cos (camera_id,*pose_);
+}
+
+void frm_Camera_Positioning_Pose::C_frm_Camera_Positioning_Pose::on_num_camera_valueChanged(int arg1)
+{
+    this->camera_id = arg1;
+}

@@ -64,6 +64,15 @@ private slots:
 
 
 
+  void on_rb_tait_extrinsic_zyx_clicked();
+  void on_rb_euler_extrinsic_zyz_clicked();
+  void on_rb_tait_intrinisc_zyx_clicked();
+  void on_rb_euler_intrinsic_zyz_clicked();
+  void on_rb_unit_grad_clicked();
+  void on_rb_unit_radiant_clicked();
+  void on_bt_exit_clicked();
+  void on_bt_appy_clicked();
+  void on_num_camera_valueChanged(int arg1);
 };
 
 }

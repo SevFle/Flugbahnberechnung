@@ -260,6 +260,9 @@
      <property name="text">
       <string>Extrinsisch ZYX</string>
      </property>
+     <property name="autoExclusive">
+      <bool>false</bool>
+     </property>
     </widget>
     <widget class="QLabel" name="label">
      <property name="geometry">
@@ -296,6 +299,9 @@
      <property name="text">
       <string>Intrinsisch ZY'X''</string>
      </property>
+     <property name="autoExclusive">
+      <bool>false</bool>
+     </property>
     </widget>
     <widget class="QRadioButton" name="rb_euler_intrinsic_zyz">
      <property name="geometry">
@@ -314,6 +320,9 @@
      <property name="text">
       <string>Intrinsisch ZY'Z''</string>
      </property>
+     <property name="autoExclusive">
+      <bool>false</bool>
+     </property>
     </widget>
     <widget class="QRadioButton" name="rb_euler_extrinsic_zyz">
      <property name="geometry">
@@ -331,6 +340,9 @@
      </property>
      <property name="text">
       <string>Extrinsisch ZYX</string>
+     </property>
+     <property name="autoExclusive">
+      <bool>false</bool>
      </property>
     </widget>
     <widget class="QLabel" name="label_2">
@@ -381,6 +393,9 @@
      <property name="text">
       <string>Grad</string>
      </property>
+     <property name="autoExclusive">
+      <bool>false</bool>
+     </property>
     </widget>
     <widget class="QRadioButton" name="rb_unit_radiant">
      <property name="geometry">
@@ -398,6 +413,9 @@
      </property>
      <property name="text">
       <string>Radiant</string>
+     </property>
+     <property name="autoExclusive">
+      <bool>false</bool>
      </property>
     </widget>
    </widget>
