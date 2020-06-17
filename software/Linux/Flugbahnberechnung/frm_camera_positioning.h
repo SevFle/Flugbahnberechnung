@@ -8,7 +8,7 @@
 
 namespace frm_Camera_Positioning
 {
-class C_frm_Camera_Positioning : public QDialog
+class C_frm_Camera_Positioning : public QMainWindow
 {
     Q_OBJECT
 
@@ -46,6 +46,8 @@ private slots:
   void on_num_cam_5_valueChanged(int arg1);
   void set_num_value (std::vector<int> camera_list);
   void set_num_value ();
+  void Fill_Mat_2_Lbl(cv::Mat& img, QLabel* label);
+
 };
 
 }

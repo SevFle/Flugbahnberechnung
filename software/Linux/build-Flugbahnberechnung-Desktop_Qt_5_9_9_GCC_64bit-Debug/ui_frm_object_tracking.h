@@ -13,19 +13,21 @@
 #include <QtWidgets/QAction>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QButtonGroup>
-#include <QtWidgets/QDialog>
 #include <QtWidgets/QGroupBox>
 #include <QtWidgets/QHeaderView>
 #include <QtWidgets/QLabel>
+#include <QtWidgets/QMainWindow>
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QSpinBox>
 #include <QtWidgets/QTextEdit>
+#include <QtWidgets/QWidget>
 
 QT_BEGIN_NAMESPACE
 
 class Ui_C_frm_object_tracking
 {
 public:
+    QWidget *centralwidget;
     QPushButton *bt_exit;
     QTextEdit *txb_zaehler;
     QGroupBox *groupBox;
@@ -49,18 +51,20 @@ public:
     QLabel *label_7;
     QLabel *lbl_thread_running;
 
-    void setupUi(QDialog *C_frm_object_tracking)
+    void setupUi(QMainWindow *C_frm_object_tracking)
     {
         if (C_frm_object_tracking->objectName().isEmpty())
             C_frm_object_tracking->setObjectName(QStringLiteral("C_frm_object_tracking"));
         C_frm_object_tracking->resize(1280, 740);
-        bt_exit = new QPushButton(C_frm_object_tracking);
+        centralwidget = new QWidget(C_frm_object_tracking);
+        centralwidget->setObjectName(QStringLiteral("centralwidget"));
+        bt_exit = new QPushButton(centralwidget);
         bt_exit->setObjectName(QStringLiteral("bt_exit"));
         bt_exit->setGeometry(QRect(1130, 660, 141, 71));
-        txb_zaehler = new QTextEdit(C_frm_object_tracking);
+        txb_zaehler = new QTextEdit(centralwidget);
         txb_zaehler->setObjectName(QStringLiteral("txb_zaehler"));
         txb_zaehler->setGeometry(QRect(1130, 620, 141, 31));
-        groupBox = new QGroupBox(C_frm_object_tracking);
+        groupBox = new QGroupBox(centralwidget);
         groupBox->setObjectName(QStringLiteral("groupBox"));
         groupBox->setGeometry(QRect(20, 0, 1081, 491));
         lbl_img_left = new QLabel(groupBox);
@@ -69,16 +73,16 @@ public:
         lbl_img_right = new QLabel(groupBox);
         lbl_img_right->setObjectName(QStringLiteral("lbl_img_right"));
         lbl_img_right->setGeometry(QRect(580, 60, 500, 371));
-        bt_start = new QPushButton(C_frm_object_tracking);
+        bt_start = new QPushButton(centralwidget);
         bt_start->setObjectName(QStringLiteral("bt_start"));
         bt_start->setGeometry(QRect(10, 660, 141, 71));
-        num_camera_id = new QSpinBox(C_frm_object_tracking);
+        num_camera_id = new QSpinBox(centralwidget);
         num_camera_id->setObjectName(QStringLiteral("num_camera_id"));
         num_camera_id->setGeometry(QRect(170, 690, 71, 41));
         QFont font;
         font.setPointSize(14);
         num_camera_id->setFont(font);
-        groupBox_2 = new QGroupBox(C_frm_object_tracking);
+        groupBox_2 = new QGroupBox(centralwidget);
         groupBox_2->setObjectName(QStringLiteral("groupBox_2"));
         groupBox_2->setGeometry(QRect(280, 580, 551, 151));
         txb_position_z = new QTextEdit(groupBox_2);
@@ -123,21 +127,22 @@ public:
         txb_velocity_y = new QTextEdit(groupBox_2);
         txb_velocity_y->setObjectName(QStringLiteral("txb_velocity_y"));
         txb_velocity_y->setGeometry(QRect(400, 70, 141, 31));
-        label_7 = new QLabel(C_frm_object_tracking);
+        label_7 = new QLabel(centralwidget);
         label_7->setObjectName(QStringLiteral("label_7"));
         label_7->setGeometry(QRect(170, 660, 101, 21));
         label_7->setFont(font);
-        lbl_thread_running = new QLabel(C_frm_object_tracking);
+        lbl_thread_running = new QLabel(centralwidget);
         lbl_thread_running->setObjectName(QStringLiteral("lbl_thread_running"));
         lbl_thread_running->setGeometry(QRect(10, 620, 141, 31));
         lbl_thread_running->setFont(font);
+        C_frm_object_tracking->setCentralWidget(centralwidget);
 
         retranslateUi(C_frm_object_tracking);
 
         QMetaObject::connectSlotsByName(C_frm_object_tracking);
     } // setupUi
 
-    void retranslateUi(QDialog *C_frm_object_tracking)
+    void retranslateUi(QMainWindow *C_frm_object_tracking)
     {
         C_frm_object_tracking->setWindowTitle(QApplication::translate("C_frm_object_tracking", "Dialog", Q_NULLPTR));
         bt_exit->setText(QApplication::translate("C_frm_object_tracking", "Exit", Q_NULLPTR));

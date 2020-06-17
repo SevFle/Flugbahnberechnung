@@ -13,18 +13,20 @@
 #include <QtWidgets/QAction>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QButtonGroup>
-#include <QtWidgets/QDialog>
 #include <QtWidgets/QGroupBox>
 #include <QtWidgets/QHeaderView>
 #include <QtWidgets/QLabel>
+#include <QtWidgets/QMainWindow>
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QTextEdit>
+#include <QtWidgets/QWidget>
 
 QT_BEGIN_NAMESPACE
 
 class Ui_C_frm_camera_calibration_crop
 {
 public:
+    QWidget *centralwidget;
     QTextEdit *txb_zaehler;
     QPushButton *bt_exit;
     QLabel *lbl_img_uncropped;
@@ -33,24 +35,26 @@ public:
     QLabel *label;
     QLabel *label_2;
 
-    void setupUi(QDialog *C_frm_camera_calibration_crop)
+    void setupUi(QMainWindow *C_frm_camera_calibration_crop)
     {
         if (C_frm_camera_calibration_crop->objectName().isEmpty())
             C_frm_camera_calibration_crop->setObjectName(QStringLiteral("C_frm_camera_calibration_crop"));
         C_frm_camera_calibration_crop->resize(1280, 740);
-        txb_zaehler = new QTextEdit(C_frm_camera_calibration_crop);
+        centralwidget = new QWidget(C_frm_camera_calibration_crop);
+        centralwidget->setObjectName(QStringLiteral("centralwidget"));
+        txb_zaehler = new QTextEdit(centralwidget);
         txb_zaehler->setObjectName(QStringLiteral("txb_zaehler"));
         txb_zaehler->setGeometry(QRect(1130, 610, 141, 31));
-        bt_exit = new QPushButton(C_frm_camera_calibration_crop);
+        bt_exit = new QPushButton(centralwidget);
         bt_exit->setObjectName(QStringLiteral("bt_exit"));
         bt_exit->setGeometry(QRect(1130, 650, 141, 71));
-        lbl_img_uncropped = new QLabel(C_frm_camera_calibration_crop);
+        lbl_img_uncropped = new QLabel(centralwidget);
         lbl_img_uncropped->setObjectName(QStringLiteral("lbl_img_uncropped"));
         lbl_img_uncropped->setGeometry(QRect(20, 10, 541, 551));
-        lbl_img_cropped = new QLabel(C_frm_camera_calibration_crop);
+        lbl_img_cropped = new QLabel(centralwidget);
         lbl_img_cropped->setObjectName(QStringLiteral("lbl_img_cropped"));
         lbl_img_cropped->setGeometry(QRect(640, 10, 541, 551));
-        groupBox = new QGroupBox(C_frm_camera_calibration_crop);
+        groupBox = new QGroupBox(centralwidget);
         groupBox->setObjectName(QStringLiteral("groupBox"));
         groupBox->setGeometry(QRect(10, 579, 1031, 151));
         label = new QLabel(groupBox);
@@ -63,13 +67,14 @@ public:
         label_2->setObjectName(QStringLiteral("label_2"));
         label_2->setGeometry(QRect(10, 80, 61, 21));
         label_2->setFont(font);
+        C_frm_camera_calibration_crop->setCentralWidget(centralwidget);
 
         retranslateUi(C_frm_camera_calibration_crop);
 
         QMetaObject::connectSlotsByName(C_frm_camera_calibration_crop);
     } // setupUi
 
-    void retranslateUi(QDialog *C_frm_camera_calibration_crop)
+    void retranslateUi(QMainWindow *C_frm_camera_calibration_crop)
     {
         C_frm_camera_calibration_crop->setWindowTitle(QApplication::translate("C_frm_camera_calibration_crop", "Dialog", Q_NULLPTR));
         bt_exit->setText(QApplication::translate("C_frm_camera_calibration_crop", "Exit", Q_NULLPTR));

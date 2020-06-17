@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>C_frm_camera_positioning</class>
- <widget class="QDialog" name="C_frm_camera_positioning">
+ <widget class="QMainWindow" name="C_frm_camera_positioning">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -13,6 +13,7 @@
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
+  <widget class="QWidget" name="centralwidget">
   <widget class="QTextEdit" name="txb_zaehler">
    <property name="geometry">
     <rect>
@@ -213,6 +214,7 @@
     <string>Apply</string>
    </property>
   </widget>
+ </widget>
  </widget>
  <resources/>
  <connections/>

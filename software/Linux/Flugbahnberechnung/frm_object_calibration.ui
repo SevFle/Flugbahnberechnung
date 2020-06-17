@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>C_frm_object_calibration</class>
- <widget class="QDialog" name="C_frm_object_calibration">
+ <widget class="QMainWindow" name="C_frm_object_calibration">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -13,6 +13,7 @@
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
+  <widget class="QWidget" name="centralwidget">
   <widget class="QLabel" name="lbl_src_img">
    <property name="geometry">
     <rect>
@@ -26,7 +27,7 @@
     <string>Originalbild</string>
    </property>
   </widget>
-  <widget class="QLabel" name="label_2">
+  <widget class="QLabel" name="lbl_img_gray">
    <property name="geometry">
     <rect>
      <x>410</x>
@@ -39,7 +40,7 @@
     <string>Originalbild</string>
    </property>
   </widget>
-  <widget class="QLabel" name="label_3">
+  <widget class="QLabel" name="lbl_hsv_filtered">
    <property name="geometry">
     <rect>
      <x>760</x>
@@ -1469,8 +1470,8 @@
   </widget>
   <zorder>bt_apply</zorder>
   <zorder>lbl_src_img</zorder>
-  <zorder>label_2</zorder>
-  <zorder>label_3</zorder>
+  <zorder>lbl_img_gray</zorder>
+  <zorder>lbl_hsv_filtered</zorder>
   <zorder>lbl_img_contoured</zorder>
   <zorder>groupBox</zorder>
   <zorder>groupBox_2</zorder>
@@ -1481,6 +1482,7 @@
   <zorder>txb_zaehler</zorder>
   <zorder>bt_apply_all</zorder>
   <zorder>bt_tracking</zorder>
+  </widget>
  </widget>
  <resources/>
  <connections/>

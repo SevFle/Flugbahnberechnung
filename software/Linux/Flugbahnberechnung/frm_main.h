@@ -50,6 +50,7 @@ namespace frm_Main
     void on_bt_tracking_clicked();
     void on_bt_camera_calibration_clicked();
     void on_bt_camera_pose_clicked();
+    void on_bt_camera_positioning_clicked();
   };//class C_frm_Main
 
   }//namespace frm_Main

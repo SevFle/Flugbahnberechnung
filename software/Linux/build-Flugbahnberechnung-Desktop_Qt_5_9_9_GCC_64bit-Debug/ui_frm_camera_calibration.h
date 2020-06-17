@@ -13,20 +13,22 @@
 #include <QtWidgets/QAction>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QButtonGroup>
-#include <QtWidgets/QDialog>
 #include <QtWidgets/QGroupBox>
 #include <QtWidgets/QHeaderView>
 #include <QtWidgets/QLabel>
+#include <QtWidgets/QMainWindow>
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QRadioButton>
 #include <QtWidgets/QTableView>
 #include <QtWidgets/QTextEdit>
+#include <QtWidgets/QWidget>
 
 QT_BEGIN_NAMESPACE
 
 class Ui_C_frm_camera_calibration
 {
 public:
+    QWidget *centralwidget;
     QTextEdit *txb_zaehler;
     QPushButton *bt_exit;
     QGroupBox *groupBox;
@@ -55,18 +57,20 @@ public:
     QPushButton *bt_start;
     QLabel *lbl_calibration_running;
 
-    void setupUi(QDialog *C_frm_camera_calibration)
+    void setupUi(QMainWindow *C_frm_camera_calibration)
     {
         if (C_frm_camera_calibration->objectName().isEmpty())
             C_frm_camera_calibration->setObjectName(QStringLiteral("C_frm_camera_calibration"));
         C_frm_camera_calibration->resize(1618, 840);
-        txb_zaehler = new QTextEdit(C_frm_camera_calibration);
+        centralwidget = new QWidget(C_frm_camera_calibration);
+        centralwidget->setObjectName(QStringLiteral("centralwidget"));
+        txb_zaehler = new QTextEdit(centralwidget);
         txb_zaehler->setObjectName(QStringLiteral("txb_zaehler"));
         txb_zaehler->setGeometry(QRect(1470, 720, 141, 31));
-        bt_exit = new QPushButton(C_frm_camera_calibration);
+        bt_exit = new QPushButton(centralwidget);
         bt_exit->setObjectName(QStringLiteral("bt_exit"));
         bt_exit->setGeometry(QRect(1470, 760, 141, 71));
-        groupBox = new QGroupBox(C_frm_camera_calibration);
+        groupBox = new QGroupBox(centralwidget);
         groupBox->setObjectName(QStringLiteral("groupBox"));
         groupBox->setGeometry(QRect(10, 0, 321, 821));
         label = new QLabel(groupBox);
@@ -87,7 +91,7 @@ public:
         txb_img_count = new QTextEdit(groupBox);
         txb_img_count->setObjectName(QStringLiteral("txb_img_count"));
         txb_img_count->setGeometry(QRect(210, 30, 104, 31));
-        groupBox_2 = new QGroupBox(C_frm_camera_calibration);
+        groupBox_2 = new QGroupBox(centralwidget);
         groupBox_2->setObjectName(QStringLiteral("groupBox_2"));
         groupBox_2->setGeometry(QRect(340, 0, 271, 361));
         rb_single_calibration = new QRadioButton(groupBox_2);
@@ -122,7 +126,7 @@ public:
         txb_edge_height = new QTextEdit(groupBox_2);
         txb_edge_height->setObjectName(QStringLiteral("txb_edge_height"));
         txb_edge_height->setGeometry(QRect(130, 260, 104, 31));
-        grpb_single_output = new QGroupBox(C_frm_camera_calibration);
+        grpb_single_output = new QGroupBox(centralwidget);
         grpb_single_output->setObjectName(QStringLiteral("grpb_single_output"));
         grpb_single_output->setEnabled(false);
         grpb_single_output->setGeometry(QRect(340, 360, 271, 461));
@@ -136,31 +140,32 @@ public:
         tblv_stereo_output = new QTableView(grpb_stereo_output);
         tblv_stereo_output->setObjectName(QStringLiteral("tblv_stereo_output"));
         tblv_stereo_output->setGeometry(QRect(10, 30, 251, 421));
-        lbl_img_single_calibration = new QLabel(C_frm_camera_calibration);
+        lbl_img_single_calibration = new QLabel(centralwidget);
         lbl_img_single_calibration->setObjectName(QStringLiteral("lbl_img_single_calibration"));
         lbl_img_single_calibration->setEnabled(false);
         lbl_img_single_calibration->setGeometry(QRect(650, 20, 771, 681));
-        lbl_img_stereo_left = new QLabel(C_frm_camera_calibration);
+        lbl_img_stereo_left = new QLabel(centralwidget);
         lbl_img_stereo_left->setObjectName(QStringLiteral("lbl_img_stereo_left"));
         lbl_img_stereo_left->setGeometry(QRect(650, 10, 441, 441));
-        lbl_img_stereo_right = new QLabel(C_frm_camera_calibration);
+        lbl_img_stereo_right = new QLabel(centralwidget);
         lbl_img_stereo_right->setObjectName(QStringLiteral("lbl_img_stereo_right"));
         lbl_img_stereo_right->setGeometry(QRect(1120, 10, 441, 441));
-        bt_start = new QPushButton(C_frm_camera_calibration);
+        bt_start = new QPushButton(centralwidget);
         bt_start->setObjectName(QStringLiteral("bt_start"));
         bt_start->setGeometry(QRect(660, 750, 141, 71));
-        lbl_calibration_running = new QLabel(C_frm_camera_calibration);
+        lbl_calibration_running = new QLabel(centralwidget);
         lbl_calibration_running->setObjectName(QStringLiteral("lbl_calibration_running"));
         lbl_calibration_running->setEnabled(false);
         lbl_calibration_running->setGeometry(QRect(810, 780, 361, 31));
         lbl_calibration_running->setFont(font);
+        C_frm_camera_calibration->setCentralWidget(centralwidget);
 
         retranslateUi(C_frm_camera_calibration);
 
         QMetaObject::connectSlotsByName(C_frm_camera_calibration);
     } // setupUi
 
-    void retranslateUi(QDialog *C_frm_camera_calibration)
+    void retranslateUi(QMainWindow *C_frm_camera_calibration)
     {
         C_frm_camera_calibration->setWindowTitle(QApplication::translate("C_frm_camera_calibration", "Dialog", Q_NULLPTR));
         bt_exit->setText(QApplication::translate("C_frm_camera_calibration", "Exit", Q_NULLPTR));

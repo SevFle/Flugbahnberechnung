@@ -2,15 +2,16 @@
 #define FRM_OBJECT_CALIBRATION_H
 
 
-#include <QMainWindow>
+#include <QtWidgets/QMainWindow>
 #include <QTimer>
 
 #include "Main.h"
 #include "ui_frm_object_calibration.h"
+using namespace Main;
 
 namespace frm_Object_Calibration
 {
-class C_frm_Object_Calibration : public QDialog
+class C_frm_Object_Calibration : public QMainWindow
 {
 Q_OBJECT
 
@@ -18,13 +19,16 @@ public:
 C_frm_Object_Calibration(C_GlobalObjects* GlobalObjects, C_Main* Main, QWidget* parent = Q_NULLPTR);
 
 ~C_frm_Object_Calibration();
+private:
 
-C_GlobalObjects* GlobalObjects;
-C_Main*         Main;
-int Zaehler;
-QTimer*         Taktgeber;
-int             Taktgeber_Intervall;
+C_GlobalObjects*                GlobalObjects;
+C_Main*                         Main;
+QTimer*                         Taktgeber;
+Ui::C_frm_object_calibration*   Ui;
+QMessageBox*                    MsgBox;
 
+  int Zaehler;
+  int             Taktgeber_Intervall;
 int camera_id_in_use;
 int TimerWait;
 
@@ -126,9 +130,6 @@ void on_num_camera_valueChanged(int arg1);
 
 void on_bt_exit_clicked();
 
-private:
-  Ui::C_frm_object_calibration* Ui;
-  QMessageBox* MsgBox;
 
 
 
@@ -154,7 +155,7 @@ private slots:
   void on_bt_tracking_clicked();
   void on_chkb_bilateral_stateChanged(int arg1);
   void get_camera_settings (int camera_id);
-
+  void Fill_Mat_2_Lbl(cv::Mat& img, QLabel* label);
 };
 
 }

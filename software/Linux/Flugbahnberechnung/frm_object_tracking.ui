@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>C_frm_object_tracking</class>
- <widget class="QDialog" name="C_frm_object_tracking">
+ <widget class="QMainWindow" name="C_frm_object_tracking">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -13,6 +13,7 @@
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
+  <widget class="QWidget" name="centralwidget">
   <widget class="QPushButton" name="bt_exit">
    <property name="geometry">
     <rect>
@@ -320,6 +321,7 @@
     <string>Thread running</string>
    </property>
   </widget>
+ </widget>
  </widget>
  <resources/>
  <connections/>

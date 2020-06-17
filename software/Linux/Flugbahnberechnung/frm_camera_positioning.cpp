@@ -2,7 +2,7 @@
 using namespace frm_Camera_Positioning;
 
 C_frm_Camera_Positioning::C_frm_Camera_Positioning(C_GlobalObjects* GlobalObjects, C_Main* Main, QWidget *parent) :
-    QDialog(parent)
+    QMainWindow(parent)
 {
     this->Ui = new Ui::C_frm_camera_positioning();
     Ui->setupUi(this);
@@ -282,5 +282,11 @@ void C_frm_Camera_Positioning::set_num_value (std::vector<int> camera_list)
       break;
     }
   }//set_numUD_value
+
+void C_frm_Camera_Positioning::Fill_Mat_2_Lbl(cv::Mat& img, QLabel* label)
+{
+label->setPixmap(QPixmap::fromImage(QImage(img.data, img.cols, img.rows, img.step, QImage::Format_RGB888)));
+}
+
 
 

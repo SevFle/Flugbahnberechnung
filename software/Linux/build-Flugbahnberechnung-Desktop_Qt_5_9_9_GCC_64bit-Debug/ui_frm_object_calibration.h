@@ -14,23 +14,25 @@
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QButtonGroup>
 #include <QtWidgets/QCheckBox>
-#include <QtWidgets/QDialog>
 #include <QtWidgets/QGroupBox>
 #include <QtWidgets/QHeaderView>
 #include <QtWidgets/QLabel>
+#include <QtWidgets/QMainWindow>
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QSlider>
 #include <QtWidgets/QSpinBox>
 #include <QtWidgets/QTextEdit>
+#include <QtWidgets/QWidget>
 
 QT_BEGIN_NAMESPACE
 
 class Ui_C_frm_object_calibration
 {
 public:
+    QWidget *centralwidget;
     QLabel *lbl_src_img;
-    QLabel *label_2;
-    QLabel *label_3;
+    QLabel *lbl_img_gray;
+    QLabel *lbl_hsv_filtered;
     QLabel *lbl_img_contoured;
     QGroupBox *groupBox;
     QSpinBox *num_opening_iterations;
@@ -116,24 +118,26 @@ public:
     QPushButton *bt_apply;
     QPushButton *bt_tracking;
 
-    void setupUi(QDialog *C_frm_object_calibration)
+    void setupUi(QMainWindow *C_frm_object_calibration)
     {
         if (C_frm_object_calibration->objectName().isEmpty())
             C_frm_object_calibration->setObjectName(QStringLiteral("C_frm_object_calibration"));
         C_frm_object_calibration->resize(1567, 832);
-        lbl_src_img = new QLabel(C_frm_object_calibration);
+        centralwidget = new QWidget(C_frm_object_calibration);
+        centralwidget->setObjectName(QStringLiteral("centralwidget"));
+        lbl_src_img = new QLabel(centralwidget);
         lbl_src_img->setObjectName(QStringLiteral("lbl_src_img"));
         lbl_src_img->setGeometry(QRect(40, 20, 341, 291));
-        label_2 = new QLabel(C_frm_object_calibration);
-        label_2->setObjectName(QStringLiteral("label_2"));
-        label_2->setGeometry(QRect(410, 20, 341, 291));
-        label_3 = new QLabel(C_frm_object_calibration);
-        label_3->setObjectName(QStringLiteral("label_3"));
-        label_3->setGeometry(QRect(760, 20, 341, 291));
-        lbl_img_contoured = new QLabel(C_frm_object_calibration);
+        lbl_img_gray = new QLabel(centralwidget);
+        lbl_img_gray->setObjectName(QStringLiteral("lbl_img_gray"));
+        lbl_img_gray->setGeometry(QRect(410, 20, 341, 291));
+        lbl_hsv_filtered = new QLabel(centralwidget);
+        lbl_hsv_filtered->setObjectName(QStringLiteral("lbl_hsv_filtered"));
+        lbl_hsv_filtered->setGeometry(QRect(760, 20, 341, 291));
+        lbl_img_contoured = new QLabel(centralwidget);
         lbl_img_contoured->setObjectName(QStringLiteral("lbl_img_contoured"));
         lbl_img_contoured->setGeometry(QRect(1120, 20, 341, 291));
-        groupBox = new QGroupBox(C_frm_object_calibration);
+        groupBox = new QGroupBox(centralwidget);
         groupBox->setObjectName(QStringLiteral("groupBox"));
         groupBox->setGeometry(QRect(20, 320, 341, 441));
         num_opening_iterations = new QSpinBox(groupBox);
@@ -270,7 +274,7 @@ public:
         chkb_bilateral->setFont(font);
         chkb_bilateral->setToolTipDuration(-6);
         chkb_bilateral->setIconSize(QSize(19, 19));
-        groupBox_2 = new QGroupBox(C_frm_object_calibration);
+        groupBox_2 = new QGroupBox(centralwidget);
         groupBox_2->setObjectName(QStringLiteral("groupBox_2"));
         groupBox_2->setGeometry(QRect(380, 320, 461, 441));
         sld_hue_min = new QSlider(groupBox_2);
@@ -395,7 +399,7 @@ public:
         label_26->setObjectName(QStringLiteral("label_26"));
         label_26->setGeometry(QRect(60, 370, 41, 21));
         label_26->setFont(font1);
-        groupBox_3 = new QGroupBox(C_frm_object_calibration);
+        groupBox_3 = new QGroupBox(centralwidget);
         groupBox_3->setObjectName(QStringLiteral("groupBox_3"));
         groupBox_3->setGeometry(QRect(860, 320, 241, 321));
         label_27 = new QLabel(groupBox_3);
@@ -461,34 +465,35 @@ public:
         txb_fps->setGeometry(QRect(90, 270, 104, 31));
         txb_fps->setFont(font1);
         txb_fps->setReadOnly(true);
-        num_camera = new QSpinBox(C_frm_object_calibration);
+        num_camera = new QSpinBox(centralwidget);
         num_camera->setObjectName(QStringLiteral("num_camera"));
         num_camera->setGeometry(QRect(1410, 650, 71, 41));
         num_camera->setFont(font);
-        label_32 = new QLabel(C_frm_object_calibration);
+        label_32 = new QLabel(centralwidget);
         label_32->setObjectName(QStringLiteral("label_32"));
         label_32->setGeometry(QRect(1410, 620, 101, 21));
         label_32->setFont(font);
-        bt_exit = new QPushButton(C_frm_object_calibration);
+        bt_exit = new QPushButton(centralwidget);
         bt_exit->setObjectName(QStringLiteral("bt_exit"));
         bt_exit->setGeometry(QRect(1410, 750, 141, 71));
-        txb_zaehler = new QTextEdit(C_frm_object_calibration);
+        txb_zaehler = new QTextEdit(centralwidget);
         txb_zaehler->setObjectName(QStringLiteral("txb_zaehler"));
         txb_zaehler->setGeometry(QRect(1410, 710, 141, 31));
         txb_zaehler->setReadOnly(true);
-        bt_apply_all = new QPushButton(C_frm_object_calibration);
+        bt_apply_all = new QPushButton(centralwidget);
         bt_apply_all->setObjectName(QStringLiteral("bt_apply_all"));
         bt_apply_all->setGeometry(QRect(1260, 750, 141, 71));
-        bt_apply = new QPushButton(C_frm_object_calibration);
+        bt_apply = new QPushButton(centralwidget);
         bt_apply->setObjectName(QStringLiteral("bt_apply"));
         bt_apply->setGeometry(QRect(1110, 750, 141, 71));
-        bt_tracking = new QPushButton(C_frm_object_calibration);
+        bt_tracking = new QPushButton(centralwidget);
         bt_tracking->setObjectName(QStringLiteral("bt_tracking"));
         bt_tracking->setGeometry(QRect(1410, 530, 141, 71));
+        C_frm_object_calibration->setCentralWidget(centralwidget);
         bt_apply->raise();
         lbl_src_img->raise();
-        label_2->raise();
-        label_3->raise();
+        lbl_img_gray->raise();
+        lbl_hsv_filtered->raise();
         lbl_img_contoured->raise();
         groupBox->raise();
         groupBox_2->raise();
@@ -505,12 +510,12 @@ public:
         QMetaObject::connectSlotsByName(C_frm_object_calibration);
     } // setupUi
 
-    void retranslateUi(QDialog *C_frm_object_calibration)
+    void retranslateUi(QMainWindow *C_frm_object_calibration)
     {
         C_frm_object_calibration->setWindowTitle(QApplication::translate("C_frm_object_calibration", "Dialog", Q_NULLPTR));
         lbl_src_img->setText(QApplication::translate("C_frm_object_calibration", "Originalbild", Q_NULLPTR));
-        label_2->setText(QApplication::translate("C_frm_object_calibration", "Originalbild", Q_NULLPTR));
-        label_3->setText(QApplication::translate("C_frm_object_calibration", "Originalbild", Q_NULLPTR));
+        lbl_img_gray->setText(QApplication::translate("C_frm_object_calibration", "Originalbild", Q_NULLPTR));
+        lbl_hsv_filtered->setText(QApplication::translate("C_frm_object_calibration", "Originalbild", Q_NULLPTR));
         lbl_img_contoured->setText(QApplication::translate("C_frm_object_calibration", "Originalbild", Q_NULLPTR));
         groupBox->setTitle(QApplication::translate("C_frm_object_calibration", "Filtering", Q_NULLPTR));
         label->setText(QApplication::translate("C_frm_object_calibration", "Kernel Size", Q_NULLPTR));

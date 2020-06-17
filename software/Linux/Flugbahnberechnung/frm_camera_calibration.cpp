@@ -2,7 +2,7 @@
 using namespace frm_Camera_Calibration;
 
 C_frm_Camera_Calibration::C_frm_Camera_Calibration(C_GlobalObjects* GlobalObjects, C_Main* Main, QWidget *parent) :
-    QDialog(parent)
+    QMainWindow(parent)
 {
     this->Ui = new Ui::C_frm_camera_calibration();
     Ui->setupUi(this);
@@ -120,3 +120,8 @@ void C_frm_Main::Taktgeber_Tick()
 
 }
 }
+void C_frm_Camera_Positioning::Fill_Mat_2_Lbl(cv::Mat& img, QLabel* label)
+{
+label->setPixmap(QPixmap::fromImage(QImage(img.data, img.cols, img.rows, img.step, QImage::Format_RGB888)));
+}
+

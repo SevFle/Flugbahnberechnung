@@ -8,7 +8,7 @@
 
 namespace frm_Camera_Calibration_Crop
 {
-class C_frm_Camera_Calibration_Crop : public QDialog
+class C_frm_Camera_Calibration_Crop : public QMainWindow
 {
     Q_OBJECT
 
@@ -34,6 +34,8 @@ private:
   bool eventFilter (QObject* Object, QEvent* Event) override;
 private slots:
   void Taktgeber_Tick();
+  void Fill_Mat_2_Lbl(cv::Mat& img, QLabel* label);
+
 };
 
 }

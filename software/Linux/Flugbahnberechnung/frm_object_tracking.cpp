@@ -2,7 +2,7 @@
 using namespace frm_Object_Tracking;
 
 C_frm_Object_Tracking::C_frm_Object_Tracking(C_GlobalObjects* GlobalObjects, C_Main* Main, QWidget *parent) :
-    QDialog(parent)
+    QMainWindow(parent)
 {
     this->Ui = new Ui::C_frm_object_tracking();
     Ui->setupUi(this);
@@ -95,14 +95,14 @@ void C_frm_Object_Tracking::Taktgeber_Tick()
     this->Ui->txb_zaehler->setText(QString::number(this->Zaehler++));
 if (this->Zaehler > this->TimerWait)
   {
-    //TODO Display images
-  this->FillMat2Picturebox (pb_cam_left,*this->Main->camera_managed->camera_unmanaged->camera_vector[this->camera_id_in_use]->cpu_contoured);
-  this->FillMat2Picturebox (pb_cam_right,*this->Main->camera_managed->camera_unmanaged->camera_vector[this->camera_id_in_use + 1]->cpu_contoured);
-  if (this->Main->camera_managed->camera_unmanaged->tracking_active)
-    {
-    txb_object_pos_x->Text = System::String::Format ("{0:0}",this->Main->camera_managed->camera_unmanaged->tracked_data->positionsvektor.X);
-    txb_object_pos_y->Text = System::String::Format ("{0:0}",this->Main->camera_managed->camera_unmanaged->tracked_data->positionsvektor.Y);
-    txb_object_pos_z->Text = System::String::Format ("{0:0}",this->Main->camera_managed->camera_unmanaged->tracked_data->positionsvektor.Z);
+    this->Fill_Mat_2_Lbl(*this->Main->Camera_manager->camera_vector[this->current_camera]->cpu_contoured, this->Ui->lbl_img_left);
+    this->Fill_Mat_2_Lbl(*this->Main->Camera_manager->camera_vector[this->current_camera+1]->cpu_contoured, this->Ui->lbl_img_right);
+
+    if (this->Main->Camera_manager->tracking_active)
+      {
+      this->Ui->txb_position_x->setText (QString::number(this->Main->Camera_manager->tracked_data->positionsvektor.X));
+      this->Ui->txb_position_y->setText (QString::number(this->Main->Camera_manager->tracked_data->positionsvektor.Y));
+      this->Ui->txb_position_z->setText (QString::number(this->Main->Camera_manager->tracked_data->positionsvektor.Z));
     }
   }
 
@@ -140,5 +140,5 @@ void frm_Object_Tracking::C_frm_Object_Tracking::on_bt_start_clicked()
 
 void frm_Object_Tracking::C_frm_Object_Tracking::on_num_camera_id_valueChanged(int arg1)
 {
-
+this->current_camera = arg1;
 }

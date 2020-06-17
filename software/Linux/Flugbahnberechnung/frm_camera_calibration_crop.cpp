@@ -2,7 +2,7 @@
 using namespace frm_Camera_Calibration_Crop;
 
 C_frm_Camera_Calibration_Crop::C_frm_Camera_Calibration_Crop(C_GlobalObjects* GlobalObjects, C_Main* Main, QWidget *parent) :
-    QDialog(parent)
+    QMainWindow(parent)
 {
     this->Ui = new Ui::C_frm_camera_calibration_crop();
     Ui->setupUi(this);
@@ -15,21 +15,21 @@ C_frm_Camera_Calibration_Crop::~C_frm_Camera_Calibration_Crop()
 
 
 /************************************** QT-Events******************************/
-void C_frm_Main::showEvent(QShowEvent* ShowEvent)
+void C_frm_Camera_Calibration_Crop::showEvent(QShowEvent* ShowEvent)
 {
 Q_UNUSED(ShowEvent)
 this->Zaehler = 0;
-connect(this->Taktgeber, &QTimer::timeout, this, &C_frm_Main::Taktgeber_Tick);
+connect(this->Taktgeber, &QTimer::timeout, this, &C_frm_Camera_Calibration_Crop::Taktgeber_Tick);
 this->Taktgeber->start(this->Taktgeber_Intervall);
 this->installEventFilter(this);
 }
 
-void C_frm_Main::closeEvent(QCloseEvent* CloseEvent)
+void C_frm_Camera_Calibration_Crop::closeEvent(QCloseEvent* CloseEvent)
 {
  Q_UNUSED(CloseEvent);
  this->removeEventFilter(this);
  this->Taktgeber->stop();
- disconnect(this->Taktgeber, &QTimer::timeout, this, &C_frm_Main::Taktgeber_Tick);
+ disconnect(this->Taktgeber, &QTimer::timeout, this, &C_frm_Camera_Calibration_Crop::Taktgeber_Tick);
  this->Zaehler = 0;
  }
 
@@ -64,29 +64,17 @@ bool               C_frm_Main::eventFilter                                      
     }
   }
 /************************************** Nicht öffentliche QT-Slots******************************/
-void ::C_frm_Main::on_bt_exit_clicked()
+void ::C_frm_Camera_Calibration_Crop::on_bt_exit_clicked()
 {
 this->close();
 }
 
 
-void C_frm_Main::Taktgeber_Tick()
+void C_frm_Camera_Calibration_Crop::Taktgeber_Tick()
 {
-    switch (state)
-      {
-      case 0:
-        this->Ui->txb_zaehler->setText(QString::number(this->Zaehler++));
-        break;
-      case 1:
-        this->Ui->txb_zaehler->setText(QString::number(this->Zaehler++));
-        if (this->Main->Camera_manager->camera_vector[GlobalObjects->cameras_in_use-1]->is_thread_ready())
-          {
-          this->Ui->bt_tracking->setEnabled(true);
-            this->Ui->bt_camera_calibration->setEnabled(true);
-            this->Ui->bt_camera_positioning->setEnabled(true);
-          state                          = 0;
-          }
-        break;
+}
+void C_frm_Camera_Positioning::Fill_Mat_2_Lbl(cv::Mat& img, QLabel* label)
+{
+label->setPixmap(QPixmap::fromImage(QImage(img.data, img.cols, img.rows, img.step, QImage::Format_RGB888)));
+}
 
-}
-}

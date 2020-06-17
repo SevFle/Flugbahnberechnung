@@ -13,37 +13,42 @@
 #include <QtWidgets/QAction>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QButtonGroup>
-#include <QtWidgets/QDialog>
 #include <QtWidgets/QHeaderView>
+#include <QtWidgets/QMainWindow>
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QTextEdit>
+#include <QtWidgets/QWidget>
 
 QT_BEGIN_NAMESPACE
 
 class Ui_C_frm_camera_positioning_pose
 {
 public:
+    QWidget *centralwidget;
     QTextEdit *txb_zaehler;
     QPushButton *bt_exit;
 
-    void setupUi(QDialog *C_frm_camera_positioning_pose)
+    void setupUi(QMainWindow *C_frm_camera_positioning_pose)
     {
         if (C_frm_camera_positioning_pose->objectName().isEmpty())
             C_frm_camera_positioning_pose->setObjectName(QStringLiteral("C_frm_camera_positioning_pose"));
         C_frm_camera_positioning_pose->resize(1280, 740);
-        txb_zaehler = new QTextEdit(C_frm_camera_positioning_pose);
+        centralwidget = new QWidget(C_frm_camera_positioning_pose);
+        centralwidget->setObjectName(QStringLiteral("centralwidget"));
+        txb_zaehler = new QTextEdit(centralwidget);
         txb_zaehler->setObjectName(QStringLiteral("txb_zaehler"));
         txb_zaehler->setGeometry(QRect(1120, 610, 141, 31));
-        bt_exit = new QPushButton(C_frm_camera_positioning_pose);
+        bt_exit = new QPushButton(centralwidget);
         bt_exit->setObjectName(QStringLiteral("bt_exit"));
         bt_exit->setGeometry(QRect(1120, 650, 141, 71));
+        C_frm_camera_positioning_pose->setCentralWidget(centralwidget);
 
         retranslateUi(C_frm_camera_positioning_pose);
 
         QMetaObject::connectSlotsByName(C_frm_camera_positioning_pose);
     } // setupUi
 
-    void retranslateUi(QDialog *C_frm_camera_positioning_pose)
+    void retranslateUi(QMainWindow *C_frm_camera_positioning_pose)
     {
         C_frm_camera_positioning_pose->setWindowTitle(QApplication::translate("C_frm_camera_positioning_pose", "Dialog", Q_NULLPTR));
         bt_exit->setText(QApplication::translate("C_frm_camera_positioning_pose", "Exit", Q_NULLPTR));

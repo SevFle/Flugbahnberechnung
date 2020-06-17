@@ -9,7 +9,7 @@
 
 namespace frm_Object_Tracking
 {
-class C_frm_Object_Tracking : public QDialog
+class C_frm_Object_Tracking : public QMainWindow
 {
     Q_OBJECT
 
@@ -38,6 +38,7 @@ private:
   int             Taktgeber_Intervall;
   int             TimerWait;
   int Zaehler;
+  int current_camera;
 
 private:
   void showEvent (QShowEvent* ShowEvent) override;

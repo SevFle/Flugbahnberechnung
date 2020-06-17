@@ -124,19 +124,25 @@ void ::C_frm_Main::on_bt_apply_clicked()
 }
 }
 void frm_Main::C_frm_Main::on_bt_tracking_clicked()
-{
-  //this->Main->
-  //this->Main->frm_Object_Calibration->show();
-
-
-}
+  {
+  this->Main->frm_Object_Calibration->setWindowModality(Qt::ApplicationModal);
+  this->Main->frm_Object_Calibration->show();
+  }
 
 void frm_Main::C_frm_Main::on_bt_camera_calibration_clicked()
-{
-
-}
+  {
+    this->Main->frm_Camera_Calibration->setWindowModality(Qt::ApplicationModal);
+    this->Main->frm_Camera_Calibration->show();
+  }
 
 void frm_Main::C_frm_Main::on_bt_camera_pose_clicked()
 {
+    this->Main->frm_Camera_Positioning_Pose->setWindowModality(Qt::ApplicationModal);
+    this->Main->frm_Camera_Positioning_Pose->show();
+}
 
+void frm_Main::C_frm_Main::on_bt_camera_positioning_clicked()
+{
+    this->Main->frm_Camera_Positioning->setWindowModality(Qt::ApplicationModal);
+    this->Main->frm_Camera_Positioning->show();
 }

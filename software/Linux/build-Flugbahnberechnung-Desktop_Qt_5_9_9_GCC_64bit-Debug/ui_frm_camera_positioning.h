@@ -13,19 +13,21 @@
 #include <QtWidgets/QAction>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QButtonGroup>
-#include <QtWidgets/QDialog>
 #include <QtWidgets/QGroupBox>
 #include <QtWidgets/QHeaderView>
 #include <QtWidgets/QLabel>
+#include <QtWidgets/QMainWindow>
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QSpinBox>
 #include <QtWidgets/QTextEdit>
+#include <QtWidgets/QWidget>
 
 QT_BEGIN_NAMESPACE
 
 class Ui_C_frm_camera_positioning
 {
 public:
+    QWidget *centralwidget;
     QTextEdit *txb_zaehler;
     QPushButton *bt_exit;
     QGroupBox *groupBox;
@@ -44,18 +46,20 @@ public:
     QSpinBox *num_cam_5;
     QPushButton *bt_apply;
 
-    void setupUi(QDialog *C_frm_camera_positioning)
+    void setupUi(QMainWindow *C_frm_camera_positioning)
     {
         if (C_frm_camera_positioning->objectName().isEmpty())
             C_frm_camera_positioning->setObjectName(QStringLiteral("C_frm_camera_positioning"));
         C_frm_camera_positioning->resize(1414, 826);
-        txb_zaehler = new QTextEdit(C_frm_camera_positioning);
+        centralwidget = new QWidget(C_frm_camera_positioning);
+        centralwidget->setObjectName(QStringLiteral("centralwidget"));
+        txb_zaehler = new QTextEdit(centralwidget);
         txb_zaehler->setObjectName(QStringLiteral("txb_zaehler"));
         txb_zaehler->setGeometry(QRect(1090, 770, 141, 31));
-        bt_exit = new QPushButton(C_frm_camera_positioning);
+        bt_exit = new QPushButton(centralwidget);
         bt_exit->setObjectName(QStringLiteral("bt_exit"));
         bt_exit->setGeometry(QRect(1260, 740, 141, 71));
-        groupBox = new QGroupBox(C_frm_camera_positioning);
+        groupBox = new QGroupBox(centralwidget);
         groupBox->setObjectName(QStringLiteral("groupBox"));
         groupBox->setGeometry(QRect(10, 0, 1251, 351));
         lbl_cam_0 = new QLabel(groupBox);
@@ -76,7 +80,7 @@ public:
         num_cam_4 = new QSpinBox(groupBox);
         num_cam_4->setObjectName(QStringLiteral("num_cam_4"));
         num_cam_4->setGeometry(QRect(720, 310, 51, 26));
-        groupBox_2 = new QGroupBox(C_frm_camera_positioning);
+        groupBox_2 = new QGroupBox(centralwidget);
         groupBox_2->setObjectName(QStringLiteral("groupBox_2"));
         groupBox_2->setGeometry(QRect(10, 360, 1251, 351));
         lbl_cam_1 = new QLabel(groupBox_2);
@@ -97,16 +101,17 @@ public:
         num_cam_5 = new QSpinBox(groupBox_2);
         num_cam_5->setObjectName(QStringLiteral("num_cam_5"));
         num_cam_5->setGeometry(QRect(720, 310, 51, 26));
-        bt_apply = new QPushButton(C_frm_camera_positioning);
+        bt_apply = new QPushButton(centralwidget);
         bt_apply->setObjectName(QStringLiteral("bt_apply"));
         bt_apply->setGeometry(QRect(930, 730, 141, 71));
+        C_frm_camera_positioning->setCentralWidget(centralwidget);
 
         retranslateUi(C_frm_camera_positioning);
 
         QMetaObject::connectSlotsByName(C_frm_camera_positioning);
     } // setupUi
 
-    void retranslateUi(QDialog *C_frm_camera_positioning)
+    void retranslateUi(QMainWindow *C_frm_camera_positioning)
     {
         C_frm_camera_positioning->setWindowTitle(QApplication::translate("C_frm_camera_positioning", "Dialog", Q_NULLPTR));
         bt_exit->setText(QApplication::translate("C_frm_camera_positioning", "Exit", Q_NULLPTR));
