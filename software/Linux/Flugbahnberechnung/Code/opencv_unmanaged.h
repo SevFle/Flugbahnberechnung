@@ -205,6 +205,7 @@ namespace nmsp_opencv_unmanaged
     void get_camera_settings ();
 
     void         get_objectPosition_2D_Pixel (bool& Contour_Found, nmsp_posen::S_Positionsvektor& Vec_Object, double& timestamp);
+
     cv::Mat*&    get_cpu_src_img ();
     void         set_cpu_src_img (cv::Mat* cpu_src_img);
     cv::Mat*&    get_cpu_temp ();
@@ -410,7 +411,7 @@ namespace nmsp_opencv_unmanaged
     void find_contours (cv::Mat* thresholded_source_image, cv::Mat* dst_contoured_image, int offset[2]);
 
     void undistord_img (cv::Mat* cpu_src, cv::Mat* cpu_dst);
-    void c_opencv_unmanaged::fit_to_roi (int width, int height);
+    void fit_to_roi (int width, int height);
 
     };
   }

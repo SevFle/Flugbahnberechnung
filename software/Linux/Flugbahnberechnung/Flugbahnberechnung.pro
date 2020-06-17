@@ -22,13 +22,6 @@ SOURCES += \
     Code/GlobalObjects.cpp \
     Code/Kalmanfilter.cpp \
     Code/OpenCV_unmanaged.cpp \
-    Code/frm_Camera_Calibration.cpp \
-    Code/frm_Camera_Calibration_crop.cpp \
-    Code/frm_Camera_Positioning.cpp \
-    Code/frm_Camera_Positioning_Pose.cpp \
-    Code/frm_Main.cpp \
-    Code/frm_Object_Calibration.cpp \
-    Code/frm_Object_Tracking.cpp \
     Code/object.cpp \
     Code/posen.cpp \
     Code/tracking.cpp \
@@ -47,13 +40,6 @@ HEADERS += \
     Code/CudaKernels.cuh \
     Code/GlobalObjects.h \
     Code/Kalmanfilter.h \
-    Code/frm_Camera_Calibration.h \
-    Code/frm_Camera_Calibration_crop.h \
-    Code/frm_Camera_Positioning.h \
-    Code/frm_Camera_Positioning_Pose.h \
-    Code/frm_Main.h \
-    Code/frm_Object_Calibration.h \
-    Code/frm_Object_Tracking.h \
     Code/kalman_cuda.cuh \
     Code/object.h \
     Code/opencv_unmanaged.h \

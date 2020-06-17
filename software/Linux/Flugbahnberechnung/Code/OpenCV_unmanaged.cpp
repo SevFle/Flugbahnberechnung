@@ -451,7 +451,7 @@ void c_opencv_unmanaged::get_calibration_parameter (double (&DistCoeffs)[1][5], 
 void c_opencv_unmanaged::get_camera_settings ()
   {
   }
-void c_opencv_unmanaged::get_objectPosition_2D_Pixel (bool& Contour_Found, S_Positionsvektor& Vec_Object)
+void c_opencv_unmanaged::get_objectPosition_2D_Pixel (bool& Contour_Found, S_Positionsvektor& Vec_Object, double& timestamp)
   {
   Contour_Found = this->contour_found;
   Vec_Object.X  = this->Vec_Object[0];
