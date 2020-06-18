@@ -33,7 +33,7 @@ void C_frm_Camera_Calibration_Crop::closeEvent(QCloseEvent* CloseEvent)
  this->Zaehler = 0;
  }
 
-bool               C_frm_Main::eventFilter                                       (QObject* Object, QEvent* Event)
+bool               C_frm_Camera_Calibration_Crop::eventFilter                                       (QObject* Object, QEvent* Event)
   {
   if (Object == this)
     {
@@ -64,16 +64,11 @@ bool               C_frm_Main::eventFilter                                      
     }
   }
 /************************************** Nicht öffentliche QT-Slots******************************/
-void ::C_frm_Camera_Calibration_Crop::on_bt_exit_clicked()
-{
-this->close();
-}
-
 
 void C_frm_Camera_Calibration_Crop::Taktgeber_Tick()
 {
 }
-void C_frm_Camera_Positioning::Fill_Mat_2_Lbl(cv::Mat& img, QLabel* label)
+void C_frm_Camera_Calibration_Crop::Fill_Mat_2_Lbl(cv::Mat& img, QLabel* label)
 {
 label->setPixmap(QPixmap::fromImage(QImage(img.data, img.cols, img.rows, img.step, QImage::Format_RGB888)));
 }

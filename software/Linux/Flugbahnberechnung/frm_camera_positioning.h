@@ -46,7 +46,7 @@ private slots:
   void on_num_cam_5_valueChanged(int arg1);
   void set_num_value (std::vector<int> camera_list);
   void set_num_value ();
-  void Fill_Mat_2_Lbl(cv::Mat& img, QLabel* label);
+  void FillMat2Lbl(cv::Mat& img, QLabel* label);
 
 };
 

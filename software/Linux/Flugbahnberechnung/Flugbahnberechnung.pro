@@ -69,18 +69,22 @@ qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
-INCLUDEPATH += /usr/include/opencv/4_2_0/install/include
+INCLUDEPATH += /usr/local/include/opencv4
 INCLUDEPATH += /usr/local/cuda-10.1/include
-
-
-LIBS += -L"/usr/include/opencv/4_2_0/install/x64/vc15/lib"
-LIBS += -lopencv_world420d
-
-LIBS += -L$CUDA_DIR/lib64 -lcuda -lcudart
-
-
-
 
 DISTFILES += \
   Code/CudaKernels.cu \
   Code/kalman.cu
+
+
+unix:!macx: LIBS += -L$$PWD/../../../../../../../usr/local/lib/ -lopencv_world
+
+INCLUDEPATH += $$PWD/../../../../../../../usr/local/include
+DEPENDPATH += $$PWD/../../../../../../../usr/local/include
+
+win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../../../../../../../usr/local/cuda-10.1/lib64/release/ -lcudart
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../../../../../../usr/local/cuda-10.1/lib64/debug/ -lcudart
+else:unix: LIBS += -L$$PWD/../../../../../../../usr/local/cuda-10.1/lib64/ -lcudart
+
+INCLUDEPATH += $$PWD/../../../../../../../usr/local/cuda-10.1/lib64
+DEPENDPATH += $$PWD/../../../../../../../usr/local/cuda-10.1/lib64

@@ -92,7 +92,7 @@ bool               C_frm_Camera_Positioning::eventFilter                        
     }
   }
 /************************************** Nicht öffentliche QT-Slots******************************/
-void ::C_frm_Camera_Positioning::on_bt_exit_clicked()
+void C_frm_Camera_Positioning::on_bt_exit_clicked()
 {
 this->close();
 }
@@ -106,34 +106,34 @@ void C_frm_Camera_Positioning::Taktgeber_Tick()
       switch (this->cameras_in_use)
         {
         case 1:   //Nur zu Testzwecken fuer die Laptopverwendung
-          Fill_Mat_2_Lbl(*this->Main->Camera_manager->camera_vector[this->Ui->num_cam_0->value()]->cpu_src_img, this->Ui->lbl_cam_0);
+          FillMat2Lbl(*this->Main->Camera_manager->camera_vector[this->Ui->num_cam_0->value()]->cpu_src_img, this->Ui->lbl_cam_0);
           break;
 
         case 2:
-          Fill_Mat_2_Lbl(*this->Main->Camera_manager->camera_vector[this->Ui->num_cam_0->value()]->cpu_src_img, this->Ui->lbl_cam_0);
-          Fill_Mat_2_Lbl(*this->Main->Camera_manager->camera_vector[this->Ui->num_cam_1->value()]->cpu_src_img, this->Ui->lbl_cam_1);
+          FillMat2Lbl(*this->Main->Camera_manager->camera_vector[this->Ui->num_cam_0->value()]->cpu_src_img, this->Ui->lbl_cam_0);
+          FillMat2Lbl(*this->Main->Camera_manager->camera_vector[this->Ui->num_cam_1->value()]->cpu_src_img, this->Ui->lbl_cam_1);
           break;
 
         case 4:
-          Fill_Mat_2_Lbl(*this->Main->Camera_manager->camera_vector[this->Ui->num_cam_0->value()]->cpu_src_img, this->Ui->lbl_cam_0);
-          Fill_Mat_2_Lbl(*this->Main->Camera_manager->camera_vector[this->Ui->num_cam_1->value()]->cpu_src_img, this->Ui->lbl_cam_1);
-          Fill_Mat_2_Lbl(*this->Main->Camera_manager->camera_vector[this->Ui->num_cam_2->value()]->cpu_src_img, this->Ui->lbl_cam_2);
-          Fill_Mat_2_Lbl(*this->Main->Camera_manager->camera_vector[this->Ui->num_cam_3->value()]->cpu_src_img, this->Ui->lbl_cam_3);
+          FillMat2Lbl(*this->Main->Camera_manager->camera_vector[this->Ui->num_cam_0->value()]->cpu_src_img, this->Ui->lbl_cam_0);
+          FillMat2Lbl(*this->Main->Camera_manager->camera_vector[this->Ui->num_cam_1->value()]->cpu_src_img, this->Ui->lbl_cam_1);
+          FillMat2Lbl(*this->Main->Camera_manager->camera_vector[this->Ui->num_cam_2->value()]->cpu_src_img, this->Ui->lbl_cam_2);
+          FillMat2Lbl(*this->Main->Camera_manager->camera_vector[this->Ui->num_cam_3->value()]->cpu_src_img, this->Ui->lbl_cam_3);
           break;
 
         case 6:
-          Fill_Mat_2_Lbl(*this->Main->Camera_manager->camera_vector[this->Ui->num_cam_0->value()]->cpu_src_img, this->Ui->lbl_cam_0);
-          Fill_Mat_2_Lbl(*this->Main->Camera_manager->camera_vector[this->Ui->num_cam_1->value()]->cpu_src_img, this->Ui->lbl_cam_1);
-          Fill_Mat_2_Lbl(*this->Main->Camera_manager->camera_vector[this->Ui->num_cam_2->value()]->cpu_src_img, this->Ui->lbl_cam_2);
-          Fill_Mat_2_Lbl(*this->Main->Camera_manager->camera_vector[this->Ui->num_cam_3->value()]->cpu_src_img, this->Ui->lbl_cam_3);
-          Fill_Mat_2_Lbl(*this->Main->Camera_manager->camera_vector[this->Ui->num_cam_4->value()]->cpu_src_img, this->Ui->lbl_cam_4);
-          Fill_Mat_2_Lbl(*this->Main->Camera_manager->camera_vector[this->Ui->num_cam_5->value()]->cpu_src_img, this->Ui->lbl_cam_5);
+          FillMat2Lbl(*this->Main->Camera_manager->camera_vector[this->Ui->num_cam_0->value()]->cpu_src_img, this->Ui->lbl_cam_0);
+          FillMat2Lbl(*this->Main->Camera_manager->camera_vector[this->Ui->num_cam_1->value()]->cpu_src_img, this->Ui->lbl_cam_1);
+          FillMat2Lbl(*this->Main->Camera_manager->camera_vector[this->Ui->num_cam_2->value()]->cpu_src_img, this->Ui->lbl_cam_2);
+          FillMat2Lbl(*this->Main->Camera_manager->camera_vector[this->Ui->num_cam_3->value()]->cpu_src_img, this->Ui->lbl_cam_3);
+          FillMat2Lbl(*this->Main->Camera_manager->camera_vector[this->Ui->num_cam_4->value()]->cpu_src_img, this->Ui->lbl_cam_4);
+          FillMat2Lbl(*this->Main->Camera_manager->camera_vector[this->Ui->num_cam_5->value()]->cpu_src_img, this->Ui->lbl_cam_5);
           break;
         }
       }
 }
 
-void C_frm_Camera_Positioning::C_frm_Camera_Positioning::on_bt_apply_clicked()
+void C_frm_Camera_Positioning::on_bt_apply_clicked()
 {
     std::vector<nmsp_opencv_unmanaged::c_opencv_unmanaged*> camera_vector_temp;
     camera_vector_temp.resize (cameras_in_use);
@@ -283,7 +283,7 @@ void C_frm_Camera_Positioning::set_num_value (std::vector<int> camera_list)
     }
   }//set_numUD_value
 
-void C_frm_Camera_Positioning::Fill_Mat_2_Lbl(cv::Mat& img, QLabel* label)
+void C_frm_Camera_Positioning::FillMat2Lbl(cv::Mat& img, QLabel* label)
 {
 label->setPixmap(QPixmap::fromImage(QImage(img.data, img.cols, img.rows, img.step, QImage::Format_RGB888)));
 }

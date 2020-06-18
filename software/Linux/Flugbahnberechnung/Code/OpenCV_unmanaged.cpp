@@ -1304,12 +1304,14 @@ void c_opencv_unmanaged::get_gaussian_kernel ()
 
 void c_opencv_unmanaged::gpu_filter_hsv (cv::cuda::GpuMat* gpu_src, cv::cuda::GpuMat* gpu_dst)
   {
+    cv::Scalar min(this->hue_min,this->saturation_min,this->value_min);
+    cv::Scalar max(this->hue_max,this->saturation_max,this->value_max);
+
   gpu_gaussian_filter (gpu_src,gpu_temp);
 
   cv::cuda::cvtColor (*gpu_temp,*gpu_filtered,cv::COLOR_BGR2HSV);
 
-  cudaKernel::inRange_gpu (*gpu_filtered,cv::Scalar (this->hue_min,this->saturation_min,this->value_min),
-                           cv::Scalar (this->hue_max,this->saturation_max,this->value_max),*gpu_color_threshold);
+  cudaKernel::inRange_gpu (*gpu_filtered,min, max,*gpu_color_threshold);
 
   gpu_open (gpu_color_threshold,gpu_temp);
 

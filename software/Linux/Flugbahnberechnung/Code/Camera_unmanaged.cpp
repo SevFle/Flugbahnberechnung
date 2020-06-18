@@ -835,7 +835,7 @@ void c_camera_unmanaged::sm_object_tracking ()
         //Hole die 2D-Koordinaten des Objektes aus dem Kamerabild
 		for (auto it = std::begin(v_objects); it != std::end(v_objects); it++)
 		{
-			this->camera_vector[v_objects(it)->ID_Cam_Links]->get_objectPosition_2D_Pixel (tracked_data->found_0, tracked_data->Richtungsvektor_0, temp1);
+            //this->camera_vector[v_objects(it)->ID_Cam_Links]->get_objectPosition_2D_Pixel (tracked_data->found_0, tracked_data->Richtungsvektor_0, temp1);
 			this->camera_vector[object_found_camID + 1]->get_objectPosition_2D_Pixel (tracked_data->found_1, tracked_data->Richtungsvektor_1, temp2);
 			this->tracked_data->timestamp = (temp1 + temp2) / 2;
 			

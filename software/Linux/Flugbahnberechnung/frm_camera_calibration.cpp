@@ -114,13 +114,13 @@ void C_frm_Camera_Calibration::Taktgeber_Tick()
       }
 
 }
-void C_frm_Camera_Positioning::Fill_Mat_2_Lbl(cv::Mat& img, QLabel* label)
+void C_frm_Camera_Calibration::Fill_Mat_2_Lbl(cv::Mat& img, QLabel* label)
 {
 label->setPixmap(QPixmap::fromImage(QImage(img.data, img.cols, img.rows, img.step, QImage::Format_RGB888)));
 }
 
 
-void frm_Camera_Calibration::C_frm_Camera_Calibration::on_bt_start_clicked()
+void C_frm_Camera_Calibration::on_bt_start_clicked()
 {
     this->Ui->lbl_calibration_running->setVisible(false);
     this->Ui->bt_photo->setVisible(true);
