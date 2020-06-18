@@ -38,12 +38,6 @@ private slots:
   void Taktgeber_Tick();
   void on_bt_apply_clicked();
   void on_bt_exit_clicked();
-  void on_num_cam_2_valueChanged(int arg1);
-  void on_num_cam_0_valueChanged(int arg1);
-  void on_num_cam_1_valueChanged(int arg1);
-  void on_num_cam_3_valueChanged(int arg1);
-  void on_num_cam_4_valueChanged(int arg1);
-  void on_num_cam_5_valueChanged(int arg1);
   void set_num_value (std::vector<int> camera_list);
   void set_num_value ();
   void FillMat2Lbl(cv::Mat& img, QLabel* label);

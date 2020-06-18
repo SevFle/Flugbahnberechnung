@@ -80,8 +80,6 @@ bool bilateral_active;
 bool morph_active;
 
 private slots:
-void on_num_sigma_kernelsize_valueChanged(int arg1);
-
 void on_num_opening_iterations_valueChanged(int arg1);
 
 void on_num_opening_kernelsize_valueChanged(int arg1);
@@ -90,15 +88,9 @@ void on_num_closing_iterations_valueChanged(int arg1);
 
 void on_num_closing_kernelsize_valueChanged(int arg1);
 
-void on_num_closing_iterations_2_valueChanged(int arg1);
-
 void on_num_erode_kernelsize_valueChanged(int arg1);
 
-void on_num_closing_iterations_3_valueChanged(int arg1);
-
 void on_num_dilate_kernelsize_valueChanged(int arg1);
-
-void on_num_closing_iterations_4_valueChanged(int arg1);
 
 void on_num_morph_kernelsize_valueChanged(int arg1);
 
@@ -141,7 +133,6 @@ private:
   bool eventFilter (QObject* Object, QEvent* Event) override;
 private slots:
   void Taktgeber_Tick();
-  void on_num_dilate_iterations_4_valueChanged(int arg1);
   void on_num_dilate_iterations_valueChanged(int arg1);
   void on_num_erode_iterations_valueChanged(int arg1);
   void on_num_morp_iterations_valueChanged(int arg1);
