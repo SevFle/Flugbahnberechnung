@@ -20,8 +20,6 @@ public:
 private slots:
     void on_bt_start_clicked();
 
-    void on_spinBox_valueChanged(int arg1);
-
     void on_bt_exit_clicked();
 
     void on_num_camera_id_valueChanged(int arg1);

@@ -135,7 +135,6 @@ private slots:
   void Taktgeber_Tick();
   void on_num_dilate_iterations_valueChanged(int arg1);
   void on_num_erode_iterations_valueChanged(int arg1);
-  void on_num_morp_iterations_valueChanged(int arg1);
   void on_num_morph_iterations_valueChanged(int arg1);
   void on_num_gaussian_kernelsize_valueChanged(int arg1);
   void on_bt_apply_all_clicked();

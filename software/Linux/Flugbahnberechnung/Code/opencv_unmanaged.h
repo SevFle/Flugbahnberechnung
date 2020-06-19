@@ -3,15 +3,17 @@
 #include <opencv2/opencv.hpp>
 #include <opencv2/highgui.hpp>
 #include "CudaKernels.cuh"
+#include <opencv2/core/cuda.hpp>
+
 #include <thread>
 #include <chrono>
 //#include "posen.h"
-
 
 namespace nmsp_posen
   {
   struct S_Positionsvektor;
   }
+
 
 namespace nmsp_opencv_unmanaged
   {
@@ -26,7 +28,6 @@ namespace nmsp_opencv_unmanaged
     cv::cuda::GpuMat* gpu_src_img;
     cv::cuda::GpuMat* gpu_thresholded;
     cv::cuda::GpuMat* gpu_filtered;
-
 
     //HSV-Filtering
     cv::cuda::GpuMat* gpu_src2color;
