@@ -15,15 +15,15 @@ namespace nmsp_posen
   }
 
 
-namespace nmsp_opencv_unmanaged
+namespace camera
   {
-  class c_opencv_unmanaged
+  class c_camera
     {
     public:
     /*************************************************************** Konstruktoren *************************************************************/
-    c_opencv_unmanaged (int camera_id);
+    c_camera (int camera_id);
     /*************************************************************** Destruktor ****************************************************************/
-    ~c_opencv_unmanaged ();
+    ~c_camera ();
     /******************************************** Nicht öffentliche private Anwender-Attribute **************************************************/
     cv::cuda::GpuMat* gpu_src_img;
     cv::cuda::GpuMat* gpu_thresholded;

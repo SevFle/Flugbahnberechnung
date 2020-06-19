@@ -364,7 +364,7 @@ void c_camera_unmanaged::load_camera_positioning ()
   {
   string                                                  Dateiname = "../Parameter/Camera_Positioning.csv";
   string                                                  Dateityp;
-  std::vector<nmsp_opencv_unmanaged::c_opencv_unmanaged*> camera_vector_temp;
+  std::vector<camera::c_camera*> camera_vector_temp;
   camera_vector_temp.resize (GlobalObjects->cameras_in_use);
 
   int id;
@@ -478,7 +478,7 @@ void c_camera_unmanaged::init_camera_vectors ()
   //Create a camera object and start its according thread. The amount of objects equals the amount of cameras in use 
   for (int i = 0; i < cameras_in_use; i++)
     {
-    auto* opencv_unmanaged = new nmsp_opencv_unmanaged::c_opencv_unmanaged (i);
+    auto* opencv_unmanaged = new camera::c_camera (i);
     opencv_unmanaged->set_idle (true);
     camera_vector.push_back (opencv_unmanaged);
 
@@ -509,7 +509,7 @@ void c_camera_unmanaged::close_cameras (int cameras_in_use)
     }
   }
 
-void c_camera_unmanaged::move_camera_vector2temp (int camera_desired_id, int camera_current_id, std::vector<c_opencv_unmanaged*>& temp_CameraVector)
+void c_camera_unmanaged::move_camera_vector2temp (int camera_desired_id, int camera_current_id, std::vector<c_camera*>& temp_CameraVector)
   {
   // Wo ist die feste Position der Kamera? -> Camera_Current_ID
   // Wo ist die Position der Kamera im unsorted Vector? ->Camera_desired_id
@@ -518,7 +518,7 @@ void c_camera_unmanaged::move_camera_vector2temp (int camera_desired_id, int cam
   //camera_vector_temp.insert(camera_vector_temp.begin()+camera_desired_id, camera_vector[camera_current_id]);
   std::cout << " Moved Pointer for Camera " << camera_current_id << " to Position " << camera_desired_id << " in temporary Vector" << std::endl;
   }
-void c_camera_unmanaged::move_camera_temp2vector (int cameras_in_use, std::vector<c_opencv_unmanaged*> temp_CameraVector)
+void c_camera_unmanaged::move_camera_temp2vector (int cameras_in_use, std::vector<c_camera*> temp_CameraVector)
   {
   for (int i = 0; i < cameras_in_use; i++)
     {

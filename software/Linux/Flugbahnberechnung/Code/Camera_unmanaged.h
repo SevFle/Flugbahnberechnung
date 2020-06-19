@@ -2,7 +2,7 @@
 
 /************************************************************ Includes *******************************************************************/
 
-#include "opencv_unmanaged.h"
+#include "camera.h"
 #include "tracking.h"
 #include "object.h"
 #include "GlobalObjects.h"
@@ -14,7 +14,7 @@ namespace std
 
 using namespace std;
 
-using namespace nmsp_opencv_unmanaged;
+using namespace camera;
 using namespace nmsp_tracking;
 using namespace object;
 using namespace nmsp_posen;
@@ -57,7 +57,7 @@ namespace nmsp_camera_unmanaged
     cv::Mat cpu_kalman_filterR;
   	
 	std::vector<C_object*> v_objects;
-	std::vector<c_opencv_unmanaged*> camera_vector;
+	std::vector<c_camera*> camera_vector;
     std::vector<C_AbsolutePose>*     vec_WorldToCam_Poses; //AKA WORLD TO CAMERA POS
 
     /*** Variablen zur Kamerakalibrierung ********************************************************/
@@ -80,8 +80,8 @@ namespace nmsp_camera_unmanaged
 
     /********************************************************* Öffentliche Klassenmethoden*******************************************************/
     public:
-    void move_camera_vector2temp (int camera_desired_id, int camera_current_id, std::vector<c_opencv_unmanaged*>& temp_CameraVector);
-    void move_camera_temp2vector (int cameras_in_use, std::vector<c_opencv_unmanaged*> temp_CameraVector);
+    void move_camera_vector2temp (int camera_desired_id, int camera_current_id, std::vector<c_camera*>& temp_CameraVector);
+    void move_camera_temp2vector (int cameras_in_use, std::vector<c_camera*> temp_CameraVector);
 
     void save_camera_calibration (int camera_id);
     void load_camera_calibration (int camera_id);

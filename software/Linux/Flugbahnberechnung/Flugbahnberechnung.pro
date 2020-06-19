@@ -21,7 +21,7 @@ SOURCES += \
     Code/Camera_unmanaged.cpp \
     Code/GlobalObjects.cpp \
     Code/Kalmanfilter.cpp \
-    Code/OpenCV_unmanaged.cpp \
+    Code/camera.cpp \
     Code/object.cpp \
     Code/posen.cpp \
     Code/tracking.cpp \
@@ -40,9 +40,9 @@ HEADERS += \
     Code/CudaKernels.cuh \
     Code/GlobalObjects.h \
     Code/Kalmanfilter.h \
+    Code/camera.h \
     Code/kalman_cuda.cuh \
     Code/object.h \
-    Code/opencv_unmanaged.h \
     Code/point.h \
     Code/posen.h \
     Code/tracking.h \
@@ -114,7 +114,6 @@ cuda.output = ${OBJECTS_DIR}${QMAKE_FILE_BASE}_cuda.obj
 
 
 QMAKE_EXTRA_COMPILERS += cuda
-
 
 
 
