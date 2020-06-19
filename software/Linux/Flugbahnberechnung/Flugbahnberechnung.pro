@@ -37,7 +37,7 @@ SOURCES += \
 HEADERS += \
     Code/CSV_Datei.h \
     Code/Camera_unmanaged.h \
-    Code/CudaKernels.h \
+    Code/CudaKernels.cuh \
     Code/GlobalObjects.h \
     Code/Kalmanfilter.h \
     Code/kalman_cuda.cuh \
@@ -64,69 +64,54 @@ FORMS += \
     frm_object_calibration.ui \
     frm_object_tracking.ui
 
-
-#CUDA Compilation relevant
-#CUDA_SOURCES += Code/CudaKernels.cu
-#CUDA_SDK = -L$$PWD/../../../../../../../usr/local/cuda-10.1/
-#CUDA_DIR = -L$$PWD/../../../../../../../usr/local/cuda-10.1/
-
-#unix:!macx: LIBS += -L$$PWD/../../../../../../../usr/local/cuda-10.1/lib64/ -lcudart
-
-#INCLUDEPATH += $$PWD/../../../../../../../usr/local/cuda-10.1/lib64
-#DEPENDPATH += $$PWD/../../../../../../../usr/local/cuda-10.1/lib64
-
-
-#INCLUDEPATH += $$CUDA_DIR/include
-
-#LIBS += $$CUDA_DIR/lib64/
-
-#CUDA_OBJECTS_DIR = ./
-
-#CUDA_LIBS = -lcuda -lcudart
-
-#CUDA_INC = $$join(INCLUDEPATH, '" -I"','-I"','"')
-#LIBS += $$CUDA_LIBS
-
-##CONFIG(debug, debug|release){
-#{
-###DEBUG
-#cuda_d.input = CUDA_SOURCES
-#cuda_d.output = $$CUDA_OBJECTS_DIR/${QMAKE_FILE_BASE}_cuda.o
-##cuda.output = ${QMAKE_FILE_BASE}.o
-#cuda_d.commands = $$CUDA_DIR/bin/nvcc -D_DEBUG $$NVCC_OPTIONS $$CUDA_INC $$NVCC_LIBS --machine $$ SYSTEM_TYPE -arch=$$CUDA_ARCH -c -o ${QMAKE_FILE_OUT} ${QMAKE_FILE_NAME}
-#cuda_d.dependency_type = TYPE_C
-#QMAKE_EXTRA_COMPILERS += cuda_d
-#}
-#else{
-###RELEASE
-#cuda_.input = CUDA_SOURCES
-#cuda_.output = $$CUDA_OBJECTS_DIR/${QMAKE_FILE_BASE}_cuda.o
-#cuda.commands = $$CUDA_DIR/bin/nvcc $$NVCC_OPTIONS $$CUDA_INC $$NVCC_LIBS --machine $$SYSTEM_TYPE -arch=$$CUDA_ARCH -c -o ${QMAKE_FILE_OUT} ${QMAKE_FILE_NAME}
-#cuda.dependency_type = TYPE_C
-#QMAKE_EXTRA_COMPILERS += cuda
-
-#}
+################################# CUDA INCLUDES #################################
 CUDA_SOURCES = \
-              Code/CudaKernels.cu
+     Code/CudaKernels.cu
+
 CUDA_DIR = /usr/local/cuda-10.1
 
-CUDA_ARCH = sm_75 # as supported by the Tegra K1
+CUDA_ARCH = sm_75       # 75 RTX 2070 / GTX 1650          # 61 GTX 1080
 
 INCLUDEPATH += $$CUDA_DIR/include
 
 LIBS += -L $$CUDA_DIR/lib64 -lcudart -lcuda
 
-osx: LIBS += -F/Library/Frameworks -framework CUDA
 
-cuda.commands = $$CUDA_DIR/bin/nvcc -c -arch=$$CUDA_ARCH -o ${QMAKE_FILE_OUT} ${QMAKE_FILE_NAME}
+############################## CUDA NVCC ############################################
 
-cuda.dependency_type = TYPE_C
 
-cuda.depend_command = $$CUDA_DIR/bin/nvcc -M ${QMAKE_FILE_NAME}
 
-cuda.input = CUDA_SOURCES
+# The following makes sure all path names (which often include spaces) are put between quotation marks
+CUDA_INC = $$join(INCLUDEPATH,'" -I"','-I"','"')
 
-cuda.output = ${QMAKE_FILE_BASE}_cuda.o
+#cuda.input = CUDA_SOURCES
+
+#cuda.output = ${QMAKE_FILE_BASE}_cuda.o
+
+
+#cuda.commands = $$CUDA_DIR/bin/nvcc -c -arch=$$CUDA_ARCH -o ${QMAKE_FILE_OUT} ${QMAKE_FILE_NAME}
+
+#cuda.dependency_type = TYPE_C
+
+#cuda.depend_command = $$CUDA_DIR/bin/nvcc -M ${QMAKE_FILE_NAME}
+
+
+#CUDA_DIR = $$system(which nvcc | sed 's,/bin/nvcc$,,')
+
+ INCLUDEPATH += $$CUDA_DIR/include
+
+ QMAKE_LIBDIR += $$CUDA_DIR/lib
+
+ LIBS += -lcudart
+
+cuda.output = ${OBJECTS_DIR}${QMAKE_FILE_BASE}_cuda.obj
+
+ cuda.commands = nvcc -c -Xcompiler $$join(QMAKE_CXXFLAGS,",") $$join(INCLUDEPATH,'" -I "','-I "','"') ${QMAKE_FILE_NAME} -o ${QMAKE_FILE_OUT}
+
+ cuda.depends = nvcc -M -Xcompiler $$join(QMAKE_CXXFLAGS,",") $$join(INCLUDEPATH,'" -I "','-I "','"') ${QMAKE_FILE_NAME} | sed "s,^.*: ,," | sed "s,^ *,," | tr -d '\\n'
+
+
+
 
 QMAKE_EXTRA_COMPILERS += cuda
 
@@ -138,11 +123,12 @@ qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
+
+################################################## OPENCV INCLUDE ###########################################
+
 DISTFILES += \
   Code/CudaKernels.cu \
   Code/kalman.cu
-
-
 
 unix:!macx: LIBS += -L$$PWD/../../../../../libs/opencv420/lib/ -lopencv_world
 
