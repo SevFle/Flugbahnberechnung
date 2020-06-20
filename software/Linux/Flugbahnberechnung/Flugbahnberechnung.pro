@@ -65,16 +65,16 @@ FORMS += \
     frm_object_tracking.ui
 
 ################################# CUDA INCLUDES #################################
-CUDA_SOURCES = \
-     Code/CudaKernels.cu
+#CUDA_SOURCES = \
+#     Code/CudaKernels.cu
 
-CUDA_DIR = /usr/local/cuda-10.1
+#CUDA_DIR = /usr/local/cuda-10.1
 
-CUDA_ARCH = sm_75       # 75 RTX 2070 / GTX 1650          # 61 GTX 1080
+#CUDA_ARCH = sm_75       # 75 RTX 2070 / GTX 1650          # 61 GTX 1080
 
-INCLUDEPATH += $$CUDA_DIR/include
+#INCLUDEPATH += $$CUDA_DIR/include
 
-LIBS += -L $$CUDA_DIR/lib64 -lcudart -lcuda
+#LIBS += -L $$CUDA_DIR/lib64 -lcudart -lcuda
 
 
 ############################## CUDA NVCC ############################################
@@ -82,7 +82,7 @@ LIBS += -L $$CUDA_DIR/lib64 -lcudart -lcuda
 
 
 # The following makes sure all path names (which often include spaces) are put between quotation marks
-CUDA_INC = $$join(INCLUDEPATH,'" -I"','-I"','"')
+#CUDA_INC = $$join(INCLUDEPATH,'" -I"','-I"','"')
 
 #cuda.input = CUDA_SOURCES
 
@@ -98,22 +98,75 @@ CUDA_INC = $$join(INCLUDEPATH,'" -I"','-I"','"')
 
 #CUDA_DIR = $$system(which nvcc | sed 's,/bin/nvcc$,,')
 
- INCLUDEPATH += $$CUDA_DIR/include
+# INCLUDEPATH += $$CUDA_DIR/include
 
- QMAKE_LIBDIR += $$CUDA_DIR/lib
+# QMAKE_LIBDIR += $$CUDA_DIR/lib
 
- LIBS += -lcudart
+# LIBS += -lcudart -lcuda
 
-cuda.output = ${OBJECTS_DIR}${QMAKE_FILE_BASE}_cuda.obj
+#cuda.output = ${OBJECTS_DIR}${QMAKE_FILE_BASE}_cuda.obj
 
- cuda.commands = nvcc -c -Xcompiler $$join(QMAKE_CXXFLAGS,",") $$join(INCLUDEPATH,'" -I "','-I "','"') ${QMAKE_FILE_NAME} -o ${QMAKE_FILE_OUT}
+# cuda.commands = nvcc -c -Xcompiler $$join(QMAKE_CXXFLAGS,",") $$join(INCLUDEPATH,'" -I "','-I "','"') ${QMAKE_FILE_NAME} -o ${QMAKE_FILE_OUT}
 
- cuda.depends = nvcc -M -Xcompiler $$join(QMAKE_CXXFLAGS,",") $$join(INCLUDEPATH,'" -I "','-I "','"') ${QMAKE_FILE_NAME} | sed "s,^.*: ,," | sed "s,^ *,," | tr -d '\\n'
+# cuda.depends = nvcc -M -Xcompiler $$join(QMAKE_CXXFLAGS,",") $$join(INCLUDEPATH,'" -I "','-I "','"') ${QMAKE_FILE_NAME} | sed "s,^.*: ,," | sed "s,^ *,," | tr -d '\\n'
 
+#QMAKE_EXTRA_COMPILERS += cuda
 
+## Cuda sources
+#CUDA_SOURCES += Code/CudaKernels.cu
 
+## Path to cuda toolkit install
+#CUDA_DIR      = /usr/local/cuda-10.1
+## Path to header and libs files
+#INCLUDEPATH  += $$CUDA_DIR/include
+#QMAKE_LIBDIR += $$CUDA_DIR/lib64     # Note I'm using a 64 bits Operating system
+## libs used in your code
+#LIBS += -lcudart -lcuda
+## GPU architecture
+#CUDA_ARCH     = sm_75                # Yeah! I've a new device. Adjust with your compute capability
+## Here are some NVCC flags I've always used by default.
+#NVCCFLAGS     = --compiler-options -fno-strict-aliasing -use_fast_math --ptxas-options=-v
+## Prepare the extra compiler configuration (taken from the nvidia forum - i'm not an expert in this part)
+#CUDA_INC = $$join(INCLUDEPATH,' -I','-I',' ')
 
-QMAKE_EXTRA_COMPILERS += cuda
+#cuda.commands = $$CUDA_DIR/bin/nvcc -m64 -g -G -arch=$$CUDA_ARCH -c $$NVCCFLAGS $$CUDA_INC $$LIBS  ${QMAKE_FILE_NAME} -o ${QMAKE_FILE_OUT}
+## nvcc error printout format ever so slightly different from gcc
+## http://forums.nvidia.com/index.php?showtopic=171651
+
+#cuda.dependency_type = TYPE_C # there was a typo here. Thanks workmate!
+#cuda.depend_command = $$CUDA_DIR/bin/nvcc -O3 -M $$CUDA_INC $$NVCCFLAGS   ${QMAKE_FILE_NAME}
+
+#cuda.input = CUDA_SOURCES
+#cuda.output = ${OBJECTS_DIR}${QMAKE_FILE_BASE}_cuda.o
+## Tell Qt that we want add more stuff to the Makefile
+#QMAKE_EXTRA_COMPILERS += cuda
+CUDA_SOURCES += Code/CudaKernels.cu
+
+CUDA_SDK += "/usr/local/cuda-10.1"
+CUDA_DIR += "/usr/local/cuda-10.1"
+
+SYSTEM_NAME = unix
+SYSTEM_TYPE = 64
+CUDA_ARCH = sm_75
+NVCC_OPTIONS = --use_fast_math -O2
+
+INCLUDEPATH += $$CUDA_DIR/include
+
+QMAKE_LIBDIR += $$CUDA_DIR/lib64/
+
+CUDA_OBJECTS_DIR = ./
+
+CUDA_LIBS = -lcuda -lcudart
+CUDA_INC = $$join(INCLUDEPATH,'" -I"','-I"','"')
+
+LIBS += $$CUDA_LIBS
+
+cuda_d.input = CUDA_SOURCES
+cuda_d.output = $$CUDA_OBJECTS_DIR/${QMAKE_FILE_BASE}.o
+cuda_d.commands = $$CUDA_DIR/bin/nvcc -D_DEBUG $$NVCC_OPTIONS $$CUDA_INC $$NVCC_LIBS --machine $$SYSTEM_TYPE -arch=$$CUDA_ARCH -c -o {QMAKE_FILE_OUT} ${QMAKE_FILE_NAME}
+cuda_d.dependency_type = TYPE_C
+QMAKE_EXTRA_COMPILERS += cuda_d
+
 
 
 
@@ -128,6 +181,8 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 DISTFILES += \
   Code/CudaKernels.cu \
   Code/kalman.cu
+
+
 
 unix:!macx: LIBS += -L$$PWD/../../../../../libs/opencv420/lib/ -lopencv_world
 
