@@ -10,65 +10,6 @@ C_frm_Object_Calibration::C_frm_Object_Calibration(C_GlobalObjects* GlobalObject
     this->Main          = Main;
 
     camera_id_in_use = 0;
-    this->Ui->sld_hue_min->setMinimum(0);
-    this->Ui->sld_hue_min->setMaximum(179);
-
-    this->Ui->sld_hue_max->setMinimum(0);
-    this->Ui->sld_hue_max->setMaximum(179);
-
-    this->Ui->sld_saturation_min->setMinimum(0);
-    this->Ui->sld_saturation_min->setMaximum(255);
-
-    this->Ui->sld_saturation_max->setMinimum(0);
-    this->Ui->sld_saturation_max->setMaximum(255);
-
-    this->Ui->sld_value_min->setMinimum(0);
-    this->Ui->sld_value_min->setMaximum(255);
-
-    this->Ui->sld_value_max->setMinimum(0);
-    this->Ui->sld_value_max->setMaximum(255);
-
-    this->Ui->sld_objectsize_min->setMinimum(0);
-    this->Ui->sld_objectsize_min->setMaximum (479999);
-
-    this->Ui->sld_objectsize_max->setMinimum(0);
-    this->Ui->sld_objectsize_max->setMaximum (480000);
-
-    this->Ui->num_erode_iterations->setMinimum(0);
-    this->Ui->num_erode_iterations->setMaximum(10);
-
-    this->Ui->num_dilate_iterations->setMinimum(0);
-    this->Ui->num_dilate_iterations->setMaximum(10);
-
-    this->Ui->num_opening_iterations->setMinimum(0);
-    this->Ui->num_opening_iterations->setMaximum(10);
-
-    this->Ui->num_bilateral_color->setMinimum(0);
-    this->Ui->num_bilateral_color->setMaximum(10);
-
-    this->Ui->num_morph_iterations->setMinimum(0);
-    this->Ui->num_morph_iterations->setMaximum(10);
-
-
-    this->Ui->num_erode_kernelsize->setMinimum(1);
-    this->Ui->num_erode_kernelsize->setMaximum(10);
-
-    this->Ui->num_dilate_kernelsize->setMinimum(1);
-    this->Ui->num_dilate_kernelsize->setMaximum(10);
-
-    this->Ui->num_opening_kernelsize->setMinimum(1);
-    this->Ui->num_opening_kernelsize->setMaximum(10);
-
-    this->Ui->num_closing_kernelsize->setMinimum(1);
-    this->Ui->num_closing_kernelsize->setMaximum(10);
-
-    this->Ui->num_bilateral_kernelsize->setMinimum(1);
-    this->Ui->num_bilateral_kernelsize->setMaximum(10);
-
-    this->Ui->num_morph_kernelsize->setMinimum (1);
-    this->Ui->num_morph_kernelsize->setMaximum(10);
-
-
     TimerWait        = 0;
     camera_id_in_use = 0;
 
@@ -103,66 +44,8 @@ this->Ui->sld_saturation_min->setValue(0);
 this->Ui->sld_saturation_max->setValue(255);
 this->Ui->sld_value_min->setValue(0);
 this->Ui->sld_value_max->setValue(255);
-/*
-trb_hue_min->Minimum = 0;
-trb_hue_min->Maximum = 179;
 
-trb_hue_max->Minimum = 0;
-trb_hue_max->Maximum = 179;
-
-trb_saturation_min->Minimum = 0;
-trb_saturation_min->Maximum = 255;
-
-trb_saturation_max->Minimum = 0;
-trb_saturation_max->Maximum = 255;
-
-trb_value_min->Minimum = 0;
-trb_value_min->Maximum = 255;
-
-trb_value_max->Minimum = 0;
-trb_value_max->Maximum = 255;
-
-trb_ObjectSize_min->Minimum = 0;
-trb_ObjectSize_min->Maximum = 479999;
-
-trb_ObjectSize_max->Minimum = 0;
-trb_ObjectSize_max->Maximum = 480000;
-
-numUD_erode_iterations->Minimum = 0;
-numUD_erode_iterations->Maximum = 10;
-
-numUD_dilation_iterations->Minimum = 0;
-numUD_dilation_iterations->Maximum = 10;
-
-numUD_opening_iterations->Minimum = 0;
-numUD_opening_iterations->Maximum = 10;
-
-numUD_bilateral_color->Minimum = 0;
-numUD_bilateral_color->Maximum = 10;
-
-numUD_morph_iterations->Minimum = 0;
-numUD_morph_iterations->Maximum = 10;
-
-
-numUD_erode_kernelsize->Minimum = static_cast<Int32>(1);
-numUD_erode_kernelsize->Maximum = static_cast<Int32>(10);
-
-numUD_dilation_kernelsize->Minimum = static_cast<Int32>(1);
-numUD_dilation_kernelsize->Maximum = static_cast<Int32>(10);
-
-numUD_opening_kernelsize->Minimum = static_cast<Int32>(1);
-numUD_opening_kernelsize->Maximum = static_cast<Int32>(10);
-
-numUD_closing_kernelsize->Minimum = static_cast<Int32>(1);
-numUD_closing_kernelsize->Maximum = static_cast<Int32>(10);
-
-numUD_bilateral_kernelsize->Minimum = static_cast<Int32>(1);
-numUD_bilateral_kernelsize->Maximum = static_cast<Int32>(10);
-
-numUD_morph_kernelsize->Minimum = static_cast<Int32> (1);
-numUD_morph_kernelsize->Maximum = static_cast<Int32>(10);
-*/
-
+this->set_gui();
 this->get_camera_settings (0);
 }
 
@@ -451,6 +334,66 @@ void C_frm_Object_Calibration::on_bt_apply_all_clicked()
 
       this->Main->Camera_manager->save_camera_settings (i);
       }
+}
+
+void C_frm_Object_Calibration::set_gui()
+{
+    this->Ui->sld_hue_min->setMinimum(0);
+    this->Ui->sld_hue_min->setMaximum(179);
+
+    this->Ui->sld_hue_max->setMinimum(0);
+    this->Ui->sld_hue_max->setMaximum(179);
+
+    this->Ui->sld_saturation_min->setMinimum(0);
+    this->Ui->sld_saturation_min->setMaximum(255);
+
+    this->Ui->sld_saturation_max->setMinimum(0);
+    this->Ui->sld_saturation_max->setMaximum(255);
+
+    this->Ui->sld_value_min->setMinimum(0);
+    this->Ui->sld_value_min->setMaximum(255);
+
+    this->Ui->sld_value_max->setMinimum(0);
+    this->Ui->sld_value_max->setMaximum(255);
+
+    this->Ui->sld_objectsize_min->setMinimum(0);
+    this->Ui->sld_objectsize_min->setMaximum (479999);
+
+    this->Ui->sld_objectsize_max->setMinimum(0);
+    this->Ui->sld_objectsize_max->setMaximum (480000);
+
+    this->Ui->num_erode_iterations->setMinimum(0);
+    this->Ui->num_erode_iterations->setMaximum(10);
+
+    this->Ui->num_dilate_iterations->setMinimum(0);
+    this->Ui->num_dilate_iterations->setMaximum(10);
+
+    this->Ui->num_opening_iterations->setMinimum(0);
+    this->Ui->num_opening_iterations->setMaximum(10);
+
+    this->Ui->num_bilateral_color->setMinimum(0);
+    this->Ui->num_bilateral_color->setMaximum(10);
+
+    this->Ui->num_morph_iterations->setMinimum(0);
+    this->Ui->num_morph_iterations->setMaximum(10);
+
+    this->Ui->num_erode_kernelsize->setMinimum(1);
+    this->Ui->num_erode_kernelsize->setMaximum(10);
+
+    this->Ui->num_dilate_kernelsize->setMinimum(1);
+    this->Ui->num_dilate_kernelsize->setMaximum(10);
+
+    this->Ui->num_opening_kernelsize->setMinimum(1);
+    this->Ui->num_opening_kernelsize->setMaximum(10);
+
+    this->Ui->num_closing_kernelsize->setMinimum(1);
+    this->Ui->num_closing_kernelsize->setMaximum(10);
+
+    this->Ui->num_bilateral_kernelsize->setMinimum(1);
+    this->Ui->num_bilateral_kernelsize->setMaximum(10);
+
+    this->Ui->num_morph_kernelsize->setMinimum (1);
+    this->Ui->num_morph_kernelsize->setMaximum(10);
 }
 
 void C_frm_Object_Calibration::on_bt_apply_clicked()

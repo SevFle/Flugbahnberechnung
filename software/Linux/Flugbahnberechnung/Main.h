@@ -2,7 +2,7 @@
 #define C_MAIN_H
 
 #include "Code/GlobalObjects.h"
-#include "Code/Camera_unmanaged.h"
+#include "Code/camera_manager.h"
 #include <thread>
 
 using namespace nmsp_GlobalObjects;

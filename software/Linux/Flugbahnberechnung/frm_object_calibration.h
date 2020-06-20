@@ -145,6 +145,7 @@ private slots:
   void on_bt_tracking_clicked();
   void on_chkb_bilateral_stateChanged(int arg1);
   void get_camera_settings (int camera_id);
+  void set_gui();
   void Fill_Mat_2_Lbl(cv::Mat& img, QLabel* label);
 };
 

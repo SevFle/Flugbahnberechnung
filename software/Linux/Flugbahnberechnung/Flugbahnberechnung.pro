@@ -18,10 +18,10 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
     App_main.cpp \
     Code/CSV_Datei.cpp \
-    Code/Camera_unmanaged.cpp \
     Code/GlobalObjects.cpp \
     Code/Kalmanfilter.cpp \
     Code/camera.cpp \
+    Code/camera_manager.cpp \
     Code/object.cpp \
     Code/posen.cpp \
     Code/tracking.cpp \
@@ -36,11 +36,11 @@ SOURCES += \
 
 HEADERS += \
     Code/CSV_Datei.h \
-    Code/Camera_unmanaged.h \
     Code/CudaKernels.cuh \
     Code/GlobalObjects.h \
     Code/Kalmanfilter.h \
     Code/camera.h \
+    Code/camera_manager.h \
     Code/kalman_cuda.cuh \
     Code/object.h \
     Code/point.h \

@@ -1,6 +1,6 @@
 #pragma once
 /****************************************************************** Includes ****************************************************************/
-#include "Camera_unmanaged.h"
+#include "camera_manager.h"
 
 #include <thread>
 
