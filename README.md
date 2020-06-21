@@ -15,11 +15,11 @@ Platzhalter
 
 **Software**
 
-| Software      | Version   |
-| ------        | ------    |
-|OpenCV         | 4.2.0     |
-|CUDA Toolkit   | 10.1      |
-|Visual Studio  | 2017      |
+| Software [Windows]    | Version   | Software [Linux]  | Version   |
+| ------                | ------    | ------            | ------    |
+|Visual Studio          | 4.2.0     |QT Creator         | 15.5      |
+|CUDA Toolkit           | 10.1      |CUDA Toolkit       | 10.1      |
+|OpenCV                 | 4.2.0     |OpenCV             | 4.2.0     |
 
 
 
