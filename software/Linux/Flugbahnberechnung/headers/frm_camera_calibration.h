@@ -19,8 +19,6 @@ public:
 private:
   Ui::C_frm_camera_calibration* Ui;
 
-
-
   C_GlobalObjects* GlobalObjects;
   C_Main*         Main;
   int Zaehler;

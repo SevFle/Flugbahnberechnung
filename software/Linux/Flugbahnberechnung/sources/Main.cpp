@@ -1,4 +1,4 @@
-#include "Main.h"
+#include "headers/Main.h"
 
 using namespace Main;
 

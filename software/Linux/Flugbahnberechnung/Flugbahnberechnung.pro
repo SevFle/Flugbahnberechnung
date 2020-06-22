@@ -16,53 +16,53 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-    App_main.cpp \
-    Code/CSV_Datei.cpp \
-    Code/GlobalObjects.cpp \
-    Code/Kalmanfilter.cpp \
-    Code/camera.cpp \
-    Code/camera_manager.cpp \
-    Code/object.cpp \
-    Code/posen.cpp \
-    Code/tracking.cpp \
-    Main.cpp \
-    frm_camera_calibration.cpp \
-    frm_camera_calibration_crop.cpp \
-    frm_camera_positioning.cpp \
-    frm_camera_positioning_pose.cpp \
-    frm_object_calibration.cpp \
-    frm_object_tracking.cpp \
-    frm_main.cpp
+    sources/App_main.cpp \
+    sources/CSV_Datei.cpp \
+    sources/GlobalObjects.cpp \
+    sources/Kalmanfilter.cpp \
+    sources/camera.cpp \
+    sources/camera_manager.cpp \
+    sources/object.cpp \
+    sources/posen.cpp \
+    sources/tracking.cpp \
+    sources/Main.cpp \
+    sources/frm_camera_calibration.cpp \
+    sources/frm_camera_calibration_crop.cpp \
+    sources/frm_camera_positioning.cpp \
+    sources/frm_camera_positioning_pose.cpp \
+    sources/frm_object_calibration.cpp \
+    sources/frm_object_tracking.cpp \
+    sources/frm_main.cpp
 
 HEADERS += \
-    Code/CSV_Datei.h \
-    Code/CudaKernels.cuh \
-    Code/GlobalObjects.h \
-    Code/Kalmanfilter.h \
-    Code/camera.h \
-    Code/camera_manager.h \
-    Code/kalman_cuda.cuh \
-    Code/object.h \
-    Code/point.h \
-    Code/posen.h \
-    Code/tracking.h \
-    Main.h \
-    frm_camera_calibration.h \
-    frm_camera_calibration_crop.h \
-    frm_camera_positioning.h \
-    frm_camera_positioning_pose.h \
-    frm_main.h \
-    frm_object_calibration.h \
-    frm_object_tracking.h
+    headers/CSV_Datei.h \
+    headers/CudaKernels.cuh \
+    headers/GlobalObjects.h \
+    headers/Kalmanfilter.h \
+    headers/camera.h \
+    headers/camera_manager.h \
+    headers/kalman_cuda.cuh \
+    headers/object.h \
+    headers/point.h \
+    headers/posen.h \
+    headers/tracking.h \
+    headers/Main.h \
+    headers/frm_camera_calibration.h \
+    headers/frm_camera_calibration_crop.h \
+    headers/frm_camera_positioning.h \
+    headers/frm_camera_positioning_pose.h \
+    headers/frm_main.h \
+    headers/frm_object_calibration.h \
+    headers/frm_object_tracking.h
 
 FORMS += \
-    frm_camera_calibration.ui \
-    frm_camera_calibration_crop.ui \
-    frm_camera_positioning.ui \
-    frm_camera_positioning_pose.ui \
-    frm_main.ui \
-    frm_object_calibration.ui \
-    frm_object_tracking.ui
+    forms/frm_camera_calibration.ui \
+    forms/frm_camera_calibration_crop.ui \
+    forms/frm_camera_positioning.ui \
+    forms/frm_camera_positioning_pose.ui \
+    forms/frm_main.ui \
+    forms/frm_object_calibration.ui \
+    forms/frm_object_tracking.ui
 
 ################################# CUDA INCLUDES #################################
 #CUDA_SOURCES = \
@@ -140,7 +140,7 @@ FORMS += \
 #cuda.output = ${OBJECTS_DIR}${QMAKE_FILE_BASE}_cuda.o
 ## Tell Qt that we want add more stuff to the Makefile
 #QMAKE_EXTRA_COMPILERS += cuda
-CUDA_SOURCES += Code/CudaKernels.cu
+CUDA_SOURCES += cuda/CudaKernels.cu
 
 CUDA_SDK += "/usr/local/cuda-10.1"
 CUDA_DIR += "/usr/local/cuda-10.1"

@@ -1,5 +1,5 @@
-#include "Main.h"
-#include "Code/GlobalObjects.h"
+#include "headers/Main.h"
+#include "headers/GlobalObjects.h"
 
 #include <QApplication>
 

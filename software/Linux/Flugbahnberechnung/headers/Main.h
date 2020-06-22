@@ -1,8 +1,8 @@
 #ifndef C_MAIN_H
 #define C_MAIN_H
 
-#include "Code/GlobalObjects.h"
-#include "Code/camera_manager.h"
+#include "headers/GlobalObjects.h"
+#include "headers/camera_manager.h"
 #include <thread>
 
 using namespace nmsp_GlobalObjects;
@@ -68,13 +68,13 @@ namespace Main
     };
   }
 
-#include "frm_main.h"
-#include "frm_object_calibration.h"
-#include "frm_object_tracking.h"
-#include "frm_camera_calibration.h"
-#include "frm_camera_calibration_crop.h"
-#include "frm_camera_positioning.h"
-#include "frm_camera_positioning_pose.h"
+#include "headers/frm_main.h"
+#include "headers/frm_object_calibration.h"
+#include "headers/frm_object_tracking.h"
+#include "headers/frm_camera_calibration.h"
+#include "headers/frm_camera_calibration_crop.h"
+#include "headers/frm_camera_positioning.h"
+#include "headers/frm_camera_positioning_pose.h"
 
 
 #endif // C_MAIN_H

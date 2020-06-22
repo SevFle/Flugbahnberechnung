@@ -1,4 +1,4 @@
-#include "frm_main.h"
+#include "headers/frm_main.h"
 using namespace frm_Main;
 
 C_frm_Main::C_frm_Main(C_GlobalObjects* GlobalObjects, C_Main* Main, QWidget *parent)

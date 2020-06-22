@@ -6,7 +6,7 @@
 #include <QTimer>
 #include <QMessageBox>
 
-#include "Main.h"
+#include "headers/Main.h"
 #include "ui_frm_main.h"
 
 using namespace Main;

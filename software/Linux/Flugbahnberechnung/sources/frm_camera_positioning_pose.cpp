@@ -1,4 +1,4 @@
-#include "frm_camera_positioning_pose.h"
+#include "headers/frm_camera_positioning_pose.h"
 using namespace frm_Camera_Positioning_Pose;
 
 C_frm_Camera_Positioning_Pose::C_frm_Camera_Positioning_Pose(C_GlobalObjects* GlobalObjects, C_Main* Main, QWidget *parent) :
