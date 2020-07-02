@@ -57,6 +57,8 @@ private slots:
   void on_rb_single_calibration_clicked();
   void on_rb_stereo_calibration_clicked();
   void on_bt_photo_clicked();
+  void ShowTable();
+
 };
 }
 

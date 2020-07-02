@@ -3,7 +3,7 @@
 #include "GlobalObjects.h"
 #include <vector>
 
-using namespace nmsp_posen;
+using namespace posen;
 using namespace nmsp_GlobalObjects;
 
 

@@ -7,11 +7,11 @@
 
 #include <thread>
 #include <chrono>
-//#include "posen.h"
+#include "headers/posen.h"
 
-namespace nmsp_posen
+namespace posen
   {
-  struct S_Positionsvektor;
+  struct C_AbsolutePose;
   }
 
 
@@ -74,7 +74,9 @@ namespace camera
     bool contour_found;
     bool image_prepared;
     bool show_cropped_image;
-
+  public:
+    C_AbsolutePose* CameraPose;
+private:
     /******************************************** Nicht öffentliche private Anwender-Attribute **************************************************/
     int capture_api;
 
@@ -205,7 +207,7 @@ namespace camera
     void get_calibration_parameter (double (&DistCoeffs)[1][5], double (&Intrinsic)[3][3]) const;
     void get_camera_settings ();
 
-    void         get_objectPosition_2D_Pixel (bool& Contour_Found, nmsp_posen::S_Positionsvektor& Vec_Object, double& timestamp);
+    void         get_objectPosition_2D_Pixel (bool& Contour_Found, posen::S_Positionsvektor& Vec_Object, double& timestamp);
 
     cv::Mat*&    get_cpu_src_img ();
     void         set_cpu_src_img (cv::Mat* cpu_src_img);

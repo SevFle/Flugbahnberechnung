@@ -1,6 +1,6 @@
 #pragma once
 
-#include "GlobalObjects.h"
+#include "headers/GlobalObjects.h"
 
 
 using namespace nmsp_GlobalObjects;

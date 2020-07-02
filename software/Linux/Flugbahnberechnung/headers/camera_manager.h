@@ -17,7 +17,7 @@ using namespace std;
 using namespace camera;
 using namespace nmsp_tracking;
 using namespace object;
-using namespace nmsp_posen;
+using namespace posen;
 using namespace nmsp_GlobalObjects;
 
 
@@ -67,6 +67,7 @@ namespace nmsp_camera_unmanaged
     int   numCornersHeight;
     float SquareSize;
     int   numBoards_imgs;
+    bool calibration_done;
 
     private:
     int Photo_ID;
@@ -98,6 +99,8 @@ namespace nmsp_camera_unmanaged
     void calibrate_single_camera (int current_camera_id);
     void calibrate_stereo_camera (int current_camera_id);
     void sm_object_tracking ();
+
+    void calculate_camera_pose(int camera1, int camera2, cv::Vec3d T, cv::Mat R);
 
 
     /******************************************************* Private Klassenmethoden***************************************************************/

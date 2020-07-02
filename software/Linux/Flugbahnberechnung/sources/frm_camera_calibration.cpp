@@ -112,8 +112,12 @@ void C_frm_Camera_Calibration::Taktgeber_Tick()
           break;
         }
       }
-
+    if (this->Main->Camera_manager->calibration_done)
+    {
+    this->ShowTable();
+    }
 }
+
 void C_frm_Camera_Calibration::Fill_Mat_2_Lbl(cv::Mat& img, QLabel* label)
 {
 label->setPixmap(QPixmap::fromImage(QImage(img.data, img.cols, img.rows, img.step, QImage::Format_RGB888)));
@@ -280,7 +284,7 @@ void C_frm_Camera_Calibration::sm_Stereo_camera_calibration ()
       this->Main->Camera_manager->camera_vector[current_camera_id]->save_picture (current_camera_id,photo_id,naming);
       this->Main->Camera_manager->camera_vector[current_camera_id]->save_picture (current_camera_id + 1,photo_id,naming);
 
-      this->Ui->txb_img_count->setText(QString::number(this->photo_id + 1));
+      this->Ui->txb_img_count->                                     setText(QString::number(this->photo_id + 1));
       this->photo_id++;
 
       if (photo_id >= photocount_user_input)
@@ -311,4 +315,22 @@ void C_frm_Camera_Calibration::sm_Stereo_camera_calibration ()
 
       break;
     }
+  }
+void C_frm_Camera_Calibration::ShowTable()
+  {
+  switch(method)
+  {
+   case 0:
+      this->Ui->tblv_single_parameters->verticalHeader()->hide();
+
+      this->Ui->tblv_single_parameters->show();
+      break;
+  case 1:
+      this->Ui->tblv_stereo_output->verticalHeader()->hide();
+      //this->Ui->tblv_stereo_output->data
+      break;
+  default:
+      return;
+
+  }
   }

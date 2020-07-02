@@ -1,6 +1,6 @@
 #pragma once
 /****************************************************************** Includes ****************************************************************/
-#include "camera_manager.h"
+#include "headers/camera_manager.h"
 
 #include <thread>
 
@@ -649,16 +649,17 @@ void c_camera_unmanaged::calibrate_single_camera (int current_camera_id)
   this->camera_vector[current_camera_id]->init_rectify_map();
   this->camera_vector[current_camera_id]->set_undistord_active (true);
   }
-void c_camera_unmanaged::calibrate_stereo_camera (int current_camera_id)
+void c_camera_unmanaged::calibrate_stereo_camera (int camera_id)
   {
-  vector<vector<cv::Point3f>> object_points;
-  vector<vector<cv::Point2f>> imagePoints1;
-  vector<vector<cv::Point2f>> imagePoints2;
-  vector<vector<cv::Point2f>> left_img_points;
-  vector<vector<cv::Point2f>> right_img_points;
+    this->calibration_done = false;
+  vector<vector<cv::Point3f>>   object_points;
+  vector<vector<cv::Point2f>>   imagePoints1;
+  vector<vector<cv::Point2f>>   imagePoints2;
+  vector<vector<cv::Point2f>>   left_img_points;
+  vector<vector<cv::Point2f>>   right_img_points;
 
-  vector<cv::Point2f> corners1;
-  vector<cv::Point2f> corners2;
+  vector<cv::Point2f>           corners1;
+  vector<cv::Point2f>           corners2;
 
   cv::Mat img1;
   cv::Mat img2;
@@ -669,15 +670,15 @@ void c_camera_unmanaged::calibrate_stereo_camera (int current_camera_id)
   int error_count = 0;
 
   cv::Size board_size = cv::Size (this->numCornersWidth,this->numCornersHeight);
-  int      board_n    = this->numCornersWidth * this->numCornersHeight;
+  int      board_n    =           this->numCornersWidth * this->numCornersHeight;
 
 
   //Iterate over all available photos
   while (this->Photo_ID < this->numBoards_imgs)
     {
     char left_img[100], right_img[100];
-    img1 = cv::imread ("../Parameter/Bilder/Camera_Stereo_Calibration_" + std::to_string (current_camera_id) + "_Snapshot_" + std::to_string (this->Photo_ID) + ".png",1);
-    img2 = cv::imread ("../Parameter/Bilder/Camera_Stereo_Calibration_" + std::to_string (current_camera_id + 1) + "_Snapshot_" + std::to_string (this->Photo_ID) + ".png",1);
+    img1 = cv::imread ("../Parameter/Bilder/Camera_Stereo_Calibration_" + std::to_string (camera_id) + "_Snapshot_" + std::to_string (this->Photo_ID) + ".png",1);
+    img2 = cv::imread ("../Parameter/Bilder/Camera_Stereo_Calibration_" + std::to_string (camera_id + 1) + "_Snapshot_" + std::to_string (this->Photo_ID) + ".png",1);
 
     cv::cvtColor (img1,gray1,cv::COLOR_BGR2GRAY);
     cv::cvtColor (img2,gray2,cv::COLOR_BGR2GRAY);
@@ -743,13 +744,17 @@ void c_camera_unmanaged::calibrate_stereo_camera (int current_camera_id)
     }
 
   std::cout << "Starting Calibration" << endl;
-  cv::Mat   K1, K2, R, F, E;
-  cv::Vec3d T;
+  cv::Mat   K1, K2, F, E;
+  cv::Mat R(3, 3, CV_64F);
+  cv::Mat T(3, 1, CV_64F);
+
+  //cv::Vec3d T;
   cv::Mat   D1, D2;
-  this->camera_vector[current_camera_id]->Intrinsic->copyTo (K1);
-  this->camera_vector[current_camera_id + 1]->Intrinsic->copyTo (K2);
-  this->camera_vector[current_camera_id]->DistCoeffs->copyTo (D1);
-  this->camera_vector[current_camera_id + 1]->DistCoeffs->copyTo (D2);
+  //cv::InputOutputArray R, T;
+  this->camera_vector[camera_id]->      Intrinsic->copyTo   (K1);
+  this->camera_vector[camera_id + 1]->  Intrinsic->copyTo   (K2);
+  this->camera_vector[camera_id]->      DistCoeffs->copyTo  (D1);
+  this->camera_vector[camera_id + 1]->  DistCoeffs->copyTo  (D2);
 
   cv::stereoCalibrate (object_points,left_img_points,right_img_points,K1,D1,K2,D2,img1.size(),R,T,E,F,cv::CALIB_FIX_INTRINSIC);
 
@@ -763,19 +768,19 @@ void c_camera_unmanaged::calibrate_stereo_camera (int current_camera_id)
   std::cout << "F" << endl << F << endl << endl;
   std::cout << "Done Calibration" << endl;
 
+  this->calculate_camera_pose(camera_id, camera_id+1, T, R);
 
-  std::cout << "Starting Rectification" << endl;
+  this->calibration_done = true;
 
-  cv::Mat R1, R2, P1, P2, Q;
-  stereoRectify (K1,D1,K2,D2,img1.size(),R,T,R1,R2,P1,P2,Q);
+//  std::cout << "Starting Rectification" << endl;
 
-  std::cout << "R1" << R1 << endl;
-  std::cout << "R2" << R2 << endl;
-  std::cout << "P1" << P1 << endl;
-  std::cout << "P2" << P2 << endl;
-  std::cout << "Q" << Q << endl;
+//  cv::Mat R1, R2, P1, P2, Q;
+//  stereoRectify (K1,D1,K2,D2,img1.size(),R,T,R1,R2,P1,P2,Q);
 
-  std::cout << "Done Rectification" << endl;
+//  std::cout << "R1" << R1 << endl;
+//  std::cout << "R2" << R2 << endl;
+//  std::cout << "P1" << P1 << endl;
+//  std::cout << "P2" << P2 << endl;0
   }
 
 void c_camera_unmanaged::sm_object_tracking ()
@@ -854,3 +859,38 @@ void c_camera_unmanaged::sm_object_tracking ()
       }//switch(statemachine_state)
     }//while(tracking_active)
   }//void sm_object_tracking
+
+void c_camera_unmanaged::calculate_camera_pose(int camera1, int camera2, cv::Vec3d T, cv::Mat R)
+  {
+   //P02 = P01*P12
+
+  double HomogenePosenMatrixTempPuffer[4][4];
+  for (int i=0; i < 3; i++)
+    {
+    for (int j=0; j < 3; j++)
+      {
+      HomogenePosenMatrixTempPuffer[j][i] = R.at<double>(j,i);
+      }
+    }
+  HomogenePosenMatrixTempPuffer[3][0] = 0.0;
+  HomogenePosenMatrixTempPuffer[3][1] = 0.0;
+  HomogenePosenMatrixTempPuffer[3][2] = 0.0;
+  HomogenePosenMatrixTempPuffer[3][3] = 1.0;
+  for (int i = 0; i< 3; i++)
+    {
+    HomogenePosenMatrixTempPuffer[i][3] = T[i];
+    }
+
+
+  for (int i = 0; i < 4; i++)
+    {
+    for (int j = 0; j < 4; j++)
+      {
+      this->camera_vector[camera2]->CameraPose->HomogenePosenMatrix[i][j] = 0;
+      for (int k = 0; k < 4; k++)
+        this->camera_vector[camera2]->CameraPose->HomogenePosenMatrix[i][j] += this->camera_vector[camera1]->CameraPose->HomogenePosenMatrix[i][k] *
+                               HomogenePosenMatrixTempPuffer[k][j];
+      }
+    }
+  this->save_camera_cos(this->camera_vector[camera2]->get_camera_id(), *this->camera_vector[camera2]->CameraPose);
+  }//calculate_camera_pose

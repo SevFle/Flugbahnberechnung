@@ -1,7 +1,7 @@
 #pragma once
 /****************************************************************** Includes ****************************************************************/
-#include "camera.h"
-#include "posen.h"
+#include "headers/camera.h"
+#include "headers/posen.h"
 /****************************************************************** Namespaces***************************************************************/
 using namespace camera;
 /*************************************************************** Konstruktoren **************************************************************/
@@ -104,6 +104,8 @@ c_camera::c_camera (int camera_id)
   this->Intrinsic  = new cv::Mat (cv::Mat_<double> (3,3));
 
   this->gpu_gaussian_kernel_size = new cv::cuda::GpuMat();
+  this->CameraPose = new C_AbsolutePose;
+
   /**************************************************************** Contour variablen ****************************************************************/
   objekt_anzahl = 0;
   KonturIndex   = 0;
@@ -1214,6 +1216,8 @@ void c_camera::init (int camera_id)
 
   this->RoI.x = 0;
   this->RoI.y = 0;
+
+  //TODO INIT C_ABSOLUTETPOSE
 
 
   this->init_rectify_map();
