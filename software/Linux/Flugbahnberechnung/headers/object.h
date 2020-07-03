@@ -1,5 +1,8 @@
 #pragma once
+#ifndef __Object_H
+#define __Object_H
 #include <vector>
+#include "headers/posen.h"
 
 namespace object
   {
@@ -14,7 +17,6 @@ namespace object
 
     double translation[3];
     double velocity[3];
-
     double pixel_coordinates[3];
 
     bool active;
@@ -44,5 +46,7 @@ namespace object
 
     };
   }
+
+#endif
 
 

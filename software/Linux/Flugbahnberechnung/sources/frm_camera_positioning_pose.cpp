@@ -12,8 +12,22 @@ C_frm_Camera_Positioning_Pose::C_frm_Camera_Positioning_Pose(C_GlobalObjects* Gl
     this->camera_id                                    = 0;
     this->Zaehler                                              = 0;
     this->method                                               = 1;
-    nx, ny, nz, ox, oy, oz, ax, ay, az, px, py, pz, n0, a0, o0 = 0.0;
-    p0                                                         = 1.0;
+    nx = 0;
+    ny = 0;
+    nz = 0;
+    n0 = 0;
+    ox = 0;
+    oy = 0;
+    oz = 0;
+    o0 = 0;
+    ax = 0;
+    ay = 0;
+    az = 0;
+    a0 = 0;
+    px = 0;
+    py = 0;
+    pz = 0;
+    p0 = 1;
     this->pose_ =    new C_AbsolutePose();
 
 }
@@ -22,10 +36,25 @@ C_frm_Camera_Positioning_Pose::~C_frm_Camera_Positioning_Pose()
 {
     delete(pose_);
     this->pose_ = nullptr;
-    nx, ny, nz, n0, ox, oy, oz, o0, ax, ay, az, a0, px, py, pz, p0 = 0;
-    this->Zaehler                                                  = 0;
-    this->camera_id                                        = 0;
-    this->Main                                                     = nullptr;
+    nx = 0;
+    ny = 0;
+    nz = 0;
+    n0 = 0;
+    ox = 0;
+    oy = 0;
+    oz = 0;
+    o0 = 0;
+    ax = 0;
+    ay = 0;
+    az = 0;
+    a0 = 0;
+    px = 0;
+    py = 0;
+    pz = 0;
+    p0 = 1;
+    this->Zaehler                                 = 0;
+    this->camera_id                               = 0;
+    this->Main                                    = nullptr;
     this->GlobalObjects                                            = nullptr;
 
     delete Ui;

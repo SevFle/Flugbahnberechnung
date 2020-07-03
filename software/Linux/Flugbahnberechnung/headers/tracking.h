@@ -1,4 +1,7 @@
 #pragma once
+#ifndef __Tracking_H
+#define __Tracking_H
+
 #include "posen.h"
 #include "GlobalObjects.h"
 #include <vector>
@@ -40,3 +43,4 @@ namespace nmsp_tracking
     void Calc_RichtungsvektorenToWorld (std::vector<S_Positionsvektor> vec_Richtungsvektoren, std::vector<S_Positionsvektor>& vec_Richtungsvektoren_World, std::vector<C_AbsolutePose> vec_TCP_Poses);
     };
   }
+#endif

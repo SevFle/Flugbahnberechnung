@@ -1,5 +1,5 @@
-#ifndef C_MAIN_H
-#define C_MAIN_H
+#ifndef __MAIN_H
+#define __MAIN_H
 
 #include "headers/GlobalObjects.h"
 #include "headers/camera_manager.h"

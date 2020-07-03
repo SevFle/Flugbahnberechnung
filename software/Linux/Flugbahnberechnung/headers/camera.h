@@ -1,4 +1,7 @@
 #pragma once
+#ifndef __Camera_H
+#define __Camera_H
+
 
 #include <opencv2/opencv.hpp>
 #include <opencv2/highgui.hpp>
@@ -129,7 +132,7 @@ private:
     double cy;
     double fx;
     double fy;
-    double f;
+    double f;__Posen_H
     double Vec_Object_Abs;
 
     float Radius;
@@ -148,7 +151,6 @@ private:
 
 
     /*********************************************************** Öffentliche OpenCV-Variablen  **************************************************/
-      #pragma region Öfffentliche OpenCV-Variablen
     uchar hue_min;
     uchar hue_max;
     uchar saturation_min;
@@ -195,7 +197,6 @@ private:
     bool idle;
 
 
-      #pragma endregion
 
     /********************************************************* Öffentliche Klassenmethoden*******************************************************/
     public:
@@ -418,3 +419,4 @@ private:
 
     };
   }
+#endif

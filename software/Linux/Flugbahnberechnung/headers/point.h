@@ -1,4 +1,6 @@
 #pragma once
+#ifndef __Point_H
+#define __Point_H
 #include <cuda.h>
 #include "cuda_runtime.h"
 #include "device_launch_parameters.h"
@@ -12,3 +14,5 @@
 void predict_loop (int iteration_num, float* predict, float* cov, float* new_predict, float* new_cov, int point_num, float delta_t);
 
 void printMatrix (float* a, int Width, int length);
+
+#endif

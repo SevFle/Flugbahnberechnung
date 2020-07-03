@@ -1,11 +1,13 @@
-#pragma once
+#ifndef __Camera_Manager_H
+#define __Camera_Manager_H
+
 
 /************************************************************ Includes *******************************************************************/
 
-#include "camera.h"
-#include "tracking.h"
-#include "object.h"
-#include "GlobalObjects.h"
+#include "headers/camera.h"
+#include "headers/tracking.h"
+#include "headers/object.h"
+#include "headers/GlobalObjects.h"
 
 namespace std
   {
@@ -108,3 +110,4 @@ namespace nmsp_camera_unmanaged
     void start_camera_thread ();
     };// c_camera_unmanaged
   }//nmsp_c_camera_unmanaged
+#endif

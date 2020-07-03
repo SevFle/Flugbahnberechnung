@@ -1,4 +1,6 @@
 ﻿#pragma once
+#ifndef __Kalmanfilter_H
+#define __Kalmanfilter_H
 #include "cuda/kalman_cuda.cuh"
 
 namespace nmsp_kalman_filter
@@ -17,3 +19,4 @@ namespace nmsp_kalman_filter
     public:
     };
   }
+#endif

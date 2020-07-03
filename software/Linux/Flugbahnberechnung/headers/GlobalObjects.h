@@ -1,4 +1,6 @@
 #pragma once
+#ifndef __GlobalObjects_H
+#define __GlobalObjects_H
 #include "CSV_Datei.h"
 #include <vector>
 
@@ -21,3 +23,4 @@ namespace nmsp_GlobalObjects
     std::vector<int>* camera_order;
     }; //ref class C_GlobalObjects
   }
+#endif

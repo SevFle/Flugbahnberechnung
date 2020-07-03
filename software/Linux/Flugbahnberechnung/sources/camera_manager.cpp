@@ -1,4 +1,3 @@
-#pragma once
 /****************************************************************** Includes ****************************************************************/
 #include "headers/camera_manager.h"
 
@@ -287,8 +286,8 @@ void c_camera_unmanaged::load_camera_calibration (int camera_id)
   int    numBoards;
   double DistCoeffs[1][5];
   double Intrinsic[3][3];
-  int    real_size_width;
-  int    real_size_height;
+  int    real_size_width = 800;
+  int    real_size_height = 600;
 
   this->GlobalObjects->csv_parameter_datei->Oeffnen (Dateiname,Enum_CSV_Access::Read);
 
@@ -474,9 +473,8 @@ void c_camera_unmanaged::load_camera_cos (int camera_id, C_AbsolutePose& WorldTo
 
 void c_camera_unmanaged::init_camera_vectors ()
   {
-    int cameras_in_use = GlobalObjects->cameras_in_use;
   //Create a camera object and start its according thread. The amount of objects equals the amount of cameras in use 
-  for (int i = 0; i < cameras_in_use; i++)
+  for (int i = 0; i < GlobalObjects->cameras_in_use; i++)
     {
     auto* opencv_unmanaged = new camera::c_camera (i);
     opencv_unmanaged->set_idle (true);
@@ -670,13 +668,13 @@ void c_camera_unmanaged::calibrate_stereo_camera (int camera_id)
   int error_count = 0;
 
   cv::Size board_size = cv::Size (this->numCornersWidth,this->numCornersHeight);
-  int      board_n    =           this->numCornersWidth * this->numCornersHeight;
+  //int      board_n    =           this->numCornersWidth * this->numCornersHeight;
 
 
   //Iterate over all available photos
   while (this->Photo_ID < this->numBoards_imgs)
     {
-    char left_img[100], right_img[100];
+    //char left_img[100], right_img[100];
     img1 = cv::imread ("../Parameter/Bilder/Camera_Stereo_Calibration_" + std::to_string (camera_id) + "_Snapshot_" + std::to_string (this->Photo_ID) + ".png",1);
     img2 = cv::imread ("../Parameter/Bilder/Camera_Stereo_Calibration_" + std::to_string (camera_id + 1) + "_Snapshot_" + std::to_string (this->Photo_ID) + ".png",1);
 
@@ -731,10 +729,10 @@ void c_camera_unmanaged::calibrate_stereo_camera (int camera_id)
 
   std::cout << endl << "Analyzed " << Photo_ID - error_count << " out of " << Photo_ID << " source immages successfully." << endl;
 
-  for (int i = 0; i < imagePoints1.size(); i++)
+  for (int i = 0; i < static_cast<int>(imagePoints1.size()); i++)
     {
     vector<cv::Point2f> v1, v2;
-    for (int j = 0; j < imagePoints1[i].size(); j++)
+    for (int j = 0; j < static_cast<int>(imagePoints1[i].size()); j++)
       {
       v1.emplace_back (static_cast<double> (imagePoints1[i][j].x),static_cast<double> (imagePoints1[i][j].y));
       v2.emplace_back (static_cast<double> (imagePoints2[i][j].x),static_cast<double> (imagePoints2[i][j].y));
@@ -785,27 +783,18 @@ void c_camera_unmanaged::calibrate_stereo_camera (int camera_id)
 
 void c_camera_unmanaged::sm_object_tracking ()
   {
-  #pragma region Initializer
-
   int statemachine_state                = 0;
-  int iteration                         = 0;
   this->tracked_data->positionsvektor.X = 0.0;
   this->tracked_data->positionsvektor.Y = 0.0;
   this->tracked_data->positionsvektor.Z = 0.0;
   int object_found_camID                = 0;
 
-  int stateSize = 9;
-  int measSize  = 3;
-  int contrSize = 4;
-
   double temp1 = 0;
   double temp2 = 0;
 
-  bool found = false;
 
   std::vector<S_Positionsvektor> v_positions;
 
-  #pragma endregion
   while (this->tracking_active)
     {
     switch (statemachine_state)
