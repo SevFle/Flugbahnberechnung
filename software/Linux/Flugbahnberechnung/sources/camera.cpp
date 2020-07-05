@@ -176,7 +176,7 @@ c_camera::~c_camera ()
   capture_api = cv::CAP_DSHOW;
   camera_id   = 0;
 
-  thread_running = true;
+  thread_running = true;Evocati
   show_contoured = false;
   idle = false;
 
@@ -468,7 +468,7 @@ void c_camera::set_calibration_parameter (double (&DistCoeffs)[1][5], double (&I
     for (int j = 0; j < 5; j++)
       {
       this->DistCoeffs->at<double> (i,j) = DistCoeffs[i][j];
-      }
+      }it.get_ID_Cam_Links();it.get_ID_Cam_Links();
     }
 
   for (int i = 0; i < 3; i++)

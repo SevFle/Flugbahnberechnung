@@ -11,8 +11,6 @@ using namespace nmsp_GlobalObjects;
 c_camera_unmanaged::c_camera_unmanaged ( C_GlobalObjects* GlobalObjects)
   {
   this->tracking_thread      = new c_tracking (GlobalObjects);
-  this->tracked_data         = new nmsp_tracking::s_tracking_data();
-  this->vec_WorldToCam_Poses = new std::vector<C_AbsolutePose>;
   stop_statemachine          = false;
   this->GlobalObjects        = GlobalObjects;
   load_positioning           = false;
@@ -37,10 +35,6 @@ c_camera_unmanaged::~c_camera_unmanaged ()
   GlobalObjects     = nullptr;
   stop_statemachine = false;
   cameras_in_use    = 0;
-  delete(this->vec_WorldToCam_Poses);
-  vec_WorldToCam_Poses = nullptr;
-  delete(this->tracked_data);
-  tracked_data = nullptr;
 
   delete(this->tracking_thread);
   this->tracking_thread = nullptr;
@@ -783,11 +777,18 @@ void c_camera_unmanaged::calibrate_stereo_camera (int camera_id)
 
 void c_camera_unmanaged::sm_object_tracking ()
   {
+  s_tracking_data                     tracked_data;
+  C_object*                           object;
+  std::vector<C_object*>              v_tracked_objects;
+  std::vector<C_AbsolutePose>*        vec_WorldToCam_Poses; //AKA WORLD TO CAMERA POS
+
   int statemachine_state                = 0;
-  this->tracked_data->positionsvektor.X = 0.0;
-  this->tracked_data->positionsvektor.Y = 0.0;
-  this->tracked_data->positionsvektor.Z = 0.0;
-  int object_found_camID                = 0;
+  int object_id                         =0;
+
+  int ID_Cam_Links = 0;
+  int ID_Cam_Rechts = 0;
+
+  bool object_in_init_zone = false;
 
   double temp1 = 0;
   double temp2 = 0;
@@ -800,6 +801,10 @@ void c_camera_unmanaged::sm_object_tracking ()
     switch (statemachine_state)
       {
       case 0:
+        tracked_data.positionsvektor.X = 0.0;
+        tracked_data.positionsvektor.Y = 0.0;
+        tracked_data.positionsvektor.Z = 0.0;
+
         //Lade alle fest definierten Welt-Kamera Posen und erstelle einen Vektor mit allen Posen. Vektor[0] bezieht sich auf Kamera[0], usw.
         for (int i = 0; i < GlobalObjects->cameras_in_use; i++)
           {
@@ -809,45 +814,121 @@ void c_camera_unmanaged::sm_object_tracking ()
           }
 
         statemachine_state = 1;
-
         break;
-      case 1:
-        //Überprüfe ob eine Kameras das Objekt gefunden hat. Gehe dazu durch die komplette linke Reihe (+2).
-        //Hat eine Kamera (0) das Objekt gesichtet, wird es wahrscheinlich
-        //auch von der gegenüberliegenden Kamera (1) auffindbar sein.
-          if (this->camera_vector[0]->is_contour_found() == true)
-            {
-			  auto detected_object = new C_object();
-			  this->v_objects.push_back(detected_object);
-			  object_found_camID = 0;
+    case 1:
+
+        //Wenn kein Objekt aus v_tracked_objects innerhalb der Init_ROI (100px x 600 px) in Camera 0+1 || v_tracked_objects leer
+        //->Suche Aktiv nach neuen Objekten
+        if(!object_in_init_zone || v_tracked_objects.size() != 0)
+          {
+          if(this->camera_vector[0]->is_contour_found())
             statemachine_state = 2;
-            break;
-            }
+          }
+        else //Führe Berechnungen der aktuellen Objekte durch
+          {
+          statemachine_state = 3;
+          }
         break;
-
-      case 2:
-        //Hole die 2D-Koordinaten des Objektes aus dem Kamerabild
-		for (auto it = std::begin(v_objects); it != std::end(v_objects); it++)
-		{
-            //this->camera_vector[v_objects(it)->ID_Cam_Links]->get_objectPosition_2D_Pixel (tracked_data->found_0, tracked_data->Richtungsvektor_0, temp1);
-			this->camera_vector[object_found_camID + 1]->get_objectPosition_2D_Pixel (tracked_data->found_1, tracked_data->Richtungsvektor_1, temp2);
-			this->tracked_data->timestamp = (temp1 + temp2) / 2;
-			
-		}
-
+    case 2:
+        //Erstelle neues Ballobjekt
+        object_in_init_zone = true;
+        object = new C_object();
+        object->set_ID_Cam_Links(0);
+        object->set_ID_Cam_Rechts(0);
+        v_tracked_objects.push_back(object);
+        //ROI für die ersten Kameras ist selbstgeführt.
         statemachine_state = 3;
         break;
 
-      case 3:
-        this->tracking_thread->Get_Position_ObjectTracking (*tracked_data,*vec_WorldToCam_Poses);
-        statemachine_state = 4;
-		v_positions.push_back(tracked_data->positionsvektor);
-        break;
-      case 4:
-        break;
+
+    case 3:
+        //Iterator über v_tracked_objects
+        for (auto it = std::begin(v_tracked_objects); it != std::end(v_tracked_objects); it++)
+          {
+          //Get zugewiesene Kameras für Objekt an stelle it
+          ID_Cam_Links  = (*it)->get_ID_Cam_Links();
+          ID_Cam_Rechts = (*it)->get_ID_Cam_Rechts();
+
+          //Get_2D_Pixel für zugewiesene Kamera
+          this->camera_vector[ID_Cam_Links]->get_objectPosition_2D_Pixel (tracked_data.found_0, tracked_data.Richtungsvektor_0, temp1);
+          this->camera_vector[ID_Cam_Rechts]->get_objectPosition_2D_Pixel (tracked_data.found_1, tracked_data.Richtungsvektor_1, temp2);
+          //Wenn Ball gefunden
+          if (tracked_data.found_0 && tracked_data.found_1)
+            {
+              //Berechne Pixel Velocity
+              //Berechne POS + m/s
+            (*it)->calculate_px_speed();
+            (*it)->calculate_ms_speed();
+            (*it)->calculate_pose();
+            //Wenn 2D Pixel im Bereich x = 700-800
+             if(tracked_data.Richtungsvektor_0.X > 700  || tracked_data.Richtungsvektor_1.X > 700)
+             {
+             //Assign nächstes Kamerapaar für Objekt
+             (*it)->set_ID_Cam_Links((*it)->get_ID_Cam_Links()+1);
+             (*it)->set_ID_Cam_Rechts((*it)->get_ID_Cam_Rechts()+1);
+             //Set ROI für nächstes Kamerapaar
+             //this->camera_vector[(*it)->get_ID_Cam_Links()]->
+             //this->camera_vector[(*it)->get_ID_Cam_Rechts()]->
+
+             }
+          break;
+          }
+       }
+    }
+}
+
+
+//      case 0:
+//        //Lade alle fest definierten Welt-Kamera Posen und erstelle einen Vektor mit allen Posen. Vektor[0] bezieht sich auf Kamera[0], usw.
+//        for (int i = 0; i < GlobalObjects->cameras_in_use; i++)
+//          {
+//          C_AbsolutePose abs_WorldToCam;
+//          load_camera_cos (i,abs_WorldToCam);
+//          vec_WorldToCam_Poses->push_back (abs_WorldToCam);
+//          }
+
+//        statemachine_state = 1;
+
+//        break;
+//      case 1:
+//        //Überprüfe ob eine Kameras das Objekt gefunden hat. Gehe dazu durch die komplette linke Reihe (+2).
+//        //Hat eine Kamera (0) das Objekt gesichtet, wird es wahrscheinlich
+//        //auch von der gegenüberliegenden Kamera (1) auffindbar sein.
+//          if (this->camera_vector[0]->is_contour_found() == true)
+//            {
+//			  auto detected_object = new C_object();
+//			  this->v_objects.push_back(detected_object);
+//			  object_found_camID = 0;
+//            statemachine_state = 2;
+//            break;
+//            }
+//        break;
+
+//      case 2:
+//        //Hole die 2D-Koordinaten des Objektes aus dem Kamerabild
+//		for (auto it = std::begin(v_objects); it != std::end(v_objects); it++)
+//		{
+//            //this->camera_vector[v_objects(it)->ID_Cam_Links]->get_objectPosition_2D_Pixel (tracked_data->found_0, tracked_data->Richtungsvektor_0, temp1);
+//			this->camera_vector[object_found_camID + 1]->get_objectPosition_2D_Pixel (tracked_data->found_1, tracked_data->Richtungsvektor_1, temp2);
+//			this->tracked_data->timestamp = (temp1 + temp2) / 2;
+			
+//		}
+
+//        statemachine_state = 3;
+//        break;
+
+//      case 3:
+//        this->tracking_thread->Get_Position_ObjectTracking (*tracked_data,*vec_WorldToCam_Poses);
+//        statemachine_state = 4;
+//		v_positions.push_back(tracked_data->positionsvektor);
+//        break;
+//      case 4:
+//        break;
       }//switch(statemachine_state)
     }//while(tracking_active)
   }//void sm_object_tracking
+
+
 
 void c_camera_unmanaged::calculate_camera_pose(int camera1, int camera2, cv::Vec3d T, cv::Mat R)
   {

@@ -51,16 +51,12 @@ namespace nmsp_camera_unmanaged
     bool             stop_statemachine;
     bool             load_positioning;
     bool             tracking_active;
-    s_tracking_data* tracked_data;
-	C_object*			object;
   	
 
     cv::Mat cpu_kalman_filterL;
     cv::Mat cpu_kalman_filterR;
   	
-	std::vector<C_object*> v_objects;
 	std::vector<c_camera*> camera_vector;
-    std::vector<C_AbsolutePose>*     vec_WorldToCam_Poses; //AKA WORLD TO CAMERA POS
 
     /*** Variablen zur Kamerakalibrierung ********************************************************/
 

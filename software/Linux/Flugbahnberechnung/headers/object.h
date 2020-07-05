@@ -37,12 +37,19 @@ namespace object
 
     void get_pixel_coordinates();
     void calculate_pose();
+    void calculate_px_speed();
+    void calculate_ms_speed();
+
 
     void save_trajectory();
     void statemachine();
 
+    void set_ID_Cam_Links(int ID_Cam_Links);
+    void set_ID_Cam_Rechts(int ID_Cam_Rechts);
 
 
+    int get_ID_Cam_Links();
+    int get_ID_Cam_Rechts();
 
     };
   }
