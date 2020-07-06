@@ -12,11 +12,17 @@ C_frm_Object_Calibration::C_frm_Object_Calibration(C_GlobalObjects* GlobalObject
     camera_id_in_use = 0;
     TimerWait        = 0;
     camera_id_in_use = 0;
+    this->Taktgeber = new QTimer(this);
+    this->Taktgeber_Intervall = 100;
+
 
 }
 
 C_frm_Object_Calibration::~C_frm_Object_Calibration()
 {
+    this->Taktgeber_Intervall = 0;
+    delete (this->Taktgeber);
+
     TimerWait = 0;
 
     this->Main          = nullptr;

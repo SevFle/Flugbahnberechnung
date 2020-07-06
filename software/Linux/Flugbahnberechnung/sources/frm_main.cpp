@@ -143,6 +143,11 @@ void frm_Main::C_frm_Main::on_bt_camera_pose_clicked()
 
 void frm_Main::C_frm_Main::on_bt_camera_positioning_clicked()
 {
+    for (int i = 0; i < this->GlobalObjects->cameras_in_use-1; i++)
+    {
+        this->Main->Camera_manager->camera_vector[i]->set_idle(false);
+        this->Main->Camera_manager->camera_vector[i]->set_undistord_active(false);
+    }
     this->Main->frm_Camera_Positioning->setWindowModality(Qt::ApplicationModal);
     this->Main->frm_Camera_Positioning->show();
 }

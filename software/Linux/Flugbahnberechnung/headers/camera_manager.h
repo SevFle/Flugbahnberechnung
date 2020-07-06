@@ -17,10 +17,10 @@ namespace std
 using namespace std;
 
 using namespace camera;
-using namespace nmsp_tracking;
+using namespace tracking;
 using namespace object;
 using namespace posen;
-using namespace nmsp_GlobalObjects;
+using namespace GlobalObjects;
 
 
 namespace nmsp_camera_unmanaged

@@ -3,7 +3,7 @@
 #include "headers/GlobalObjects.h"
 
 
-using namespace nmsp_GlobalObjects;
+using namespace GlobalObjects;
 
 C_GlobalObjects::C_GlobalObjects ()
   {

@@ -16,11 +16,17 @@ C_frm_Camera_Calibration::C_frm_Camera_Calibration(C_GlobalObjects* GlobalObject
     this->photo_id              = 0;
     this->intervall             = 0;
     this->photocount_user_input = 3;
+    this->Taktgeber = new QTimer(this);
+    this->Taktgeber_Intervall = 100;
+
 
 }
 
 C_frm_Camera_Calibration::~C_frm_Camera_Calibration()
 {
+    this->Taktgeber_Intervall = 0;
+    delete (this->Taktgeber);
+
     this->cameras_in_use        = 0;
     this->photocount_user_input = 3;
     this->intervall             = 0;

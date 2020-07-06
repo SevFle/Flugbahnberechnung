@@ -5,7 +5,7 @@
 #include "headers/camera_manager.h"
 #include <thread>
 
-using namespace nmsp_GlobalObjects;
+using namespace GlobalObjects;
 using namespace nmsp_camera_unmanaged;
 
 namespace frm_Main

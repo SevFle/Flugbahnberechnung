@@ -3,7 +3,7 @@
 
 #include <QApplication>
 
-using namespace nmsp_GlobalObjects;
+using namespace GlobalObjects;
 
 int main(int argc, char *argv[])
 {

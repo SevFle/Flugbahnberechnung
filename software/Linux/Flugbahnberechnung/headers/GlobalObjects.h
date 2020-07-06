@@ -7,7 +7,7 @@
 using namespace UM_CSV_Datei;
 
 /*********************************************************** Definition Namespace **************************************************************/
-namespace nmsp_GlobalObjects
+namespace GlobalObjects
   {
   class C_GlobalObjects
     {

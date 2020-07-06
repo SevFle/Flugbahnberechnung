@@ -81,7 +81,6 @@ namespace camera
     C_AbsolutePose* CameraPose;
 private:
     /******************************************** Nicht öffentliche private Anwender-Attribute **************************************************/
-    int capture_api;
 
     /******************************************************************************Zeit Management**********************************************/
     typedef std::chrono::high_resolution_clock Clock;

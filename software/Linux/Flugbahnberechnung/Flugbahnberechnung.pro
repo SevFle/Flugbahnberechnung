@@ -36,12 +36,12 @@ SOURCES += \
 
 HEADERS += \
     headers/CSV_Datei.h \
-    headers/CudaKernels.cuh \
     headers/GlobalObjects.h \
     headers/Kalmanfilter.h \
     headers/camera.h \
     headers/camera_manager.h \
-    headers/kalman_cuda.cuh \
+    cuda/CudaKernels.cuh \
+    cuda/kalman_cuda.cuh \
     headers/object.h \
     headers/point.h \
     headers/posen.h \
@@ -180,7 +180,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 DISTFILES += \
   Code/CudaKernels.cu \
-  Code/kalman.cu
+  Code/kalman.cuCudaKernels
 
 
 

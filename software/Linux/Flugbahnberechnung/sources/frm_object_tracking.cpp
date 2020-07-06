@@ -10,12 +10,17 @@ C_frm_Object_Tracking::C_frm_Object_Tracking(C_GlobalObjects* GlobalObjects, C_M
     this->Main          = Main;
     this->Zaehler       = 0;
     this->TimerWait     = 0;
+    this->Taktgeber = new QTimer(this);
+    this->Taktgeber_Intervall = 100;
 
 
 }
 
 C_frm_Object_Tracking::~C_frm_Object_Tracking()
 {
+    this->Taktgeber_Intervall = 0;
+    delete (this->Taktgeber);
+
     this->Main          = nullptr;
     this->GlobalObjects = nullptr;
     delete Ui;
@@ -100,9 +105,10 @@ if (this->Zaehler > this->TimerWait)
 
     if (this->Main->Camera_manager->tracking_active)
       {
-      this->Ui->txb_position_x->setText (QString::number(this->Main->Camera_manager->tracked_data->positionsvektor.X));
-      this->Ui->txb_position_y->setText (QString::number(this->Main->Camera_manager->tracked_data->positionsvektor.Y));
-      this->Ui->txb_position_z->setText (QString::number(this->Main->Camera_manager->tracked_data->positionsvektor.Z));
+      //TODO Add method to display current coordinates
+      //this->Ui->txb_position_x->setText (QString::number(this->Main->Camera_manager->tracked_data->positionsvektor.X));
+      //this->Ui->txb_position_y->setText (QString::number(this->Main->Camera_manager->tracked_data->positionsvektor.Y));
+      //this->Ui->txb_position_z->setText (QString::number(this->Main->Camera_manager->tracked_data->positionsvektor.Z));
     }
   }
 

@@ -7,10 +7,10 @@
 #include <vector>
 
 using namespace posen;
-using namespace nmsp_GlobalObjects;
+using namespace GlobalObjects;
 
 
-namespace nmsp_tracking
+namespace tracking
   {
   struct s_tracking_data
     {

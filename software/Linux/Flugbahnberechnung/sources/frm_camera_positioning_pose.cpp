@@ -29,6 +29,9 @@ C_frm_Camera_Positioning_Pose::C_frm_Camera_Positioning_Pose(C_GlobalObjects* Gl
     pz = 0;
     p0 = 1;
     this->pose_ =    new C_AbsolutePose();
+    this->Taktgeber = new QTimer(this);
+    this->Taktgeber_Intervall = 100;
+
 
 }
 

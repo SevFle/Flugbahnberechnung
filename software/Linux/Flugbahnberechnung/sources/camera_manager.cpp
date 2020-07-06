@@ -5,7 +5,7 @@
 
 /****************************************************************** Namespaces***************************************************************/
 using namespace nmsp_camera_unmanaged;
-using namespace nmsp_GlobalObjects;
+using namespace GlobalObjects;
 
 /*************************************************************** Konstruktoren **************************************************************/
 c_camera_unmanaged::c_camera_unmanaged ( C_GlobalObjects* GlobalObjects)
@@ -486,7 +486,7 @@ void c_camera_unmanaged::init_camera_vectors ()
   this->load_camera_positioning();
 
   //Load Settings and Calibration for each camera created earlier
-  for (int i = 0; i < cameras_in_use; i++)
+  for (int i = 0; i < GlobalObjects->cameras_in_use-1; i++)
     {
     this->load_camera_calibration (i);
     this->load_camera_settings (i);
@@ -778,7 +778,7 @@ void c_camera_unmanaged::calibrate_stereo_camera (int camera_id)
 void c_camera_unmanaged::sm_object_tracking ()
   {
   s_tracking_data                     tracked_data;
-  C_object*                           object;
+  C_object*                           tracked_object;
   std::vector<C_object*>              v_tracked_objects;
   std::vector<C_AbsolutePose>*        vec_WorldToCam_Poses; //AKA WORLD TO CAMERA POS
 
@@ -832,10 +832,10 @@ void c_camera_unmanaged::sm_object_tracking ()
     case 2:
         //Erstelle neues Ballobjekt
         object_in_init_zone = true;
-        object = new C_object();
-        object->set_ID_Cam_Links(0);
-        object->set_ID_Cam_Rechts(0);
-        v_tracked_objects.push_back(object);
+        tracked_object = new C_object();
+        tracked_object->set_ID_Cam_Links(0);
+        tracked_object->set_ID_Cam_Rechts(0);
+        v_tracked_objects.push_back(tracked_object);
         //ROI für die ersten Kameras ist selbstgeführt.
         statemachine_state = 3;
         break;
@@ -925,8 +925,8 @@ void c_camera_unmanaged::sm_object_tracking ()
 //      case 4:
 //        break;
       }//switch(statemachine_state)
-    }//while(tracking_active)
-  }//void sm_object_tracking
+    //while(tracking_active)
+  //void sm_object_tracking
 
 
 

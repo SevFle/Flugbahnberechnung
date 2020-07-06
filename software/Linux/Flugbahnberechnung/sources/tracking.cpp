@@ -1,7 +1,7 @@
 #include "headers/tracking.h"
 
-using namespace nmsp_tracking;
-using namespace nmsp_GlobalObjects;
+using namespace tracking;
+using namespace GlobalObjects;
 
 c_tracking::c_tracking (C_GlobalObjects* GlobalObjects)
   {

@@ -54,7 +54,7 @@ c_camera::c_camera (int camera_id)
   bilateral_active = false;
 
 
-  capture_api     = cv::CAP_DSHOW;
+  capture_api     = cv::CAP_ANY;
   this->camera_id = camera_id;
 
   thread_running   = true;
@@ -71,7 +71,7 @@ c_camera::c_camera (int camera_id)
 
   show_contoured = false;
 
-  undistord_active = true;
+  undistord_active = false;
 
 
   this->gpu_src_img         = new cv::cuda::GpuMat();
@@ -176,7 +176,7 @@ c_camera::~c_camera ()
   capture_api = cv::CAP_DSHOW;
   camera_id   = 0;
 
-  thread_running = true;Evocati
+  thread_running = true;
   show_contoured = false;
   idle = false;
 
@@ -291,9 +291,9 @@ void c_camera::camera_thread ()
         //cpu_temp->cols = frame_width;
         //cpu_temp->rows = frame_height;
 
-         this->undistord_img (this->cpu_src_img, cpu_temp);
+         //this->undistord_img (this->cpu_src_img, cpu_temp);
 
-        *cpu_undistorted = cpu_temp->operator()(RoI);
+        *cpu_undistorted = cpu_src_img->operator()(RoI);
 
         //cv::imshow("roi", *cpu_undistorted);
 
@@ -363,7 +363,7 @@ void c_camera::camera_thread ()
         break;
 
       case 7:
-
+        //TODO SET ROI FOR CAMERAS
         if (this->contour_found)
           {
 
@@ -421,7 +421,8 @@ void c_camera::camera_thread ()
         this->end = Clock::now();
         this->frametime = std::chrono::duration_cast<milliseconds>(end - start);
         this->fps = 1000.0/frametime.count();
-        thread_ready = true;
+        if(!thread_ready)
+          thread_ready = true;
 
         }
       }
@@ -468,7 +469,7 @@ void c_camera::set_calibration_parameter (double (&DistCoeffs)[1][5], double (&I
     for (int j = 0; j < 5; j++)
       {
       this->DistCoeffs->at<double> (i,j) = DistCoeffs[i][j];
-      }it.get_ID_Cam_Links();it.get_ID_Cam_Links();
+      }
     }
 
   for (int i = 0; i < 3; i++)
@@ -1182,10 +1183,13 @@ void c_camera::init (int camera_id)
   //  1024X768  MJPEG 30fps
   //  800X600   MJPEG 30fps
   //  640X480   MJPEG 30fps
-
+  this->camera_id = camera_id;
   frame_height = 600;
   frame_width = 800;
-  cap->open (camera_id, capture_api);
+  std::string capture_api;
+
+
+  cap->open (capture_api);
 
   cap->set (cv::CAP_PROP_FRAME_HEIGHT, frame_height);
   cap->set (cv::CAP_PROP_FRAME_WIDTH, frame_width);
