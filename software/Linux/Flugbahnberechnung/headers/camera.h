@@ -133,6 +133,7 @@ private:
     double fy;
     double f;__Posen_H
     double Vec_Object_Abs;
+    std::string pipeline;
 
     float Radius;
 
@@ -209,6 +210,39 @@ private:
 
     void         get_objectPosition_2D_Pixel (bool& Contour_Found, posen::S_Positionsvektor& Vec_Object, double& timestamp);
 
+    void set_aspect_ratio (int Height, int width);
+    void set_framerate (int framerate);
+
+    void init_rectify_map ();
+    void save_picture (int camera_id, int photo_id, std::string definition);
+    void crop_image (cv::Mat* undistorted_img, cv::Mat* crop_undist_img);
+
+    /******************************************************* Private Klassenmethoden***************************************************************/
+    private:
+    void init (int camera_id);
+    void cpu_grab_frame (cv::Mat* cpu_dst_img);
+    void apply_filter (cv::Mat* cpu_src, cv::Mat* cpu_dst);
+
+
+    void gpu_erode (cv::cuda::GpuMat* gpu_src, cv::cuda::GpuMat* gpu_dst, int borderType);
+    void gpu_dilate (cv::cuda::GpuMat* gpu_src, cv::cuda::GpuMat* gpu_dst);
+    void gpu_open (cv::cuda::GpuMat* gpu_src, cv::cuda::GpuMat* gpu_dst);
+    void gpu_close (cv::cuda::GpuMat* gpu_src, cv::cuda::GpuMat* gpu_dst);
+
+    void gpu_bilateral_filter (cv::cuda::GpuMat* gpu_src, cv::cuda::GpuMat* gpu_dst);
+    void gpu_gaussian_filter (cv::cuda::GpuMat* gpu_src, cv::cuda::GpuMat* gpu_dst);
+    void get_gaussian_kernel ();
+    void gpu_morph_gradient (cv::cuda::GpuMat* gpu_src, cv::cuda::GpuMat* gpu_dst);
+
+    void gpu_filter_hsv (cv::cuda::GpuMat* gpu_src, cv::cuda::GpuMat* gpu_dst);
+
+    void find_contours (cv::Mat* thresholded_source_image, cv::Mat* dst_contoured_image, int offset[2]);
+
+    void undistord_img (cv::Mat* cpu_src, cv::Mat* cpu_dst);
+    void fit_to_roi (int width, int height);
+
+    /******************************************************* Public Getter_Setter Methoden*****************************************************/
+  public:
     cv::Mat*&    get_cpu_src_img ();
     void         set_cpu_src_img (cv::Mat* cpu_src_img);
     cv::Mat*&    get_cpu_temp ();
@@ -251,8 +285,6 @@ private:
     void         set_image_prepared (bool image_prepared);
     bool&        is_show_cropped_image ();
     void         set_show_cropped_image (bool show_cropped_image);
-    int&         get_capture_api ();
-    void         set_capture_api (int capture_api);
     int&         get_objekt_anzahl ();
     void         set_objekt_anzahl (int objekt_anzahl);
     int&         get_kontur_index ();
@@ -381,40 +413,9 @@ private:
     void set_show_contoured_active(bool show_contoured);
     bool&        is_idle ();
     void         set_idle (bool idle);
+    void         set_pipeline(std::string pipeline);
+    std::string  get_pipeline ();
 
-
-    void set_aspect_ratio (int Height, int width);
-    void set_framerate (int framerate);
-
-    void init_rectify_map ();
-    void save_picture (int camera_id, int photo_id, std::string definition);
-    void crop_image (cv::Mat* undistorted_img, cv::Mat* crop_undist_img);
-
-    /******************************************************* Private Klassenmethoden***************************************************************/
-    private:
-    void init (int camera_id);
-    void cpu_grab_frame (cv::Mat* cpu_dst_img);
-    void apply_filter (cv::Mat* cpu_src, cv::Mat* cpu_dst);
-
-
-    void gpu_erode (cv::cuda::GpuMat* gpu_src, cv::cuda::GpuMat* gpu_dst, int borderType);
-    void gpu_dilate (cv::cuda::GpuMat* gpu_src, cv::cuda::GpuMat* gpu_dst);
-    void gpu_open (cv::cuda::GpuMat* gpu_src, cv::cuda::GpuMat* gpu_dst);
-    void gpu_close (cv::cuda::GpuMat* gpu_src, cv::cuda::GpuMat* gpu_dst);
-
-    void gpu_bilateral_filter (cv::cuda::GpuMat* gpu_src, cv::cuda::GpuMat* gpu_dst);
-    void gpu_gaussian_filter (cv::cuda::GpuMat* gpu_src, cv::cuda::GpuMat* gpu_dst);
-    void get_gaussian_kernel ();
-    void gpu_morph_gradient (cv::cuda::GpuMat* gpu_src, cv::cuda::GpuMat* gpu_dst);
-
-    void gpu_filter_hsv (cv::cuda::GpuMat* gpu_src, cv::cuda::GpuMat* gpu_dst);
-    void gpu_filter_bgr (cv::cuda::GpuMat* gpu_src, cv::cuda::GpuMat* gpu_dst);
-    void gpu_filter_gray (cv::cuda::GpuMat* gpu_src, cv::cuda::GpuMat* gpu_dst);
-
-    void find_contours (cv::Mat* thresholded_source_image, cv::Mat* dst_contoured_image, int offset[2]);
-
-    void undistord_img (cv::Mat* cpu_src, cv::Mat* cpu_dst);
-    void fit_to_roi (int width, int height);
 
     };
   }

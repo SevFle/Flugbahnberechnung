@@ -6,6 +6,9 @@ C_frm_Camera_Calibration_Crop::C_frm_Camera_Calibration_Crop(C_GlobalObjects* Gl
 {
     this->Ui = new Ui::C_frm_camera_calibration_crop();
     Ui->setupUi(this);
+    this->GlobalObjects = GlobalObjects;
+    this->Main = Main;
+
 }
 
 C_frm_Camera_Calibration_Crop::~C_frm_Camera_Calibration_Crop()

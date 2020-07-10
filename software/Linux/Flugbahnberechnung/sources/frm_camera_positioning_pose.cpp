@@ -247,7 +247,6 @@ void C_frm_Camera_Positioning_Pose::calculation_method ()
   }
 void C_frm_Camera_Positioning_Pose::get_textbox_data ()
   {
-  double temp;
 
   if (this->Ui->txb_phi->toPlainText() == "" || this->Ui->txb_phi->toPlainText() == "-")
     {

@@ -1,4 +1,3 @@
-#pragma once
 /****************************************************************** Includes ****************************************************************/
 #include "headers/camera.h"
 #include "headers/posen.h"
@@ -54,8 +53,7 @@ c_camera::c_camera (int camera_id)
   bilateral_active = false;
 
 
-  capture_api     = cv::CAP_ANY;
-  this->camera_id = camera_id;
+ this->camera_id = camera_id;
 
   thread_running   = true;
   filtering_active = false;
@@ -173,7 +171,6 @@ c_camera::~c_camera ()
   show_cropped_image = false;
 
 
-  capture_api = cv::CAP_DSHOW;
   camera_id   = 0;
 
   thread_running = true;
@@ -328,12 +325,12 @@ void c_camera::camera_thread ()
         if (filtering_bgr_active)
           {
           gpu_src_img->upload (*cpu_undistorted);
-          gpu_filter_bgr (gpu_src_img,gpu_thresholded);
+          //gpu_filter_bgr (gpu_src_img,gpu_thresholded);
           }
         if (filtering_gray_active)
           {
           this->gpu_src_img->upload (*cpu_undistorted);
-          gpu_filter_gray (gpu_src_img,gpu_thresholded);
+          //gpu_filter_gray (gpu_src_img,gpu_thresholded);
           }
 
         gpu_thresholded->download (*cpu_masked_img);
@@ -460,6 +457,7 @@ void c_camera::get_objectPosition_2D_Pixel (bool& Contour_Found, S_Positionsvekt
   Vec_Object.X  = this->Vec_Object[0];
   Vec_Object.Y  = this->Vec_Object[1];
   Vec_Object.Z  = this->Vec_Object[2];
+  timestamp     = this->cap->get(cv::CAP_PROP_POS_MSEC);
   }
 
 void c_camera::set_calibration_parameter (double (&DistCoeffs)[1][5], double (&Intrinsic)[3][3])
@@ -491,7 +489,6 @@ void c_camera::set_framerate (int framerate)
   }
 
 /********************************GETTER SETTER************/
-#pragma region GETTER-SETTER
 cv::Mat*& c_camera::get_cpu_src_img ()
   {
   return cpu_src_img;
@@ -659,14 +656,6 @@ bool& c_camera::is_show_cropped_image ()
 void c_camera::set_show_cropped_image (bool show_cropped_image)
   {
   this->show_cropped_image = show_cropped_image;
-  }
-int& c_camera::get_capture_api ()
-  {
-  return capture_api;
-  }
-void c_camera::set_capture_api (int capture_api)
-  {
-  this->capture_api = capture_api;
   }
 int& c_camera::get_objekt_anzahl ()
   {
@@ -1174,7 +1163,15 @@ void c_camera::set_idle (bool idle)
   {
   this->idle = idle;
   }
-#pragma endregion
+
+void c_camera::set_pipeline(std::string pipeline)
+{
+    this->pipeline = pipeline;
+}
+std::string c_camera::get_pipeline()
+{
+    return this->pipeline;
+}
 /*************************************************************** Private Klassenmethoden*****************************************************/
 
 void c_camera::init (int camera_id)
@@ -1189,10 +1186,10 @@ void c_camera::init (int camera_id)
   std::string capture_api;
 
 
-  cap->open (capture_api);
+  cap->open (this->pipeline, cv::CAP_GSTREAMER);
 
-  cap->set (cv::CAP_PROP_FRAME_HEIGHT, frame_height);
-  cap->set (cv::CAP_PROP_FRAME_WIDTH, frame_width);
+  //cap->set (cv::CAP_PROP_FRAME_HEIGHT, frame_height);
+  //cap->set (cv::CAP_PROP_FRAME_WIDTH, frame_width);
   //cap->set (cv::CAP_PROP_FPS, 60);
   cap->set (cv::CAP_PROP_BUFFERSIZE, 10);
 
@@ -1330,13 +1327,6 @@ void c_camera::gpu_filter_hsv (cv::cuda::GpuMat* gpu_src, cv::cuda::GpuMat* gpu_
   bitwise_and (*gpu_src,*gpu_temp,*gpu_dst);
   }
 
-void c_camera::gpu_filter_bgr (cv::cuda::GpuMat* gpu_src, cv::cuda::GpuMat* gpu_dst)
-  {
-  }
-
-void c_camera::gpu_filter_gray (cv::cuda::GpuMat* gpu_src, cv::cuda::GpuMat* gpu_dst)
-  {
-  }
 
 void c_camera::find_contours (cv::Mat* thresholded_source_image, cv::Mat* dst_contoured_image, int offset[2])
   {

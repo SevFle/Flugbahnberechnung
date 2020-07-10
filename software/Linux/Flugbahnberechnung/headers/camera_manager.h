@@ -88,6 +88,9 @@ namespace nmsp_camera_unmanaged
     void load_camera_positioning ();
     void save_camera_cos (int camera_id, C_AbsolutePose& WorldToCam_Param);
     void load_camera_cos (int camera_id, C_AbsolutePose& WorldToCam_Param);
+
+    void load_camera_pipelines(std::vector<std::string> &vec_pipeline);
+
     void init_camera_vectors ();
     void close_cameras (int cameras_in_use);
 
