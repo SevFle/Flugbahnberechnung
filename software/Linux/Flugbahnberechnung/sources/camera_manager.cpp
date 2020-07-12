@@ -517,13 +517,19 @@ void c_camera_unmanaged::load_camera_pipelines(std::vector<std::string> &vec_pip
 void c_camera_unmanaged::init_camera_vectors ()
   {
   std::vector<std::string> Pipelines;
+  std::string pipeline;
   this->load_camera_pipelines(Pipelines);
   //Create a camera object and start its according thread. The amount of objects equals the amount of cameras in use 
   for (int i = 0; i < GlobalObjects->cameras_in_use; i++)
     {
     auto* camera = new camera::c_camera (i);
     camera->set_idle (true);
-    camera->set_pipeline(Pipelines[i]);
+    if (i = 0)
+        pipeline ="v4l2src device=/dev/video" + to_string(i) + " ! video/x-raw,format=BGR,width=640,height=480,framerate=30/1 ! appsink";
+    if(i > 0)
+        pipeline ="v4l2src device=/dev/video" + to_string(i+1) + " ! video/x-raw,format=BGR,width=640,height=480,framerate=30/1 ! appsink";
+
+    camera->set_pipeline(pipeline);
     camera_vector.push_back (camera);
 
     std::cout << "Created " << i + 1 << " Camera Objects with according pointers" << std::endl;
