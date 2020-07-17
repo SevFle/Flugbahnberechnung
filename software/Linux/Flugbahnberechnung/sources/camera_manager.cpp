@@ -524,7 +524,7 @@ void c_camera_unmanaged::init_camera_vectors ()
     {
     auto* camera = new camera::c_camera (i);
     camera->set_idle (true);
-    if (i = 0)
+    if (i == 0)
         pipeline ="v4l2src device=/dev/video" + to_string(i) + " ! video/x-raw,format=BGR,width=640,height=480,framerate=30/1 ! appsink";
     if(i > 0)
         pipeline ="v4l2src device=/dev/video" + to_string(i+1) + " ! video/x-raw,format=BGR,width=640,height=480,framerate=30/1 ! appsink";
@@ -838,7 +838,7 @@ void c_camera_unmanaged::sm_object_tracking ()
   s_tracking_data                     tracked_data;
   C_object*                           tracked_object;
   std::vector<C_object*>              v_tracked_objects;
-  std::vector<C_AbsolutePose>*        vec_WorldToCam_Poses; //AKA WORLD TO CAMERA POS
+  std::vector<C_AbsolutePose>*        vec_WorldToCam_Poses = 0; //AKA WORLD TO CAMERA POS
 
   int statemachine_state                = 0;
 

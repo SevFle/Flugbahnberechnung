@@ -102,13 +102,13 @@ bool               C_frm_Object_Calibration::eventFilter                        
 void ::C_frm_Object_Calibration::on_bt_exit_clicked()
 {
     this->Main->frm_Object_Tracking->close();
-    for (int i = 0; i < GlobalObjects->cameras_in_use; i++)
+    for (auto it = std::begin(this->Main->Camera_manager->camera_vector); it != std::end(this->Main->Camera_manager->camera_vector); it++)
       {
-      this->Main->Camera_manager->camera_vector[i]->set_idle (true);
-      this->Main->Camera_manager->camera_vector[i]->set_undistord_active (false);
-      this->Main->Camera_manager->camera_vector[i]->set_filtering_active (false);
-      this->Main->Camera_manager->camera_vector[i]->set_show_cropped_image(false);
-      this->Main->Camera_manager->camera_vector[i]->set_show_contoured_active(false);
+      (*it)->set_idle (true);
+      (*it)->set_undistord_active (false);
+      (*it)->set_filtering_active (false);
+      (*it)->set_show_cropped_image(false);
+      (*it)->set_show_contoured_active(false);
       }
     //TODO Implement proper cv windows handling
     //cv::destroyAllWindows();
@@ -297,48 +297,48 @@ void C_frm_Object_Calibration::on_num_morph_iterations_valueChanged(int arg1)
 
 void C_frm_Object_Calibration::on_bt_apply_all_clicked()
 {
-    for (int i = 0; i < GlobalObjects->cameras_in_use; i++)
+    for (auto it = std::begin(this->Main->Camera_manager->camera_vector); it != std::end(this->Main->Camera_manager->camera_vector); it++)
       {
-      this->Main->Camera_manager->camera_vector[i]->set_value_min (this->Ui->sld_value_min->value());
-      this->Main->Camera_manager->camera_vector[i]->set_value_max (this->Ui->sld_value_max->value());
+      (*it)->set_value_min (this->Ui->sld_value_min->value());
+      (*it)->set_value_max (this->Ui->sld_value_max->value());
 
-      this->Main->Camera_manager->camera_vector[i]->set_saturation_min (this->Ui->sld_saturation_min->value());
-      this->Main->Camera_manager->camera_vector[i]->set_saturation_max (this->Ui->sld_saturation_max->value());
+      (*it)->set_saturation_min (this->Ui->sld_saturation_min->value());
+      (*it)->set_saturation_max (this->Ui->sld_saturation_max->value());
 
-      this->Main->Camera_manager->camera_vector[i]->set_hue_min (this->Ui->sld_hue_min->value());
-      this->Main->Camera_manager->camera_vector[i]->set_hue_max (this->Ui->sld_hue_max->value());
+      (*it)->set_hue_min (this->Ui->sld_hue_min->value());
+      (*it)->set_hue_max (this->Ui->sld_hue_max->value());
 
-      this->Main->Camera_manager->camera_vector[i]->set_opening_iterations (this->Ui->num_opening_iterations->value());
-      this->Main->Camera_manager->camera_vector[i]->set_opening_kernel_size (this->Ui->num_opening_kernelsize->value());
+      (*it)->set_opening_iterations (this->Ui->num_opening_iterations->value());
+      (*it)->set_opening_kernel_size (this->Ui->num_opening_kernelsize->value());
 
-      this->Main->Camera_manager->camera_vector[i]->set_closing_iterations (this->Ui->num_closing_iterations->value());
-      this->Main->Camera_manager->camera_vector[i]->set_closing_kernel_size (this->Ui->num_closing_kernelsize->value());
+      (*it)->set_closing_iterations (this->Ui->num_closing_iterations->value());
+      (*it)->set_closing_kernel_size (this->Ui->num_closing_kernelsize->value());
 
-      this->Main->Camera_manager->camera_vector[i]->set_erode_active (this->Ui->chkb_erode->isChecked());
-      this->Main->Camera_manager->camera_vector[i]->set_erosion_iterations (this->Ui->num_erode_iterations->value());
-      this->Main->Camera_manager->camera_vector[i]->set_erosion_kernel_size (this->Ui->num_erode_kernelsize->value());
+      (*it)->set_erode_active (this->Ui->chkb_erode->isChecked());
+      (*it)->set_erosion_iterations (this->Ui->num_erode_iterations->value());
+      (*it)->set_erosion_kernel_size (this->Ui->num_erode_kernelsize->value());
 
-      this->Main->Camera_manager->camera_vector[i]->set_dilate_active (this->Ui->chkb_dilate->isChecked());
-      this->Main->Camera_manager->camera_vector[i]->set_dilation_iterations (this->Ui->num_dilate_iterations->value());
-      this->Main->Camera_manager->camera_vector[i]->set_dilation_kernel_size (this->Ui->num_dilate_kernelsize->value());
+      (*it)->set_dilate_active (this->Ui->chkb_dilate->isChecked());
+      (*it)->set_dilation_iterations (this->Ui->num_dilate_iterations->value());
+      (*it)->set_dilation_kernel_size (this->Ui->num_dilate_kernelsize->value());
 
-      this->Main->Camera_manager->camera_vector[i]->set_morph_active (this->Ui->chkb_morph->isChecked());
-      this->Main->Camera_manager->camera_vector[i]->set_morph_iterations (this->Ui->num_morph_iterations->value());
-      this->Main->Camera_manager->camera_vector[i]->set_morph_kernel_size (this->Ui->num_morph_kernelsize->value());
+      (*it)->set_morph_active (this->Ui->chkb_morph->isChecked());
+      (*it)->set_morph_iterations (this->Ui->num_morph_iterations->value());
+      (*it)->set_morph_kernel_size (this->Ui->num_morph_kernelsize->value());
 
-      this->Main->Camera_manager->camera_vector[i]->set_gaussian_sigma (this->Ui->num_gaussian_sigma->value());
-      this->Main->Camera_manager->camera_vector[i]->set_gaussian_kernel_size (this->Ui->num_gaussian_kernelsize->value());
+      (*it)->set_gaussian_sigma (this->Ui->num_gaussian_sigma->value());
+      (*it)->set_gaussian_kernel_size (this->Ui->num_gaussian_kernelsize->value());
 
-      this->Main->Camera_manager->camera_vector[i]->set_bilateral_active (this->Ui->chkb_bilateral->isChecked());
-      this->Main->Camera_manager->camera_vector[i]->set_bilateral_sigma_color (Ui->num_bilateral_color->value());
-      this->Main->Camera_manager->camera_vector[i]->set_bilateral_sigma_spatial (Ui->num_bilateral_spatial->value());
-      this->Main->Camera_manager->camera_vector[i]->set_bilateral_kernel_size (this->Ui->num_dilate_kernelsize->value());
+      (*it)->set_bilateral_active (this->Ui->chkb_bilateral->isChecked());
+      (*it)->set_bilateral_sigma_color (Ui->num_bilateral_color->value());
+      (*it)->set_bilateral_sigma_spatial (Ui->num_bilateral_spatial->value());
+      (*it)->set_bilateral_kernel_size (this->Ui->num_dilate_kernelsize->value());
 
-      this->Main->Camera_manager->camera_vector[i]->set_object_size_min (this->Ui->sld_objectsize_min->value());
-      this->Main->Camera_manager->camera_vector[i]->set_object_size_max (this->Ui->sld_objectsize_min->value());
+      (*it)->set_object_size_min (this->Ui->sld_objectsize_min->value());
+      (*it)->set_object_size_max (this->Ui->sld_objectsize_min->value());
 
-
-      this->Main->Camera_manager->save_camera_settings (i);
+      //TODO
+      //this->Main->Camera_manager->save_camera_settings (*it);
       }
 }
 
