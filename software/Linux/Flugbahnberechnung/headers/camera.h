@@ -240,6 +240,8 @@ private:
 
     void undistord_img (cv::Mat* cpu_src, cv::Mat* cpu_dst);
     void fit_to_roi (int width, int height);
+    void set_roi(int width, int height);
+
 
     /******************************************************* Public Getter_Setter Methoden*****************************************************/
   public:

@@ -8,7 +8,7 @@
 #include "cuda_runtime.h"
 #include "device_launch_parameters.h"
 #include "device_functions.h"
-#include "point.h"
+#include "headers/point.h"
 
 #ifdef __INTELLISENSE__
 void __syncthreads();

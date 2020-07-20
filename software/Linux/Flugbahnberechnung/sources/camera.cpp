@@ -360,6 +360,7 @@ void c_camera::camera_thread ()
         break;
 
       case 7:
+         //Adjust ROI according to Command or automatically
         //TODO SET ROI FOR CAMERAS
         if (this->contour_found)
           {
@@ -846,6 +847,10 @@ void c_camera::fit_to_roi (int width, int height)
   cpu_contoured->rows = height;
 
   }
+void c_camera::set_roi(int width, int height)
+{
+
+}
 /********************************GETTER SETTER************/
 cv::Mat*& c_camera::get_cpu_src_img ()
   {
