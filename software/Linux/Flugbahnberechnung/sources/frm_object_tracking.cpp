@@ -86,7 +86,7 @@ bool               C_frm_Object_Tracking::eventFilter                           
     return false;
     }
   }
-/************************************** Nicht öffentliche QT-Slots******************************/
+/************************************** Nicht öffentliche QT-Slots*(*it) = *****************************/
 void ::C_frm_Object_Tracking::on_bt_exit_clicked()
 {
     this->Main->Camera_manager->tracking_active = false;

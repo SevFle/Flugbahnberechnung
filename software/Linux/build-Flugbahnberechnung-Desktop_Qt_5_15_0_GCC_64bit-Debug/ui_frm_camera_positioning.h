@@ -74,9 +74,11 @@ public:
         num_cam_2 = new QSpinBox(groupBox);
         num_cam_2->setObjectName(QString::fromUtf8("num_cam_2"));
         num_cam_2->setGeometry(QRect(370, 310, 51, 26));
+        num_cam_2->setValue(2);
         num_cam_4 = new QSpinBox(groupBox);
         num_cam_4->setObjectName(QString::fromUtf8("num_cam_4"));
         num_cam_4->setGeometry(QRect(720, 310, 51, 26));
+        num_cam_4->setValue(4);
         groupBox_2 = new QGroupBox(centralwidget);
         groupBox_2->setObjectName(QString::fromUtf8("groupBox_2"));
         groupBox_2->setGeometry(QRect(10, 360, 1251, 351));
@@ -92,12 +94,15 @@ public:
         num_cam_1 = new QSpinBox(groupBox_2);
         num_cam_1->setObjectName(QString::fromUtf8("num_cam_1"));
         num_cam_1->setGeometry(QRect(20, 310, 51, 26));
+        num_cam_1->setValue(1);
         num_cam_3 = new QSpinBox(groupBox_2);
         num_cam_3->setObjectName(QString::fromUtf8("num_cam_3"));
         num_cam_3->setGeometry(QRect(370, 310, 51, 26));
+        num_cam_3->setValue(3);
         num_cam_5 = new QSpinBox(groupBox_2);
         num_cam_5->setObjectName(QString::fromUtf8("num_cam_5"));
         num_cam_5->setGeometry(QRect(720, 310, 51, 26));
+        num_cam_5->setValue(5);
         bt_apply = new QPushButton(centralwidget);
         bt_apply->setObjectName(QString::fromUtf8("bt_apply"));
         bt_apply->setGeometry(QRect(930, 730, 141, 71));

@@ -1,3 +1,6 @@
+/******************************************************************GSTREAMER PIPELINE*******************************************************/
+//std::string cameraPipeline ="v4l2src device=/dev/video2 ! ";
+//cameraPipeline+="image/jpeg, format=BGR, framerate=60/1, width=1280,height=720 ! jpegdec ! videoconvert ! appsink";
 /****************************************************************** Includes ****************************************************************/
 #include "headers/camera.h"
 #include "headers/posen.h"
@@ -70,7 +73,6 @@ c_camera::c_camera (int camera_id)
   show_contoured = false;
 
   undistord_active = false;
-
 
   this->gpu_src_img         = new cv::cuda::GpuMat();
   this->gpu_thresholded     = new cv::cuda::GpuMat();
@@ -201,7 +203,8 @@ c_camera::~c_camera ()
   delete (cpu_contoured);
   delete (cpu_cropped_img);
 
-  delete (cap);
+  delete (cap);        std::string cameraPipeline ="v4l2src device=/dev/video2 ! ";
+  cameraPipeline+="image/jpeg, format=BGR, framerate=60/1, width=1280,height=720 ! jpegdec ! videoconvert ! appsink";
 
   objekt_anzahl = 0;
   KonturIndex   = 0;
@@ -251,7 +254,7 @@ void c_camera::camera_thread ()
       case 0:
         std::cout << "Thread " << this->camera_id + 1 << " running with ID: " << std::this_thread::get_id() << std::endl << std::endl << std::endl;
 
-        init (camera_id);
+        init ();
 
 
         statemachine_state = 1;
@@ -272,6 +275,7 @@ void c_camera::camera_thread ()
       case 2:
         this->start = Clock::now();
         this->cpu_grab_frame (cpu_src_img);
+        cv::imshow("source " + std::to_string(camera_id) + "", *cpu_src_img);
 		this->timestamp_frame = Clock::now();
 
         if (undistord_active == true)
@@ -330,7 +334,7 @@ void c_camera::camera_thread ()
         if (filtering_gray_active)
           {
           this->gpu_src_img->upload (*cpu_undistorted);
-          //gpu_filter_gray (gpu_src_img,gpu_thresholded);
+          //gpu_filter_gray (gpu_src_img,gpu_thiddenhresholded);
           }
 
         gpu_thresholded->download (*cpu_masked_img);
@@ -488,20 +492,25 @@ void c_camera::set_framerate (int framerate)
   {
   this->cap->set (cv::CAP_PROP_FPS,framerate);
   }
-
+void c_camera::stop()
+{
+    this->thread_running = false;
+    this->cap->release();
+}
 
 /*************************************************************** Private Klassenmethoden*****************************************************/
 
-void c_camera::init (int camera_id)
+void c_camera::init ()
   {
   //ELP Webcam 5-50 mm USB8MP02G-SFV
   //  1024X768  MJPEG 30fps
   //  800X600   MJPEG 30fps
   //  640X480   MJPEG 30fps
-  this->camera_id = camera_id;
-  frame_height = 600;
-  frame_width = 800;
-  std::string capture_api;
+
+  //std::string cameraPipeline ="v4l2src device=/dev/video2 ! ";
+  //cameraPipeline+="image/jpeg, format=BGR, framerate=60/1, width=1280,height=720 ! jpegdec ! videoconvert ! appsink";
+  frame_height = 720;
+  frame_width = 1280;
 
 
   cap->open (this->pipeline, cv::CAP_GSTREAMER);
@@ -509,7 +518,7 @@ void c_camera::init (int camera_id)
   //cap->set (cv::CAP_PROP_FRAME_HEIGHT, frame_height);
   //cap->set (cv::CAP_PROP_FRAME_WIDTH, frame_width);
   //cap->set (cv::CAP_PROP_FPS, 60);
-  cap->set (cv::CAP_PROP_BUFFERSIZE, 10);
+  //cap->set (cv::CAP_PROP_BUFFERSIZE, 10);
 
 
   //+--------+----+----+----+----+------+------+------+------+
@@ -545,8 +554,8 @@ void c_camera::init (int camera_id)
   }
 void c_camera::cpu_grab_frame (cv::Mat* cpu_dst_img)
   {
-  cap->read (*cpu_dst_img);
-  }
+ *cap >> *cpu_dst_img;
+}
 void c_camera::apply_filter (cv::Mat* cpu_src, cv::Mat* cpu_dst)
   {
   if (filtering_hsv_active == true)

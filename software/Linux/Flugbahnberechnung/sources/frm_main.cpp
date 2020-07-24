@@ -79,6 +79,10 @@ bool               C_frm_Main::eventFilter                                      
 /************************************** Nicht öffentliche QT-Slots******************************/
 void ::C_frm_Main::on_bt_exit_clicked()
 {
+    for(auto it = std::begin(this->Main->Camera_manager->camera_vector); it< std::end(this->Main->Camera_manager->camera_vector); it++)
+    {
+        (*it)->stop();
+    }
 this->close();
 }
 
@@ -112,6 +116,7 @@ void ::C_frm_Main::on_bt_apply_clicked()
       //MessageBox::Show ("Es muss eine gerade Anzahl an Kameras verwendet werden","Fehler",MessageBoxButtons::OK,MessageBoxIcon::Error);
       this->MsgBox->setText("Es muss eine gerade Anzahl an Kameras verwendet werden");
       this->MsgBox->setIcon(QMessageBox::Critical);
+      this->MsgBox->exec();
       }
     else
       {

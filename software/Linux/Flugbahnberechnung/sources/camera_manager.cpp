@@ -466,70 +466,35 @@ void c_camera_unmanaged::load_camera_cos (int camera_id, C_AbsolutePose& WorldTo
 
 void c_camera_unmanaged::load_camera_pipelines(std::vector<std::string> &vec_pipeline)
 {
-    string Dateiname = "../Parameter/Camera_pipeline.csv";
-    string Dateityp;
-    std::string temp;
-    vec_pipeline.resize(GlobalObjects->cameras_in_use);
-
-    GlobalObjects->csv_parameter_datei->Oeffnen (Dateiname,Enum_CSV_Access::Read);
-    if (GlobalObjects->csv_parameter_datei->IsOpen())
-      {
-        switch (GlobalObjects->cameras_in_use)
-          {
-           case 2:
-            this->GlobalObjects->csv_parameter_datei->Lesen (Dateityp);
-            this->GlobalObjects->csv_parameter_datei->Lesen(vec_pipeline[0]);
-            this->GlobalObjects->csv_parameter_datei->Lesen(vec_pipeline[1]);
-            break;
-        case 4:
-            this->GlobalObjects->csv_parameter_datei->Lesen (Dateityp);
-            this->GlobalObjects->csv_parameter_datei->Lesen(vec_pipeline[0]);
-            this->GlobalObjects->csv_parameter_datei->Lesen(vec_pipeline[1]);
-            this->GlobalObjects->csv_parameter_datei->Lesen(vec_pipeline[2]);
-            this->GlobalObjects->csv_parameter_datei->Lesen(vec_pipeline[3]);
-            break;
-        case 6:
-            this->GlobalObjects->csv_parameter_datei->Lesen(vec_pipeline[0]);
-            this->GlobalObjects->csv_parameter_datei->Lesen(vec_pipeline[1]);
-            this->GlobalObjects->csv_parameter_datei->Lesen(vec_pipeline[2]);
-            this->GlobalObjects->csv_parameter_datei->Lesen(vec_pipeline[3]);
-            this->GlobalObjects->csv_parameter_datei->Lesen(vec_pipeline[4]);
-            this->GlobalObjects->csv_parameter_datei->Lesen(vec_pipeline[5]);
-            break;
-        case 8:
-            this->GlobalObjects->csv_parameter_datei->Lesen (Dateityp);
-            this->GlobalObjects->csv_parameter_datei->Lesen(vec_pipeline[0]);
-            this->GlobalObjects->csv_parameter_datei->Lesen(vec_pipeline[1]);
-            this->GlobalObjects->csv_parameter_datei->Lesen(vec_pipeline[2]);
-            this->GlobalObjects->csv_parameter_datei->Lesen(vec_pipeline[3]);
-            this->GlobalObjects->csv_parameter_datei->Lesen(vec_pipeline[4]);
-            this->GlobalObjects->csv_parameter_datei->Lesen(vec_pipeline[5]);
-            this->GlobalObjects->csv_parameter_datei->Lesen(vec_pipeline[6]);
-            this->GlobalObjects->csv_parameter_datei->Lesen(vec_pipeline[7]);
-
-            break;
-          }
-      }
-    GlobalObjects->csv_parameter_datei->Schliessen();
+    int deviceNo = 0;
+for(auto i= 1; i <= this->GlobalObjects->cameras_in_use; i++)
+    {
+    if(i < 7)
+    {
+        vec_pipeline.push_back("v4l2src device=/dev/video" + to_string(deviceNo) +" ! image/jpeg, format=BGR, framerate=60/1, width=1280,height=720 ! jpegdec ! videoconvert ! appsink");
+        deviceNo += 2;
+    }
+    else
+    {
+        vec_pipeline.push_back("v4l2src device=/dev/video" + to_string(deviceNo) +" ! image/jpeg, format=BGR, framerate=30/1, width=1280,height=720 ! jpegdec ! videoconvert ! appsink");
+        deviceNo += 2;
+    }
+    }
 
 }
 
 void c_camera_unmanaged::init_camera_vectors ()
   {
   std::vector<std::string> Pipelines;
-  std::string pipeline;
   this->load_camera_pipelines(Pipelines);
   //Create a camera object and start its according thread. The amount of objects equals the amount of cameras in use 
   for (int i = 0; i < GlobalObjects->cameras_in_use; i++)
     {
     auto* camera = new camera::c_camera (i);
     camera->set_idle (true);
-    if (i == 0)
-        pipeline ="v4l2src device=/dev/video" + to_string(i) + " ! video/x-raw,format=BGR,width=640,height=480,framerate=30/1 ! appsink";
-    if(i > 0)
-        pipeline ="v4l2src device=/dev/video" + to_string(i+1) + " ! video/x-raw,format=BGR,width=640,height=480,framerate=30/1 ! appsink";
+    camera->set_camera_id(i);
 
-    camera->set_pipeline(pipeline);
+    camera->set_pipeline(Pipelines[i]);
     camera_vector.push_back (camera);
 
     std::cout << "Created " << i + 1 << " Camera Objects with according pointers" << std::endl;
@@ -544,7 +509,7 @@ void c_camera_unmanaged::init_camera_vectors ()
   this->load_camera_positioning();
 
   //Load Settings and Calibration for each camera created earlier
-  for (int i = 0; i < GlobalObjects->cameras_in_use-1; i++)
+  for (int i = 0; i < GlobalObjects->cameras_in_use; i++)
     {
     this->load_camera_calibration (i);
     this->load_camera_settings (i);

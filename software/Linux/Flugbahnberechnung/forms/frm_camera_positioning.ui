@@ -14,207 +14,222 @@
    <string>Dialog</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-  <widget class="QTextEdit" name="txb_zaehler">
-   <property name="geometry">
-    <rect>
-     <x>1090</x>
-     <y>770</y>
-     <width>141</width>
-     <height>31</height>
-    </rect>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="bt_exit">
-   <property name="geometry">
-    <rect>
-     <x>1260</x>
-     <y>740</y>
-     <width>141</width>
-     <height>71</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Exit</string>
-   </property>
-  </widget>
-  <widget class="QGroupBox" name="groupBox">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>0</y>
-     <width>1251</width>
-     <height>351</height>
-    </rect>
-   </property>
-   <property name="title">
-    <string>Links</string>
-   </property>
-   <widget class="QLabel" name="lbl_cam_0">
+   <widget class="QTextEdit" name="txb_zaehler">
+    <property name="geometry">
+     <rect>
+      <x>1090</x>
+      <y>770</y>
+      <width>141</width>
+      <height>31</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="bt_exit">
+    <property name="geometry">
+     <rect>
+      <x>1260</x>
+      <y>740</y>
+      <width>141</width>
+      <height>71</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Exit</string>
+    </property>
+   </widget>
+   <widget class="QGroupBox" name="groupBox">
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>30</y>
-      <width>331</width>
-      <height>261</height>
+      <y>0</y>
+      <width>1251</width>
+      <height>351</height>
      </rect>
     </property>
-    <property name="text">
-     <string>TextLabel</string>
+    <property name="title">
+     <string>Links</string>
     </property>
+    <widget class="QLabel" name="lbl_cam_0">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>30</y>
+       <width>331</width>
+       <height>261</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>TextLabel</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lbl_cam_2">
+     <property name="geometry">
+      <rect>
+       <x>360</x>
+       <y>30</y>
+       <width>331</width>
+       <height>261</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>TextLabel</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lbl_cam_4">
+     <property name="geometry">
+      <rect>
+       <x>710</x>
+       <y>30</y>
+       <width>331</width>
+       <height>261</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>TextLabel</string>
+     </property>
+    </widget>
+    <widget class="QSpinBox" name="num_cam_0">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>310</y>
+       <width>51</width>
+       <height>26</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QSpinBox" name="num_cam_2">
+     <property name="geometry">
+      <rect>
+       <x>370</x>
+       <y>310</y>
+       <width>51</width>
+       <height>26</height>
+      </rect>
+     </property>
+     <property name="value">
+      <number>2</number>
+     </property>
+    </widget>
+    <widget class="QSpinBox" name="num_cam_4">
+     <property name="geometry">
+      <rect>
+       <x>720</x>
+       <y>310</y>
+       <width>51</width>
+       <height>26</height>
+      </rect>
+     </property>
+     <property name="value">
+      <number>4</number>
+     </property>
+    </widget>
    </widget>
-   <widget class="QLabel" name="lbl_cam_2">
-    <property name="geometry">
-     <rect>
-      <x>360</x>
-      <y>30</y>
-      <width>331</width>
-      <height>261</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>TextLabel</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="lbl_cam_4">
-    <property name="geometry">
-     <rect>
-      <x>710</x>
-      <y>30</y>
-      <width>331</width>
-      <height>261</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>TextLabel</string>
-    </property>
-   </widget>
-   <widget class="QSpinBox" name="num_cam_0">
-    <property name="geometry">
-     <rect>
-      <x>20</x>
-      <y>310</y>
-      <width>51</width>
-      <height>26</height>
-     </rect>
-    </property>
-   </widget>
-   <widget class="QSpinBox" name="num_cam_2">
-    <property name="geometry">
-     <rect>
-      <x>370</x>
-      <y>310</y>
-      <width>51</width>
-      <height>26</height>
-     </rect>
-    </property>
-   </widget>
-   <widget class="QSpinBox" name="num_cam_4">
-    <property name="geometry">
-     <rect>
-      <x>720</x>
-      <y>310</y>
-      <width>51</width>
-      <height>26</height>
-     </rect>
-    </property>
-   </widget>
-  </widget>
-  <widget class="QGroupBox" name="groupBox_2">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>360</y>
-     <width>1251</width>
-     <height>351</height>
-    </rect>
-   </property>
-   <property name="title">
-    <string>Rechts</string>
-   </property>
-   <widget class="QLabel" name="lbl_cam_1">
+   <widget class="QGroupBox" name="groupBox_2">
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>30</y>
-      <width>331</width>
-      <height>261</height>
+      <y>360</y>
+      <width>1251</width>
+      <height>351</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>Rechts</string>
+    </property>
+    <widget class="QLabel" name="lbl_cam_1">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>30</y>
+       <width>331</width>
+       <height>261</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>TextLabel</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lbl_cam_3">
+     <property name="geometry">
+      <rect>
+       <x>360</x>
+       <y>30</y>
+       <width>331</width>
+       <height>261</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>TextLabel</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lbl_cam_5">
+     <property name="geometry">
+      <rect>
+       <x>710</x>
+       <y>30</y>
+       <width>331</width>
+       <height>261</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>TextLabel</string>
+     </property>
+    </widget>
+    <widget class="QSpinBox" name="num_cam_1">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>310</y>
+       <width>51</width>
+       <height>26</height>
+      </rect>
+     </property>
+     <property name="value">
+      <number>1</number>
+     </property>
+    </widget>
+    <widget class="QSpinBox" name="num_cam_3">
+     <property name="geometry">
+      <rect>
+       <x>370</x>
+       <y>310</y>
+       <width>51</width>
+       <height>26</height>
+      </rect>
+     </property>
+     <property name="value">
+      <number>3</number>
+     </property>
+    </widget>
+    <widget class="QSpinBox" name="num_cam_5">
+     <property name="geometry">
+      <rect>
+       <x>720</x>
+       <y>310</y>
+       <width>51</width>
+       <height>26</height>
+      </rect>
+     </property>
+     <property name="value">
+      <number>5</number>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QPushButton" name="bt_apply">
+    <property name="geometry">
+     <rect>
+      <x>930</x>
+      <y>730</y>
+      <width>141</width>
+      <height>71</height>
      </rect>
     </property>
     <property name="text">
-     <string>TextLabel</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="lbl_cam_3">
-    <property name="geometry">
-     <rect>
-      <x>360</x>
-      <y>30</y>
-      <width>331</width>
-      <height>261</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>TextLabel</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="lbl_cam_5">
-    <property name="geometry">
-     <rect>
-      <x>710</x>
-      <y>30</y>
-      <width>331</width>
-      <height>261</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>TextLabel</string>
-    </property>
-   </widget>
-   <widget class="QSpinBox" name="num_cam_1">
-    <property name="geometry">
-     <rect>
-      <x>20</x>
-      <y>310</y>
-      <width>51</width>
-      <height>26</height>
-     </rect>
-    </property>
-   </widget>
-   <widget class="QSpinBox" name="num_cam_3">
-    <property name="geometry">
-     <rect>
-      <x>370</x>
-      <y>310</y>
-      <width>51</width>
-      <height>26</height>
-     </rect>
-    </property>
-   </widget>
-   <widget class="QSpinBox" name="num_cam_5">
-    <property name="geometry">
-     <rect>
-      <x>720</x>
-      <y>310</y>
-      <width>51</width>
-      <height>26</height>
-     </rect>
+     <string>Apply</string>
     </property>
    </widget>
   </widget>
-  <widget class="QPushButton" name="bt_apply">
-   <property name="geometry">
-    <rect>
-     <x>930</x>
-     <y>730</y>
-     <width>141</width>
-     <height>71</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Apply</string>
-   </property>
-  </widget>
- </widget>
  </widget>
  <resources/>
  <connections/>

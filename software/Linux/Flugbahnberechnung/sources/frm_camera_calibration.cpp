@@ -57,6 +57,8 @@ this->Zaehler             = 0;
 this->cameras_in_use      = GlobalObjects->cameras_in_use;
 this->current_camera_id   = 0;
 this->Timerwait           = 50;
+this->Ui->rb_single_calibration->setChecked(true);
+this->on_rb_single_calibration_clicked();
 
 }
 

@@ -219,7 +219,7 @@ private:
 
     /******************************************************* Private Klassenmethoden***************************************************************/
     private:
-    void init (int camera_id);
+    void init ();
     void cpu_grab_frame (cv::Mat* cpu_dst_img);
     void apply_filter (cv::Mat* cpu_src, cv::Mat* cpu_dst);
 
@@ -417,6 +417,8 @@ private:
     void         set_idle (bool idle);
     void         set_pipeline(std::string pipeline);
     std::string  get_pipeline ();
+    void stop();
+
 
 
     };
