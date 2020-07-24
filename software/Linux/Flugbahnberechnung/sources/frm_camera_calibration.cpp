@@ -128,7 +128,9 @@ void C_frm_Camera_Calibration::Taktgeber_Tick()
 
 void C_frm_Camera_Calibration::Fill_Mat_2_Lbl(cv::Mat& img, QLabel* label)
 {
-label->setPixmap(QPixmap::fromImage(QImage(img.data, img.cols, img.rows, img.step, QImage::Format_RGB888)));
+QImage imgIn= QImage((uchar*) img.data, img.cols, img.rows, img.step, QImage::Format_BGR888);
+
+label->setPixmap(QPixmap::fromImage(imgIn));
 }
 
 

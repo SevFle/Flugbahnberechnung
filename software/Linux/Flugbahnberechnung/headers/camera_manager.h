@@ -8,6 +8,8 @@
 #include "headers/tracking.h"
 #include "headers/object.h"
 #include "headers/GlobalObjects.h"
+#include "gst/gst.h"
+
 
 namespace std
   {
@@ -52,11 +54,12 @@ namespace nmsp_camera_unmanaged
     bool             load_positioning;
     bool             tracking_active;
   	
-
+    GstDeviceMonitor *DeviceMonitor;
     cv::Mat cpu_kalman_filterL;
     cv::Mat cpu_kalman_filterR;
   	
 	std::vector<c_camera*> camera_vector;
+
 
     /*** Variablen zur Kamerakalibrierung ********************************************************/
 
@@ -102,6 +105,8 @@ namespace nmsp_camera_unmanaged
     void sm_object_tracking ();
 
     void calculate_camera_pose(int camera1, int camera2, cv::Vec3d T, cv::Mat R);
+
+    void getDeviceList();
 
 
     /******************************************************* Private Klassenmethoden***************************************************************/

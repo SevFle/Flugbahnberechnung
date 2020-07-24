@@ -255,6 +255,7 @@ void c_camera::camera_thread ()
         std::cout << "Thread " << this->camera_id + 1 << " running with ID: " << std::this_thread::get_id() << std::endl << std::endl << std::endl;
 
         init ();
+        cv::namedWindow("test", cv::WINDOW_AUTOSIZE);
 
 
         statemachine_state = 1;
@@ -275,7 +276,6 @@ void c_camera::camera_thread ()
       case 2:
         this->start = Clock::now();
         this->cpu_grab_frame (cpu_src_img);
-        cv::imshow("source " + std::to_string(camera_id) + "", *cpu_src_img);
 		this->timestamp_frame = Clock::now();
 
         if (undistord_active == true)
@@ -417,7 +417,9 @@ void c_camera::camera_thread ()
 
 
       case 8:
-        if (cv::waitKey (1) >= 0) break;
+        cv::imshow("test", *cpu_src_img);
+
+        //cv::waitKey(1);
 
         statemachine_state = 1;
         this->end = Clock::now();
@@ -425,6 +427,7 @@ void c_camera::camera_thread ()
         this->fps = 1000.0/frametime.count();
         if(!thread_ready)
           thread_ready = true;
+        break;
 
         }
       }
@@ -552,9 +555,9 @@ void c_camera::init ()
 
 
   }
-void c_camera::cpu_grab_frame (cv::Mat* cpu_dst_img)
+void c_camera::cpu_grab_frame (cv::Mat* dst_img)
   {
- *cap >> *cpu_dst_img;
+ cap->read(*dst_img);
 }
 void c_camera::apply_filter (cv::Mat* cpu_src, cv::Mat* cpu_dst)
   {

@@ -11,7 +11,7 @@ C_frm_Camera_Positioning::C_frm_Camera_Positioning(C_GlobalObjects* GlobalObject
     this->cameras_in_use = GlobalObjects->cameras_in_use;
     this->TimerWait      = 0;
     this->Taktgeber = new QTimer(this);
-    this->Taktgeber_Intervall = 100;
+    this->Taktgeber_Intervall = 25;
 
 
 }
@@ -291,9 +291,9 @@ void C_frm_Camera_Positioning::set_num_value (std::vector<int> camera_list)
 
 void C_frm_Camera_Positioning::FillMat2Lbl(cv::Mat& img, QLabel* label)
 {
-cv::Mat dst;
-cv::cvtColor(img, img, cv::COLOR_BGR2RGB);
-label->setPixmap(QPixmap::fromImage(QImage(img.data, img.cols, img.rows, img.step, QImage::Format_RGB888)));
+    QImage imgIn= QImage((uchar*) img.data, img.cols, img.rows, img.step, QImage::Format_BGR888);
+
+label->setPixmap(QPixmap::fromImage(imgIn));
 }
 
 

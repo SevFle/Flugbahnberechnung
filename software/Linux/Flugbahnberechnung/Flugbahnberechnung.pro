@@ -188,3 +188,6 @@ unix:!macx: LIBS += -L$$PWD/../../../../../libs/opencv420/lib/ -lopencv_world
 
 INCLUDEPATH += $$PWD/../../../../../libs/opencv420/include
 DEPENDPATH += $$PWD/../../../../../libs/opencv420/include
+
+CONFIG += link_pkgconfig
+PKGCONFIG += gstreamer-1.0 glib-2.0 gobject-2.0 gstreamer-app-1.0 gstreamer-pbutils-1.0

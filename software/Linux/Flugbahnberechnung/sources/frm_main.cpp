@@ -126,7 +126,8 @@ void ::C_frm_Main::on_bt_apply_clicked()
 
       this->Main->Camera_manager->init_camera_vectors ();
       this->state = 1;
-}
+    }
+
 }
 void frm_Main::C_frm_Main::on_bt_tracking_clicked()
   {

@@ -20,10 +20,12 @@ c_camera_unmanaged::c_camera_unmanaged ( C_GlobalObjects* GlobalObjects)
   SquareSize                 = 0;
   numBoards_imgs             = 0;
   Photo_ID                   = 0;
+  this->DeviceMonitor        = new GstDeviceMonitor;
   }
 /**************************************************************** Destruktor ****************************************************************/
 c_camera_unmanaged::~c_camera_unmanaged ()
   {
+  delete(this->DeviceMonitor);
   Photo_ID         = 0;
   numBoards_imgs   = 0;
   SquareSize       = 0;
@@ -540,6 +542,13 @@ void c_camera_unmanaged::move_camera_temp2vector (int cameras_in_use, std::vecto
     camera_vector[i] = std::move (temp_CameraVector[i]);
     }
   }
+
+void c_camera_unmanaged::getDeviceList()
+{
+    gst_device_monitor_start(DeviceMonitor);
+    GList DeviceList;
+    gst_device_monitor_get_devices(this->DeviceMonitor);
+}
 
 void c_camera_unmanaged::calibrate_single_camera (int current_camera_id)
   {

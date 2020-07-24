@@ -220,7 +220,7 @@ private:
     /******************************************************* Private Klassenmethoden***************************************************************/
     private:
     void init ();
-    void cpu_grab_frame (cv::Mat* cpu_dst_img);
+    void cpu_grab_frame (cv::Mat* dst_img);
     void apply_filter (cv::Mat* cpu_src, cv::Mat* cpu_dst);
 
 
