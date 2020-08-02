@@ -50,65 +50,45 @@ namespace CameraManager
 
     /**************************************************** Öffentliche Klassenobjekte ********************************************************/
     public:
-    pthread_t*                    pipelineCam;
-    pthread_t*                    simpleCam;
     std::vector<Camera::C_Camera2*>        vecCameras;
 
 
     /**************************************************** Öffentliche Anwender-Attribute ********************************************************/
     public:
-    int camera_id;
-    int absCameras;
-    int frameWidth;
-    int frameHeight;
-    bool             stop_statemachine;
-    bool             load_positioning;
-    bool             tracking_active;
   	
-    GstDeviceMonitor *DeviceMonitor;
-    cv::Mat cpu_kalman_filterL;
-    cv::Mat cpu_kalman_filterR;
-  	
-
-
-    /*** Variablen zur Kamerakalibrierung ********************************************************/
-
-    public:
-    int   numCornersWidth;
-    int   numCornersHeight;
-    float SquareSize;
-    int   numBoards_imgs;
-    bool calibration_done;
-
-    private:
-    int Photo_ID;
-
-
     /******************************************** Nicht öffentliche private Anwender-Attribute **************************************************/
     private:
-    C_GlobalObjects* GlobalObjects;
-    Savemanager::c_SaveManager* SaveManager;
-    LoadManager::C_LoadManager* Loadmanager;
-    int              current_camera_id;
+    C_GlobalObjects*              GlobalObjects;
+    Savemanager::c_SaveManager*   SaveManager;
+    LoadManager::C_LoadManager*   Loadmanager;
+    pthread_t*                    pipelineCam;
+    pthread_t*                    simpleCam;
+
+    int                           camera_id;
+    int                           absCameras;
+    int                           frameWidth;
+    int                           frameHeight;
+    float                         SquareSize;
+    bool                          calibration_done;
 
 
     /********************************************************* Öffentliche Klassenmethoden*******************************************************/
     public:
-    void mvVecCamera2Temp (std::vector<int> vecCamOrder);
-    void mvTemp2VecCamera (std::vector<Camera::C_Camera2*> temp_CameraVector);
+    void mvVecCamera2Temp         (std::vector<int> vecCamOrder);
+    void mvTemp2VecCamera         (std::vector<Camera::C_Camera2*> temp_CameraVector);
 
-    void openCameras ();
-    void closeCameras ();
+    void openCameras              ();
+    void closeCameras             ();
 
-    void calibrate_single_camera (int current_camera_id);
-    void calibrate_stereo_camera (int current_camera_id);
-    void sm_object_tracking ();
+    void calibrateSingleCamera (int current_camera_id, int absCornersWidth, int absCornersHeight, int absBoardImg );
+    void calibrate_stereo_camera  (int current_camera_id);
+    void sm_object_tracking       ();
 
-    void calculate_camera_pose(int camera1, int camera2, cv::Vec3d T, cv::Mat R);
+    void calculate_camera_pose    (int camera1, int camera2, cv::Vec3d T, cv::Mat R);
 
-    void getDeviceList();
+    void getDeviceList            ();
 
-    void pipelineTracking(std::vector<cv::VideoCapture*> &camera_vector, tbb::concurrent_bounded_queue<Payload*> &que);
+    void pipelineTracking         (std::vector<cv::VideoCapture*> &camera_vector, tbb::concurrent_bounded_queue<Payload*> &que);
 
 
     /******************************************************* Private Klassenmethoden***************************************************************/

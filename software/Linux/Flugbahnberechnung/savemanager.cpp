@@ -67,23 +67,19 @@ void c_SaveManager::saveCameraPositioning (std::vector<int> camera_list) const
 
   GlobalObjects->csv_parameter_datei->Schliessen();
   }
-void c_SaveManager::saveCameraCalibration (int camera_id)
+void c_SaveManager::saveCameraCalibration (Camera::C_Camera2 &Camera)
   {
-  string Dateiname = "../Parameter/Camera_Calibration_Parameter_CameraID_" + to_string (camera_id) + ".csv";
+  int    cameraID = Camera.getCameraID();
+  string Dateiname = "../Parameter/Camera_Calibration_Parameter_CameraID_" + to_string (cameraID) + ".csv";
   string Dateityp  = "Intrinisic and distortion parameters of camera-single-calibration";
-  int    numBoards = this->numBoards_imgs;
 
   double DistCoeffs[1][5];
   double Intrinsic[3][3];
-  int    real_size_width  = this->camera_vector[camera_id]->get_resize_width();
-  int    real_size_height = this->camera_vector[camera_id]->get_resize_height();
-
-  this->camera_vector[camera_id]->get_calibration_parameter (DistCoeffs,Intrinsic);
+  Camera.getCalibrationParameter(DistCoeffs,Intrinsic);
 
   this->GlobalObjects->csv_parameter_datei->Oeffnen (Dateiname,Enum_CSV_Access::Write);
 
   this->GlobalObjects->csv_parameter_datei->Schreiben ("Dateityp",Dateityp,"[1]");
-  this->GlobalObjects->csv_parameter_datei->Schreiben ("Anzahl Boards",numBoards,"[1]");
   this->GlobalObjects->csv_parameter_datei->Schreiben ("Distortion k1",DistCoeffs[0][0],"[1]");
   this->GlobalObjects->csv_parameter_datei->Schreiben ("Distortion k2",DistCoeffs[0][1],"[1]");
   this->GlobalObjects->csv_parameter_datei->Schreiben ("Distortion p1",DistCoeffs[0][2],"[1]");
@@ -100,26 +96,6 @@ void c_SaveManager::saveCameraCalibration (int camera_id)
   this->GlobalObjects->csv_parameter_datei->Schreiben ("Intrinsic 22",Intrinsic[2][2],"[Px]");
   this->GlobalObjects->csv_parameter_datei->Schreiben ("Intrinsic 21",Intrinsic[2][1],"[Px]");
   this->GlobalObjects->csv_parameter_datei->Schreiben ("Intrinsic 22",Intrinsic[2][2],"[Px]");
-  this->GlobalObjects->csv_parameter_datei->Schreiben ("Resize Width",real_size_width,"[Px]");
-  this->GlobalObjects->csv_parameter_datei->Schreiben ("Resize Height",real_size_height,"[Px]");
-
-
-  std::cout << "Camera " << camera_id << " Saved Distortion k1 " << to_string (DistCoeffs[0][0]) << endl;
-  std::cout << "Camera " << camera_id << " Saved Distortion k2 " << to_string (DistCoeffs[0][1]) << endl;
-  std::cout << "Camera " << camera_id << " Saved Distortion p1 " << to_string (DistCoeffs[0][2]) << endl;
-  std::cout << "Camera " << camera_id << " Saved Distortion p2 " << to_string (DistCoeffs[0][3]) << endl;
-  std::cout << "Camera " << camera_id << " Saved Distortion k3 " << to_string (DistCoeffs[0][4]) << endl;
-
-  std::cout << "Camera " << camera_id << " Saved Intrinsic fx " << to_string (Intrinsic[0][0]) << endl;
-  std::cout << "Camera " << camera_id << " Saved Intrinsic 01 " << to_string (Intrinsic[0][1]) << endl;
-  std::cout << "Camera " << camera_id << " Saved Intrinsic cx " << to_string (Intrinsic[0][2]) << endl;
-  std::cout << "Camera " << camera_id << " Saved Intrinsic 10 " << to_string (Intrinsic[1][0]) << endl;
-  std::cout << "Camera " << camera_id << " Saved Intrinsic fy " << to_string (Intrinsic[1][1]) << endl;
-  std::cout << "Camera " << camera_id << " Saved Intrinsic cy " << to_string (Intrinsic[1][2]) << endl;
-  std::cout << "Camera " << camera_id << " Saved Intrinsic 20 " << to_string (Intrinsic[2][0]) << endl;
-  std::cout << "Camera " << camera_id << " Saved Intrinsic 21 " << to_string (Intrinsic[2][1]) << endl;
-  std::cout << "Camera " << camera_id << " Saved Intrinsic 22 " << to_string (Intrinsic[2][2]) << endl;
-
 
   this->GlobalObjects->csv_parameter_datei->Schliessen();
   }

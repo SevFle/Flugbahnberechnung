@@ -14,7 +14,6 @@ namespace Camera
   {
   class C_Camera2
     {
-
     struct S_filterProperties
       {
       uchar   hue_min;
@@ -109,11 +108,11 @@ namespace Camera
       bool getBilateral_active() const;
       void setBilateral_active(bool value);
       };
-
   public:
     C_Camera2();
     ~C_Camera2();
 
+  private:
     C_GlobalObjects* GlobalObjects;
     S_filterProperties* Filterproperties;
 
@@ -131,7 +130,7 @@ namespace Camera
 
     int cameraID;
 
-
+  public:
     bool open                         ();
     bool close                        ();
     void savePicture                  (int camera_id, int photo_id, std::string definition);
@@ -141,9 +140,15 @@ namespace Camera
     void getCalibrationParameter      (double (&DistCoeffs)[1][5], double (&Intrinsic)[3][3]) const;
     void setPipeline                  (std::string Pipeline);
     void setROI                       (int &width, int &height);
-    int  getROI                       ();
+    int  getROI                       () const;
     void setCameraID                  (int &cameraID);
-    int  getCameraID                  ();
+    int  getCameraID                  () const;
+    cv::Mat *getDistCoeffs            () const;
+    void setDistCoeffs                (cv::Mat &value);
+
+    cv::Mat *getIntrinsic             () const;
+    void setIntrinsic                 (cv::Mat &value);
+
     };
 
   }

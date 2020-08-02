@@ -111,13 +111,13 @@ void C_CameraManager::mvTemp2VecCamera (std::vector<Camera::C_Camera2*> vecCamer
     }
   }
 
-void C_CameraManager::calibrate_single_camera (int current_camera_id)
+void C_CameraManager::calibrateSingleCamera (int current_camera_id, int absCornersWidth, int absCornersHeight, int absBoardImg )
   {
   // Deklaration benötigter Variablen
   cv::Mat                     Originalbild;
   cv::Mat                     Grau_Bild;
   vector<cv::Point2f>         Corners;
-  cv::Size                    Board_Sz = cv::Size (this->numCornersWidth,this->numCornersHeight);
+  cv::Size                    Board_Sz = cv::Size (absCornersWidth,absCornersHeight);
   cv::Mat                     intrinsic (cv::Mat_<double> (3,3));
   cv::Mat                     distCoeffs;
   vector<cv::Point3f>         Obj;
@@ -128,27 +128,27 @@ void C_CameraManager::calibrate_single_camera (int current_camera_id)
   vector<cv::Mat>             TCP_Orientation;
   vector<cv::Mat>             TCP_Position;
 
-  this->Photo_ID  = 0;
+  int photoID = 0;
   int error_count = 0;
 
   // Füllen des "Obj"-Vektors mit 3D-Koordinaten der Schachbrett-Ecken. Die Koordinaten werden manuell vorgegeben und ergeben sich über Länge
   // und Breite der Schachbrett-Rechtecke über die gesamte Länge und Breite des Schachbrettes. Das Schachbrett-Rechteck hat eine Größe von
   // 24.23mm x 24.23mm. Damit ergeben sich die Koordinaten (x, y, z) wie folgt: (0, 0, 0), (24.23, 0, 0), (48.46, 0, 0), .... z ist immer null,
   // da die Rechtecke auf einer Ebene liegen und der Koordinatensystemursprung (Welt) auf dem Schachbrett liegt.
-  for (int i = 0; i < this->numCornersHeight; i++)
+  for (int i = 0; i < absCornersHeight; i++)
     {
-    for (int j = 0; j < this->numCornersWidth; j++)
+    for (int j = 0; j < absCornersWidth; j++)
       {
       Obj.push_back (cv::Point3f ((float)j * this->SquareSize,(float)i * this->SquareSize,0.0f));
       }
     }
 
   // Abarbeiten aller gespeicherten Bilder
-  while (this->Photo_ID < this->numBoards_imgs)
+  while (photoID < absBoardImg)
     {
-    std::cout << "Processing image " << Photo_ID << " out of " << numBoards_imgs << " images." << endl;
+    std::cout << "Processing image " << photoID << " out of " << absBoardImg << " images." << endl;
     // Laden des Bildes mit der angegebenen Photo_ID
-    Originalbild = cv::imread ("../Parameter/Bilder/Camera_Single_Calibration_" + std::to_string (current_camera_id) + "_Snapshot_" + std::to_string (this->Photo_ID) + ".png",1);
+    Originalbild = cv::imread ("../Parameter/Bilder/Camera_Single_Calibration_" + std::to_string (current_camera_id) + "_Snapshot_" + std::to_string (photoID) + ".png",1);
 
     // Umwandeln des geladenen Bildes in ein Grauwertbild und abspeichern dieses in einem anderen Bild-Array
     cvtColor (Originalbild,Grau_Bild,cv::COLOR_BGR2GRAY);
@@ -207,10 +207,10 @@ void C_CameraManager::calibrate_single_camera (int current_camera_id)
     imwrite ("../Parameter/Bilder/Camera_Single_Calibration_" + std::to_string (camera_id) + "_Gray_DrawCorners_" + std::to_string (this->Photo_ID) + ".png",Grau_Bild);
 
     // Photo-ID für nächsten Durchlauf erhöhen.
-    this->Photo_ID++;
+    photoID++;
     }
 
-  std::cout << "Analyzed " << numBoards_imgs - error_count << "good images out of " << numBoards_imgs << endl;
+  std::cout << "Analyzed " << absBoardImg - error_count << "good images out of " << absBoardImg << endl;
 
   // Mit den gefundenen Ecken in 2D-Koordinaten und den vorgegebenen 3D-Koordinaten werden die intrinsischen Parameter (Camera-Matrix) und
   // die Koeffizienten der Verzerrung berechnet. Rvecs und Tvecs erhalten dabei die Orientierung und die Position der Transformationsmatrix
@@ -224,15 +224,13 @@ void C_CameraManager::calibrate_single_camera (int current_camera_id)
   std::cout << "Calculation finished. Saving data." << endl << endl;
 
   //Kopieren der berechneten Daten zur dazugehörigen Kamera
-  *camera_vector[current_camera_id]->Intrinsic  = intrinsic;
-  *camera_vector[current_camera_id]->DistCoeffs = distCoeffs;
+  vecCameras[current_camera_id]->setIntrinsic(intrinsic);
+  vecCameras[current_camera_id]->setDistCoeffs(distCoeffs);
 
   //Speichern der berechenten Daten in CSV Datei
-  this->save_camera_calibration (current_camera_id);
-
+  this->SaveManager->saveCameraCalibration(*vecCameras[current_camera_id]);
   //Reaktivierung der Bildentzerrung
-  this->camera_vector[current_camera_id]->init_rectify_map();
-  this->camera_vector[current_camera_id]->set_undistord_active (true);
+  this->vecCameras[current_camera_id]->initRectifyMap();
   }
 void C_CameraManager::calibrate_stereo_camera (int camera_id)
   {
