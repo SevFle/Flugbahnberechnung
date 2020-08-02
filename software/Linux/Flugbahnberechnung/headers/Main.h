@@ -6,7 +6,7 @@
 #include <thread>
 
 using namespace GlobalObjects;
-using namespace nmsp_camera_unmanaged;
+using namespace camera_manager;
 
 namespace frm_Main
   {

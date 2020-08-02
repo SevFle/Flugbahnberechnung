@@ -8,6 +8,11 @@
 #include "headers/tracking.h"
 #include "headers/object.h"
 #include "headers/GlobalObjects.h"
+
+#include "tbb/pipeline.h"
+#include "tbb/concurrent_queue.h"
+
+
 #include "gst/gst.h"
 
 
@@ -24,16 +29,21 @@ using namespace object;
 using namespace posen;
 using namespace GlobalObjects;
 
+struct Payload
+{
+    camera::c_camera camera;
 
-namespace nmsp_camera_unmanaged
+};
+
+namespace cameraManager
   {
-  class c_camera_unmanaged
+  class c_cameraManager
     {
     public:
     /*************************************************************** Konstruktoren *************************************************************/
-    c_camera_unmanaged ( C_GlobalObjects* GlobalObjects);
+    c_cameraManager ( C_GlobalObjects* GlobalObjects);
     /*************************************************************** Destruktor ****************************************************************/
-    ~c_camera_unmanaged ();
+    ~c_cameraManager ();
 
 
     /**************************************************** Öffentliche Klassenobjekte ********************************************************/
@@ -69,6 +79,8 @@ namespace nmsp_camera_unmanaged
     float SquareSize;
     int   numBoards_imgs;
     bool calibration_done;
+    volatile bool done;
+
 
     private:
     int Photo_ID;
@@ -107,6 +119,10 @@ namespace nmsp_camera_unmanaged
     void calculate_camera_pose(int camera1, int camera2, cv::Vec3d T, cv::Mat R);
 
     void getDeviceList();
+
+    void pipelineTracking(std::vector<cv::VideoCapture*> &camera_vector, tbb::concurrent_bounded_queue<Payload*> &que);
+    void threadGrabsrc();
+
 
 
     /******************************************************* Private Klassenmethoden***************************************************************/

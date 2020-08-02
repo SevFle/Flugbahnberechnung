@@ -320,7 +320,7 @@ void c_camera::camera_thread ()
 
         //STEP 4: Apply chosen filter to cpu_undistorted image
       case 5:
-        {
+
         if (filtering_hsv_active)
           {
           this->gpu_src_img->upload (*cpu_undistorted);
@@ -431,7 +431,7 @@ void c_camera::camera_thread ()
 
         }
       }
-    }
+
   std::cout << std::endl << "Thread " << std::this_thread::get_id() << " ending." << std::endl;
   }
 

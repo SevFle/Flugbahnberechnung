@@ -4,11 +4,11 @@
 #include <thread>
 
 /****************************************************************** Namespaces***************************************************************/
-using namespace nmsp_camera_unmanaged;
+using namespace cameraManager;
 using namespace GlobalObjects;
 
 /*************************************************************** Konstruktoren **************************************************************/
-c_camera_unmanaged::c_camera_unmanaged ( C_GlobalObjects* GlobalObjects)
+c_cameraManager::c_cameraManager ( C_GlobalObjects* GlobalObjects)
   {
   this->tracking_thread      = new c_tracking (GlobalObjects);
   stop_statemachine          = false;
@@ -21,10 +21,12 @@ c_camera_unmanaged::c_camera_unmanaged ( C_GlobalObjects* GlobalObjects)
   numBoards_imgs             = 0;
   Photo_ID                   = 0;
   this->DeviceMonitor        = new GstDeviceMonitor;
+  done                       = false;
   }
 /**************************************************************** Destruktor ****************************************************************/
-c_camera_unmanaged::~c_camera_unmanaged ()
+c_cameraManager::~c_cameraManager ()
   {
+  done                       = false;
   delete(this->DeviceMonitor);
   Photo_ID         = 0;
   numBoards_imgs   = 0;
@@ -44,7 +46,7 @@ c_camera_unmanaged::~c_camera_unmanaged ()
 
 /*************************************************** Nicht öffentliche private Methoden *****************************************************/
 
-void c_camera_unmanaged::start_camera_thread ()
+void c_cameraManager::start_camera_thread ()
   {
   camera_vector[current_camera_id]->set_idle (true);
 
@@ -52,7 +54,7 @@ void c_camera_unmanaged::start_camera_thread ()
   }
 /******************************************************* Öffentliche Anwender-Methoden ******************************************************/
 
-void c_camera_unmanaged::save_camera_settings (int camera_id)
+void c_cameraManager::save_camera_settings (int camera_id)
   {
   string Dateiname = "../Parameter/Camera_setting" + to_string (camera_id) + ".csv";
   string Dateityp  = "Value of the individual setting";
@@ -102,7 +104,7 @@ void c_camera_unmanaged::save_camera_settings (int camera_id)
     }
   this->GlobalObjects->csv_parameter_datei->Schliessen();
   }
-void c_camera_unmanaged::load_camera_settings (int camera_id)
+void c_cameraManager::load_camera_settings (int camera_id)
   {
   string Dateiname      = "../Parameter/Camera_setting" + to_string (camera_id) + ".csv";
   string Dateityp       = "Value of the individual setting";
@@ -219,7 +221,7 @@ void c_camera_unmanaged::load_camera_settings (int camera_id)
   std::cout << "Loaded Settings for Camera " << camera_id << "." << endl;
   }
 
-void c_camera_unmanaged::save_camera_calibration (int camera_id)
+void c_cameraManager::save_camera_calibration (int camera_id)
   {
   string Dateiname = "../Parameter/Camera_Calibration_Parameter_CameraID_" + to_string (camera_id) + ".csv";
   string Dateityp  = "Intrinisic and distortion parameters of camera-single-calibration";
@@ -275,7 +277,7 @@ void c_camera_unmanaged::save_camera_calibration (int camera_id)
 
   this->GlobalObjects->csv_parameter_datei->Schliessen();
   }
-void c_camera_unmanaged::load_camera_calibration (int camera_id)
+void c_cameraManager::load_camera_calibration (int camera_id)
   {
   string Dateiname = "../Parameter/Camera_Calibration_Parameter_CameraID_" + to_string (camera_id) + ".csv";
   string Dateityp  = "Intrinisic and distortion parameters of camera-single-calibration";
@@ -335,7 +337,7 @@ void c_camera_unmanaged::load_camera_calibration (int camera_id)
   std::cout << "Loaded Calibration for Camera " << camera_id << "." << endl;
   }
 
-void c_camera_unmanaged::save_camera_positioning (std::vector<int> camera_list) const
+void c_cameraManager::save_camera_positioning (std::vector<int> camera_list) const
   {
   string Dateiname = "../Parameter/Camera_Positioning.csv";
   string Dateityp  = "Correct Camera position in vector corresponding to their ID";
@@ -355,7 +357,7 @@ void c_camera_unmanaged::save_camera_positioning (std::vector<int> camera_list) 
 
   GlobalObjects->csv_parameter_datei->Schliessen();
   }
-void c_camera_unmanaged::load_camera_positioning ()
+void c_cameraManager::load_camera_positioning ()
   {
   string                                                  Dateiname = "../Parameter/Camera_Positioning.csv";
   string                                                  Dateityp;
@@ -386,7 +388,7 @@ void c_camera_unmanaged::load_camera_positioning ()
   std::cout << "Loaded Positioning." << endl;
   }
 
-void c_camera_unmanaged::save_camera_cos (int camera_id, C_AbsolutePose& WorldToCam_Param)
+void c_cameraManager::save_camera_cos (int camera_id, C_AbsolutePose& WorldToCam_Param)
   {
   string Dateiname = "../Parameter/Pose_world_to_camera" + to_string (camera_id) + ".csv";
   string Dateityp;
@@ -427,7 +429,7 @@ void c_camera_unmanaged::save_camera_cos (int camera_id, C_AbsolutePose& WorldTo
     }
   GlobalObjects->csv_parameter_datei->Schliessen();
   }
-void c_camera_unmanaged::load_camera_cos (int camera_id, C_AbsolutePose& WorldToCam_Param)
+void c_cameraManager::load_camera_cos (int camera_id, C_AbsolutePose& WorldToCam_Param)
   {
   string Dateiname = "../Parameter/Pose_world_to_camera" + to_string (camera_id) + ".csv";
   string Dateityp;
@@ -466,7 +468,7 @@ void c_camera_unmanaged::load_camera_cos (int camera_id, C_AbsolutePose& WorldTo
   GlobalObjects->csv_parameter_datei->Schliessen();
   }
 
-void c_camera_unmanaged::load_camera_pipelines(std::vector<std::string> &vec_pipeline)
+void c_cameraManager::load_camera_pipelines(std::vector<std::string> &vec_pipeline)
 {
     int deviceNo = 0;
 for(auto i= 1; i <= this->GlobalObjects->cameras_in_use; i++)
@@ -485,7 +487,7 @@ for(auto i= 1; i <= this->GlobalObjects->cameras_in_use; i++)
 
 }
 
-void c_camera_unmanaged::init_camera_vectors ()
+void c_cameraManager::init_camera_vectors ()
   {
   std::vector<std::string> Pipelines;
   this->load_camera_pipelines(Pipelines);
@@ -503,8 +505,8 @@ void c_camera_unmanaged::init_camera_vectors ()
 
 
     current_camera_id = i;
-    //camera_thread   = new std::thread                       (&c_camera_unmanaged::start_camera_thread, this);
-    this->camera_thread = new std::thread (&c_camera_unmanaged::start_camera_thread,this);
+    //camera_thread   = new std::thread                       (&c_cameraManager::start_camera_thread, this);
+    this->camera_thread = new std::thread (&c_cameraManager::start_camera_thread,this);
     }
 
   //Reorder recently created Cameras
@@ -517,7 +519,7 @@ void c_camera_unmanaged::init_camera_vectors ()
     this->load_camera_settings (i);
     }
   }
-void c_camera_unmanaged::close_cameras (int cameras_in_use)
+void c_cameraManager::close_cameras (int cameras_in_use)
   {
   for (int i = 0; i < cameras_in_use; i++)
     {
@@ -526,7 +528,7 @@ void c_camera_unmanaged::close_cameras (int cameras_in_use)
     }
   }
 
-void c_camera_unmanaged::move_camera_vector2temp (int camera_desired_id, int camera_current_id, std::vector<c_camera*>& temp_CameraVector)
+void c_cameraManager::move_camera_vector2temp (int camera_desired_id, int camera_current_id, std::vector<c_camera*>& temp_CameraVector)
   {
   // Wo ist die feste Position der Kamera? -> Camera_Current_ID
   // Wo ist die Position der Kamera im unsorted Vector? ->Camera_desired_id
@@ -535,7 +537,7 @@ void c_camera_unmanaged::move_camera_vector2temp (int camera_desired_id, int cam
   //camera_vector_temp.insert(camera_vector_temp.begin()+camera_desired_id, camera_vector[camera_current_id]);
   std::cout << " Moved Pointer for Camera " << camera_current_id << " to Position " << camera_desired_id << " in temporary Vector" << std::endl;
   }
-void c_camera_unmanaged::move_camera_temp2vector (int cameras_in_use, std::vector<c_camera*> temp_CameraVector)
+void c_cameraManager::move_camera_temp2vector (int cameras_in_use, std::vector<c_camera*> temp_CameraVector)
   {
   for (int i = 0; i < cameras_in_use; i++)
     {
@@ -543,14 +545,14 @@ void c_camera_unmanaged::move_camera_temp2vector (int cameras_in_use, std::vecto
     }
   }
 
-void c_camera_unmanaged::getDeviceList()
+void c_cameraManager::getDeviceList()
 {
     gst_device_monitor_start(DeviceMonitor);
     GList DeviceList;
     gst_device_monitor_get_devices(this->DeviceMonitor);
 }
 
-void c_camera_unmanaged::calibrate_single_camera (int current_camera_id)
+void c_cameraManager::calibrate_single_camera (int current_camera_id)
   {
   // Deklaration benötigter Variablen
   cv::Mat                     Originalbild;
@@ -673,7 +675,7 @@ void c_camera_unmanaged::calibrate_single_camera (int current_camera_id)
   this->camera_vector[current_camera_id]->init_rectify_map();
   this->camera_vector[current_camera_id]->set_undistord_active (true);
   }
-void c_camera_unmanaged::calibrate_stereo_camera (int camera_id)
+void c_cameraManager::calibrate_stereo_camera (int camera_id)
   {
     this->calibration_done = false;
   vector<vector<cv::Point3f>>   object_points;
@@ -807,7 +809,7 @@ void c_camera_unmanaged::calibrate_stereo_camera (int camera_id)
 //  std::cout << "P2" << P2 << endl;0
   }
 
-void c_camera_unmanaged::sm_object_tracking ()
+void c_cameraManager::sm_object_tracking ()
   {
   s_tracking_data                     tracked_data;
   C_object*                           tracked_object;
@@ -955,13 +957,13 @@ void c_camera_unmanaged::sm_object_tracking ()
 //        break;
 //      case 4:
 //        break;
-      }//switch(statemachine_state)
+}//switch(statemachine_state)
     //while(tracking_active)
   //void sm_object_tracking
 
 
 
-void c_camera_unmanaged::calculate_camera_pose(int camera1, int camera2, cv::Vec3d T, cv::Mat R)
+void c_cameraManager::calculate_camera_pose(int camera1, int camera2, cv::Vec3d T, cv::Mat R)
   {
    //P02 = P01*P12
 
@@ -995,3 +997,63 @@ void c_camera_unmanaged::calculate_camera_pose(int camera1, int camera2, cv::Vec
     }
   this->save_camera_cos(this->camera_vector[camera2]->get_camera_id(), *this->camera_vector[camera2]->CameraPose);
   }//calculate_camera_pose
+
+void c_cameraManager::pipelineTracking(std::vector<cv::VideoCapture*> &camera_vector, tbb::concurrent_bounded_queue<Payload*> &que)
+{
+//STEP 1: GRAB PICTURE FROM ARRAY-ACTIVE_CAMERAS
+tbb::parallel_pipeline(7, tbb::make_filter<void, Payload*>(tbb::filter::serial_in_order, [&](tbb::flow_control& fc)->Payload*
+  {
+  if(pipelineCamera == devices) pipelineCamera = 0;
+
+  auto pData = new Payload;
+  cv::Mat frame;
+  camera_vector[pipelineCamera]->read(pData->img);
+  if(done || pData->img.empty())
+    {
+    done = true;
+    fc.stop();
+    return 0;
+    }
+  pipelineCamera++;
+  return pData;
+  }
+)&
+//STEP 2: UNDISTORT SRC TO CPUDISTORT
+tbb::make_filter<Payload*, Payload*>(tbb::filter::serial_in_order, [&] (Payload *pData)->Payload*
+  {
+  cv::cvtColor(pData->img ,pData->gray, cv::COLOR_BGRA2GRAY);
+
+  return pData;
+  }
+
+)&
+//STEP 3: FILTER UNDISTORT TO CPUHSV; USE CUDA
+tbb::make_filter<Payload*, Payload*>(tbb::filter::serial_in_order, [&] (Payload *pData)->Payload*
+  {
+  cv::circle(pData->gray, cv::Point(pData->gray.rows/2, pData->gray.cols/2), 50, cv::Scalar(0, 140, 50), cv::FILLED);
+  return pData;
+  }
+)&
+//STEP 4: FIND CONTOURS ON CPUHSV, DRAW ON UNDISTORT
+//STEP 5: ADJUST ROI ON CPU UNDISTORT
+tbb::make_filter<Payload*,void>(tbb::filter::serial_in_order, [&] (Payload *pData)
+  {
+  pData->gray.copyTo(pData->final);
+  // TBB NOTE: pipeline end point. dispatch to GUI
+  if (! done)
+    {
+    try
+      {
+      que.push(pData);
+      }
+    catch (...)
+      {
+      std::cout << "Pipeline caught an exception on the queue" << std::endl;
+      done = true;
+      }//catch
+    }//if (!done)
+  }//tbb::makefilter
+  )//tbb::makefilter
+);//tbb pipeline
+
+}//void pipelineTracking
