@@ -41,7 +41,7 @@ this->Main->Camera_manager->camera_vector[0]->set_undistord_active (true);
 this->Main->Camera_manager->camera_vector[1]->set_undistord_active (true);
 this->Main->Camera_manager->camera_vector[0]->set_filtering_active (true);
 this->Main->Camera_manager->camera_vector[1]->set_filtering_active (true);
-this->Ui->num_camera_id->setMaximum(GlobalObjects->cameras_in_use);
+this->Ui->num_camera_id->setMaximum(GlobalObjects->absCameras);
 
 }
 

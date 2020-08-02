@@ -30,13 +30,12 @@ void C_CameraManager::start_camera_thread ()
   }
 /******************************************************* Öffentliche Anwender-Methoden ******************************************************/
 
-void C_CameraManager::initVecCameras ()
+void C_CameraManager::openCameras ()
   {
   GstDeviceMonitor *Monitor;
   GstCaps *caps;
   GstDevice *device;
   GList *devlist = NULL, *devIter;
-  gchar *devString;
 
   Monitor = gst_device_monitor_new ();
   caps = gst_caps_new_empty_simple("image/jpeg");
@@ -77,47 +76,40 @@ void C_CameraManager::initVecCameras ()
     }
 
   //Reorder recently created Cameras
-  this->Loadmanager->loadCameraPositioning(this->vecCameras);
+  this->mvVecCamera2Temp(this->Loadmanager->loadCameraPositioning());
 
   //Load Settings and Calibration for each camera created earlier
-  for (int i = 0; i < GlobalObjects->cameras_in_use; i++)
+  for (int i = 0; i < GlobalObjects->absCameras; i++)
     {
     this->Loadmanager->loadCameraCalibration(vecCameras[i]);
     this->Loadmanager->loadCameraSettings(vecCameras[i]);
     }
   }
-void C_CameraManager::close_cameras (int cameras_in_use)
+void C_CameraManager::closeCameras ()
   {
-  for (int i = 0; i < cameras_in_use; i++)
+  for (auto it = std::begin(vecCameras); it < std::end(vecCameras); it++)
     {
-    camera_vector[i]->cap->release();
-    camera_vector[i]->set_thread_running (false);
+    (*it)->close();
     }
   }
 
-void C_CameraManager::move_camera_vector2temp (int camera_desired_id, int camera_current_id, std::vector<C_Camera*>& temp_CameraVector)
+void C_CameraManager::mvVecCamera2Temp (std::vector<int> vecCamOrder)
   {
-  // Wo ist die feste Position der Kamera? -> Camera_Current_ID
-  // Wo ist die Position der Kamera im unsorted Vector? ->Camera_desired_id
-  // Zeige die fest installierte Position des Vektors "Referrences" auf die Adresse im Unsortierten Vektor
-  temp_CameraVector[camera_desired_id] = std::move (camera_vector[camera_current_id]);
-  //camera_vector_temp.insert(camera_vector_temp.begin()+camera_desired_id, camera_vector[camera_current_id]);
-  std::cout << " Moved Pointer for Camera " << camera_current_id << " to Position " << camera_desired_id << " in temporary Vector" << std::endl;
-  }
-void C_CameraManager::move_camera_temp2vector (int cameras_in_use, std::vector<C_Camera*> temp_CameraVector)
-  {
-  for (int i = 0; i < cameras_in_use; i++)
+  std::vector<Camera::C_Camera2*> vecCamerastemp;
+  vecCamerastemp.resize(GlobalObjects->absCameras);
+  for(int i =0; i < GlobalObjects->absCameras; i++)
     {
-    camera_vector[i] = std::move (temp_CameraVector[i]);
+    vecCamerastemp[i] = std::move(this->vecCameras[vecCamOrder[i]]);
+    }
+  mvTemp2VecCamera(vecCamerastemp);
+  }
+void C_CameraManager::mvTemp2VecCamera (std::vector<Camera::C_Camera2*> vecCamerastemp)
+  {
+  for (int i = 0; i < GlobalObjects->absCameras; i++)
+    {
+    vecCameras[i] = std::move (vecCamerastemp[i]);
     }
   }
-
-void C_CameraManager::getDeviceList()
-{
-    gst_device_monitor_start(DeviceMonitor);
-    GList DeviceList;
-    gst_device_monitor_get_devices(this->DeviceMonitor);
-}
 
 void C_CameraManager::calibrate_single_camera (int current_camera_id)
   {
@@ -406,7 +398,7 @@ void C_CameraManager::sm_object_tracking ()
         tracked_data.positionsvektor.Z = 0.0;
 
         //Lade alle fest definierten Welt-Kamera Posen und erstelle einen Vektor mit allen Posen. Vektor[0] bezieht sich auf Kamera[0], usw.
-        for (int i = 0; i < GlobalObjects->cameras_in_use; i++)
+        for (int i = 0; i < GlobalObjects->absCameras; i++)
           {
           C_AbsolutePose abs_WorldToCam;
           load_camera_cos (i,abs_WorldToCam);

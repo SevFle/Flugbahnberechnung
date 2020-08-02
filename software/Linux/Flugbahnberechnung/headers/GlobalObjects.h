@@ -17,7 +17,7 @@ namespace GlobalObjects
 
     C_CSV_Parameter_Datei* csv_parameter_datei;
 
-    int cameras_in_use;
+    int absCameras;
     int camera_id;
 
     std::vector<int>* camera_order;

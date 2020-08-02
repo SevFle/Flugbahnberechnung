@@ -43,7 +43,7 @@ this->installEventFilter(this);
 
 this->Zaehler                   = 0;
 this->TimerWait                 = 75;
-this->Ui->num_camera->setMaximum(GlobalObjects->cameras_in_use);
+this->Ui->num_camera->setMaximum(GlobalObjects->absCameras);
 this->Ui->sld_hue_min->setValue(0);
 this->Ui->sld_hue_max->setValue(50);
 this->Ui->sld_saturation_min->setValue(0);
@@ -510,7 +510,7 @@ void C_frm_Object_Calibration::get_camera_settings (int camera_id)
 
 void frm_Object_Calibration::C_frm_Object_Calibration::on_bt_tracking_clicked()
 {
-    for (int i = 0; i < GlobalObjects->cameras_in_use; i++)
+    for (int i = 0; i < GlobalObjects->absCameras; i++)
       {
       this->Main->Camera_manager->camera_vector[i]->set_idle (false);
       this->Main->Camera_manager->camera_vector[i]->set_show_cropped_image (false);

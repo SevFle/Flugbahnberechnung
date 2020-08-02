@@ -55,10 +55,10 @@ void c_SaveManager::saveCameraPositioning (std::vector<int> camera_list) const
   GlobalObjects->csv_parameter_datei->Oeffnen (Dateiname,Enum_CSV_Access::Write);
 
   GlobalObjects->csv_parameter_datei->Schreiben ("Dateityp",Dateityp,"[1]");
-  GlobalObjects->csv_parameter_datei->Schreiben ("Anzahl Kameras",to_string (GlobalObjects->cameras_in_use),"[1]");
+  GlobalObjects->csv_parameter_datei->Schreiben ("Anzahl Kameras",to_string (GlobalObjects->absCameras),"[1]");
 
 
-  for (int i = 0; i < GlobalObjects->cameras_in_use; i++)
+  for (int i = 0; i < GlobalObjects->absCameras; i++)
     {
     GlobalObjects->csv_parameter_datei->Schreiben ("Cameravector[" + to_string (i) + "]",to_string (camera_list[i]),"[1]");
     std::cout << "Saving Camera " << i << " to position " << camera_list[i];

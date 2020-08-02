@@ -7,10 +7,13 @@ C_LoadManager::C_LoadManager()
 
   }
 
-void C_LoadManager::loadCameraSettings (int camera_id)
+void C_LoadManager::loadCameraSettings (Camera::C_Camera2 *Camera)
   {
-  string Dateiname      = "../Parameter/Camera_setting" + to_string (camera_id) + ".csv";
+  int cameraID = Camera->getCameraID();
+  string Dateiname      = "../Parameter/Camera_setting" + to_string (cameraID) + ".csv";
   string Dateityp       = "Value of the individual setting";
+
+
   int    hue_min        = 0;
   int    hue_max        = 0;
   int    saturation_min = 0;
@@ -51,7 +54,6 @@ void C_LoadManager::loadCameraSettings (int camera_id)
   if (GlobalObjects->csv_parameter_datei->IsOpen())
     {
     GlobalObjects->csv_parameter_datei->Lesen (Dateityp);
-
     GlobalObjects->csv_parameter_datei->Lesen (hue_min);
     GlobalObjects->csv_parameter_datei->Lesen (hue_max);
     GlobalObjects->csv_parameter_datei->Lesen (saturation_min);
@@ -87,7 +89,7 @@ void C_LoadManager::loadCameraSettings (int camera_id)
     GlobalObjects->csv_parameter_datei->Lesen (object_size_max);
 
 
-    camera_vector[camera_id]->set_hue_min (hue_min);
+    Camera->set_hue_min (hue_min);
     camera_vector[camera_id]->set_hue_max (hue_max);
     camera_vector[camera_id]->set_saturation_min (saturation_min);
     camera_vector[camera_id]->set_saturation_max (saturation_max);
@@ -184,13 +186,11 @@ void C_LoadManager::loadCameraCalibration (int camera_id)
   std::cout << "Loaded Calibration for Camera " << camera_id << "." << endl;
   }
 
-void C_LoadManager::loadCameraPositioning ()
+std::vector<int> C_LoadManager::loadCameraPositioning ()
   {
   string                                                  Dateiname = "../Parameter/Camera_Positioning.csv";
   string                                                  Dateityp;
-  std::vector<camera::c_camera*> camera_vector_temp;
-  camera_vector_temp.resize (GlobalObjects->cameras_in_use);
-
+  std::vector<int> vecCameraPosition;
   int id;
   int Camera_count;
 
@@ -199,20 +199,24 @@ void C_LoadManager::loadCameraPositioning ()
     {
     GlobalObjects->csv_parameter_datei->Lesen (Dateityp);
     GlobalObjects->csv_parameter_datei->Lesen (Camera_count);
-    if (GlobalObjects->cameras_in_use == Camera_count)
+    if (GlobalObjects->absCameras == Camera_count)
       {
       for (int i = 0; i < Camera_count; i++)
         {
         GlobalObjects->csv_parameter_datei->Lesen (id);
-        GlobalObjects->camera_order->push_back (id);
-        move_camera_vector2temp (i,id,camera_vector_temp);
+        vecCameraPosition.push_back(id);
         }
-
-      move_camera_temp2vector (Camera_count,camera_vector_temp);
-      load_positioning = true;
+      }
+    else
+      {
+      for (int i = 0; i < GlobalObjects->absCameras; i++)
+        {
+        vecCameraPosition.push_back(i);
+        }
       }
     }
-  std::cout << "Loaded Positioning." << endl;
+  GlobalObjects->csv_parameter_datei->Schliessen();
+  return vecCameraPosition;
   }
 
 void C_LoadManager::loadCameraCos (int camera_id, C_AbsolutePose& WorldToCam_Param)
@@ -257,7 +261,7 @@ void C_LoadManager::loadCameraCos (int camera_id, C_AbsolutePose& WorldToCam_Par
 void C_LoadManager::load_camera_pipelines(std::vector<std::string> &vec_pipeline)
 {
     int deviceNo = 0;
-for(auto i= 1; i <= this->GlobalObjects->cameras_in_use; i++)
+for(auto i= 1; i <= this->GlobalObjects->absCameras; i++)
     {
     if(i < 7)
     {

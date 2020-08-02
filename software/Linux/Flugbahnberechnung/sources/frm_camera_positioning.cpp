@@ -8,7 +8,7 @@ C_frm_Camera_Positioning::C_frm_Camera_Positioning(C_GlobalObjects* GlobalObject
     Ui->setupUi(this);
     this->GlobalObjects  = GlobalObjects;
     this->Main           = Main;
-    this->cameras_in_use = GlobalObjects->cameras_in_use;
+    this->cameras_in_use = GlobalObjects->absCameras;
     this->TimerWait      = 0;
     this->Taktgeber = new QTimer(this);
     this->Taktgeber_Intervall = 25;
@@ -40,16 +40,16 @@ this->Taktgeber->start(this->Taktgeber_Intervall);
 this->installEventFilter(this);
 this->Zaehler             = 0;
 this->TimerWait           = 50;
-this->cameras_in_use      = GlobalObjects->cameras_in_use;
+this->cameras_in_use      = GlobalObjects->absCameras;
 
 if (this->Main->Camera_manager->load_positioning) this->set_num_value (*GlobalObjects->camera_order);
 
-this->Ui->num_cam_0->setMaximum(GlobalObjects->cameras_in_use);
-this->Ui->num_cam_1->setMaximum(GlobalObjects->cameras_in_use);
-this->Ui->num_cam_2->setMaximum(GlobalObjects->cameras_in_use);
-this->Ui->num_cam_3->setMaximum(GlobalObjects->cameras_in_use);
-this->Ui->num_cam_4->setMaximum(GlobalObjects->cameras_in_use);
-this->Ui->num_cam_5->setMaximum(GlobalObjects->cameras_in_use);
+this->Ui->num_cam_0->setMaximum(GlobalObjects->absCameras);
+this->Ui->num_cam_1->setMaximum(GlobalObjects->absCameras);
+this->Ui->num_cam_2->setMaximum(GlobalObjects->absCameras);
+this->Ui->num_cam_3->setMaximum(GlobalObjects->absCameras);
+this->Ui->num_cam_4->setMaximum(GlobalObjects->absCameras);
+this->Ui->num_cam_5->setMaximum(GlobalObjects->absCameras);
 
 }
 
@@ -60,7 +60,7 @@ void C_frm_Camera_Positioning::closeEvent(QCloseEvent* CloseEvent)
  this->Taktgeber->stop();
  disconnect(this->Taktgeber, &QTimer::timeout, this, &C_frm_Camera_Positioning::Taktgeber_Tick);
  this->Zaehler = 0;
- for (int i = 0; i < GlobalObjects->cameras_in_use; i++)
+ for (int i = 0; i < GlobalObjects->absCameras; i++)
    {
    Main->Camera_manager->camera_vector[i]->set_idle (true);
    }

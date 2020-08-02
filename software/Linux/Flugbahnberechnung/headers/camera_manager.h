@@ -94,11 +94,11 @@ namespace CameraManager
 
     /********************************************************* Öffentliche Klassenmethoden*******************************************************/
     public:
-    void move_camera_vector2temp (int camera_desired_id, int camera_current_id, std::vector<Camera::C_Camera2*>& temp_CameraVector);
-    void move_camera_temp2vector (int cameras_in_use, std::vector<Camera::C_Camera2*> temp_CameraVector);
+    void mvVecCamera2Temp (std::vector<int> vecCamOrder);
+    void mvTemp2VecCamera (std::vector<Camera::C_Camera2*> temp_CameraVector);
 
-    void initVecCameras ();
-    void close_cameras (int cameras_in_use);
+    void openCameras ();
+    void closeCameras ();
 
     void calibrate_single_camera (int current_camera_id);
     void calibrate_stereo_camera (int current_camera_id);

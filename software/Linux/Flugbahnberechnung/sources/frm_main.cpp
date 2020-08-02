@@ -96,7 +96,7 @@ void C_frm_Main::Taktgeber_Tick()
         break;
       case 1:
         this->Ui->txb_zaehler->setText(QString::number(this->Zaehler++));
-        if (this->Main->Camera_manager->camera_vector[GlobalObjects->cameras_in_use-1]->is_thread_ready())
+        if (this->Main->Camera_manager->camera_vector[GlobalObjects->absCameras-1]->is_thread_ready())
           {
           this->Ui->bt_tracking->setEnabled(true);
             this->Ui->bt_camera_calibration->setEnabled(true);
@@ -120,11 +120,11 @@ void ::C_frm_Main::on_bt_apply_clicked()
       }
     else
       {
-      GlobalObjects->cameras_in_use = this->Ui->num_cameras->value();
+      GlobalObjects->absCameras = this->Ui->num_cameras->value();
       this->Ui->num_cameras->setEnabled(false);
       this->Ui->bt_apply->setEnabled     (false);
 
-      this->Main->Camera_manager->initVecCameras ();
+      this->Main->Camera_manager->openCameras ();
       this->state = 1;
     }
 

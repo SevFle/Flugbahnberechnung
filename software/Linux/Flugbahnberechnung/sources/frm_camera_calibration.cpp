@@ -54,7 +54,7 @@ this->Taktgeber->start(this->Taktgeber_Intervall);
 this->installEventFilter(this);
 
 this->Zaehler             = 0;
-this->cameras_in_use      = GlobalObjects->cameras_in_use;
+this->cameras_in_use      = GlobalObjects->absCameras;
 this->current_camera_id   = 0;
 this->Timerwait           = 50;
 this->Ui->rb_single_calibration->setChecked(true);
