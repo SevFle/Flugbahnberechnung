@@ -4,47 +4,25 @@
 #include <thread>
 
 /****************************************************************** Namespaces***************************************************************/
-using namespace nmsp_camera_unmanaged;
+using namespace CameraManager;
 using namespace GlobalObjects;
 
 /*************************************************************** Konstruktoren **************************************************************/
-c_camera_unmanaged::c_camera_unmanaged ( C_GlobalObjects* GlobalObjects)
+C_CameraManager::C_CameraManager ( C_GlobalObjects* GlobalObjects)
   {
-  this->tracking_thread      = new c_tracking (GlobalObjects);
-  stop_statemachine          = false;
-  this->GlobalObjects        = GlobalObjects;
-  load_positioning           = false;
-  tracking_active            = false;
-  numCornersWidth            = 0;
-  numCornersHeight           = 0;
-  SquareSize                 = 0;
-  numBoards_imgs             = 0;
-  Photo_ID                   = 0;
-  this->DeviceMonitor        = new GstDeviceMonitor;
+  this->Loadmanager = new LoadManager::C_LoadManager;
+  this->SaveManager = new Savemanager::c_SaveManager;
   }
 /**************************************************************** Destruktor ****************************************************************/
-c_camera_unmanaged::~c_camera_unmanaged ()
+C_CameraManager::~C_CameraManager ()
   {
-  delete(this->DeviceMonitor);
-  Photo_ID         = 0;
-  numBoards_imgs   = 0;
-  SquareSize       = 0;
-  numCornersHeight = 0;
-  numCornersWidth  = 0;
-  tracking_active  = false;
-
-  load_positioning  = false;
-  GlobalObjects     = nullptr;
-  stop_statemachine = false;
-  cameras_in_use    = 0;
-
-  delete(this->tracking_thread);
-  this->tracking_thread = nullptr;
+  delete (SaveManager);
+  delete (Loadmanager);
   }
 
 /*************************************************** Nicht öffentliche private Methoden *****************************************************/
 
-void c_camera_unmanaged::start_camera_thread ()
+void C_CameraManager::start_camera_thread ()
   {
   camera_vector[current_camera_id]->set_idle (true);
 
@@ -52,472 +30,63 @@ void c_camera_unmanaged::start_camera_thread ()
   }
 /******************************************************* Öffentliche Anwender-Methoden ******************************************************/
 
-void c_camera_unmanaged::save_camera_settings (int camera_id)
+void C_CameraManager::initVecCameras ()
   {
-  string Dateiname = "../Parameter/Camera_setting" + to_string (camera_id) + ".csv";
-  string Dateityp  = "Value of the individual setting";
+  GstDeviceMonitor *Monitor;
+  GstCaps *caps;
+  GstDevice *device;
+  GList *devlist = NULL, *devIter;
+  gchar *devString;
 
+  Monitor = gst_device_monitor_new ();
+  caps = gst_caps_new_empty_simple("image/jpeg");
+  gst_device_monitor_add_filter(Monitor, "Video/Source", caps);
+  gst_caps_unref(caps);
 
-  GlobalObjects->csv_parameter_datei->Oeffnen (Dateiname,Enum_CSV_Access::Write);
+  devlist = gst_device_monitor_get_devices (Monitor);
 
-
-  if (GlobalObjects->csv_parameter_datei->IsOpen())
+  if (!gst_device_monitor_start(Monitor))
     {
-    GlobalObjects->csv_parameter_datei->Schreiben ("Dateityp",Dateityp,"[1]");
-
-
-    GlobalObjects->csv_parameter_datei->Schreiben ("hue_min",to_string (camera_vector[camera_id]->get_hue_min()),"[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben ("hue_max",to_string (camera_vector[camera_id]->get_hue_max()),"[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben ("saturation_min",to_string (camera_vector[camera_id]->get_saturation_min()),"[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben ("saturation_max",to_string (camera_vector[camera_id]->get_saturation_max()),"[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben ("value_min",to_string (camera_vector[camera_id]->get_value_min()),"[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben ("value_max",to_string (camera_vector[camera_id]->get_value_max()),"[1]");
-
-    GlobalObjects->csv_parameter_datei->Schreiben ("erosion_iterations",to_string (camera_vector[camera_id]->get_erosion_iterations()),"[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben ("dilation_iterations",to_string (camera_vector[camera_id]->get_dilation_iterations()),"[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben ("opening_iteration",to_string (camera_vector[camera_id]->get_opening_iterations()),"[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben ("closing_iteration",to_string (camera_vector[camera_id]->get_closing_iterations()),"[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben ("morph_iteration",to_string (camera_vector[camera_id]->get_morph_iterations()),"[1]");
-
-    GlobalObjects->csv_parameter_datei->Schreiben ("erosion_kernel_size",to_string (camera_vector[camera_id]->get_erosion_kernel_size()),"[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben ("dilation_kernel_size",to_string (camera_vector[camera_id]->get_dilation_kernel_size()),"[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben ("opening_kernel_size",to_string (camera_vector[camera_id]->get_opening_kernel_size()),"[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben ("closing_kernel_size",to_string (camera_vector[camera_id]->get_closing_kernel_size()),"[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben ("morph_kernel_size",to_string (camera_vector[camera_id]->get_morph_kernel_size()),"[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben ("gaussian_kernel_size",to_string (camera_vector[camera_id]->get_gaussian_kernel_size()),"[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben ("bilateral_kernel_size",to_string (camera_vector[camera_id]->get_bilateral_kernel_size()),"[1]");
-
-    GlobalObjects->csv_parameter_datei->Schreiben ("gaussian_sigma",to_string (camera_vector[camera_id]->get_gaussian_sigma()),"[1]");
-
-    GlobalObjects->csv_parameter_datei->Schreiben ("bilateral_sigma_color",to_string (camera_vector[camera_id]->get_bilateral_sigma_color()),"[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben ("bilateral_sigma_spatial",to_string (camera_vector[camera_id]->get_bilateral_sigma_spatial()),"[1]");
-
-    GlobalObjects->csv_parameter_datei->Schreiben ("Erode_Active",to_string (camera_vector[camera_id]->is_erode_active()),"[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben ("Dilate_Active",to_string (camera_vector[camera_id]->is_dilate_active()),"[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben ("Morph_Active",to_string (camera_vector[camera_id]->is_morph_active()),"[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben ("Bilateral_Active",to_string (camera_vector[camera_id]->is_bilateral_active()),"[1]");
-
-    GlobalObjects->csv_parameter_datei->Schreiben ("Object_size_min",to_string (camera_vector[camera_id]->get_object_size_min()),"[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben ("Object_size_max",to_string (camera_vector[camera_id]->get_object_size_max()),"[1]");
-    }
-  this->GlobalObjects->csv_parameter_datei->Schliessen();
-  }
-void c_camera_unmanaged::load_camera_settings (int camera_id)
-  {
-  string Dateiname      = "../Parameter/Camera_setting" + to_string (camera_id) + ".csv";
-  string Dateityp       = "Value of the individual setting";
-  int    hue_min        = 0;
-  int    hue_max        = 0;
-  int    saturation_min = 0;
-  int    saturation_max = 0;
-  int    value_min      = 0;
-  int    value_max      = 0;
-
-  int erosion_iterations  = 0;
-  int dilation_iterations = 0;
-  int opening_iterations  = 0;
-  int closing_iterations  = 0;
-  int morph_iterations    = 0;
-
-  int erosion_kernel_size   = 0;
-  int dilation_kernel_size  = 0;
-  int opening_kernel_size   = 0;
-  int closing_kernel_size   = 0;
-  int morph_kernel_size     = 0;
-  int gaussian_kernel_size  = 0;
-  int bilateral_kernel_size = 0;
-
-  double gaussian_sigma = 0.0;
-
-
-  float bilateral_sigma_color   = 0.0;
-  float bilateral_sigma_spatial = 0.0;
-
-  bool erode_active     = false;
-  bool dilation_active  = false;
-  bool morph_active     = false;
-  bool bilateral_active = false;
-
-  int object_size_min = 0;
-  int object_size_max = 0;
-
-  GlobalObjects->csv_parameter_datei->Oeffnen (Dateiname,Enum_CSV_Access::Read);
-
-  if (GlobalObjects->csv_parameter_datei->IsOpen())
-    {
-    GlobalObjects->csv_parameter_datei->Lesen (Dateityp);
-
-    GlobalObjects->csv_parameter_datei->Lesen (hue_min);
-    GlobalObjects->csv_parameter_datei->Lesen (hue_max);
-    GlobalObjects->csv_parameter_datei->Lesen (saturation_min);
-    GlobalObjects->csv_parameter_datei->Lesen (saturation_max);
-    GlobalObjects->csv_parameter_datei->Lesen (value_min);
-    GlobalObjects->csv_parameter_datei->Lesen (value_max);
-
-    GlobalObjects->csv_parameter_datei->Lesen (erosion_iterations);
-    GlobalObjects->csv_parameter_datei->Lesen (dilation_iterations);
-    GlobalObjects->csv_parameter_datei->Lesen (opening_iterations);
-    GlobalObjects->csv_parameter_datei->Lesen (closing_iterations);
-    GlobalObjects->csv_parameter_datei->Lesen (morph_iterations);
-
-    GlobalObjects->csv_parameter_datei->Lesen (erosion_kernel_size);
-    GlobalObjects->csv_parameter_datei->Lesen (dilation_kernel_size);
-    GlobalObjects->csv_parameter_datei->Lesen (opening_kernel_size);
-    GlobalObjects->csv_parameter_datei->Lesen (closing_kernel_size);
-    GlobalObjects->csv_parameter_datei->Lesen (morph_kernel_size);
-    GlobalObjects->csv_parameter_datei->Lesen (gaussian_kernel_size);
-    GlobalObjects->csv_parameter_datei->Lesen (bilateral_kernel_size);
-
-    GlobalObjects->csv_parameter_datei->Lesen (gaussian_sigma);
-
-    GlobalObjects->csv_parameter_datei->Lesen (bilateral_sigma_color);
-    GlobalObjects->csv_parameter_datei->Lesen (bilateral_sigma_spatial);
-
-    GlobalObjects->csv_parameter_datei->Lesen (erode_active);
-    GlobalObjects->csv_parameter_datei->Lesen (dilation_active);
-    GlobalObjects->csv_parameter_datei->Lesen (morph_active);
-    GlobalObjects->csv_parameter_datei->Lesen (bilateral_active);
-
-    GlobalObjects->csv_parameter_datei->Lesen (object_size_min);
-    GlobalObjects->csv_parameter_datei->Lesen (object_size_max);
-
-
-    camera_vector[camera_id]->set_hue_min (hue_min);
-    camera_vector[camera_id]->set_hue_max (hue_max);
-    camera_vector[camera_id]->set_saturation_min (saturation_min);
-    camera_vector[camera_id]->set_saturation_max (saturation_max);
-    camera_vector[camera_id]->set_value_min (value_min);
-    camera_vector[camera_id]->set_value_max (value_max);
-
-    camera_vector[camera_id]->set_erosion_iterations (erosion_iterations);
-    camera_vector[camera_id]->set_dilation_iterations (dilation_iterations);
-    camera_vector[camera_id]->set_opening_iterations (opening_iterations);
-    camera_vector[camera_id]->set_closing_iterations (closing_iterations);
-    camera_vector[camera_id]->set_morph_iterations (morph_iterations);
-
-    camera_vector[camera_id]->set_erosion_kernel_size (erosion_kernel_size);
-    camera_vector[camera_id]->set_dilation_kernel_size (dilation_kernel_size);
-    camera_vector[camera_id]->set_opening_kernel_size (opening_kernel_size);
-    camera_vector[camera_id]->set_closing_kernel_size (closing_kernel_size);
-    camera_vector[camera_id]->set_morph_kernel_size (morph_kernel_size);
-    camera_vector[camera_id]->set_gaussian_kernel_size (gaussian_kernel_size);
-    camera_vector[camera_id]->set_bilateral_kernel_size (bilateral_kernel_size);
-
-    camera_vector[camera_id]->set_gaussian_sigma (gaussian_sigma);
-
-    camera_vector[camera_id]->set_bilateral_sigma_color (bilateral_sigma_color);
-    camera_vector[camera_id]->set_bilateral_sigma_spatial (bilateral_sigma_spatial);
-
-    camera_vector[camera_id]->set_dilate_active (dilation_active);
-    camera_vector[camera_id]->set_erode_active (erode_active);
-    camera_vector[camera_id]->set_morph_active (morph_active);
-    camera_vector[camera_id]->set_bilateral_active (bilateral_active);
-
-    camera_vector[camera_id]->set_object_size_min (object_size_min);
-    camera_vector[camera_id]->set_object_size_max (object_size_max);
-    }
-  std::cout << "Loaded Settings for Camera " << camera_id << "." << endl;
-  }
-
-void c_camera_unmanaged::save_camera_calibration (int camera_id)
-  {
-  string Dateiname = "../Parameter/Camera_Calibration_Parameter_CameraID_" + to_string (camera_id) + ".csv";
-  string Dateityp  = "Intrinisic and distortion parameters of camera-single-calibration";
-  int    numBoards = this->numBoards_imgs;
-
-  double DistCoeffs[1][5];
-  double Intrinsic[3][3];
-  int    real_size_width  = this->camera_vector[camera_id]->get_resize_width();
-  int    real_size_height = this->camera_vector[camera_id]->get_resize_height();
-
-  this->camera_vector[camera_id]->get_calibration_parameter (DistCoeffs,Intrinsic);
-
-  this->GlobalObjects->csv_parameter_datei->Oeffnen (Dateiname,Enum_CSV_Access::Write);
-
-  this->GlobalObjects->csv_parameter_datei->Schreiben ("Dateityp",Dateityp,"[1]");
-  this->GlobalObjects->csv_parameter_datei->Schreiben ("Anzahl Boards",numBoards,"[1]");
-  this->GlobalObjects->csv_parameter_datei->Schreiben ("Distortion k1",DistCoeffs[0][0],"[1]");
-  this->GlobalObjects->csv_parameter_datei->Schreiben ("Distortion k2",DistCoeffs[0][1],"[1]");
-  this->GlobalObjects->csv_parameter_datei->Schreiben ("Distortion p1",DistCoeffs[0][2],"[1]");
-  this->GlobalObjects->csv_parameter_datei->Schreiben ("Distortion p2",DistCoeffs[0][3],"[1]");
-  this->GlobalObjects->csv_parameter_datei->Schreiben ("Distortion k3",DistCoeffs[0][4],"[1]");
-  this->GlobalObjects->csv_parameter_datei->Schreiben ("Intrinsic fx",Intrinsic[0][0],"[Px]");
-  this->GlobalObjects->csv_parameter_datei->Schreiben ("Intrinsic 01",Intrinsic[0][1],"[Px]");
-  this->GlobalObjects->csv_parameter_datei->Schreiben ("Intrinsic cx",Intrinsic[0][2],"[Px]");
-  this->GlobalObjects->csv_parameter_datei->Schreiben ("Intrinsic 10",Intrinsic[1][0],"[Px]");
-  this->GlobalObjects->csv_parameter_datei->Schreiben ("Intrinsic fy",Intrinsic[1][1],"[Px]");
-  this->GlobalObjects->csv_parameter_datei->Schreiben ("Intrinsic cy",Intrinsic[1][2],"[Px]");
-  this->GlobalObjects->csv_parameter_datei->Schreiben ("Intrinsic 20",Intrinsic[2][0],"[Px]");
-  this->GlobalObjects->csv_parameter_datei->Schreiben ("Intrinsic 21",Intrinsic[2][1],"[Px]");
-  this->GlobalObjects->csv_parameter_datei->Schreiben ("Intrinsic 22",Intrinsic[2][2],"[Px]");
-  this->GlobalObjects->csv_parameter_datei->Schreiben ("Intrinsic 21",Intrinsic[2][1],"[Px]");
-  this->GlobalObjects->csv_parameter_datei->Schreiben ("Intrinsic 22",Intrinsic[2][2],"[Px]");
-  this->GlobalObjects->csv_parameter_datei->Schreiben ("Resize Width",real_size_width,"[Px]");
-  this->GlobalObjects->csv_parameter_datei->Schreiben ("Resize Height",real_size_height,"[Px]");
-
-
-  std::cout << "Camera " << camera_id << " Saved Distortion k1 " << to_string (DistCoeffs[0][0]) << endl;
-  std::cout << "Camera " << camera_id << " Saved Distortion k2 " << to_string (DistCoeffs[0][1]) << endl;
-  std::cout << "Camera " << camera_id << " Saved Distortion p1 " << to_string (DistCoeffs[0][2]) << endl;
-  std::cout << "Camera " << camera_id << " Saved Distortion p2 " << to_string (DistCoeffs[0][3]) << endl;
-  std::cout << "Camera " << camera_id << " Saved Distortion k3 " << to_string (DistCoeffs[0][4]) << endl;
-
-  std::cout << "Camera " << camera_id << " Saved Intrinsic fx " << to_string (Intrinsic[0][0]) << endl;
-  std::cout << "Camera " << camera_id << " Saved Intrinsic 01 " << to_string (Intrinsic[0][1]) << endl;
-  std::cout << "Camera " << camera_id << " Saved Intrinsic cx " << to_string (Intrinsic[0][2]) << endl;
-  std::cout << "Camera " << camera_id << " Saved Intrinsic 10 " << to_string (Intrinsic[1][0]) << endl;
-  std::cout << "Camera " << camera_id << " Saved Intrinsic fy " << to_string (Intrinsic[1][1]) << endl;
-  std::cout << "Camera " << camera_id << " Saved Intrinsic cy " << to_string (Intrinsic[1][2]) << endl;
-  std::cout << "Camera " << camera_id << " Saved Intrinsic 20 " << to_string (Intrinsic[2][0]) << endl;
-  std::cout << "Camera " << camera_id << " Saved Intrinsic 21 " << to_string (Intrinsic[2][1]) << endl;
-  std::cout << "Camera " << camera_id << " Saved Intrinsic 22 " << to_string (Intrinsic[2][2]) << endl;
-
-
-  this->GlobalObjects->csv_parameter_datei->Schliessen();
-  }
-void c_camera_unmanaged::load_camera_calibration (int camera_id)
-  {
-  string Dateiname = "../Parameter/Camera_Calibration_Parameter_CameraID_" + to_string (camera_id) + ".csv";
-  string Dateityp  = "Intrinisic and distortion parameters of camera-single-calibration";
-  int    numBoards;
-  double DistCoeffs[1][5];
-  double Intrinsic[3][3];
-  int    real_size_width = 800;
-  int    real_size_height = 600;
-
-  this->GlobalObjects->csv_parameter_datei->Oeffnen (Dateiname,Enum_CSV_Access::Read);
-
-  if (this->GlobalObjects->csv_parameter_datei->IsOpen())
-    {
-    this->GlobalObjects->csv_parameter_datei->Lesen (Dateityp);
-    this->GlobalObjects->csv_parameter_datei->Lesen (numBoards);
-    this->GlobalObjects->csv_parameter_datei->Lesen (DistCoeffs[0][0]);
-    this->GlobalObjects->csv_parameter_datei->Lesen (DistCoeffs[0][1]);
-    this->GlobalObjects->csv_parameter_datei->Lesen (DistCoeffs[0][2]);
-    this->GlobalObjects->csv_parameter_datei->Lesen (DistCoeffs[0][3]);
-    this->GlobalObjects->csv_parameter_datei->Lesen (DistCoeffs[0][4]);
-    this->GlobalObjects->csv_parameter_datei->Lesen (Intrinsic[0][0]);
-    this->GlobalObjects->csv_parameter_datei->Lesen (Intrinsic[0][1]);
-    this->GlobalObjects->csv_parameter_datei->Lesen (Intrinsic[0][2]);
-    this->GlobalObjects->csv_parameter_datei->Lesen (Intrinsic[1][0]);
-    this->GlobalObjects->csv_parameter_datei->Lesen (Intrinsic[1][1]);
-    this->GlobalObjects->csv_parameter_datei->Lesen (Intrinsic[1][2]);
-    this->GlobalObjects->csv_parameter_datei->Lesen (Intrinsic[2][0]);
-    this->GlobalObjects->csv_parameter_datei->Lesen (Intrinsic[2][1]);
-    this->GlobalObjects->csv_parameter_datei->Lesen (Intrinsic[2][2]);
-    this->GlobalObjects->csv_parameter_datei->Lesen (real_size_width);
-    this->GlobalObjects->csv_parameter_datei->Lesen (real_size_height);
-    this->GlobalObjects->csv_parameter_datei->Schliessen();
+    printf("\n PTB-INFO: GstDeviceMonitor unsupported. May not be able to enumerate all video devices.\n");
     }
   else
     {
-    numBoards        = 50;
-    DistCoeffs[0][0] = -0.422409;
-    DistCoeffs[0][1] = -0.102515;
-    DistCoeffs[0][2] = -0.005320;
-    DistCoeffs[0][3] = 0.001334;
-    DistCoeffs[0][4] = 2.581073;
-    Intrinsic[0][0]  = 946.734995;
-    Intrinsic[0][1]  = 0.000000;
-    Intrinsic[0][2]  = 279.097216;
-    Intrinsic[1][0]  = 0.000000;
-    Intrinsic[1][1]  = 948.766038;
-    Intrinsic[1][2]  = 254.572998;
-    Intrinsic[1][0]  = 0.000000;
-    Intrinsic[2][1]  = 0.000000;
-    Intrinsic[2][2]  = 1.000000;
-    }
+    devlist = gst_device_monitor_get_devices(Monitor);
 
-  this->camera_vector[camera_id]->set_calibration_parameter (DistCoeffs,Intrinsic);
-  this->camera_vector[camera_id]->set_resize_height (real_size_height);
-  this->camera_vector[camera_id]->set_resize_width (real_size_width);
-
-  std::cout << "Loaded Calibration for Camera " << camera_id << "." << endl;
-  }
-
-void c_camera_unmanaged::save_camera_positioning (std::vector<int> camera_list) const
-  {
-  string Dateiname = "../Parameter/Camera_Positioning.csv";
-  string Dateityp  = "Correct Camera position in vector corresponding to their ID";
-
-  GlobalObjects->csv_parameter_datei->Oeffnen (Dateiname,Enum_CSV_Access::Write);
-
-  GlobalObjects->csv_parameter_datei->Schreiben ("Dateityp",Dateityp,"[1]");
-  GlobalObjects->csv_parameter_datei->Schreiben ("Anzahl Kameras",to_string (GlobalObjects->cameras_in_use),"[1]");
-
-
-  for (int i = 0; i < GlobalObjects->cameras_in_use; i++)
-    {
-    GlobalObjects->csv_parameter_datei->Schreiben ("Cameravector[" + to_string (i) + "]",to_string (camera_list[i]),"[1]");
-    std::cout << "Saving Camera " << i << " to position " << camera_list[i];
-    }
-
-
-  GlobalObjects->csv_parameter_datei->Schliessen();
-  }
-void c_camera_unmanaged::load_camera_positioning ()
-  {
-  string                                                  Dateiname = "../Parameter/Camera_Positioning.csv";
-  string                                                  Dateityp;
-  std::vector<camera::c_camera*> camera_vector_temp;
-  camera_vector_temp.resize (GlobalObjects->cameras_in_use);
-
-  int id;
-  int Camera_count;
-
-  GlobalObjects->csv_parameter_datei->Oeffnen (Dateiname,Enum_CSV_Access::Read);
-  if (GlobalObjects->csv_parameter_datei->IsOpen())
-    {
-    GlobalObjects->csv_parameter_datei->Lesen (Dateityp);
-    GlobalObjects->csv_parameter_datei->Lesen (Camera_count);
-    if (GlobalObjects->cameras_in_use == Camera_count)
+    for (devIter = g_list_first(devlist); devIter != NULL; devIter = g_list_next(devIter))
       {
-      for (int i = 0; i < Camera_count; i++)
-        {
-        GlobalObjects->csv_parameter_datei->Lesen (id);
-        GlobalObjects->camera_order->push_back (id);
-        move_camera_vector2temp (i,id,camera_vector_temp);
-        }
+      device                          = (GstDevice*) devIter->data;
+      if (device == NULL)
+        continue;
+      GstStructure *    DeviceProps   = gst_device_get_properties (device);
+      gchar *           fieldname     = "device.path" ;
+      std::string       devicePath    = gst_structure_get_string(DeviceProps, fieldname);
+      std::string       Pipeline      = "v4l2src device="+ devicePath +" ! ";
+                        Pipeline      += "image/jpeg, format=BGR, width=" + std::to_string(this->frameWidth) +",";
+                        Pipeline      += "height=" + std::to_string(this->frameHeight) +" ! jpegdec ! videoconvert ! appsink";
 
-      move_camera_temp2vector (Camera_count,camera_vector_temp);
-      load_positioning = true;
+      auto              camera        = new Camera::C_Camera2;
+      camera->setPipeline(Pipeline);
+      camera->setCameraID(absCameras);
+      if(!camera->open())
+        std::cout << "Could not open device on path" << devicePath << std::endl;
+      vecCameras.push_back(camera);
+      absCameras++;
       }
-    }
-  std::cout << "Loaded Positioning." << endl;
-  }
-
-void c_camera_unmanaged::save_camera_cos (int camera_id, C_AbsolutePose& WorldToCam_Param)
-  {
-  string Dateiname = "../Parameter/Pose_world_to_camera" + to_string (camera_id) + ".csv";
-  string Dateityp;
-  double nx, ny, nz, ox, oy, oz, ax, ay, az, px, py, pz;
-
-  nx = WorldToCam_Param.nx();
-  ny = WorldToCam_Param.ny();
-  nz = WorldToCam_Param.nz();
-
-  ox = WorldToCam_Param.ox();
-  oy = WorldToCam_Param.oy();
-  oz = WorldToCam_Param.oz();
-
-  ax = WorldToCam_Param.ax();
-  ay = WorldToCam_Param.ay();
-  az = WorldToCam_Param.az();
-
-  px = WorldToCam_Param.px();
-  py = WorldToCam_Param.py();
-  pz = WorldToCam_Param.pz();
-
-  GlobalObjects->csv_parameter_datei->Oeffnen (Dateiname,Enum_CSV_Access::Read);
-  if (GlobalObjects->csv_parameter_datei->IsOpen())
-    {
-    GlobalObjects->csv_parameter_datei->Schreiben ("Dateityp",Dateityp,"[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben ("nx",nx,"[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben ("ny",ny,"[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben ("nz",nz,"[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben ("ox",ox,"[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben ("oy",oy,"[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben ("oz",oz,"[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben ("ax",ax,"[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben ("ay",ay,"[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben ("az",az,"[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben ("px",px,"[mm]");
-    GlobalObjects->csv_parameter_datei->Schreiben ("py",py,"[mm]");
-    GlobalObjects->csv_parameter_datei->Schreiben ("pz",pz,"[mm]");
-    }
-  GlobalObjects->csv_parameter_datei->Schliessen();
-  }
-void c_camera_unmanaged::load_camera_cos (int camera_id, C_AbsolutePose& WorldToCam_Param)
-  {
-  string Dateiname = "../Parameter/Pose_world_to_camera" + to_string (camera_id) + ".csv";
-  string Dateityp;
-  double nx, ny, nz, ox, oy, oz, ax, ay, az, px, py, pz;
-
-  GlobalObjects->csv_parameter_datei->Oeffnen (Dateiname,Enum_CSV_Access::Read);
-  if (GlobalObjects->csv_parameter_datei->IsOpen())
-    {
-    GlobalObjects->csv_parameter_datei->Lesen (Dateityp);
-    GlobalObjects->csv_parameter_datei->Lesen (nx);
-    GlobalObjects->csv_parameter_datei->Lesen (ny);
-    GlobalObjects->csv_parameter_datei->Lesen (nz);
-    GlobalObjects->csv_parameter_datei->Lesen (ox);
-    GlobalObjects->csv_parameter_datei->Lesen (oy);
-    GlobalObjects->csv_parameter_datei->Lesen (oz);
-    GlobalObjects->csv_parameter_datei->Lesen (ax);
-    GlobalObjects->csv_parameter_datei->Lesen (ay);
-    GlobalObjects->csv_parameter_datei->Lesen (az);
-    GlobalObjects->csv_parameter_datei->Lesen (px);
-    GlobalObjects->csv_parameter_datei->Lesen (py);
-    GlobalObjects->csv_parameter_datei->Lesen (pz);
-
-    WorldToCam_Param.nx (nx);
-    WorldToCam_Param.ny (ny);
-    WorldToCam_Param.nz (nz);
-    WorldToCam_Param.ox (ox);
-    WorldToCam_Param.oy (oy);
-    WorldToCam_Param.oz (oz);
-    WorldToCam_Param.ax (ax);
-    WorldToCam_Param.ay (ay);
-    WorldToCam_Param.az (az);
-    WorldToCam_Param.px (px);
-    WorldToCam_Param.py (py);
-    WorldToCam_Param.pz (pz);
-    }
-  GlobalObjects->csv_parameter_datei->Schliessen();
-  }
-
-void c_camera_unmanaged::load_camera_pipelines(std::vector<std::string> &vec_pipeline)
-{
-    int deviceNo = 0;
-for(auto i= 1; i <= this->GlobalObjects->cameras_in_use; i++)
-    {
-    if(i < 7)
-    {
-        vec_pipeline.push_back("v4l2src device=/dev/video" + to_string(deviceNo) +" ! image/jpeg, format=BGR, framerate=60/1, width=1280,height=720 ! jpegdec ! videoconvert ! appsink");
-        deviceNo += 2;
-    }
-    else
-    {
-        vec_pipeline.push_back("v4l2src device=/dev/video" + to_string(deviceNo) +" ! image/jpeg, format=BGR, framerate=30/1, width=1280,height=720 ! jpegdec ! videoconvert ! appsink");
-        deviceNo += 2;
-    }
-    }
-
-}
-
-void c_camera_unmanaged::init_camera_vectors ()
-  {
-  std::vector<std::string> Pipelines;
-  this->load_camera_pipelines(Pipelines);
-  //Create a camera object and start its according thread. The amount of objects equals the amount of cameras in use 
-  for (int i = 0; i < GlobalObjects->cameras_in_use; i++)
-    {
-    auto* camera = new camera::c_camera (i);
-    camera->set_idle (true);
-    camera->set_camera_id(i);
-
-    camera->set_pipeline(Pipelines[i]);
-    camera_vector.push_back (camera);
-
-    std::cout << "Created " << i + 1 << " Camera Objects with according pointers" << std::endl;
-
-
-    current_camera_id = i;
-    //camera_thread   = new std::thread                       (&c_camera_unmanaged::start_camera_thread, this);
-    this->camera_thread = new std::thread (&c_camera_unmanaged::start_camera_thread,this);
+    std::cout << "Created " << std::to_string(absCameras) << " Devices" << std::endl;
     }
 
   //Reorder recently created Cameras
-  this->load_camera_positioning();
+  this->Loadmanager->loadCameraPositioning(this->vecCameras);
 
   //Load Settings and Calibration for each camera created earlier
   for (int i = 0; i < GlobalObjects->cameras_in_use; i++)
     {
-    this->load_camera_calibration (i);
-    this->load_camera_settings (i);
+    this->Loadmanager->loadCameraCalibration(vecCameras[i]);
+    this->Loadmanager->loadCameraSettings(vecCameras[i]);
     }
   }
-void c_camera_unmanaged::close_cameras (int cameras_in_use)
+void C_CameraManager::close_cameras (int cameras_in_use)
   {
   for (int i = 0; i < cameras_in_use; i++)
     {
@@ -526,7 +95,7 @@ void c_camera_unmanaged::close_cameras (int cameras_in_use)
     }
   }
 
-void c_camera_unmanaged::move_camera_vector2temp (int camera_desired_id, int camera_current_id, std::vector<c_camera*>& temp_CameraVector)
+void C_CameraManager::move_camera_vector2temp (int camera_desired_id, int camera_current_id, std::vector<C_Camera*>& temp_CameraVector)
   {
   // Wo ist die feste Position der Kamera? -> Camera_Current_ID
   // Wo ist die Position der Kamera im unsorted Vector? ->Camera_desired_id
@@ -535,7 +104,7 @@ void c_camera_unmanaged::move_camera_vector2temp (int camera_desired_id, int cam
   //camera_vector_temp.insert(camera_vector_temp.begin()+camera_desired_id, camera_vector[camera_current_id]);
   std::cout << " Moved Pointer for Camera " << camera_current_id << " to Position " << camera_desired_id << " in temporary Vector" << std::endl;
   }
-void c_camera_unmanaged::move_camera_temp2vector (int cameras_in_use, std::vector<c_camera*> temp_CameraVector)
+void C_CameraManager::move_camera_temp2vector (int cameras_in_use, std::vector<C_Camera*> temp_CameraVector)
   {
   for (int i = 0; i < cameras_in_use; i++)
     {
@@ -543,14 +112,14 @@ void c_camera_unmanaged::move_camera_temp2vector (int cameras_in_use, std::vecto
     }
   }
 
-void c_camera_unmanaged::getDeviceList()
+void C_CameraManager::getDeviceList()
 {
     gst_device_monitor_start(DeviceMonitor);
     GList DeviceList;
     gst_device_monitor_get_devices(this->DeviceMonitor);
 }
 
-void c_camera_unmanaged::calibrate_single_camera (int current_camera_id)
+void C_CameraManager::calibrate_single_camera (int current_camera_id)
   {
   // Deklaration benötigter Variablen
   cv::Mat                     Originalbild;
@@ -673,7 +242,7 @@ void c_camera_unmanaged::calibrate_single_camera (int current_camera_id)
   this->camera_vector[current_camera_id]->init_rectify_map();
   this->camera_vector[current_camera_id]->set_undistord_active (true);
   }
-void c_camera_unmanaged::calibrate_stereo_camera (int camera_id)
+void C_CameraManager::calibrate_stereo_camera (int camera_id)
   {
     this->calibration_done = false;
   vector<vector<cv::Point3f>>   object_points;
@@ -807,7 +376,7 @@ void c_camera_unmanaged::calibrate_stereo_camera (int camera_id)
 //  std::cout << "P2" << P2 << endl;0
   }
 
-void c_camera_unmanaged::sm_object_tracking ()
+void C_CameraManager::sm_object_tracking ()
   {
   s_tracking_data                     tracked_data;
   C_object*                           tracked_object;
@@ -958,10 +527,7 @@ void c_camera_unmanaged::sm_object_tracking ()
       }//switch(statemachine_state)
     //while(tracking_active)
   //void sm_object_tracking
-
-
-
-void c_camera_unmanaged::calculate_camera_pose(int camera1, int camera2, cv::Vec3d T, cv::Mat R)
+void C_CameraManager::calculate_camera_pose(int camera1, int camera2, cv::Vec3d T, cv::Mat R)
   {
    //P02 = P01*P12
 
@@ -995,3 +561,63 @@ void c_camera_unmanaged::calculate_camera_pose(int camera1, int camera2, cv::Vec
     }
   this->save_camera_cos(this->camera_vector[camera2]->get_camera_id(), *this->camera_vector[camera2]->CameraPose);
   }//calculate_camera_pose
+
+void pipelineTracking(std::vector<cv::VideoCapture*> &camera_vector, tbb::concurrent_bounded_queue<Payload*> &que)
+  {
+  //STEP 1: GRAB PICTURE FROM ARRAY-ACTIVE_CAMERAS
+  tbb::parallel_pipeline(7, tbb::make_filter<void, Payload*>(tbb::filter::serial_in_order, [&](tbb::flow_control& fc)->Payload*
+    {
+    if(pipelineCamera == devices) pipelineCamera = 0;
+
+    auto pData = new Payload;
+    cv::Mat frame;
+    camera_vector[pipelineCamera]->read(pData->img);
+    if(done || pData->img.empty())
+      {
+      done = true;
+      fc.stop();
+      return 0;
+      }
+    pipelineCamera++;
+    return pData;
+    }
+  )&
+  //STEP 2: UNDISTORT SRC TO CPUDISTORT
+  tbb::make_filter<Payload*, Payload*>(tbb::filter::serial_in_order, [&] (Payload *pData)->Payload*
+    {
+    cv::cvtColor(pData->img ,pData->gray, cv::COLOR_BGRA2GRAY);
+
+    return pData;
+    }
+
+  )&
+  //STEP 3: FILTER UNDISTORT TO CPUHSV; USE CUDA
+  tbb::make_filter<Payload*, Payload*>(tbb::filter::serial_in_order, [&] (Payload *pData)->Payload*
+    {
+    cv::circle(pData->gray, cv::Point(pData->gray.rows/2, pData->gray.cols/2), 50, cv::Scalar(0, 140, 50), cv::FILLED);
+    return pData;
+    }
+  )&
+  //STEP 4: FIND CONTOURS ON CPUHSV, DRAW ON UNDISTORT
+  //STEP 5: ADJUST ROI ON CPU UNDISTORT
+  tbb::make_filter<Payload*,void>(tbb::filter::serial_in_order, [&] (Payload *pData)
+    {
+    pData->gray.copyTo(pData->final);
+    // TBB NOTE: pipeline end point. dispatch to GUI
+    if (! done)
+      {
+      try
+        {
+        que.push(pData);
+        }
+      catch (...)
+        {
+        std::cout << "Pipeline caught an exception on the queue" << std::endl;
+        done = true;
+        }//catch
+      }//if (!done)
+    }//tbb::makefilter
+    )//tbb::makefilter
+  );//tbb pipeline
+
+}

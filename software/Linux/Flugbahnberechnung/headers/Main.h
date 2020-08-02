@@ -6,7 +6,7 @@
 #include <thread>
 
 using namespace GlobalObjects;
-using namespace nmsp_camera_unmanaged;
+using namespace CameraManager;
 
 namespace frm_Main
   {
@@ -52,7 +52,7 @@ namespace Main
     C_Main                              (C_GlobalObjects* GlobalObjects);
     ~C_Main                             ();
 
-    c_camera_unmanaged*                 Camera_manager;
+    C_CameraManager*                 Camera_manager;
 
     C_frm_Main*                         frm_Main;
     C_frm_Object_Calibration*           frm_Object_Calibration;

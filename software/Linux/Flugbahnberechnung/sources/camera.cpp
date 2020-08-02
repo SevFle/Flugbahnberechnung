@@ -5,9 +5,9 @@
 #include "headers/camera.h"
 #include "headers/posen.h"
 /****************************************************************** Namespaces***************************************************************/
-using namespace camera;
+using namespace Camera;
 /*************************************************************** Konstruktoren **************************************************************/
-c_camera::c_camera (int camera_id)
+C_Camera::C_Camera (int camera_id)
   {
   hue_min        = 0;
   hue_max        = 179;
@@ -141,7 +141,7 @@ c_camera::c_camera (int camera_id)
   }
 
 /**************************************************************** Destruktor ****************************************************************/
-c_camera::~c_camera ()
+C_Camera::~C_Camera ()
   {
   hue_min             = 0;
   hue_max             = 0;
@@ -240,7 +240,7 @@ c_camera::~c_camera ()
 /************************************************************* Öffentliche Klassenmethoden*************************************************/
 
 
-void c_camera::camera_thread ()
+void C_Camera::camera_thread ()
   {
   int      statemachine_state = 0;
   int breite = 0;
@@ -436,7 +436,7 @@ void c_camera::camera_thread ()
   }
 
 /********************************************************Öffentlich Get and Set methods for Cameras************************/
-void c_camera::get_calibration_parameter (double (&DistCoeffs)[1][5], double (&Intrinsic)[3][3]) const
+void C_Camera::get_calibration_parameter (double (&DistCoeffs)[1][5], double (&Intrinsic)[3][3]) const
   {
   for (int i = 0; i < 1; i++)
     {
@@ -456,10 +456,10 @@ void c_camera::get_calibration_parameter (double (&DistCoeffs)[1][5], double (&I
       }
     }
   }
-void c_camera::get_camera_settings ()
+void C_Camera::get_camera_settings ()
   {
   }
-void c_camera::get_objectPosition_2D_Pixel (bool& Contour_Found, S_Positionsvektor& Vec_Object, double& timestamp)
+void C_Camera::get_objectPosition_2D_Pixel (bool& Contour_Found, S_Positionsvektor& Vec_Object, double& timestamp)
   {
   Contour_Found = this->contour_found;
   Vec_Object.X  = this->Vec_Object[0];
@@ -468,7 +468,7 @@ void c_camera::get_objectPosition_2D_Pixel (bool& Contour_Found, S_Positionsvekt
   timestamp     = this->cap->get(cv::CAP_PROP_POS_MSEC);
   }
 
-void c_camera::set_calibration_parameter (double (&DistCoeffs)[1][5], double (&Intrinsic)[3][3])
+void C_Camera::set_calibration_parameter (double (&DistCoeffs)[1][5], double (&Intrinsic)[3][3])
   {
   for (int i = 0; i < 1; i++)
     {
@@ -486,16 +486,16 @@ void c_camera::set_calibration_parameter (double (&DistCoeffs)[1][5], double (&I
       }
     }
   }
-void c_camera::set_aspect_ratio (int Height, int width)
+void C_Camera::set_aspect_ratio (int Height, int width)
   {
   this->cap->set (cv::CAP_PROP_FRAME_HEIGHT,Height);
   this->cap->set (cv::CAP_PROP_FRAME_WIDTH,width);
   }
-void c_camera::set_framerate (int framerate)
+void C_Camera::set_framerate (int framerate)
   {
   this->cap->set (cv::CAP_PROP_FPS,framerate);
   }
-void c_camera::stop()
+void C_Camera::stop()
 {
     this->thread_running = false;
     this->cap->release();
@@ -503,7 +503,7 @@ void c_camera::stop()
 
 /*************************************************************** Private Klassenmethoden*****************************************************/
 
-void c_camera::init ()
+void C_Camera::init ()
   {
   //ELP Webcam 5-50 mm USB8MP02G-SFV
   //  1024X768  MJPEG 30fps
@@ -555,11 +555,11 @@ void c_camera::init ()
 
 
   }
-void c_camera::cpu_grab_frame (cv::Mat* dst_img)
+void C_Camera::cpu_grab_frame (cv::Mat* dst_img)
   {
  cap->read(*dst_img);
 }
-void c_camera::apply_filter (cv::Mat* cpu_src, cv::Mat* cpu_dst)
+void C_Camera::apply_filter (cv::Mat* cpu_src, cv::Mat* cpu_dst)
   {
   if (filtering_hsv_active == true)
     {
@@ -579,7 +579,7 @@ void c_camera::apply_filter (cv::Mat* cpu_src, cv::Mat* cpu_dst)
 
   gpu_thresholded->download (*cpu_dst);
   }
-void c_camera::init_rectify_map ()
+void C_Camera::init_rectify_map ()
   {
   cv::Mat cpu_map1;
   cv::Mat cpu_map2;
@@ -590,54 +590,54 @@ void c_camera::init_rectify_map ()
   this->gpu_map2->upload (cpu_map2);
   }
 
-void c_camera::gpu_erode (cv::cuda::GpuMat* gpu_src, cv::cuda::GpuMat* gpu_dst, int borderType)  //
+void C_Camera::gpu_erode (cv::cuda::GpuMat* gpu_src, cv::cuda::GpuMat* gpu_dst, int borderType)  //
   {
   cv::Mat                   erode_structuring_element = getStructuringElement (cv::MORPH_ELLIPSE,cv::Size (2 * erosion_kernel_size,2 * erosion_kernel_size));
   cv::Ptr<cv::cuda::Filter> erode                     = cv::cuda::createMorphologyFilter (cv::MORPH_ERODE,gpu_src->type(),erode_structuring_element,cv::Point (-1,-1),erosion_iterations);
   erode->apply (*gpu_src,*gpu_dst);
   }
-void c_camera::gpu_dilate (cv::cuda::GpuMat* gpu_src, cv::cuda::GpuMat* gpu_dst)   //
+void C_Camera::gpu_dilate (cv::cuda::GpuMat* gpu_src, cv::cuda::GpuMat* gpu_dst)   //
   {
   cv::Mat                   dilate_structuring_element = getStructuringElement (cv::MORPH_ELLIPSE,cv::Size (2 * dilation_kernel_size,2 * dilation_kernel_size));
   cv::Ptr<cv::cuda::Filter> dilate                     = cv::cuda::createMorphologyFilter (cv::MORPH_DILATE,gpu_src->type(),dilate_structuring_element,cv::Point (-1,-1),dilation_iterations);
   dilate->apply (*gpu_src,*gpu_dst);
   }
-void c_camera::gpu_open (cv::cuda::GpuMat* gpu_src, cv::cuda::GpuMat* gpu_dst)
+void C_Camera::gpu_open (cv::cuda::GpuMat* gpu_src, cv::cuda::GpuMat* gpu_dst)
   {
   cv::Mat                   opening_structuring_element = getStructuringElement (cv::MORPH_ELLIPSE,cv::Size (2 * opening_kernel_size,2 * opening_kernel_size));
   cv::Ptr<cv::cuda::Filter> opening                     = cv::cuda::createMorphologyFilter (cv::MORPH_OPEN,gpu_src->type(),opening_structuring_element,cv::Point (-1,-1),opening_iterations);
   opening->apply (*gpu_src,*gpu_dst);
   }
-void c_camera::gpu_close (cv::cuda::GpuMat* gpu_src, cv::cuda::GpuMat* gpu_dst)
+void C_Camera::gpu_close (cv::cuda::GpuMat* gpu_src, cv::cuda::GpuMat* gpu_dst)
   {
   cv::Mat                   closing_structuring_element = getStructuringElement (cv::MORPH_ELLIPSE,cv::Size (2 * closing_kernel_size,2 * closing_kernel_size));
   cv::Ptr<cv::cuda::Filter> closing                     = cv::cuda::createMorphologyFilter (cv::MORPH_CLOSE,gpu_src->type(),closing_structuring_element,cv::Point (-1,-1),closing_iterations);
   closing->apply (*gpu_src,*gpu_dst);
   }
 
-void c_camera::gpu_bilateral_filter (cv::cuda::GpuMat* gpu_src, cv::cuda::GpuMat* gpu_dst)
+void C_Camera::gpu_bilateral_filter (cv::cuda::GpuMat* gpu_src, cv::cuda::GpuMat* gpu_dst)
   {
   cv::cuda::bilateralFilter (*gpu_src,*gpu_dst,bilateral_kernel_size,bilateral_sigma_color,bilateral_sigma_spatial,cv::BORDER_DEFAULT);
   }
-void c_camera::gpu_gaussian_filter (cv::cuda::GpuMat* gpu_src, cv::cuda::GpuMat* gpu_dst)
+void C_Camera::gpu_gaussian_filter (cv::cuda::GpuMat* gpu_src, cv::cuda::GpuMat* gpu_dst)
   {
   this->get_gaussian_kernel();
   cv::Ptr<cv::cuda::Filter> gauss = cv::cuda::createGaussianFilter (gpu_src->type(),-1,gpu_gaussian_kernel_size->size(),gaussian_sigma,gaussian_sigma,cv::BORDER_DEFAULT);
   gauss->apply (*gpu_src,*gpu_dst);
   }
-void c_camera::gpu_morph_gradient (cv::cuda::GpuMat* gpu_src, cv::cuda::GpuMat* gpu_dst)
+void C_Camera::gpu_morph_gradient (cv::cuda::GpuMat* gpu_src, cv::cuda::GpuMat* gpu_dst)
   {
   cv::Mat                   morph_structuring_element = getStructuringElement (cv::MORPH_ELLIPSE,cv::Size (2 * morph_kernel_size,2 * morph_kernel_size));
   cv::Ptr<cv::cuda::Filter> morph                     = cv::cuda::createMorphologyFilter (cv::MORPH_GRADIENT,gpu_src->type(),morph_structuring_element,cv::Point (-1,-1),morph_iterations);
   morph->apply (*gpu_src,*gpu_dst);
   }
-void c_camera::get_gaussian_kernel ()
+void C_Camera::get_gaussian_kernel ()
   {
   cv::Mat cpu_gaussian = cv::getGaussianKernel (gaussian_kernel_size,gaussian_sigma, CV_32F);
   gpu_gaussian_kernel_size->upload (cpu_gaussian);
   }
 
-void c_camera::gpu_filter_hsv (cv::cuda::GpuMat* gpu_src, cv::cuda::GpuMat* gpu_dst)
+void C_Camera::gpu_filter_hsv (cv::cuda::GpuMat* gpu_src, cv::cuda::GpuMat* gpu_dst)
   {
     cv::Scalar min(this->hue_min,this->saturation_min,this->value_min);
     cv::Scalar max(this->hue_max,this->saturation_max,this->value_max);
@@ -656,9 +656,7 @@ void c_camera::gpu_filter_hsv (cv::cuda::GpuMat* gpu_src, cv::cuda::GpuMat* gpu_
 
   bitwise_and (*gpu_src,*gpu_temp,*gpu_dst);
   }
-
-
-void c_camera::find_contours (cv::Mat* thresholded_source_image, cv::Mat* dst_contoured_image, int offset[2])
+void C_Camera::find_contours (cv::Mat* thresholded_source_image, cv::Mat* dst_contoured_image, int offset[2])
   {
   objekt_anzahl = 0;
   std::vector<std::vector<cv::Point>> contours;
@@ -810,7 +808,7 @@ void c_camera::find_contours (cv::Mat* thresholded_source_image, cv::Mat* dst_co
     }
   }
 
-void c_camera::undistord_img (cv::Mat* cpu_src, cv::Mat* cpu_dst)
+void C_Camera::undistord_img (cv::Mat* cpu_src, cv::Mat* cpu_dst)
   {
 
   gpu_src_img->upload (*cpu_src);
@@ -820,12 +818,12 @@ void c_camera::undistord_img (cv::Mat* cpu_src, cv::Mat* cpu_dst)
   gpu_temp->download (*cpu_dst);
   }
 
-void c_camera::save_picture (int camera_id, int photo_id, std::string definition)
+void C_Camera::save_picture (int camera_id, int photo_id, std::string definition)
   {
   imwrite (definition + std::to_string (camera_id) + "_Snapshot_" + std::to_string (photo_id) + ".png",*cpu_src_img);
   }
 
-void c_camera::crop_image (cv::Mat* undistorted_img, cv::Mat* crop_undist_img)
+void C_Camera::crop_image (cv::Mat* undistorted_img, cv::Mat* crop_undist_img)
   {
   cv::Mat temp;
   undistorted_img->copyTo (temp);
@@ -838,7 +836,7 @@ void c_camera::crop_image (cv::Mat* undistorted_img, cv::Mat* crop_undist_img)
   cropped.copyTo (*crop_undist_img);
   }
 
-void c_camera::fit_to_roi (int width, int height)
+void C_Camera::fit_to_roi (int width, int height)
   {
   //gpu_src_img->cols = width;
   //gpu_src_img->rows = height;
@@ -859,691 +857,691 @@ void c_camera::fit_to_roi (int width, int height)
   cpu_contoured->rows = height;
 
   }
-void c_camera::set_roi(int width, int height)
+void C_Camera::set_roi(int width, int height)
 {
 
 }
 /********************************GETTER SETTER************/
-cv::Mat*& c_camera::get_cpu_src_img ()
+cv::Mat*& C_Camera::get_cpu_src_img ()
   {
   return cpu_src_img;
   }
-void c_camera::set_cpu_src_img (cv::Mat* cpu_src_img)
+void C_Camera::set_cpu_src_img (cv::Mat* cpu_src_img)
   {
   this->cpu_src_img = cpu_src_img;
   }
-cv::Mat*& c_camera::get_cpu_temp ()
+cv::Mat*& C_Camera::get_cpu_temp ()
   {
   return cpu_temp;
   }
-void c_camera::set_cpu_temp (cv::Mat* cpu_temp)
+void C_Camera::set_cpu_temp (cv::Mat* cpu_temp)
   {
   this->cpu_temp = cpu_temp;
   }
-cv::Mat*& c_camera::get_cpu_masked_img ()
+cv::Mat*& C_Camera::get_cpu_masked_img ()
   {
   return cpu_masked_img;
   }
-void c_camera::set_cpu_masked_img (cv::Mat* cpu_masked_img)
+void C_Camera::set_cpu_masked_img (cv::Mat* cpu_masked_img)
   {
   this->cpu_masked_img = cpu_masked_img;
   }
-cv::Mat*& c_camera::get_cpu_hsv_filtered ()
+cv::Mat*& C_Camera::get_cpu_hsv_filtered ()
   {
   return cpu_hsv_filtered;
   }
-void c_camera::set_cpu_hsv_filtered (cv::Mat* cpu_hsv_filtered)
+void C_Camera::set_cpu_hsv_filtered (cv::Mat* cpu_hsv_filtered)
   {
   this->cpu_hsv_filtered = cpu_hsv_filtered;
   }
-cv::Mat*& c_camera::get_cpu_contoured ()
+cv::Mat*& C_Camera::get_cpu_contoured ()
   {
   return cpu_contoured;
   }
-void c_camera::set_cpu_contoured (cv::Mat* cpu_contoured)
+void C_Camera::set_cpu_contoured (cv::Mat* cpu_contoured)
   {
   this->cpu_contoured = cpu_contoured;
   }
-cv::Mat*& c_camera::get_cpu_undistorted ()
+cv::Mat*& C_Camera::get_cpu_undistorted ()
   {
   return cpu_undistorted;
   }
-void c_camera::set_cpu_undistorted (cv::Mat* cpu_undistorted)
+void C_Camera::set_cpu_undistorted (cv::Mat* cpu_undistorted)
   {
   this->cpu_undistorted = cpu_undistorted;
   }
-cv::Mat*& c_camera::get_cpu_cropped_img ()
+cv::Mat*& C_Camera::get_cpu_cropped_img ()
   {
   return cpu_cropped_img;
   }
-void c_camera::set_cpu_cropped_img (cv::Mat* cpu_cropped_img)
+void C_Camera::set_cpu_cropped_img (cv::Mat* cpu_cropped_img)
   {
   this->cpu_cropped_img = cpu_cropped_img;
   }
-cv::Mat*& c_camera::get_dist_coeffs ()
+cv::Mat*& C_Camera::get_dist_coeffs ()
   {
   return DistCoeffs;
   }
-void c_camera::set_dist_coeffs (cv::Mat* dist_coeffs)
+void C_Camera::set_dist_coeffs (cv::Mat* dist_coeffs)
   {
   DistCoeffs = dist_coeffs;
   }
-cv::Mat*& c_camera::get_intrinsic ()
+cv::Mat*& C_Camera::get_intrinsic ()
   {
   return Intrinsic;
   }
-void c_camera::set_intrinsic (cv::Mat* intrinsic)
+void C_Camera::set_intrinsic (cv::Mat* intrinsic)
   {
   Intrinsic = intrinsic;
   }
-int& c_camera::get_camera_id ()
+int& C_Camera::get_camera_id ()
   {
   return camera_id;
   }
-void c_camera::set_camera_id (int camera_id)
+void C_Camera::set_camera_id (int camera_id)
   {
   this->camera_id = camera_id;
   }
-bool& c_camera::is_thread_running ()
+bool& C_Camera::is_thread_running ()
   {
   return thread_running;
   }
-void c_camera::set_thread_running (bool thread_running)
+void C_Camera::set_thread_running (bool thread_running)
   {
   this->thread_running = thread_running;
   }
-bool& c_camera::is_filtering_active ()
+bool& C_Camera::is_filtering_active ()
   {
   return filtering_active;
   }
-void c_camera::set_filtering_active (bool filtering_active)
+void C_Camera::set_filtering_active (bool filtering_active)
   {
   this->filtering_active = filtering_active;
   }
-bool& c_camera::is_filtering_hsv_active ()
+bool& C_Camera::is_filtering_hsv_active ()
   {
   return filtering_hsv_active;
   }
-void c_camera::set_filtering_hsv_active (bool filtering_hsv_active)
+void C_Camera::set_filtering_hsv_active (bool filtering_hsv_active)
   {
   this->filtering_hsv_active = filtering_hsv_active;
   }
-bool& c_camera::is_filtering_bgr_active ()
+bool& C_Camera::is_filtering_bgr_active ()
   {
   return filtering_bgr_active;
   }
-void c_camera::set_filtering_bgr_active (bool filtering_bgr_active)
+void C_Camera::set_filtering_bgr_active (bool filtering_bgr_active)
   {
   this->filtering_bgr_active = filtering_bgr_active;
   }
-bool& c_camera::is_filtering_gray_active ()
+bool& C_Camera::is_filtering_gray_active ()
   {
   return filtering_gray_active;
   }
-void c_camera::set_filtering_gray_active (bool filtering_gray_active)
+void C_Camera::set_filtering_gray_active (bool filtering_gray_active)
   {
   this->filtering_gray_active = filtering_gray_active;
   }
-bool& c_camera::is_thread_ready ()
+bool& C_Camera::is_thread_ready ()
   {
   return thread_ready;
   }
-void c_camera::set_thread_ready (bool thread_ready)
+void C_Camera::set_thread_ready (bool thread_ready)
   {
   this->thread_ready = thread_ready;
   }
-bool& c_camera::is_contours_active ()
+bool& C_Camera::is_contours_active ()
   {
   return contours_active;
   }
-void c_camera::set_contours_active (bool contours_active)
+void C_Camera::set_contours_active (bool contours_active)
   {
   this->contours_active = contours_active;
   }
-bool& c_camera::is_undistord_active ()
+bool& C_Camera::is_undistord_active ()
   {
   return undistord_active;
   }
-void c_camera::set_undistord_active (bool undistord_active)
+void C_Camera::set_undistord_active (bool undistord_active)
   {
   this->undistord_active = undistord_active;
   }
-bool& c_camera::is_contour_found ()
+bool& C_Camera::is_contour_found ()
   {
   return contour_found;
   }
-void c_camera::set_contour_found (bool contour_found)
+void C_Camera::set_contour_found (bool contour_found)
   {
   this->contour_found = contour_found;
   }
-bool& c_camera::is_image_prepared ()
+bool& C_Camera::is_image_prepared ()
   {
   return image_prepared;
   }
-void c_camera::set_image_prepared (bool image_prepared)
+void C_Camera::set_image_prepared (bool image_prepared)
   {
   this->image_prepared = image_prepared;
   }
-bool& c_camera::is_show_cropped_image ()
+bool& C_Camera::is_show_cropped_image ()
   {
   return show_cropped_image;
   }
-void c_camera::set_show_cropped_image (bool show_cropped_image)
+void C_Camera::set_show_cropped_image (bool show_cropped_image)
   {
   this->show_cropped_image = show_cropped_image;
   }
-int& c_camera::get_objekt_anzahl ()
+int& C_Camera::get_objekt_anzahl ()
   {
   return objekt_anzahl;
   }
-void c_camera::set_objekt_anzahl (int objekt_anzahl)
+void C_Camera::set_objekt_anzahl (int objekt_anzahl)
   {
   this->objekt_anzahl = objekt_anzahl;
   }
-int& c_camera::get_kontur_index ()
+int& C_Camera::get_kontur_index ()
   {
   return KonturIndex;
   }
-void c_camera::set_kontur_index (int kontur_index)
+void C_Camera::set_kontur_index (int kontur_index)
   {
   KonturIndex = kontur_index;
   }
-double& c_camera::get_max_moment_m00 ()
+double& C_Camera::get_max_moment_m00 ()
   {
   return max_Moment_m00;
   }
-void c_camera::set_max_moment_m00 (double max_moment_m00)
+void C_Camera::set_max_moment_m00 (double max_moment_m00)
   {
   max_Moment_m00 = max_moment_m00;
   }
-double& c_camera::get_ist_x ()
+double& C_Camera::get_ist_x ()
   {
   return Ist_x;
   }
-void c_camera::set_ist_x (double ist_x)
+void C_Camera::set_ist_x (double ist_x)
   {
   Ist_x = ist_x;
   }
-double& c_camera::get_ist_y ()
+double& C_Camera::get_ist_y ()
   {
   return Ist_y;
   }
-void c_camera::set_ist_y (double ist_y)
+void C_Camera::set_ist_y (double ist_y)
   {
   Ist_y = ist_y;
   }
-double& c_camera::get_soll_x ()
+double& C_Camera::get_soll_x ()
   {
   return Soll_x;
   }
-void c_camera::set_soll_x (double soll_x)
+void C_Camera::set_soll_x (double soll_x)
   {
   Soll_x = soll_x;
   }
-double& c_camera::get_soll_y ()
+double& C_Camera::get_soll_y ()
   {
   return Soll_y;
   }
-void c_camera::set_soll_y (double soll_y)
+void C_Camera::set_soll_y (double soll_y)
   {
   Soll_y = soll_y;
   }
-double& c_camera::get_delta_x ()
+double& C_Camera::get_delta_x ()
   {
   return Delta_x;
   }
-void c_camera::set_delta_x (double delta_x)
+void C_Camera::set_delta_x (double delta_x)
   {
   Delta_x = delta_x;
   }
-double& c_camera::get_delta_y ()
+double& C_Camera::get_delta_y ()
   {
   return Delta_y;
   }
-void c_camera::set_delta_y (double delta_y)
+void C_Camera::set_delta_y (double delta_y)
   {
   Delta_y = delta_y;
   }
-double& c_camera::get_moment_0_ordnung ()
+double& C_Camera::get_moment_0_ordnung ()
   {
   return Moment_0_Ordnung;
   }
-void c_camera::set_moment_0_ordnung (double moment_0_ordnung)
+void C_Camera::set_moment_0_ordnung (double moment_0_ordnung)
   {
   Moment_0_Ordnung = moment_0_ordnung;
   }
-double& c_camera::get_moment_1_ordnung_x ()
+double& C_Camera::get_moment_1_ordnung_x ()
   {
   return Moment_1_Ordnung_x;
   }
-void c_camera::set_moment_1_ordnung_x (double moment_1_ordnung_x)
+void C_Camera::set_moment_1_ordnung_x (double moment_1_ordnung_x)
   {
   Moment_1_Ordnung_x = moment_1_ordnung_x;
   }
-double& c_camera::get_moment_1_ordnung_y ()
+double& C_Camera::get_moment_1_ordnung_y ()
   {
   return Moment_1_Ordnung_y;
   }
-void c_camera::set_moment_1_ordnung_y (double moment_1_ordnung_y)
+void C_Camera::set_moment_1_ordnung_y (double moment_1_ordnung_y)
   {
   Moment_1_Ordnung_y = moment_1_ordnung_y;
   }
-double& c_camera::get_schwerpunkt_x ()
+double& C_Camera::get_schwerpunkt_x ()
   {
   return Schwerpunkt_x;
   }
-void c_camera::set_schwerpunkt_x (double schwerpunkt_x)
+void C_Camera::set_schwerpunkt_x (double schwerpunkt_x)
   {
   Schwerpunkt_x = schwerpunkt_x;
   }
-double& c_camera::get_schwerpunkt_y ()
+double& C_Camera::get_schwerpunkt_y ()
   {
   return Schwerpunkt_y;
   }
-void c_camera::set_schwerpunkt_y (double schwerpunkt_y)
+void C_Camera::set_schwerpunkt_y (double schwerpunkt_y)
   {
   Schwerpunkt_y = schwerpunkt_y;
   }
-double& c_camera::get_mittelpunkt_x ()
+double& C_Camera::get_mittelpunkt_x ()
   {
   return Mittelpunkt_x;
   }
-void c_camera::set_mittelpunkt_x (double mittelpunkt_x)
+void C_Camera::set_mittelpunkt_x (double mittelpunkt_x)
   {
   Mittelpunkt_x = mittelpunkt_x;
   }
-double& c_camera::get_mittelpunkt_y ()
+double& C_Camera::get_mittelpunkt_y ()
   {
   return Mittelpunkt_y;
   }
-void c_camera::set_mittelpunkt_y (double mittelpunkt_y)
+void C_Camera::set_mittelpunkt_y (double mittelpunkt_y)
   {
   Mittelpunkt_y = mittelpunkt_y;
   }
-double& c_camera::get_x_kamera_ks ()
+double& C_Camera::get_x_kamera_ks ()
   {
   return x_Kamera_KS;
   }
-void c_camera::set_x_kamera_ks (double kamera_ks)
+void C_Camera::set_x_kamera_ks (double kamera_ks)
   {
   x_Kamera_KS = kamera_ks;
   }
-double& c_camera::get_y_kamera_ks ()
+double& C_Camera::get_y_kamera_ks ()
   {
   return y_Kamera_KS;
   }
-void c_camera::set_y_kamera_ks (double kamera_ks)
+void C_Camera::set_y_kamera_ks (double kamera_ks)
   {
   y_Kamera_KS = kamera_ks;
   }
-double& c_camera::get_cx ()
+double& C_Camera::get_cx ()
   {
   return cx;
   }
-void c_camera::set_cx (double cx)
+void C_Camera::set_cx (double cx)
   {
   this->cx = cx;
   }
-double& c_camera::get_cy ()
+double& C_Camera::get_cy ()
   {
   return cy;
   }
-void c_camera::set_cy (double cy)
+void C_Camera::set_cy (double cy)
   {
   this->cy = cy;
   }
-double& c_camera::get_fx ()
+double& C_Camera::get_fx ()
   {
   return fx;
   }
-void c_camera::set_fx (double fx)
+void C_Camera::set_fx (double fx)
   {
   this->fx = fx;
   }
-double& c_camera::get_fy ()
+double& C_Camera::get_fy ()
   {
   return fy;
   }
-void c_camera::set_fy (double fy)
+void C_Camera::set_fy (double fy)
   {
   this->fy = fy;
   }
-double& c_camera::get_f ()
+double& C_Camera::get_f ()
   {
   return f;
   }
-void c_camera::set_f (double f)
+void C_Camera::set_f (double f)
   {
   this->f = f;
   }
-double& c_camera::get_vec_object_abs ()
+double& C_Camera::get_vec_object_abs ()
   {
   return Vec_Object_Abs;
   }
-void c_camera::set_vec_object_abs (double vec_object_abs)
+void C_Camera::set_vec_object_abs (double vec_object_abs)
   {
   Vec_Object_Abs = vec_object_abs;
   }
-c_camera::milliseconds c_camera::get_frametime() const
+C_Camera::milliseconds C_Camera::get_frametime() const
   {
   return frametime;
   }
 
-double c_camera::get_fps() const
+double C_Camera::get_fps() const
   {
   return fps;
   }
-float& c_camera::get_radius ()
+float& C_Camera::get_radius ()
   {
   return Radius;
   }
-void c_camera::set_radius (float radius)
+void C_Camera::set_radius (float radius)
   {
   Radius = radius;
   }
-std::string& c_camera::get_s_x ()
+std::string& C_Camera::get_s_x ()
   {
   return S_x;
   }
-void c_camera::set_s_x (const std::string& cs)
+void C_Camera::set_s_x (const std::string& cs)
   {
   S_x = cs;
   }
-std::string& c_camera::get_s_y ()
+std::string& C_Camera::get_s_y ()
   {
   return S_y;
   }
-void c_camera::set_s_y (const std::string& cs)
+void C_Camera::set_s_y (const std::string& cs)
   {
   S_y = cs;
   }
-std::string& c_camera::get_delta_x_str ()
+std::string& C_Camera::get_delta_x_str ()
   {
   return Delta_x_str;
   }
-void c_camera::set_delta_x_str (const std::string& delta_x_str)
+void C_Camera::set_delta_x_str (const std::string& delta_x_str)
   {
   Delta_x_str = delta_x_str;
   }
-std::string& c_camera::get_delta_y_str ()
+std::string& C_Camera::get_delta_y_str ()
   {
   return Delta_y_str;
   }
-void c_camera::set_delta_y_str (const std::string& delta_y_str)
+void C_Camera::set_delta_y_str (const std::string& delta_y_str)
   {
   Delta_y_str = delta_y_str;
   }
-cv::Rect& c_camera::get_rect_roi ()
+cv::Rect& C_Camera::get_rect_roi ()
   {
   return rect_roi;
   }
-void c_camera::set_rect_roi (const cv::Rect& rect_roi)
+void C_Camera::set_rect_roi (const cv::Rect& rect_roi)
   {
   this->rect_roi = rect_roi;
   }
-uchar& c_camera::get_hue_min ()
+uchar& C_Camera::get_hue_min ()
   {
   return hue_min;
   }
-void c_camera::set_hue_min (uchar hue_min)
+void C_Camera::set_hue_min (uchar hue_min)
   {
   this->hue_min = hue_min;
   }
-uchar& c_camera::get_hue_max ()
+uchar& C_Camera::get_hue_max ()
   {
   return hue_max;
   }
-void c_camera::set_hue_max (uchar hue_max)
+void C_Camera::set_hue_max (uchar hue_max)
   {
   this->hue_max = hue_max;
   }
-uchar& c_camera::get_saturation_min ()
+uchar& C_Camera::get_saturation_min ()
   {
   return saturation_min;
   }
-void c_camera::set_saturation_min (uchar saturation_min)
+void C_Camera::set_saturation_min (uchar saturation_min)
   {
   this->saturation_min = saturation_min;
   }
-uchar& c_camera::get_saturation_max ()
+uchar& C_Camera::get_saturation_max ()
   {
   return saturation_max;
   }
-void c_camera::set_saturation_max (uchar saturation_max)
+void C_Camera::set_saturation_max (uchar saturation_max)
   {
   this->saturation_max = saturation_max;
   }
-uchar& c_camera::get_value_min ()
+uchar& C_Camera::get_value_min ()
   {
   return value_min;
   }
-void c_camera::set_value_min (uchar value_min)
+void C_Camera::set_value_min (uchar value_min)
   {
   this->value_min = value_min;
   }
-uchar& c_camera::get_value_max ()
+uchar& C_Camera::get_value_max ()
   {
   return value_max;
   }
-void c_camera::set_value_max (uchar value_max)
+void C_Camera::set_value_max (uchar value_max)
   {
   this->value_max = value_max;
   }
-int& c_camera::get_erosion_iterations ()
+int& C_Camera::get_erosion_iterations ()
   {
   return erosion_iterations;
   }
-void c_camera::set_erosion_iterations (int erosion_iterations)
+void C_Camera::set_erosion_iterations (int erosion_iterations)
   {
   this->erosion_iterations = erosion_iterations;
   }
-int& c_camera::get_dilation_iterations ()
+int& C_Camera::get_dilation_iterations ()
   {
   return dilation_iterations;
   }
-void c_camera::set_dilation_iterations (int dilation_iterations)
+void C_Camera::set_dilation_iterations (int dilation_iterations)
   {
   this->dilation_iterations = dilation_iterations;
   }
-int& c_camera::get_opening_iterations ()
+int& C_Camera::get_opening_iterations ()
   {
   return opening_iterations;
   }
-void c_camera::set_opening_iterations (int opening_iterations)
+void C_Camera::set_opening_iterations (int opening_iterations)
   {
   this->opening_iterations = opening_iterations;
   }
-int& c_camera::get_closing_iterations ()
+int& C_Camera::get_closing_iterations ()
   {
   return closing_iterations;
   }
-void c_camera::set_closing_iterations (int closing_iterations)
+void C_Camera::set_closing_iterations (int closing_iterations)
   {
   this->closing_iterations = closing_iterations;
   }
-int& c_camera::get_morph_iterations ()
+int& C_Camera::get_morph_iterations ()
   {
   return morph_iterations;
   }
-void c_camera::set_morph_iterations (int morph_iterations)
+void C_Camera::set_morph_iterations (int morph_iterations)
   {
   this->morph_iterations = morph_iterations;
   }
-int& c_camera::get_erosion_kernel_size ()
+int& C_Camera::get_erosion_kernel_size ()
   {
   return erosion_kernel_size;
   }
-void c_camera::set_erosion_kernel_size (int erosion_kernel_size)
+void C_Camera::set_erosion_kernel_size (int erosion_kernel_size)
   {
   this->erosion_kernel_size = erosion_kernel_size;
   }
-int& c_camera::get_dilation_kernel_size ()
+int& C_Camera::get_dilation_kernel_size ()
   {
   return dilation_kernel_size;
   }
-void c_camera::set_dilation_kernel_size (int dilation_kernel_size)
+void C_Camera::set_dilation_kernel_size (int dilation_kernel_size)
   {
   this->dilation_kernel_size = dilation_kernel_size;
   }
-int& c_camera::get_bilateral_kernel_size ()
+int& C_Camera::get_bilateral_kernel_size ()
   {
   return bilateral_kernel_size;
   }
-void c_camera::set_bilateral_kernel_size (int bilateral_kernel_size)
+void C_Camera::set_bilateral_kernel_size (int bilateral_kernel_size)
   {
   this->bilateral_kernel_size = bilateral_kernel_size;
   }
-int& c_camera::get_opening_kernel_size ()
+int& C_Camera::get_opening_kernel_size ()
   {
   return opening_kernel_size;
   }
-void c_camera::set_opening_kernel_size (int opening_kernel_size)
+void C_Camera::set_opening_kernel_size (int opening_kernel_size)
   {
   this->opening_kernel_size = opening_kernel_size;
   }
-int& c_camera::get_closing_kernel_size ()
+int& C_Camera::get_closing_kernel_size ()
   {
   return closing_kernel_size;
   }
-void c_camera::set_closing_kernel_size (int closing_kernel_size)
+void C_Camera::set_closing_kernel_size (int closing_kernel_size)
   {
   this->closing_kernel_size = closing_kernel_size;
   }
-int& c_camera::get_morph_kernel_size ()
+int& C_Camera::get_morph_kernel_size ()
   {
   return morph_kernel_size;
   }
-void c_camera::set_morph_kernel_size (int morph_kernel_size)
+void C_Camera::set_morph_kernel_size (int morph_kernel_size)
   {
   this->morph_kernel_size = morph_kernel_size;
   }
-int& c_camera::get_gaussian_kernel_size ()
+int& C_Camera::get_gaussian_kernel_size ()
   {
   return gaussian_kernel_size;
   }
-void c_camera::set_gaussian_kernel_size (int gaussian_kernel_size)
+void C_Camera::set_gaussian_kernel_size (int gaussian_kernel_size)
   {
   this->gaussian_kernel_size = gaussian_kernel_size;
   }
-int& c_camera::get_resize_width ()
+int& C_Camera::get_resize_width ()
   {
   return resize_width;
   }
-void c_camera::set_resize_width (int resize_width)
+void C_Camera::set_resize_width (int resize_width)
   {
   this->resize_width = resize_width;
   }
-int& c_camera::get_resize_height ()
+int& C_Camera::get_resize_height ()
   {
   return resize_height;
   }
-void c_camera::set_resize_height (int resize_height)
+void C_Camera::set_resize_height (int resize_height)
   {
   this->resize_height = resize_height;
   }
-double& c_camera::get_gaussian_sigma ()
+double& C_Camera::get_gaussian_sigma ()
   {
   return gaussian_sigma;
   }
-void c_camera::set_gaussian_sigma (double gaussian_sigma)
+void C_Camera::set_gaussian_sigma (double gaussian_sigma)
   {
   this->gaussian_sigma = gaussian_sigma;
   }
-int& c_camera::get_object_size_min ()
+int& C_Camera::get_object_size_min ()
   {
   return Object_Size_min;
   }
-void c_camera::set_object_size_min (int object_size_min)
+void C_Camera::set_object_size_min (int object_size_min)
   {
   Object_Size_min = object_size_min;
   }
-int& c_camera::get_object_size_max ()
+int& C_Camera::get_object_size_max ()
   {
   return Object_Size_max;
   }
-void c_camera::set_object_size_max (int object_size_max)
+void C_Camera::set_object_size_max (int object_size_max)
   {
   Object_Size_max = object_size_max;
   }
-float& c_camera::get_bilateral_sigma_color ()
+float& C_Camera::get_bilateral_sigma_color ()
   {
   return bilateral_sigma_color;
   }
-void c_camera::set_bilateral_sigma_color (float bilateral_sigma_color)
+void C_Camera::set_bilateral_sigma_color (float bilateral_sigma_color)
   {
   this->bilateral_sigma_color = bilateral_sigma_color;
   }
-float& c_camera::get_bilateral_sigma_spatial ()
+float& C_Camera::get_bilateral_sigma_spatial ()
   {
   return bilateral_sigma_spatial;
   }
-void c_camera::set_bilateral_sigma_spatial (float bilateral_sigma_spatial)
+void C_Camera::set_bilateral_sigma_spatial (float bilateral_sigma_spatial)
   {
   this->bilateral_sigma_spatial = bilateral_sigma_spatial;
   }
-bool& c_camera::is_erode_active ()
+bool& C_Camera::is_erode_active ()
   {
   return erode_active;
   }
-void c_camera::set_erode_active (bool erode_active)
+void C_Camera::set_erode_active (bool erode_active)
   {
   this->erode_active = erode_active;
   }
-bool& c_camera::is_dilate_active ()
+bool& C_Camera::is_dilate_active ()
   {
   return dilate_active;
   }
-void c_camera::set_dilate_active (bool dilate_active)
+void C_Camera::set_dilate_active (bool dilate_active)
   {
   this->dilate_active = dilate_active;
   }
-bool& c_camera::is_gaussian_active ()
+bool& C_Camera::is_gaussian_active ()
   {
   return gaussian_active;
   }
-void c_camera::set_gaussian_active (bool gaussian_active)
+void C_Camera::set_gaussian_active (bool gaussian_active)
   {
   this->gaussian_active = gaussian_active;
   }
-bool& c_camera::is_morph_active ()
+bool& C_Camera::is_morph_active ()
   {
   return morph_active;
   }
-void c_camera::set_morph_active (bool morph_active)
+void C_Camera::set_morph_active (bool morph_active)
   {
   this->morph_active = morph_active;
   }
-bool& c_camera::is_bilateral_active ()
+bool& C_Camera::is_bilateral_active ()
   {
   return bilateral_active;
   }
-void c_camera::set_bilateral_active (bool bilateral_active)
+void C_Camera::set_bilateral_active (bool bilateral_active)
   {
   this->bilateral_active = bilateral_active;
   }
-bool& c_camera::is_show_contoured_active ()
+bool& C_Camera::is_show_contoured_active ()
   {
   return show_contoured;
   }
-void c_camera::set_show_contoured_active (bool show_contoured)
+void C_Camera::set_show_contoured_active (bool show_contoured)
   {
   this->show_contoured = show_contoured;
   }
 
-bool& c_camera::is_idle ()
+bool& C_Camera::is_idle ()
   {
   return idle;
   }
-void c_camera::set_idle (bool idle)
+void C_Camera::set_idle (bool idle)
   {
   this->idle = idle;
   }
 
-void c_camera::set_pipeline(std::string pipeline)
+void C_Camera::set_pipeline(std::string pipeline)
 {
     this->pipeline = pipeline;
 }
-std::string c_camera::get_pipeline()
+std::string C_Camera::get_pipeline()
 {
     return this->pipeline;
 }

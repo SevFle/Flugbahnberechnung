@@ -16,6 +16,9 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    camera2.cpp \
+    loadmanager.cpp \
+    savemanager.cpp \
     sources/App_main.cpp \
     sources/CSV_Datei.cpp \
     sources/GlobalObjects.cpp \
@@ -35,6 +38,7 @@ SOURCES += \
     sources/frm_main.cpp
 
 HEADERS += \
+    camera2.h \
     headers/CSV_Datei.h \
     headers/GlobalObjects.h \
     headers/Kalmanfilter.h \
@@ -53,7 +57,9 @@ HEADERS += \
     headers/frm_camera_positioning_pose.h \
     headers/frm_main.h \
     headers/frm_object_calibration.h \
-    headers/frm_object_tracking.h
+    headers/frm_object_tracking.h \
+    loadmanager.h \
+    savemanager.h
 
 FORMS += \
     forms/frm_camera_calibration.ui \

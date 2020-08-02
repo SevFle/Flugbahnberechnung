@@ -4,52 +4,63 @@
 
 /************************************************************ Includes *******************************************************************/
 
-#include "headers/camera.h"
+#include "tbb/pipeline.h"
+#include "tbb/concurrent_queue.h"
+
+#include <pthread.h>
+
+#include "opencv2/opencv.hpp"
+#include "opencv2/highgui.hpp"
+
+//#include "headers/camera.h"
+#include "camera2.h"
+#include "loadmanager.h"
+#include "savemanager.h"
+
 #include "headers/tracking.h"
 #include "headers/object.h"
 #include "headers/GlobalObjects.h"
 #include "gst/gst.h"
 
-
-namespace std
-  {
-  class thread;
-  }
-
-using namespace std;
-
-using namespace camera;
+using namespace Camera;
 using namespace tracking;
 using namespace object;
 using namespace posen;
 using namespace GlobalObjects;
 
+struct Payload
+{
+ cv::Mat img;
+ double timestamp = 0;
+ cv::Mat gray;
+ cv::Mat final;
+};
 
-namespace nmsp_camera_unmanaged
+
+namespace CameraManager
   {
-  class c_camera_unmanaged
+  class C_CameraManager
     {
     public:
     /*************************************************************** Konstruktoren *************************************************************/
-    c_camera_unmanaged ( C_GlobalObjects* GlobalObjects);
+    C_CameraManager ( C_GlobalObjects* GlobalObjects);
     /*************************************************************** Destruktor ****************************************************************/
-    ~c_camera_unmanaged ();
+    ~C_CameraManager ();
 
 
     /**************************************************** Öffentliche Klassenobjekte ********************************************************/
     public:
-    c_tracking* tracking_thread;
-
-    std::thread* camera_thread;
+    pthread_t*                    pipelineCam;
+    pthread_t*                    simpleCam;
+    std::vector<Camera::C_Camera2*>        vecCameras;
 
 
     /**************************************************** Öffentliche Anwender-Attribute ********************************************************/
     public:
-    int cameras_in_use;
     int camera_id;
-
-    int** camera_referrence;
-
+    int absCameras;
+    int frameWidth;
+    int frameHeight;
     bool             stop_statemachine;
     bool             load_positioning;
     bool             tracking_active;
@@ -58,7 +69,6 @@ namespace nmsp_camera_unmanaged
     cv::Mat cpu_kalman_filterL;
     cv::Mat cpu_kalman_filterR;
   	
-	std::vector<c_camera*> camera_vector;
 
 
     /*** Variablen zur Kamerakalibrierung ********************************************************/
@@ -77,28 +87,18 @@ namespace nmsp_camera_unmanaged
     /******************************************** Nicht öffentliche private Anwender-Attribute **************************************************/
     private:
     C_GlobalObjects* GlobalObjects;
+    Savemanager::c_SaveManager* SaveManager;
+    LoadManager::C_LoadManager* Loadmanager;
     int              current_camera_id;
 
 
     /********************************************************* Öffentliche Klassenmethoden*******************************************************/
     public:
-    void move_camera_vector2temp (int camera_desired_id, int camera_current_id, std::vector<c_camera*>& temp_CameraVector);
-    void move_camera_temp2vector (int cameras_in_use, std::vector<c_camera*> temp_CameraVector);
+    void move_camera_vector2temp (int camera_desired_id, int camera_current_id, std::vector<Camera::C_Camera2*>& temp_CameraVector);
+    void move_camera_temp2vector (int cameras_in_use, std::vector<Camera::C_Camera2*> temp_CameraVector);
 
-    void save_camera_calibration (int camera_id);
-    void load_camera_calibration (int camera_id);
-    void save_camera_positioning (std::vector<int> camera_list) const;
-    void load_camera_positioning ();
-    void save_camera_cos (int camera_id, C_AbsolutePose& WorldToCam_Param);
-    void load_camera_cos (int camera_id, C_AbsolutePose& WorldToCam_Param);
-
-    void load_camera_pipelines(std::vector<std::string> &vec_pipeline);
-
-    void init_camera_vectors ();
+    void initVecCameras ();
     void close_cameras (int cameras_in_use);
-
-    void save_camera_settings (int camera_id);
-    void load_camera_settings (int camera_id);
 
     void calibrate_single_camera (int current_camera_id);
     void calibrate_stereo_camera (int current_camera_id);
@@ -107,6 +107,8 @@ namespace nmsp_camera_unmanaged
     void calculate_camera_pose(int camera1, int camera2, cv::Vec3d T, cv::Mat R);
 
     void getDeviceList();
+
+    void pipelineTracking(std::vector<cv::VideoCapture*> &camera_vector, tbb::concurrent_bounded_queue<Payload*> &que);
 
 
     /******************************************************* Private Klassenmethoden***************************************************************/

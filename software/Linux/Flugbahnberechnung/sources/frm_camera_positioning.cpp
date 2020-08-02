@@ -141,7 +141,7 @@ void C_frm_Camera_Positioning::Taktgeber_Tick()
 
 void C_frm_Camera_Positioning::on_bt_apply_clicked()
 {
-    std::vector<camera::c_camera*> camera_vector_temp;
+    std::vector<Camera::C_Camera*> camera_vector_temp;
     camera_vector_temp.resize (cameras_in_use);
     //TODO Need way to stop Taktgeber
     this->Taktgeber->stop();

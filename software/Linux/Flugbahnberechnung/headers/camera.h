@@ -18,15 +18,15 @@ namespace posen
   }
 
 
-namespace camera
+namespace Camera
   {
-  class c_camera
+  class C_Camera
     {
     public:
     /*************************************************************** Konstruktoren *************************************************************/
-    c_camera (int camera_id);
+    C_Camera (int camera_id);
     /*************************************************************** Destruktor ****************************************************************/
-    ~c_camera ();
+    ~C_Camera ();
     /******************************************** Nicht öffentliche private Anwender-Attribute **************************************************/
     cv::cuda::GpuMat* gpu_src_img;
     cv::cuda::GpuMat* gpu_thresholded;

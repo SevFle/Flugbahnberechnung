@@ -4,7 +4,7 @@ using namespace Main;
 
 C_Main::C_Main(C_GlobalObjects* GlobalObjects)
   {
-  this->Camera_manager = new c_camera_unmanaged(GlobalObjects);
+  this->Camera_manager = new C_CameraManager(GlobalObjects);
 
   this->frm_Main = new C_frm_Main(GlobalObjects, this);
   this->frm_Main->show();

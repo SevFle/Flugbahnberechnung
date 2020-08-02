@@ -124,7 +124,7 @@ void ::C_frm_Main::on_bt_apply_clicked()
       this->Ui->num_cameras->setEnabled(false);
       this->Ui->bt_apply->setEnabled     (false);
 
-      this->Main->Camera_manager->init_camera_vectors ();
+      this->Main->Camera_manager->initVecCameras ();
       this->state = 1;
     }
 
