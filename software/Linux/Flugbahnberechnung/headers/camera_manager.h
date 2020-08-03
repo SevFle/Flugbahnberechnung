@@ -80,8 +80,8 @@ namespace CameraManager
     void openCameras              ();
     void closeCameras             ();
 
-    void calibrateSingleCamera (int current_camera_id, int absCornersWidth, int absCornersHeight, int absBoardImg );
-    void calibrate_stereo_camera  (int current_camera_id);
+    void calibrateSingleCamera    (int current_camera_id, int absCornersWidth, int absCornersHeight, int absBoardImg );
+    void calibrate_stereo_camera  (int current_camera_id, int absCornersWidth, int absCornersHeight, int absBoardImg);
     void sm_object_tracking       ();
 
     void calculate_camera_pose    (int camera1, int camera2, cv::Vec3d T, cv::Mat R);

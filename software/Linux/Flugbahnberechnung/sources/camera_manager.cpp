@@ -10,6 +10,7 @@ using namespace GlobalObjects;
 /*************************************************************** Konstruktoren **************************************************************/
 C_CameraManager::C_CameraManager ( C_GlobalObjects* GlobalObjects)
   {
+  this->GlobalObjects = GlobalObjects;
   this->Loadmanager = new LoadManager::C_LoadManager;
   this->SaveManager = new Savemanager::c_SaveManager;
   }
@@ -18,15 +19,13 @@ C_CameraManager::~C_CameraManager ()
   {
   delete (SaveManager);
   delete (Loadmanager);
+  delete (GlobalObjects);
   }
 
 /*************************************************** Nicht öffentliche private Methoden *****************************************************/
 
 void C_CameraManager::start_camera_thread ()
   {
-  camera_vector[current_camera_id]->set_idle (true);
-
-  camera_vector[current_camera_id]->camera_thread();
   }
 /******************************************************* Öffentliche Anwender-Methoden ******************************************************/
 
@@ -232,7 +231,7 @@ void C_CameraManager::calibrateSingleCamera (int current_camera_id, int absCorne
   //Reaktivierung der Bildentzerrung
   this->vecCameras[current_camera_id]->initRectifyMap();
   }
-void C_CameraManager::calibrate_stereo_camera (int camera_id)
+void C_CameraManager::calibrate_stereo_camera (int current_camera_id, int absCornersWidth, int absCornersHeight, int absBoardImg)
   {
     this->calibration_done = false;
   vector<vector<cv::Point3f>>   object_points;
@@ -249,19 +248,19 @@ void C_CameraManager::calibrate_stereo_camera (int camera_id)
   cv::Mat gray1;
   cv::Mat gray2;
 
-  Photo_ID        = 0;
-  int error_count = 0;
+  int photoID        = 0;
+  int absError = 0;
 
-  cv::Size board_size = cv::Size (this->numCornersWidth,this->numCornersHeight);
+  cv::Size board_size = cv::Size (absCornersWidth,absCornersHeight);
   //int      board_n    =           this->numCornersWidth * this->numCornersHeight;
 
 
   //Iterate over all available photos
-  while (this->Photo_ID < this->numBoards_imgs)
+  while (photoID < absBoardImg)
     {
     //char left_img[100], right_img[100];
-    img1 = cv::imread ("../Parameter/Bilder/Camera_Stereo_Calibration_" + std::to_string (camera_id) + "_Snapshot_" + std::to_string (this->Photo_ID) + ".png",1);
-    img2 = cv::imread ("../Parameter/Bilder/Camera_Stereo_Calibration_" + std::to_string (camera_id + 1) + "_Snapshot_" + std::to_string (this->Photo_ID) + ".png",1);
+    img1 = cv::imread ("../Parameter/Bilder/Camera_Stereo_Calibration_" + std::to_string (camera_id) + "_Snapshot_" + std::to_string (photoID) + ".png",1);
+    img2 = cv::imread ("../Parameter/Bilder/Camera_Stereo_Calibration_" + std::to_string (camera_id + 1) + "_Snapshot_" + std::to_string (photoID) + ".png",1);
 
     cv::cvtColor (img1,gray1,cv::COLOR_BGR2GRAY);
     cv::cvtColor (img2,gray2,cv::COLOR_BGR2GRAY);
@@ -278,9 +277,9 @@ void C_CameraManager::calibrate_stereo_camera (int camera_id)
     if (!found1 || !found2)
       {
       std::cout << "Chessboard find error!" << endl;
-      std::cout << "Setnumber: " << Photo_ID << endl;
-      Photo_ID++;
-      error_count++;
+      std::cout << "Setnumber: " << photoID << endl;
+      photoID++;
+      absError++;
       continue;
       }
 
@@ -297,11 +296,11 @@ void C_CameraManager::calibrate_stereo_camera (int camera_id)
       cv::drawChessboardCorners (gray2,board_size,corners2,found2);
       }
 
-    cv::imwrite ("../Parameter/Bilder/Camera_Stereo_Calibration_" + std::to_string (camera_id) + "_Gray_DrawCorners_" + std::to_string (this->Photo_ID) + ".png",gray1);
-    cv::imwrite ("../Parameter/Bilder/Camera_Stereo_Calibration_" + std::to_string (camera_id + 1) + "_Gray_DrawCorners_" + std::to_string (this->Photo_ID) + ".png",gray2);
+    cv::imwrite ("../Parameter/Bilder/Camera_Stereo_Calibration_" + std::to_string (camera_id) + "_Gray_DrawCorners_" + std::to_string (photoID) + ".png",gray1);
+    cv::imwrite ("../Parameter/Bilder/Camera_Stereo_Calibration_" + std::to_string (camera_id + 1) + "_Gray_DrawCorners_" + std::to_string (photoID) + ".png",gray2);
 
     vector<cv::Point3f> obj;
-    for (int i = 0; i < this->numCornersHeight; i++) for (int j = 0; j < this->numCornersWidth; j++) obj.emplace_back (static_cast<float> (j) * SquareSize,static_cast<float> (i) * SquareSize,0);
+    for (int i = 0; i < absCornersHeight; i++) for (int j = 0; j < absCornersWidth; j++) obj.emplace_back (static_cast<float> (j) * SquareSize,static_cast<float> (i) * SquareSize,0);
 
     if (found1 && found2)
       {
@@ -309,10 +308,10 @@ void C_CameraManager::calibrate_stereo_camera (int camera_id)
       imagePoints2.push_back (corners2);
       object_points.push_back (obj);
       }
-    Photo_ID++;
+    photoID++;
     }//  while (this->Photo_ID < this->numBoards_imgs)
 
-  std::cout << endl << "Analyzed " << Photo_ID - error_count << " out of " << Photo_ID << " source immages successfully." << endl;
+  std::cout << endl << "Analyzed " << photoID - absError << " out of " << photoID << " source immages successfully." << endl;
 
   for (int i = 0; i < static_cast<int>(imagePoints1.size()); i++)
     {
@@ -334,10 +333,10 @@ void C_CameraManager::calibrate_stereo_camera (int camera_id)
   //cv::Vec3d T;
   cv::Mat   D1, D2;
   //cv::InputOutputArray R, T;
-  this->camera_vector[camera_id]->      Intrinsic->copyTo   (K1);
-  this->camera_vector[camera_id + 1]->  Intrinsic->copyTo   (K2);
-  this->camera_vector[camera_id]->      DistCoeffs->copyTo  (D1);
-  this->camera_vector[camera_id + 1]->  DistCoeffs->copyTo  (D2);
+  this->vecCameras[current_camera_id]->getIntrinsic()->copyTo(K1);
+  this->vecCameras[current_camera_id + 1]->getIntrinsic()->copyTo(K2);
+  this->vecCameras[current_camera_id]->getDistCoeffs()->copyTo(D1);
+  this->vecCameras[current_camera_id + 1]->getDistCoeffs()->copyTo(D2);
 
   cv::stereoCalibrate (object_points,left_img_points,right_img_points,K1,D1,K2,D2,img1.size(),R,T,E,F,cv::CALIB_FIX_INTRINSIC);
 
