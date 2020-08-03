@@ -11,9 +11,11 @@ C_Camera2::C_Camera2                        ()
   auto gpuSrc = new cv::cuda::GpuMat;
   auto map1 = new cv::cuda::GpuMat;
   auto map2 = new cv::cuda::GpuMat;
+  auto CameraPose = new posen::C_AbsolutePose;
   }
 C_Camera2::~C_Camera2                       ()
   {
+  delete (CameraPose);
   delete (map1);
   delete (map2);
   delete (GpuSrc);
@@ -380,3 +382,14 @@ void C_Camera2::S_filterProperties::setBilateral_active(bool value)
   {
   bilateral_active = value;
   }
+
+C_AbsolutePose *C_Camera2::getCameraPose() const
+  {
+  return CameraPose;
+  }
+
+void C_Camera2::setCameraPose(C_AbsolutePose *value)
+  {
+  CameraPose = value;
+  }
+

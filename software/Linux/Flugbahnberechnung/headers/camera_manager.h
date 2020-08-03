@@ -28,13 +28,16 @@ using namespace object;
 using namespace posen;
 using namespace GlobalObjects;
 
-struct Payload
+struct S_Payload
 {
  cv::Mat img;
  double timestamp = 0;
  cv::Mat gray;
  cv::Mat final;
 };
+
+
+
 
 
 namespace CameraManager
@@ -68,6 +71,7 @@ namespace CameraManager
     int                           absCameras;
     int                           frameWidth;
     int                           frameHeight;
+    int                           arrActiveCameras[4];
     float                         SquareSize;
     bool                          calibration_done;
 

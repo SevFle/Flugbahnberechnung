@@ -465,6 +465,7 @@ void C_CameraManager::sm_object_tracking ()
        }
     }
 }
+  }
 
 
 //      case 0:
@@ -513,7 +514,7 @@ void C_CameraManager::sm_object_tracking ()
 //        break;
 //      case 4:
 //        break;
-      }//switch(statemachine_state)
+      //switch(statemachine_state)
     //while(tracking_active)
   //void sm_object_tracking
 void C_CameraManager::calculate_camera_pose(int camera1, int camera2, cv::Vec3d T, cv::Mat R)
@@ -542,19 +543,19 @@ void C_CameraManager::calculate_camera_pose(int camera1, int camera2, cv::Vec3d 
     {
     for (int j = 0; j < 4; j++)
       {
-      this->camera_vector[camera2]->CameraPose->HomogenePosenMatrix[i][j] = 0;
+      this->vecCameras[camera2]->getCameraPose()->HomogenePosenMatrix[i][j] = 0;
       for (int k = 0; k < 4; k++)
-        this->camera_vector[camera2]->CameraPose->HomogenePosenMatrix[i][j] += this->camera_vector[camera1]->CameraPose->HomogenePosenMatrix[i][k] *
+        this->vecCameras[camera2]->getCameraPose()->HomogenePosenMatrix[i][j] += this->vecCameras[camera1]->getCameraPose()->HomogenePosenMatrix[i][k] *
                                HomogenePosenMatrixTempPuffer[k][j];
       }
     }
-  this->save_camera_cos(this->camera_vector[camera2]->get_camera_id(), *this->camera_vector[camera2]->CameraPose);
+  this->SaveManager->saveCameraCos(*this->vecCameras[camera2]);
   }//calculate_camera_pose
 
-void pipelineTracking(std::vector<cv::VideoCapture*> &camera_vector, tbb::concurrent_bounded_queue<Payload*> &que)
+void C_CameraManager::pipelineTracking(std::vector<cv::VideoCapture*> &camera_vector, tbb::concurrent_bounded_queue<S_Payload*> &que)
   {
   //STEP 1: GRAB PICTURE FROM ARRAY-ACTIVE_CAMERAS
-  tbb::parallel_pipeline(7, tbb::make_filter<void, Payload*>(tbb::filter::serial_in_order, [&](tbb::flow_control& fc)->Payload*
+  tbb::parallel_pipeline(7, tbb::make_filter<void, S_Payload*>(tbb::filter::serial_in_order, [&](tbb::flow_control& fc)->S_Payload*
     {
     if(pipelineCamera == devices) pipelineCamera = 0;
 

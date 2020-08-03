@@ -6,27 +6,27 @@ c_SaveManager::c_SaveManager()
   {
 
   }
-void c_SaveManager::saveCameraCos (int camera_id, C_AbsolutePose& WorldToCam_Param)
+void c_SaveManager::saveCameraCos (Camera::C_Camera2 &Camera)
   {
-  string Dateiname = "../Parameter/Pose_world_to_camera" + to_string (camera_id) + ".csv";
+  string Dateiname = "../Parameter/Pose_world_to_camera" + to_string (Camera.getCameraID()) + ".csv";
   string Dateityp;
   double nx, ny, nz, ox, oy, oz, ax, ay, az, px, py, pz;
 
-  nx = WorldToCam_Param.nx();
-  ny = WorldToCam_Param.ny();
-  nz = WorldToCam_Param.nz();
+  nx = Camera.getCameraPose()->nx();
+  ny = Camera.getCameraPose()->ny();
+  nz = Camera.getCameraPose()->nz();
 
-  ox = WorldToCam_Param.ox();
-  oy = WorldToCam_Param.oy();
-  oz = WorldToCam_Param.oz();
+  ox = Camera.getCameraPose()->ox();
+  oy = Camera.getCameraPose()->oy();
+  oz = Camera.getCameraPose()->oz();
 
-  ax = WorldToCam_Param.ax();
-  ay = WorldToCam_Param.ay();
-  az = WorldToCam_Param.az();
+  ax = Camera.getCameraPose()->ax();
+  ay = Camera.getCameraPose()->ay();
+  az = Camera.getCameraPose()->az();
 
-  px = WorldToCam_Param.px();
-  py = WorldToCam_Param.py();
-  pz = WorldToCam_Param.pz();
+  px = Camera.getCameraPose()->px();
+  py = Camera.getCameraPose()->py();
+  pz = Camera.getCameraPose()->pz();
 
   GlobalObjects->csv_parameter_datei->Oeffnen (Dateiname,Enum_CSV_Access::Read);
   if (GlobalObjects->csv_parameter_datei->IsOpen())

@@ -6,6 +6,7 @@
 #include <opencv2/core/cuda.hpp>
 
 #include "headers/GlobalObjects.h"
+#include "headers/posen.h"
 
 
 using namespace GlobalObjects;
@@ -115,7 +116,7 @@ namespace Camera
   private:
     C_GlobalObjects* GlobalObjects;
     S_filterProperties* Filterproperties;
-
+    C_AbsolutePose* CameraPose;
 
     cv::VideoCapture* cap;
     cv::Mat* CpuSrc;
@@ -149,6 +150,8 @@ namespace Camera
     cv::Mat *getIntrinsic             () const;
     void setIntrinsic                 (cv::Mat &value);
 
+    C_AbsolutePose *getCameraPose() const;
+    void setCameraPose(C_AbsolutePose *value);
     };
 
   }
