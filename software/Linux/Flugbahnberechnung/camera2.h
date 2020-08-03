@@ -15,6 +15,7 @@ namespace Camera
   {
   class C_Camera2
     {
+  public:
     struct S_filterProperties
       {
       uchar   hue_min;

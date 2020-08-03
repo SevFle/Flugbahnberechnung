@@ -551,7 +551,7 @@ void C_Camera::init ()
   //TODO INIT C_ABSOLUTETPOSE
 
 
-  this->init_rectify_map();
+  this->initRectifyMap();
 
 
   }
@@ -579,7 +579,7 @@ void C_Camera::apply_filter (cv::Mat* cpu_src, cv::Mat* cpu_dst)
 
   gpu_thresholded->download (*cpu_dst);
   }
-void C_Camera::init_rectify_map ()
+void C_Camera::initRectifyMap ()
   {
   cv::Mat cpu_map1;
   cv::Mat cpu_map2;

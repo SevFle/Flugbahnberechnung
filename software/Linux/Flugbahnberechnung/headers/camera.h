@@ -213,7 +213,7 @@ private:
     void set_aspect_ratio (int Height, int width);
     void set_framerate (int framerate);
 
-    void init_rectify_map ();
+    void initRectifyMap ();
     void save_picture (int camera_id, int photo_id, std::string definition);
     void crop_image (cv::Mat* undistorted_img, cv::Mat* crop_undist_img);
 

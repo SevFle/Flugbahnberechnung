@@ -72,8 +72,10 @@ namespace CameraManager
     int                           frameWidth;
     int                           frameHeight;
     int                           arrActiveCameras[4];
+    int                           cntPipeline;
     float                         SquareSize;
-    bool                          calibration_done;
+    volatile bool                 calibrationDone;
+    volatile bool                 pipelineDone;
 
 
     /********************************************************* Öffentliche Klassenmethoden*******************************************************/
@@ -92,7 +94,7 @@ namespace CameraManager
 
     void getDeviceList            ();
 
-    void pipelineTracking         (std::vector<cv::VideoCapture*> &camera_vector, tbb::concurrent_bounded_queue<Payload*> &que);
+    void pipelineTracking         (std::vector<cv::VideoCapture*> &camera_vector, tbb::concurrent_bounded_queue<S_Payload*> &que);
 
 
     /******************************************************* Private Klassenmethoden***************************************************************/

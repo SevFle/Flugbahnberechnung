@@ -82,6 +82,7 @@ void C_CameraManager::openCameras ()
     {
     this->Loadmanager->loadCameraCalibration(vecCameras[i]);
     this->Loadmanager->loadCameraSettings(vecCameras[i]);
+    this->vecCameras[i]->initRectifyMap();
     }
   }
 void C_CameraManager::closeCameras ()
@@ -203,7 +204,7 @@ void C_CameraManager::calibrateSingleCamera (int current_camera_id, int absCorne
       }
 
     // Grauwertbild mit eingezeichneten Ecken abspeichern.
-    imwrite ("../Parameter/Bilder/Camera_Single_Calibration_" + std::to_string (camera_id) + "_Gray_DrawCorners_" + std::to_string (this->Photo_ID) + ".png",Grau_Bild);
+    imwrite ("../Parameter/Bilder/Camera_Single_Calibration_" + std::to_string (camera_id) + "_Gray_DrawCorners_" + std::to_string (photoID) + ".png",Grau_Bild);
 
     // Photo-ID für nächsten Durchlauf erhöhen.
     photoID++;
@@ -233,7 +234,7 @@ void C_CameraManager::calibrateSingleCamera (int current_camera_id, int absCorne
   }
 void C_CameraManager::calibrate_stereo_camera (int current_camera_id, int absCornersWidth, int absCornersHeight, int absBoardImg)
   {
-    this->calibration_done = false;
+    this->calibrationDone = false;
   vector<vector<cv::Point3f>>   object_points;
   vector<vector<cv::Point2f>>   imagePoints1;
   vector<vector<cv::Point2f>>   imagePoints2;
@@ -352,7 +353,7 @@ void C_CameraManager::calibrate_stereo_camera (int current_camera_id, int absCor
 
   this->calculate_camera_pose(camera_id, camera_id+1, T, R);
 
-  this->calibration_done = true;
+  this->calibrationDone = true;
 
 //  std::cout << "Starting Rectification" << endl;
 
@@ -557,40 +558,43 @@ void C_CameraManager::pipelineTracking(std::vector<cv::VideoCapture*> &camera_ve
   //STEP 1: GRAB PICTURE FROM ARRAY-ACTIVE_CAMERAS
   tbb::parallel_pipeline(7, tbb::make_filter<void, S_Payload*>(tbb::filter::serial_in_order, [&](tbb::flow_control& fc)->S_Payload*
     {
-    if(pipelineCamera == devices) pipelineCamera = 0;
-
-    auto pData = new Payload;
+    if(cntPipeline == 4) cntPipeline = 0;
+    auto pData = new S_Payload;
     cv::Mat frame;
-    camera_vector[pipelineCamera]->read(pData->img);
-    if(done || pData->img.empty())
+    camera_vector[arrActiveCameras[cntPipeline]]->read(pData->img);
+    if(pipelineDone || pData->img.empty())
       {
-      done = true;
+      this->pipelineDone = true;
       fc.stop();
       return 0;
       }
-    pipelineCamera++;
+    cntPipeline++;
     return pData;
     }
   )&
   //STEP 2: UNDISTORT SRC TO CPUDISTORT
-  tbb::make_filter<Payload*, Payload*>(tbb::filter::serial_in_order, [&] (Payload *pData)->Payload*
+  tbb::make_filter<S_Payload*, S_Payload*>(tbb::filter::serial_in_order, [&] (S_Payload *pData)->S_Payload*
     {
     cv::cvtColor(pData->img ,pData->gray, cv::COLOR_BGRA2GRAY);
 
     return pData;
     }
-
   )&
   //STEP 3: FILTER UNDISTORT TO CPUHSV; USE CUDA
-  tbb::make_filter<Payload*, Payload*>(tbb::filter::serial_in_order, [&] (Payload *pData)->Payload*
+  tbb::make_filter<S_Payload*, S_Payload*>(tbb::filter::serial_in_order, [&] (S_Payload *pData)->S_Payload*
     {
     cv::circle(pData->gray, cv::Point(pData->gray.rows/2, pData->gray.cols/2), 50, cv::Scalar(0, 140, 50), cv::FILLED);
     return pData;
     }
   )&
   //STEP 4: FIND CONTOURS ON CPUHSV, DRAW ON UNDISTORT
+  tbb::make_filter<S_Payload*, S_Payload*>(tbb::filter::serial_in_order, [&] (S_Payload *pData)->S_Payload*
+    {
+
+    }
+  )&
   //STEP 5: ADJUST ROI ON CPU UNDISTORT
-  tbb::make_filter<Payload*,void>(tbb::filter::serial_in_order, [&] (Payload *pData)
+  tbb::make_filter<S_Payload*,void>(tbb::filter::serial_in_order, [&] (S_Payload *pData)
     {
     pData->gray.copyTo(pData->final);
     // TBB NOTE: pipeline end point. dispatch to GUI

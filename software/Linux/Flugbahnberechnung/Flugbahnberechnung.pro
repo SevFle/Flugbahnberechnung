@@ -17,6 +17,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     camera2.cpp \
+    imagefilter.cpp \
     loadmanager.cpp \
     savemanager.cpp \
     sources/App_main.cpp \
@@ -58,6 +59,7 @@ HEADERS += \
     headers/frm_main.h \
     headers/frm_object_calibration.h \
     headers/frm_object_tracking.h \
+    imagefilter.h \
     loadmanager.h \
     savemanager.h
 
