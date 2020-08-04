@@ -13,10 +13,12 @@ C_CameraManager::C_CameraManager ( C_GlobalObjects* GlobalObjects)
   this->GlobalObjects = GlobalObjects;
   this->Loadmanager = new LoadManager::C_LoadManager;
   this->SaveManager = new Savemanager::c_SaveManager;
+  this->ImageFilter = new imagefilter::C_ImageFilter;
   }
 /**************************************************************** Destruktor ****************************************************************/
 C_CameraManager::~C_CameraManager ()
   {
+  delete (ImageFilter);
   delete (SaveManager);
   delete (Loadmanager);
   delete (GlobalObjects);
@@ -553,16 +555,18 @@ void C_CameraManager::calculate_camera_pose(int camera1, int camera2, cv::Vec3d 
   this->SaveManager->saveCameraCos(*this->vecCameras[camera2]);
   }//calculate_camera_pose
 
-void C_CameraManager::pipelineTracking(std::vector<cv::VideoCapture*> &camera_vector, tbb::concurrent_bounded_queue<S_Payload*> &que)
+void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera, tbb::concurrent_bounded_queue<S_Payload*> &que)
   {
   //STEP 1: GRAB PICTURE FROM ARRAY-ACTIVE_CAMERAS
   tbb::parallel_pipeline(7, tbb::make_filter<void, S_Payload*>(tbb::filter::serial_in_order, [&](tbb::flow_control& fc)->S_Payload*
     {
     if(cntPipeline == 4) cntPipeline = 0;
-    auto pData = new S_Payload;
-    cv::Mat frame;
-    camera_vector[arrActiveCameras[cntPipeline]]->read(pData->img);
-    if(pipelineDone || pData->img.empty())
+    auto pData          = new S_Payload;
+    pData->cameraID     = arrActiveCameras[cntPipeline];
+    pData->Filter       = *vecCameras[arrActiveCameras[cntPipeline]]->getFilterproperties();
+
+    vecCameras[arrActiveCameras[cntPipeline]]->readImg(pData->cpuSrcImg);
+    if(pipelineDone || pData->cpuSrcImg.empty())
       {
       this->pipelineDone = true;
       fc.stop();
@@ -575,14 +579,14 @@ void C_CameraManager::pipelineTracking(std::vector<cv::VideoCapture*> &camera_ve
   //STEP 2: UNDISTORT SRC TO CPUDISTORT
   tbb::make_filter<S_Payload*, S_Payload*>(tbb::filter::serial_in_order, [&] (S_Payload *pData)->S_Payload*
     {
-    cv::cvtColor(pData->img ,pData->gray, cv::COLOR_BGRA2GRAY);
-
+    this->ImageFilter->gpufUnidstord(pData->cpuSrcImg, pData->gpuUndistortedImg, vecCamera[pData->cameraID]->getMap1(), vecCamera[pData->cameraID]->getMap2());
     return pData;
     }
   )&
   //STEP 3: FILTER UNDISTORT TO CPUHSV; USE CUDA
   tbb::make_filter<S_Payload*, S_Payload*>(tbb::filter::serial_in_order, [&] (S_Payload *pData)->S_Payload*
     {
+    this->ImageFilter->gpufHSV(pData->gpuUndistortedImg, pData->cpuHSVImg, pData->Filter);
     cv::circle(pData->gray, cv::Point(pData->gray.rows/2, pData->gray.cols/2), 50, cv::Scalar(0, 140, 50), cv::FILLED);
     return pData;
     }
@@ -590,7 +594,7 @@ void C_CameraManager::pipelineTracking(std::vector<cv::VideoCapture*> &camera_ve
   //STEP 4: FIND CONTOURS ON CPUHSV, DRAW ON UNDISTORT
   tbb::make_filter<S_Payload*, S_Payload*>(tbb::filter::serial_in_order, [&] (S_Payload *pData)->S_Payload*
     {
-
+    this->ImageFilter->findContours(pData->cpuHSVImg, pData->cpuConturedImg, pData->offset, pData->Filter);
     }
   )&
   //STEP 5: ADJUST ROI ON CPU UNDISTORT

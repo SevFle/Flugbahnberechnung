@@ -16,6 +16,7 @@
 #include "camera2.h"
 #include "loadmanager.h"
 #include "savemanager.h"
+#include "imagefilter.h"
 
 #include "headers/tracking.h"
 #include "headers/object.h"
@@ -30,10 +31,19 @@ using namespace GlobalObjects;
 
 struct S_Payload
 {
- cv::Mat img;
+ cv::Mat cpuSrcImg;
+ cv::Mat cpuUndistortedImg;
+ cv::Mat cpuHSVImg;
+ cv::Mat cpuConturedImg;
+
+ cv::cuda::GpuMat gpuUndistortedImg;
  double timestamp = 0;
  cv::Mat gray;
  cv::Mat final;
+ Camera::C_Camera2::S_filterProperties Filter;
+
+ int cameraID = 0;
+ int offset[];
 };
 
 
@@ -64,6 +74,7 @@ namespace CameraManager
     C_GlobalObjects*              GlobalObjects;
     Savemanager::c_SaveManager*   SaveManager;
     LoadManager::C_LoadManager*   Loadmanager;
+    imagefilter::C_ImageFilter*   ImageFilter;
     pthread_t*                    pipelineCam;
     pthread_t*                    simpleCam;
 
@@ -94,7 +105,7 @@ namespace CameraManager
 
     void getDeviceList            ();
 
-    void pipelineTracking         (std::vector<cv::VideoCapture*> &camera_vector, tbb::concurrent_bounded_queue<S_Payload*> &que);
+    void pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera, tbb::concurrent_bounded_queue<S_Payload*> &que);
 
 
     /******************************************************* Private Klassenmethoden***************************************************************/

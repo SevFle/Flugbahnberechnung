@@ -65,23 +65,23 @@ namespace Camera
       void setValue_min(const uchar &value);
       uchar getValue_max() const;
       void setValue_max(const uchar &value);
-      int getErosion_iterations() const;
+      int getErodeIterations() const;
       void setErosion_iterations(int value);
-      int getDilation_iterations() const;
+      int getDilateIterations() const;
       void setDilation_iterations(int value);
-      int getOpening_iterations() const;
+      int getOpenIterations() const;
       void setOpening_iterations(int value);
       int getClosing_iterations() const;
       void setClosing_iterations(int value);
       int getMorph_iterations() const;
       void setMorph_iterations(int value);
-      int getErosion_kernel_size() const;
+      int getErodeKernelSize() const;
       void setErosion_kernel_size(int value);
-      int getDilation_kernel_size() const;
+      int getDilateKernelSize() const;
       void setDilation_kernel_size(int value);
       int getBilateral_kernel_size() const;
       void setBilateral_kernel_size(int value);
-      int getOpening_kernel_size() const;
+      int getOpenKernelSize() const;
       void setOpening_kernel_size(int value);
       int getClosing_kernel_size() const;
       void setClosing_kernel_size(int value);
@@ -135,6 +135,7 @@ namespace Camera
   public:
     bool open                         ();
     bool close                        ();
+    void readImg                      (cv::Mat &dstImg);
     void savePicture                  (int camera_id, int photo_id, std::string definition);
     void initRectifyMap               ();
 
@@ -153,6 +154,12 @@ namespace Camera
 
     C_AbsolutePose *getCameraPose() const;
     void setCameraPose(C_AbsolutePose *value);
+    S_filterProperties *getFilterproperties() const;
+    void setFilterproperties(S_filterProperties *value);
+    cv::cuda::GpuMat *getMap1() const;
+    void setMap1(cv::cuda::GpuMat *value);
+    cv::cuda::GpuMat *getMap2() const;
+    void setMap2(cv::cuda::GpuMat *value);
     };
 
   }

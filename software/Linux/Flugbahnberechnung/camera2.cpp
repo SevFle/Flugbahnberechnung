@@ -23,15 +23,45 @@ C_Camera2::~C_Camera2                       ()
   delete (DistCoeffs);
   delete (CpuSrc);
   delete (cap);
-  }
+    }
+
+cv::cuda::GpuMat *C_Camera2::getMap2() const
+    {
+    return map2;
+    }
+
+void C_Camera2::setMap2(cv::cuda::GpuMat *value)
+    {
+    map2 = value;
+    }
+
+cv::cuda::GpuMat *C_Camera2::getMap1() const
+    {
+    return map1;
+    }
+
+void C_Camera2::setMap1(cv::cuda::GpuMat *value)
+    {
+    map1 = value;
+    }
+
+S_filterProperties *C_Camera2::getFilterproperties() const
+    {
+    return Filterproperties;
+    }
+
+void C_Camera2::setFilterproperties(S_filterProperties *value)
+    {
+    Filterproperties = value;
+    }
 
 
 bool C_Camera2::open                        ()
-  {
-  this->cap->open(Pipeline, cv::CAP_GSTREAMER);
-  if(!this->cap->isOpened()) return false;
-  else return true;
-  }
+    {
+    this->cap->open(Pipeline, cv::CAP_GSTREAMER);
+    if(!this->cap->isOpened()) return false;
+    else return true;
+    }
 bool C_Camera2::close                       ()
   {
   this->cap->release();
@@ -185,7 +215,7 @@ void C_Camera2::S_filterProperties::setValue_max(const uchar &value)
   value_max = value;
   }
 
-int C_Camera2::S_filterProperties::getErosion_iterations() const
+int C_Camera2::S_filterProperties::getErodeIterations() const
   {
   return erosion_iterations;
   }
@@ -194,7 +224,7 @@ void C_Camera2::S_filterProperties::setErosion_iterations(int value)
   erosion_iterations = value;
   }
 
-int C_Camera2::S_filterProperties::getDilation_iterations() const
+int C_Camera2::S_filterProperties::getDilateIterations() const
   {
   return dilation_iterations;
   }
@@ -203,7 +233,7 @@ void C_Camera2::S_filterProperties::setDilation_iterations(int value)
   dilation_iterations = value;
   }
 
-int C_Camera2::S_filterProperties::getOpening_iterations() const
+int C_Camera2::S_filterProperties::getOpenIterations() const
   {
   return opening_iterations;
   }
@@ -230,7 +260,7 @@ void C_Camera2::S_filterProperties::setMorph_iterations(int value)
   morph_iterations = value;
   }
 
-int C_Camera2::S_filterProperties::getErosion_kernel_size() const
+int C_Camera2::S_filterProperties::getErodeKernelSize() const
   {
   return erosion_kernel_size;
   }
@@ -239,7 +269,7 @@ void C_Camera2::S_filterProperties::setErosion_kernel_size(int value)
   erosion_kernel_size = value;
   }
 
-int C_Camera2::S_filterProperties::getDilation_kernel_size() const
+int C_Camera2::S_filterProperties::getDilateKernelSize() const
   {
   return dilation_kernel_size;
   }
@@ -257,7 +287,7 @@ void C_Camera2::S_filterProperties::setBilateral_kernel_size(int value)
   bilateral_kernel_size = value;
   }
 
-int C_Camera2::S_filterProperties::getOpening_kernel_size() const
+int C_Camera2::S_filterProperties::getOpenKernelSize() const
   {
   return opening_kernel_size;
   }

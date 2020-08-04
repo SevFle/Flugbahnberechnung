@@ -11,40 +11,40 @@ C_ImageFilter::~C_ImageFilter()
 
   }
 
-void C_ImageFilter::gpufErode(cv::cuda::GpuMat *gpu_src, cv::cuda::GpuMat *gpu_dst, int erodeKernelSize, int erodeIterations)
+void C_ImageFilter::gpufErode(cv::cuda::GpuMat &gpu_src, cv::cuda::GpuMat &gpu_dst, Camera::C_Camera2::S_filterProperties &Filter)
   {
-  cv::Mat                   erode_structuring_element = getStructuringElement (cv::MORPH_ELLIPSE,cv::Size (2 * erodeKernelSize,2 * erodeKernelSize));
-  cv::Ptr<cv::cuda::Filter> erode                     = cv::cuda::createMorphologyFilter (cv::MORPH_ERODE,gpu_src->type(),erode_structuring_element,cv::Point (-1,-1),erodeIterations);
-  erode->apply (*gpu_src,*gpu_dst);
+  cv::Mat                   erode_structuring_element = getStructuringElement (cv::MORPH_ELLIPSE,cv::Size (2 * Filter.getErodeKernelSize(),2 * Filter.getErodeKernelSize()));
+  cv::Ptr<cv::cuda::Filter> erode                     = cv::cuda::createMorphologyFilter (cv::MORPH_ERODE,gpu_src.type(),erode_structuring_element,cv::Point (-1,-1),Filter.getErodeIterations());
+  erode->apply (gpu_src,gpu_dst);
   }
 
-void C_ImageFilter::gpufDilate(cv::cuda::GpuMat *gpu_src, cv::cuda::GpuMat *gpu_dst, int dilateKernelSize, int dilateIterations)
+void C_ImageFilter::gpufDilate(cv::cuda::GpuMat &gpu_src, cv::cuda::GpuMat &gpu_dst, Camera::C_Camera2::S_filterProperties &Filter)
   {
-  cv::Mat                   dilate_structuring_element = getStructuringElement (cv::MORPH_ELLIPSE,cv::Size (2 * dilateKernelSize,2 * dilateKernelSize));
-  cv::Ptr<cv::cuda::Filter> dilate                     = cv::cuda::createMorphologyFilter (cv::MORPH_DILATE,gpu_src->type(),dilate_structuring_element,cv::Point (-1,-1),dilateIterations);
-  dilate->apply (*gpu_src,*gpu_dst);
+  cv::Mat                   dilate_structuring_element = getStructuringElement (cv::MORPH_ELLIPSE,cv::Size (2 * Filter.getDilateKernelSize(),2 * Filter.getDilateKernelSize()));
+  cv::Ptr<cv::cuda::Filter> dilate                     = cv::cuda::createMorphologyFilter (cv::MORPH_DILATE,gpu_src->type(),dilate_structuring_element,cv::Point (-1,-1),Filter.getDilateIterations());
+  dilate->apply (gpu_src,gpu_dst);
   }
 
-void C_ImageFilter::gpufOpen(cv::cuda::GpuMat *gpu_src, cv::cuda::GpuMat *gpu_dst, int openKernelSize, int openIterations)
+void C_ImageFilter::gpufOpen(cv::cuda::GpuMat &gpu_src, cv::cuda::GpuMat &gpu_dst, Camera::C_Camera2::S_filterProperties &Filter)
   {
-  cv::Mat                   opening_structuring_element = getStructuringElement (cv::MORPH_ELLIPSE,cv::Size (2 * openKernelSize,2 * openKernelSize));
-  cv::Ptr<cv::cuda::Filter> opening                     = cv::cuda::createMorphologyFilter (cv::MORPH_OPEN,gpu_src->type(),opening_structuring_element,cv::Point (-1,-1),openIterations);
-  opening->apply (*gpu_src,*gpu_dst);
+  cv::Mat                   opening_structuring_element = getStructuringElement (cv::MORPH_ELLIPSE,cv::Size (2 * Filter.getOpenKernelSize(),2 * Filter.getOpenKernelSize()));
+  cv::Ptr<cv::cuda::Filter> opening                     = cv::cuda::createMorphologyFilter (cv::MORPH_OPEN,gpu_src->type(),opening_structuring_element,cv::Point (-1,-1),Filter.getOpenIterations());
+  opening->apply (gpu_src,gpu_dst);
   }
 
-void C_ImageFilter::gpufClose(cv::cuda::GpuMat *gpu_src, cv::cuda::GpuMat *gpu_dst, int closeKernelSize, int closeIterations)
+void C_ImageFilter::gpufClose(cv::cuda::GpuMat &gpu_src, cv::cuda::GpuMat &gpu_dst, Camera::C_Camera2::S_filterProperties &Filter)
   {
   cv::Mat                   closing_structuring_element = getStructuringElement (cv::MORPH_ELLIPSE,cv::Size (2 * closeKernelSize,2 * closeKernelSize));
   cv::Ptr<cv::cuda::Filter> closing                     = cv::cuda::createMorphologyFilter (cv::MORPH_CLOSE,gpu_src->type(),closing_structuring_element,cv::Point (-1,-1),closeIterations);
   closing->apply (*gpu_src,*gpu_dst);
   }
 
-void C_ImageFilter::gpufBilateral(cv::cuda::GpuMat *gpu_src, cv::cuda::GpuMat *gpu_dst, int bilateralKernelSize, float bilateralSigmaColor, float bilateralSigmaSpatial)
+void C_ImageFilter::gpufBilateral(cv::cuda::GpuMat &gpu_src, cv::cuda::GpuMat &gpu_dst, Camera::C_Camera2::S_filterProperties &Filter)
   {
   cv::cuda::bilateralFilter (*gpu_src,*gpu_dst,bilateralKernelSize,bilateralSigmaColor,bilateralSigmaSpatial,cv::BORDER_DEFAULT);
   }
 
-void C_ImageFilter::gpufGaussian(cv::cuda::GpuMat *gpuSrc, cv::cuda::GpuMat *gpuDst, int gaussianKernelSize, double gaussianSigma)
+void C_ImageFilter::gpufGaussian(cv::cuda::GpuMat &gpuSrc, cv::cuda::GpuMat &gpuDst, Camera::C_Camera2::S_filterProperties &Filter)
   {
   cv::Ptr<cv::cuda::Filter> gauss = cv::cuda::createGaussianFilter (gpuSrc->type(),-1,this->getfGaussianKernel(gaussianKernelSize, gaussianSigma).size(),gaussianSigma,gaussianSigma,cv::BORDER_DEFAULT);
   gauss->apply (*gpuSrc,*gpuDst);
@@ -58,34 +58,37 @@ cv::cuda::GpuMat C_ImageFilter::getfGaussianKernel(int gaussianKernelSize, doubl
   return gpuGaussianKernel;
   }
 
-void C_ImageFilter::gpufMorphGradient(cv::cuda::GpuMat *gpu_src, cv::cuda::GpuMat *gpu_dst)
+void C_ImageFilter::gpufMorphGradient(cv::cuda::GpuMat &gpu_src, cv::cuda::GpuMat &gpu_dst, Camera::C_Camera2::S_filterProperties &Filter)
   {
   cv::Mat                   morph_structuring_element = getStructuringElement (cv::MORPH_ELLIPSE,cv::Size (2 * morph_kernel_size,2 * morph_kernel_size));
   cv::Ptr<cv::cuda::Filter> morph                     = cv::cuda::createMorphologyFilter (cv::MORPH_GRADIENT,gpu_src->type(),morph_structuring_element,cv::Point (-1,-1),morph_iterations);
   morph->apply (*gpu_src,*gpu_dst);
   }
 
-void C_ImageFilter::gpufHSV(cv::cuda::GpuMat *gpu_src, cv::cuda::GpuMat *gpu_dst)
+void C_ImageFilter::gpufHSV (cv::cuda::GpuMat &gpu_src, cv::Mat &cpu_dst, Camera::C_Camera2::S_filterProperties &Filter)
   {
-  cv::Scalar min(this->hue_min,this->saturation_min,this->value_min);
-  cv::Scalar max(this->hue_max,this->saturation_max,this->value_max);
+  cv::cuda::GpuMat temp1, temp2;
+  cv::Scalar min(Filter.getHue_min(),Filter.getSaturation_min(),Filter.getValue_min());
+  cv::Scalar max(Filter.getHue_max(),Filter.getSaturation_max(),Filter.getValue_max());
 
-  gpu_gaussian_filter (gpu_src,gpu_temp);
+  this->gpufGaussian(gpu_src,temp1, Filter);
 
-  cv::cuda::cvtColor (*gpu_temp,*gpu_filtered,cv::COLOR_BGR2HSV);
+  cv::cuda::cvtColor (temp1,temp2,cv::COLOR_BGR2HSV);
 
-  cudaKernel::inRange_gpu (*gpu_filtered,min, max,*gpu_color_threshold);
+  cudaKernel::inRange_gpu (temp2,min, max,temp1);
 
-  gpu_open (gpu_color_threshold,gpu_temp);
+  gpufOpen( temp1,temp2, Filter);
 
-  gpu_close (gpu_temp,gpu_filtered);
+  gpufClose(temp2,temp1, Filter);
 
-  cv::cuda::cvtColor (*gpu_filtered,*gpu_temp,cv::COLOR_GRAY2BGR);
+  //LAST CHANCE TO GRAB GRAYSCALE FOR GPU MAT
+  cv::cuda::cvtColor (temp1, temp2 ,cv::COLOR_GRAY2BGR);
 
-  bitwise_and (*gpu_src,*gpu_temp,*gpu_dst);
+  bitwise_and (gpu_src,temp2,temp1);
+  temp1.download(cpu_dst);
   }
 
-void C_ImageFilter::findContours(cv::Mat *thresholded_source_image, cv::Mat *dst_contoured_image, int offset[])
+void C_ImageFilter::findContours(cv::Mat &thresholded_source_image, cv::Mat &dst_contoured_image, int offset[])
   {
 
   {
@@ -241,12 +244,11 @@ void C_ImageFilter::findContours(cv::Mat *thresholded_source_image, cv::Mat *dst
 
   }
 
-void C_ImageFilter::gpufUnidstord(cv::Mat *cpuSrc, cv::Mat *cpuDst, cv::cuda::GpuMat *gpuMap1, cv::cuda::GpuMat *gpuMap2)
+void gpufUnidstord(cv::Mat &cpuSrc, cv::cuda::GpuMat &gpuDst, cv::cuda::GpuMat &gpuMap1, cv::cuda::GpuMat &gpuMap2)
   {
-  cv::cuda::GpuMat gpuSrcImg, gpuTemp;
-  gpuSrcImg.upload (*cpuSrc);
-  cv::cuda::remap (gpuSrcImg,gpuTemp,*gpuMap1,*gpuMap2,cv::INTER_NEAREST,cv::BORDER_CONSTANT,0);
-  gpuTemp.download (*cpuDst);
+  cv::cuda::GpuMat gpuSrcImg;
+  gpuSrcImg.upload (cpuSrc);
+  cv::cuda::remap (gpuSrcImg,gpuDst,gpuMap1,gpuMap2,cv::INTER_NEAREST,cv::BORDER_CONSTANT,0);
 
   }
 
