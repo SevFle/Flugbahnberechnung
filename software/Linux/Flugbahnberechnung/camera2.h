@@ -71,33 +71,33 @@ namespace Camera
       void setDilation_iterations(int value);
       int getOpenIterations() const;
       void setOpening_iterations(int value);
-      int getClosing_iterations() const;
+      int getCloseIterations() const;
       void setClosing_iterations(int value);
-      int getMorph_iterations() const;
+      int getMorphIterations() const;
       void setMorph_iterations(int value);
       int getErodeKernelSize() const;
       void setErosion_kernel_size(int value);
       int getDilateKernelSize() const;
       void setDilation_kernel_size(int value);
-      int getBilateral_kernel_size() const;
+      int getBilateralKernelSize() const;
       void setBilateral_kernel_size(int value);
       int getOpenKernelSize() const;
       void setOpening_kernel_size(int value);
-      int getClosing_kernel_size() const;
+      int getCloseKernelSize() const;
       void setClosing_kernel_size(int value);
-      int getMorph_kernel_size() const;
+      int getMorphKernelSize() const;
       void setMorph_kernel_size(int value);
-      int getGaussian_kernel_size() const;
+      int getGaussianKernelSize() const;
       void setGaussian_kernel_size(int value);
       int getObject_Size_min() const;
       void setObject_Size_min(int value);
       int getObject_Size_max() const;
       void setObject_Size_max(int value);
-      double getGaussian_sigma() const;
+      double getGaussianSigma() const;
       void setGaussian_sigma(double value);
-      float getBilateral_sigma_color() const;
+      float getBilateralSigmaColor() const;
       void setBilateral_sigma_color(float value);
-      float getBilateral_sigma_spatial() const;
+      float getBilateralSigmaSpatial() const;
       void setBilateral_sigma_spatial(float value);
       bool getErode_active() const;
       void setErode_active(bool value);
@@ -116,7 +116,6 @@ namespace Camera
 
   private:
     C_GlobalObjects* GlobalObjects;
-    S_filterProperties* Filterproperties;
     C_AbsolutePose* CameraPose;
 
     cv::VideoCapture* cap;
@@ -131,6 +130,10 @@ namespace Camera
     std::string Pipeline;
 
     int cameraID;
+
+  public:
+    S_filterProperties* filterValues;
+
 
   public:
     bool open                         ();

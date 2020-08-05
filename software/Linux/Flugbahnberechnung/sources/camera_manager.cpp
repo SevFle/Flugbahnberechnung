@@ -594,7 +594,7 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
   //STEP 4: FIND CONTOURS ON CPUHSV, DRAW ON UNDISTORT
   tbb::make_filter<S_Payload*, S_Payload*>(tbb::filter::serial_in_order, [&] (S_Payload *pData)->S_Payload*
     {
-    this->ImageFilter->findContours(pData->cpuHSVImg, pData->cpuConturedImg, pData->offset, pData->Filter);
+    this->ImageFilter->findContours(pData->cpuHSVImg, pData->cpuConturedImg, pData->offset);
     }
   )&
   //STEP 5: ADJUST ROI ON CPU UNDISTORT
@@ -602,7 +602,7 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
     {
     pData->gray.copyTo(pData->final);
     // TBB NOTE: pipeline end point. dispatch to GUI
-    if (! done)
+    if (! pipelineDone)
       {
       try
         {

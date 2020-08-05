@@ -21,7 +21,7 @@ void C_ImageFilter::gpufErode(cv::cuda::GpuMat &gpu_src, cv::cuda::GpuMat &gpu_d
 void C_ImageFilter::gpufDilate(cv::cuda::GpuMat &gpu_src, cv::cuda::GpuMat &gpu_dst, Camera::C_Camera2::S_filterProperties &Filter)
   {
   cv::Mat                   dilate_structuring_element = getStructuringElement (cv::MORPH_ELLIPSE,cv::Size (2 * Filter.getDilateKernelSize(),2 * Filter.getDilateKernelSize()));
-  cv::Ptr<cv::cuda::Filter> dilate                     = cv::cuda::createMorphologyFilter (cv::MORPH_DILATE,gpu_src->type(),dilate_structuring_element,cv::Point (-1,-1),Filter.getDilateIterations());
+  cv::Ptr<cv::cuda::Filter> dilate                     = cv::cuda::createMorphologyFilter (cv::MORPH_DILATE,gpu_src.type(),dilate_structuring_element,cv::Point (-1,-1),Filter.getDilateIterations());
   dilate->apply (gpu_src,gpu_dst);
   }
 
@@ -34,20 +34,20 @@ void C_ImageFilter::gpufOpen(cv::cuda::GpuMat &gpu_src, cv::cuda::GpuMat &gpu_ds
 
 void C_ImageFilter::gpufClose(cv::cuda::GpuMat &gpu_src, cv::cuda::GpuMat &gpu_dst, Camera::C_Camera2::S_filterProperties &Filter)
   {
-  cv::Mat                   closing_structuring_element = getStructuringElement (cv::MORPH_ELLIPSE,cv::Size (2 * closeKernelSize,2 * closeKernelSize));
-  cv::Ptr<cv::cuda::Filter> closing                     = cv::cuda::createMorphologyFilter (cv::MORPH_CLOSE,gpu_src->type(),closing_structuring_element,cv::Point (-1,-1),closeIterations);
-  closing->apply (*gpu_src,*gpu_dst);
+  cv::Mat                   closing_structuring_element = getStructuringElement (cv::MORPH_ELLIPSE,cv::Size (2 * Filter.getCloseKernelSize(),2 * Filter.getCloseKernelSize()));
+  cv::Ptr<cv::cuda::Filter> closing                     = cv::cuda::createMorphologyFilter (cv::MORPH_CLOSE,gpu_src->type(),closing_structuring_element,cv::Point (-1,-1),Filter.getCloseIterations());
+  closing->apply (gpu_src,gpu_dst);
   }
 
 void C_ImageFilter::gpufBilateral(cv::cuda::GpuMat &gpu_src, cv::cuda::GpuMat &gpu_dst, Camera::C_Camera2::S_filterProperties &Filter)
   {
-  cv::cuda::bilateralFilter (*gpu_src,*gpu_dst,bilateralKernelSize,bilateralSigmaColor,bilateralSigmaSpatial,cv::BORDER_DEFAULT);
+  cv::cuda::bilateralFilter (gpu_src,gpu_dst,Filter.getBilateralKernelSize(),Filter.getBilateralSigmaColor(),Filter.getBilateralSigmaSpatial(),cv::BORDER_DEFAULT);
   }
 
 void C_ImageFilter::gpufGaussian(cv::cuda::GpuMat &gpuSrc, cv::cuda::GpuMat &gpuDst, Camera::C_Camera2::S_filterProperties &Filter)
   {
-  cv::Ptr<cv::cuda::Filter> gauss = cv::cuda::createGaussianFilter (gpuSrc->type(),-1,this->getfGaussianKernel(gaussianKernelSize, gaussianSigma).size(),gaussianSigma,gaussianSigma,cv::BORDER_DEFAULT);
-  gauss->apply (*gpuSrc,*gpuDst);
+  cv::Ptr<cv::cuda::Filter> gauss = cv::cuda::createGaussianFilter (gpuSrc.type(),-1,this->getfGaussianKernel(Filter.getGaussianKernelSize(), Filter.getGaussianSigma()).size(),Filter.getGaussianSigma(),Filter.getGaussianSigma(),cv::BORDER_DEFAULT);
+  gauss->apply (gpuSrc,gpuDst);
   }
 
 cv::cuda::GpuMat C_ImageFilter::getfGaussianKernel(int gaussianKernelSize, double gaussianSigma)
@@ -60,26 +60,26 @@ cv::cuda::GpuMat C_ImageFilter::getfGaussianKernel(int gaussianKernelSize, doubl
 
 void C_ImageFilter::gpufMorphGradient(cv::cuda::GpuMat &gpu_src, cv::cuda::GpuMat &gpu_dst, Camera::C_Camera2::S_filterProperties &Filter)
   {
-  cv::Mat                   morph_structuring_element = getStructuringElement (cv::MORPH_ELLIPSE,cv::Size (2 * morph_kernel_size,2 * morph_kernel_size));
-  cv::Ptr<cv::cuda::Filter> morph                     = cv::cuda::createMorphologyFilter (cv::MORPH_GRADIENT,gpu_src->type(),morph_structuring_element,cv::Point (-1,-1),morph_iterations);
-  morph->apply (*gpu_src,*gpu_dst);
+  cv::Mat                   morph_structuring_element = getStructuringElement (cv::MORPH_ELLIPSE,cv::Size (2 * Filter.getMorphKernelSize(),2 * Filter.getMorphKernelSize()));
+  cv::Ptr<cv::cuda::Filter> morph                     = cv::cuda::createMorphologyFilter (cv::MORPH_GRADIENT,gpu_src.type(),morph_structuring_element,cv::Point (-1,-1),Filter.getMorphIterations());
+  morph->apply (gpu_src,gpu_dst);
   }
 
-void C_ImageFilter::gpufHSV (cv::cuda::GpuMat &gpu_src, cv::Mat &cpu_dst, Camera::C_Camera2::S_filterProperties &Filter)
+void C_ImageFilter::gpufHSV (cv::cuda::GpuMat &gpu_src, cv::Mat &cpu_dst, Camera::C_Camera2 &Camera)
   {
   cv::cuda::GpuMat temp1, temp2;
-  cv::Scalar min(Filter.getHue_min(),Filter.getSaturation_min(),Filter.getValue_min());
-  cv::Scalar max(Filter.getHue_max(),Filter.getSaturation_max(),Filter.getValue_max());
+  cv::Scalar min(Camera.filterValues->getHue_min(),Camera.filterValues->getSaturation_min(),Camera.filterValues->getValue_min());
+  cv::Scalar max(Camera.filterValues->getHue_max(),Camera.filterValues->getSaturation_max(),Camera.filterValues->getValue_max());
 
-  this->gpufGaussian(gpu_src,temp1, Filter);
+  this->gpufGaussian(gpu_src,temp1, *Camera.filterValues);
 
   cv::cuda::cvtColor (temp1,temp2,cv::COLOR_BGR2HSV);
 
   cudaKernel::inRange_gpu (temp2,min, max,temp1);
 
-  gpufOpen( temp1,temp2, Filter);
+  gpufOpen( temp1,temp2, *Camera.filterValues);
 
-  gpufClose(temp2,temp1, Filter);
+  gpufClose(temp2,temp1, *Camera.filterValues);
 
   //LAST CHANCE TO GRAB GRAYSCALE FOR GPU MAT
   cv::cuda::cvtColor (temp1, temp2 ,cv::COLOR_GRAY2BGR);
@@ -88,11 +88,54 @@ void C_ImageFilter::gpufHSV (cv::cuda::GpuMat &gpu_src, cv::Mat &cpu_dst, Camera
   temp1.download(cpu_dst);
   }
 
-void C_ImageFilter::findContours(cv::Mat &thresholded_source_image, cv::Mat &dst_contoured_image, int offset[])
+void C_ImageFilter::findContours(cv::Mat &thresholded_source_image, cv::Mat &dstCpuContouredImg, int offset[], Camera::C_Camera2 &Camera)
   {
+  int KonturIndex             = 0;
+  int objektAnzahl            = 0;
 
-  {
-  objekt_anzahl = 0;
+  cv::Rect RoI;
+
+  double  Vec_Object[3];
+
+  double max_Moment_m00       = 0.0;
+  double Ist_x                = 0.0;
+  double Ist_y;
+  double Soll_x;
+  double Soll_y;
+  double Delta_x;
+  double Delta_y;
+  double Moment_0_Ordnung;
+  double Moment_1_Ordnung_x;
+  double Moment_1_Ordnung_y;
+  double Schwerpunkt_x;
+  double Schwerpunkt_y;
+  double Mittelpunkt_x;
+  double Mittelpunkt_y;
+  double x_Kamera_KS;
+  double y_Kamera_KS;
+  double cx;
+  double cy;
+  double fx;
+  double fy;
+  double f;__Posen_H
+  double Vec_Object_Abs;
+  std::string pipeline;
+
+  float Radius;
+  bool contourFound;
+
+  int ObjectSizeMin = Camera.filterValues->getObject_Size_min();
+  int ObjectSizeMax = Camera.filterValues->getObject_Size_max();
+
+
+
+  //cv::Moments Image_Moments;
+  //cv::Point2f Center;
+  std::string S_x;
+  std::string S_y;
+  std::string Delta_x_str;
+  std::string Delta_y_str;
+  cv::Rect    rect_roi;
   std::vector<std::vector<cv::Point>> contours;
   std::vector<cv::Vec4i>              hirarchy;
   //dst_contoured_image->copyTo(*dst_contoured_image);
@@ -102,23 +145,23 @@ void C_ImageFilter::findContours(cv::Mat &thresholded_source_image, cv::Mat &dst
   //OpenCV Hirarchy: https://docs.opencv.org/3.4/d9/d8b/tutorial_py_contours_hierarchy.html
 
 // Zeichne Bildmittelpunkt ein
-  Mittelpunkt_x = dst_contoured_image->cols / 2;
-  Mittelpunkt_y = dst_contoured_image->rows / 2;
-  circle (*dst_contoured_image,cv::Point (static_cast<int> (Mittelpunkt_x),static_cast<int> (Mittelpunkt_y)),2,cv::Scalar (0,255,0));
+  Mittelpunkt_x = dstCpuContouredImg.cols / 2;
+  Mittelpunkt_y = dstCpuContouredImg.rows / 2;
+  circle (dstCpuContouredImg,cv::Point (static_cast<int> (Mittelpunkt_x),static_cast<int> (Mittelpunkt_y)),2,cv::Scalar (0,255,0));
 
   // Zeichne kalibrierten Bildmittelpunkt ein
-  cx = this->Intrinsic->at<double> (0,2);
-  cy = this->Intrinsic->at<double> (1,2);
-  circle (*dst_contoured_image,cv::Point (static_cast<int> (cx),static_cast<int> (cy)),15,cv::Scalar (255,255,0));
+  cx = Camera.getIntrinsic()->at<double> (0,2);
+  cy = Camera.getIntrinsic()->at<double> (1,2);
+  circle (dstCpuContouredImg,cv::Point (static_cast<int> (cx),static_cast<int> (cy)),15,cv::Scalar (255,255,0));
 
 
-  findContours (*thresholded_source_image,contours,hirarchy,cv::RETR_TREE,cv::CHAIN_APPROX_SIMPLE,cv::Point (offset[0],offset[1]));
+  cv::findContours (thresholded_source_image,contours,hirarchy,cv::RETR_TREE,cv::CHAIN_APPROX_SIMPLE,cv::Point (offset[0],offset[1]));
 
 
-  objekt_anzahl = hirarchy.size();
+  objektAnzahl = hirarchy.size();
 
 
-  if (objekt_anzahl > 0)
+  if (objektAnzahl > 0)
     {
     // Vorinitialisierung des Abstands des Konturschwerpunktes zum Bildmittelpunkt
     cv::Moments Image_Moments = moments (static_cast<cv::Mat> (contours[0]));
@@ -130,7 +173,7 @@ void C_ImageFilter::findContours(cv::Mat &thresholded_source_image, cv::Mat &dst
     Soll_y             = 0.0;
     Delta_x            = 0.0;
     Delta_y            = 0.0;
-    contour_found      = false;
+    contourFound      = false;
     Vec_Object[0]      = 0.0;
     Vec_Object[1]      = 0.0;
     Vec_Object[2]      = 0.0;
@@ -146,7 +189,7 @@ void C_ImageFilter::findContours(cv::Mat &thresholded_source_image, cv::Mat &dst
 
 
     // Größte Kontur anhand der Fläche suchen
-    for (int i = 0; i < objekt_anzahl; i++)
+    for (int i = 0; i < objektAnzahl; i++)
       {
       Image_Moments    = moments (static_cast<cv::Mat> (contours[i]));
       Moment_0_Ordnung = Image_Moments.m00;
@@ -168,7 +211,7 @@ void C_ImageFilter::findContours(cv::Mat &thresholded_source_image, cv::Mat &dst
 
 
     //std::cout << "Objektgröße "<< std::to_string(Moment_0_Ordnung) << std::endl << std::endl;
-    if (Object_Size_min > Moment_0_Ordnung || Moment_0_Ordnung > Object_Size_max)
+    if (ObjectSizeMin > Moment_0_Ordnung || Moment_0_Ordnung > ObjectSizeMax)
       {
       return;
       }
@@ -183,10 +226,10 @@ void C_ImageFilter::findContours(cv::Mat &thresholded_source_image, cv::Mat &dst
     minEnclosingCircle (static_cast<cv::Mat> (contours[KonturIndex]),Center,Radius);
 
     // Mittelpunkt / schwerpunkt der kontur einzeichnen
-    circle (*dst_contoured_image,cv::Point (static_cast<int> (Schwerpunkt_x),static_cast<int> (Schwerpunkt_y)),2,cv::Scalar (0,255,255));
+    circle (dstCpuContouredImg,cv::Point (static_cast<int> (Schwerpunkt_x),static_cast<int> (Schwerpunkt_y)),2,cv::Scalar (0,255,255));
 
     // Konturumfang zeichnen
-    circle (*dst_contoured_image,Center,static_cast<int> (Radius),cv::Scalar (0,255,255));
+    circle (dstCpuContouredImg,Center,static_cast<int> (Radius),cv::Scalar (0,255,255));
 
     // Schwerpunktkoordinaten als Text im Bild darstellen
     //S_x = std::to_string (Schwerpunkt_x);
@@ -195,7 +238,7 @@ void C_ImageFilter::findContours(cv::Mat &thresholded_source_image, cv::Mat &dst
     //putText (*dst_contoured_image,"S_y: " + S_y,cv::Point (0,50),1,1,cv::Scalar (255,255,255),2);
 
     // Bestimme den Abstand des Mittelpunktes der gefundenen Kontur zum Bildmittelpunkt
-    contour_found = true;
+    contourFound = true;
     Ist_x         = Schwerpunkt_x;
     Ist_y         = Schwerpunkt_y;
     Soll_x        = cx;
@@ -206,8 +249,8 @@ void C_ImageFilter::findContours(cv::Mat &thresholded_source_image, cv::Mat &dst
     // Bestimme den Lichtstrahlvektor der Kontur bezogen auf das Kamera-KS
     x_Kamera_KS    = Delta_x;
     y_Kamera_KS    = Delta_y;
-    fx             = this->Intrinsic->at<double> (0,0);
-    fy             = this->Intrinsic->at<double> (1,1);
+    fx             = Camera.getIntrinsic()->at<double> (0,0);
+    fy             = Camera.getIntrinsic()->at<double> (1,1);
     f              = (fx + fy) / 2.0; // Mittelwert der Brennweite
     Vec_Object[0]  = x_Kamera_KS;
     Vec_Object[1]  = y_Kamera_KS;
@@ -225,11 +268,11 @@ void C_ImageFilter::findContours(cv::Mat &thresholded_source_image, cv::Mat &dst
     //putText (*dst_contoured_image,"Delta_y: " + Delta_y_str,cv::Point (0,110),1,1,cv::Scalar (255,255,255),2);
 
     // Zeichne eine Linie zwischen kalibriertem Bildmittelpunkt und dem Objektschwerpunkt
-    line (*dst_contoured_image,cv::Point (static_cast<int> (Ist_x),static_cast<int> (Ist_y)),cv::Point (static_cast<int> (Soll_x),static_cast<int> (Soll_y)),cv::Scalar (0,0,255),4,8,0);
+    line (dstCpuContouredImg,cv::Point (static_cast<int> (Ist_x),static_cast<int> (Ist_y)),cv::Point (static_cast<int> (Soll_x),static_cast<int> (Soll_y)),cv::Scalar (0,0,255),4,8,0);
     }
   else
     {
-    contour_found = false;
+    contourFound = false;
     //this->Vec_Object[0] = 0.0;
     //this->Vec_Object[1] = 0.0;
     //this->Vec_Object[2] = 0.0;

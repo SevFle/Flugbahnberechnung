@@ -47,12 +47,12 @@ void C_Camera2::setMap1(cv::cuda::GpuMat *value)
 
 S_filterProperties *C_Camera2::getFilterproperties() const
     {
-    return Filterproperties;
+    return filterValues;
     }
 
 void C_Camera2::setFilterproperties(S_filterProperties *value)
     {
-    Filterproperties = value;
+    filterValues = value;
     }
 
 
@@ -130,7 +130,7 @@ void C_Camera2::setROI                      (int &width, int &height)
   {
 
   }
-int  C_Camera2::getROI                      ()
+int  C_Camera2::getROI() const
   {
 
   }
@@ -138,7 +138,7 @@ void C_Camera2::setCameraID                 (int &cameraID)
   {
 
   }
-int  C_Camera2::getCameraID                 ()
+int  C_Camera2::getCameraID                 () const
   {
   return this->cameraID;
   }
@@ -149,7 +149,7 @@ cv::Mat *C_Camera2::getDistCoeffs                         () const
   }
 void C_Camera2::setDistCoeffs                             (cv::Mat &value)
   {
-  DistCoeffs = value;
+  *DistCoeffs = value;
   }
 
 cv::Mat *C_Camera2::getIntrinsic                          () const
@@ -158,7 +158,7 @@ cv::Mat *C_Camera2::getIntrinsic                          () const
   }
 void C_Camera2::setIntrinsic                              (cv::Mat &value)
   {
-  Intrinsic = value;
+  *Intrinsic = value;
   }
 
 uchar C_Camera2::S_filterProperties::getHue_min           () const
@@ -242,7 +242,7 @@ void C_Camera2::S_filterProperties::setOpening_iterations(int value)
   opening_iterations = value;
   }
 
-int C_Camera2::S_filterProperties::getClosing_iterations() const
+int C_Camera2::S_filterProperties::getCloseIterations() const
   {
   return closing_iterations;
   }
@@ -251,7 +251,7 @@ void C_Camera2::S_filterProperties::setClosing_iterations(int value)
   closing_iterations = value;
   }
 
-int C_Camera2::S_filterProperties::getMorph_iterations() const
+int C_Camera2::S_filterProperties::getMorphIterations() const
   {
   return morph_iterations;
   }
@@ -278,7 +278,7 @@ void C_Camera2::S_filterProperties::setDilation_kernel_size(int value)
   dilation_kernel_size = value;
   }
 
-int C_Camera2::S_filterProperties::getBilateral_kernel_size() const
+int C_Camera2::S_filterProperties::getBilateralKernelSize() const
   {
   return bilateral_kernel_size;
   }
@@ -296,7 +296,7 @@ void C_Camera2::S_filterProperties::setOpening_kernel_size(int value)
   opening_kernel_size = value;
   }
 
-int C_Camera2::S_filterProperties::getClosing_kernel_size() const
+int C_Camera2::S_filterProperties::getCloseKernelSize() const
   {
   return closing_kernel_size;
   }
@@ -305,7 +305,7 @@ void C_Camera2::S_filterProperties::setClosing_kernel_size(int value)
   closing_kernel_size = value;
   }
 
-int C_Camera2::S_filterProperties::getMorph_kernel_size() const
+int C_Camera2::S_filterProperties::getMorphKernelSize() const
   {
   return morph_kernel_size;
   }
@@ -314,7 +314,7 @@ void C_Camera2::S_filterProperties::setMorph_kernel_size(int value)
   morph_kernel_size = value;
   }
 
-int C_Camera2::S_filterProperties::getGaussian_kernel_size() const
+int C_Camera2::S_filterProperties::getGaussianKernelSize() const
   {
   return gaussian_kernel_size;
   }
@@ -341,7 +341,7 @@ void C_Camera2::S_filterProperties::setObject_Size_max(int value)
   Object_Size_max = value;
   }
 
-double C_Camera2::S_filterProperties::getGaussian_sigma() const
+double C_Camera2::S_filterProperties::getGaussianSigma() const
   {
   return gaussian_sigma;
   }
@@ -350,7 +350,7 @@ void C_Camera2::S_filterProperties::setGaussian_sigma(double value)
   gaussian_sigma = value;
   }
 
-float C_Camera2::S_filterProperties::getBilateral_sigma_color() const
+float C_Camera2::S_filterProperties::getBilateralSigmaColor() const
   {
   return bilateral_sigma_color;
   }
@@ -359,7 +359,7 @@ void C_Camera2::S_filterProperties::setBilateral_sigma_color(float value)
   bilateral_sigma_color = value;
   }
 
-float C_Camera2::S_filterProperties::getBilateral_sigma_spatial() const
+float C_Camera2::S_filterProperties::getBilateralSigmaSpatial() const
   {
   return bilateral_sigma_spatial;
   }
