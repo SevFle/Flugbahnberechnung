@@ -285,7 +285,6 @@ void C_ImageFilter::findContours(cv::Mat &thresholded_source_image, cv::Mat &dst
     }
   }
 
-  }
 
 void gpufUnidstord(cv::Mat &cpuSrc, cv::cuda::GpuMat &gpuDst, cv::cuda::GpuMat &gpuMap1, cv::cuda::GpuMat &gpuMap2)
   {

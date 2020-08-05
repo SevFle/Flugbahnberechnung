@@ -12,12 +12,13 @@ C_frm_Camera_Positioning::C_frm_Camera_Positioning(C_GlobalObjects* GlobalObject
     this->TimerWait      = 0;
     this->Taktgeber = new QTimer(this);
     this->Taktgeber_Intervall = 25;
-
+    this->lock            = new pthread_mutex_t;
 
 }
 
 C_frm_Camera_Positioning::~C_frm_Camera_Positioning()
 {
+    delete(lock);
     this->Taktgeber_Intervall = 0;
     delete (this->Taktgeber);
 
@@ -41,7 +42,7 @@ this->installEventFilter(this);
 this->Zaehler             = 0;
 this->TimerWait           = 50;
 this->cameras_in_use      = GlobalObjects->absCameras;
-
+pthread_mutex_init(lock, NULL);
 if (this->Main->Camera_manager->load_positioning) this->set_num_value (*GlobalObjects->camera_order);
 
 this->Ui->num_cam_0->setMaximum(GlobalObjects->absCameras);
@@ -107,40 +108,44 @@ this->close();
 void C_frm_Camera_Positioning::Taktgeber_Tick()
 {
     this->Ui->txb_zaehler->setText(QString::number(this->Zaehler++));
-    if (Zaehler > TimerWait + 30)
+    if (Zaehler > TimerWait)
       {
+      pthread_mutex_lock(lock);
+      this->Main->Camera_manager->getVecImgShow();
       switch (this->cameras_in_use)
         {
         case 1:   //Nur zu Testzwecken fuer die Laptopverwendung
-          FillMat2Lbl(*this->Main->Camera_manager->camera_vector[this->Ui->num_cam_0->value()]->cpu_src_img, this->Ui->lbl_cam_0);
+          FillMat2Lbl(*this->Main->Camera_manager->getVecImgShow()[this->Ui->num_cam_0->value()], this->Ui->lbl_cam_0);
           break;
 
         case 2:
-          FillMat2Lbl(*this->Main->Camera_manager->camera_vector[this->Ui->num_cam_0->value()]->cpu_src_img, this->Ui->lbl_cam_0);
-          FillMat2Lbl(*this->Main->Camera_manager->camera_vector[this->Ui->num_cam_1->value()]->cpu_src_img, this->Ui->lbl_cam_1);
+          FillMat2Lbl(*this->Main->Camera_manager->getVecImgShow()[this->Ui->num_cam_0->value()], this->Ui->lbl_cam_0);
+          FillMat2Lbl(*this->Main->Camera_manager->getVecImgShow()[this->Ui->num_cam_1->value()], this->Ui->lbl_cam_1);
           break;
 
         case 4:
-          FillMat2Lbl(*this->Main->Camera_manager->camera_vector[this->Ui->num_cam_0->value()]->cpu_src_img, this->Ui->lbl_cam_0);
-          FillMat2Lbl(*this->Main->Camera_manager->camera_vector[this->Ui->num_cam_1->value()]->cpu_src_img, this->Ui->lbl_cam_1);
-          FillMat2Lbl(*this->Main->Camera_manager->camera_vector[this->Ui->num_cam_2->value()]->cpu_src_img, this->Ui->lbl_cam_2);
-          FillMat2Lbl(*this->Main->Camera_manager->camera_vector[this->Ui->num_cam_3->value()]->cpu_src_img, this->Ui->lbl_cam_3);
+          FillMat2Lbl(*this->Main->Camera_manager->getVecImgShow()[this->Ui->num_cam_0->value()], this->Ui->lbl_cam_0);
+          FillMat2Lbl(*this->Main->Camera_manager->getVecImgShow()[this->Ui->num_cam_1->value()], this->Ui->lbl_cam_1);
+          FillMat2Lbl(*this->Main->Camera_manager->getVecImgShow()[this->Ui->num_cam_2->value()], this->Ui->lbl_cam_2);
+          FillMat2Lbl(*this->Main->Camera_manager->getVecImgShow()[this->Ui->num_cam_3->value()], this->Ui->lbl_cam_3);
           break;
 
         case 6:
-          FillMat2Lbl(*this->Main->Camera_manager->camera_vector[this->Ui->num_cam_0->value()]->cpu_src_img, this->Ui->lbl_cam_0);
-          FillMat2Lbl(*this->Main->Camera_manager->camera_vector[this->Ui->num_cam_1->value()]->cpu_src_img, this->Ui->lbl_cam_1);
-          FillMat2Lbl(*this->Main->Camera_manager->camera_vector[this->Ui->num_cam_2->value()]->cpu_src_img, this->Ui->lbl_cam_2);
-          FillMat2Lbl(*this->Main->Camera_manager->camera_vector[this->Ui->num_cam_3->value()]->cpu_src_img, this->Ui->lbl_cam_3);
-          FillMat2Lbl(*this->Main->Camera_manager->camera_vector[this->Ui->num_cam_4->value()]->cpu_src_img, this->Ui->lbl_cam_4);
-          FillMat2Lbl(*this->Main->Camera_manager->camera_vector[this->Ui->num_cam_5->value()]->cpu_src_img, this->Ui->lbl_cam_5);
+          FillMat2Lbl(*this->Main->Camera_manager->getVecImgShow()[this->Ui->num_cam_0->value()], this->Ui->lbl_cam_0);
+          FillMat2Lbl(*this->Main->Camera_manager->getVecImgShow()[this->Ui->num_cam_1->value()], this->Ui->lbl_cam_1);
+          FillMat2Lbl(*this->Main->Camera_manager->getVecImgShow()[this->Ui->num_cam_2->value()], this->Ui->lbl_cam_2);
+          FillMat2Lbl(*this->Main->Camera_manager->getVecImgShow()[this->Ui->num_cam_3->value()], this->Ui->lbl_cam_3);
+          FillMat2Lbl(*this->Main->Camera_manager->getVecImgShow()[this->Ui->num_cam_4->value()], this->Ui->lbl_cam_4);
+          FillMat2Lbl(*this->Main->Camera_manager->getVecImgShow()[this->Ui->num_cam_5->value()], this->Ui->lbl_cam_5);
           break;
         }
+      pthread_mutex_unlock(lock);
       }
 }
 
 void C_frm_Camera_Positioning::on_bt_apply_clicked()
 {
+  //TODO NEED WORKS
     std::vector<Camera::C_Camera*> camera_vector_temp;
     camera_vector_temp.resize (cameras_in_use);
     //TODO Need way to stop Taktgeber
@@ -152,7 +157,6 @@ void C_frm_Camera_Positioning::on_bt_apply_clicked()
     switch (this->cameras_in_use)
       {
       case 1:   //Nur zu Testzwecken f�r die Laptopverwendung
-        this->Main->Camera_manager->move_camera_vector2temp (0,this->Ui->num_cam_0->value(),camera_vector_temp);
 
         camera_list.push_back (this->Ui->num_cam_0->value());
 
@@ -161,8 +165,6 @@ void C_frm_Camera_Positioning::on_bt_apply_clicked()
         break;
 
       case 2:
-        this->Main->Camera_manager->move_camera_vector2temp (0,this->Ui->num_cam_0->value(),camera_vector_temp);
-        this->Main->Camera_manager->move_camera_vector2temp (1,this->Ui->num_cam_1->value(),camera_vector_temp);
 
         camera_list.push_back (this->Ui->num_cam_0->value());
         camera_list.push_back (this->Ui->num_cam_1->value());
@@ -173,11 +175,6 @@ void C_frm_Camera_Positioning::on_bt_apply_clicked()
         break;
 
       case 4:
-        this->Main->Camera_manager->move_camera_vector2temp (0,this->Ui->num_cam_0->value(),camera_vector_temp);
-        this->Main->Camera_manager->move_camera_vector2temp (1,this->Ui->num_cam_1->value(),camera_vector_temp);
-        this->Main->Camera_manager->move_camera_vector2temp (2,this->Ui->num_cam_2->value(),camera_vector_temp);
-        this->Main->Camera_manager->move_camera_vector2temp (3,this->Ui->num_cam_3->value(),camera_vector_temp);
-
         camera_list.push_back (this->Ui->num_cam_0->value());
         camera_list.push_back (this->Ui->num_cam_1->value());
         camera_list.push_back (this->Ui->num_cam_2->value());
@@ -191,12 +188,6 @@ void C_frm_Camera_Positioning::on_bt_apply_clicked()
         break;
 
       case 6:
-        this->Main->Camera_manager->move_camera_vector2temp (0,this->Ui->num_cam_0->value(),camera_vector_temp);
-        this->Main->Camera_manager->move_camera_vector2temp (1,this->Ui->num_cam_1->value(),camera_vector_temp);
-        this->Main->Camera_manager->move_camera_vector2temp (2,this->Ui->num_cam_2->value(),camera_vector_temp);
-        this->Main->Camera_manager->move_camera_vector2temp (3,this->Ui->num_cam_3->value(),camera_vector_temp);
-        this->Main->Camera_manager->move_camera_vector2temp (4,this->Ui->num_cam_4->value(),camera_vector_temp);
-        this->Main->Camera_manager->move_camera_vector2temp (5,this->Ui->num_cam_5->value(),camera_vector_temp);
 
         camera_list.push_back (this->Ui->num_cam_0->value());
         camera_list.push_back (this->Ui->num_cam_1->value());
@@ -215,7 +206,7 @@ void C_frm_Camera_Positioning::on_bt_apply_clicked()
         break;
       }
 
-    this->Main->Camera_manager->move_camera_temp2vector (cameras_in_use,camera_vector_temp);
+    this->Main->Camera_manager->mvVecCamera2Temp(camera_vector_temp);
     for (int i = 0; i < cameras_in_use; i++)
       {
       this->Main->Camera_manager->load_camera_calibration (i);

@@ -18,12 +18,14 @@ C_frm_Camera_Calibration::C_frm_Camera_Calibration(C_GlobalObjects* GlobalObject
     this->photocount_user_input = 3;
     this->Taktgeber = new QTimer(this);
     this->Taktgeber_Intervall = 100;
+    this->lock                  = new pthread_mutex_t;
 
 
 }
 
 C_frm_Camera_Calibration::~C_frm_Camera_Calibration()
 {
+    delete (lock);
     this->Taktgeber_Intervall = 0;
     delete (this->Taktgeber);
 
@@ -52,13 +54,11 @@ this->Zaehler = 0;
 connect(this->Taktgeber, &QTimer::timeout, this, &C_frm_Camera_Calibration::Taktgeber_Tick);
 this->Taktgeber->start(this->Taktgeber_Intervall);
 this->installEventFilter(this);
-
+pthread_mutex_init(lock, NULL);
 this->Zaehler             = 0;
-this->cameras_in_use      = GlobalObjects->absCameras;
-this->current_camera_id   = 0;
+this->cameraID   = 0;
 this->Timerwait           = 50;
 this->Ui->rb_single_calibration->setChecked(true);
-this->on_rb_single_calibration_clicked();
 
 }
 
@@ -104,27 +104,26 @@ bool               C_frm_Camera_Calibration::eventFilter                        
 /************************************** Nicht öffentliche QT-Slots******************************/
 
 void C_frm_Camera_Calibration::Taktgeber_Tick()
-{
-    this->Ui->txb_zaehler->setText(QString::number(this->Zaehler++));
-    if (this->Main->Camera_manager->camera_vector[current_camera_id]->is_thread_ready())
-      {
-      switch (method)
-        {
-        case 0:
-          this->Fill_Mat_2_Lbl(*this->Main->Camera_manager->camera_vector[current_camera_id]->get_cpu_src_img(), this->Ui->lbl_img_single_calibration);
-                 break;
-
-        case 1:
-          this->Fill_Mat_2_Lbl(*this->Main->Camera_manager->camera_vector[current_camera_id]->get_cpu_src_img(), this->Ui->lbl_img_stereo_left);
-          this->Fill_Mat_2_Lbl(*this->Main->Camera_manager->camera_vector[current_camera_id+1]->get_cpu_src_img(), this->Ui->lbl_img_stereo_right);
-          break;
-        }
-      }
-    if (this->Main->Camera_manager->calibration_done)
+  {
+  this->Ui->txb_zaehler->setText(QString::number(this->Zaehler++));
+  pthread_mutex_lock(lock);
+  switch (method)
     {
-    this->ShowTable();
-    }
-}
+    case 0:
+      this->Fill_Mat_2_Lbl(*this->Main->Camera_manager->getVecImgShow()[cameraID], this->Ui->lbl_img_single_calibration);
+      break;
+
+    case 1:
+      this->Fill_Mat_2_Lbl(*this->Main->Camera_manager->getVecImgShow()[cameraID], this->Ui->lbl_img_single_calibration);
+      this->Fill_Mat_2_Lbl(*this->Main->Camera_manager->getVecImgShow()[cameraID+1], this->Ui->lbl_img_single_calibration);
+      break;
+     }
+  pthread_mutex_unlock(lock);
+   if (this->Main->Camera_manager->getCalibrationDone())
+     {
+     this->ShowTable();
+     }
+  }
 
 void C_frm_Camera_Calibration::Fill_Mat_2_Lbl(cv::Mat& img, QLabel* label)
 {
@@ -161,9 +160,7 @@ this->close();
 void C_frm_Camera_Calibration::on_num_camera_id_valueChanged(int arg1)
 {
     Timerwait = Zaehler + 8;
-    this->current_camera_id = arg1;
-
-    Main->Camera_manager->camera_vector[current_camera_id]->set_idle (false);
+    this->cameraID = arg1;
 }
 
 void C_frm_Camera_Calibration::on_rb_single_calibration_clicked()
@@ -171,7 +168,7 @@ void C_frm_Camera_Calibration::on_rb_single_calibration_clicked()
     this->method                   = 0;
     this->Ui->num_camera_id->setValue(0);
     this->Ui->num_camera_id->setSingleStep(1);
-    this->current_camera_id        = 0;
+    this->cameraID        = 0;
 
     this->Ui->rb_stereo_calibration->setChecked(false);
     this->Ui->rb_single_calibration->setChecked(true);
@@ -188,7 +185,7 @@ void C_frm_Camera_Calibration::on_rb_stereo_calibration_clicked()
     this->method                   = 1;
     this->Ui->num_camera_id->setValue(0);
     this->Ui->num_camera_id->setSingleStep(2);
-    this->current_camera_id        = 0;
+    this->cameraID        = 0;
 
     this->Ui->rb_stereo_calibration->setChecked(true);
     this->Ui->rb_single_calibration->setChecked(false);
@@ -209,11 +206,19 @@ void C_frm_Camera_Calibration::camera_calibration_thread ()
   switch (method)
     {
     case 0:
-      this->Main->Camera_manager->calibrate_single_camera (this->current_camera_id);
+      this->Main->Camera_manager->calibrateSingleCamera(this->cameraID,
+                                                        this->Ui->txb_edge_width->text().toInt(),
+                                                        this->Ui->txb_edge_height->text().toInt(),
+                                                        this->Ui->txb_usrInput_images->text().toInt(),
+                                                        this->Ui->txb_edge_length->text().toInt());
       break;
 
     case 1:
-      this->Main->Camera_manager->calibrate_stereo_camera (this->current_camera_id);
+      this->Main->Camera_manager->calibrate_stereo_camera (this->cameraID,
+                                                           this->Ui->txb_edge_width->text().toInt(),
+                                                           this->Ui->txb_edge_height->text().toInt(),
+                                                           this->Ui->txb_usrInput_images->text().toInt(),
+                                                           this->Ui->txb_edge_length->text().toInt());
       break;
     }
   }
@@ -225,7 +230,7 @@ void C_frm_Camera_Calibration::sm_Single_camera_calibration ()
     {
     case 0:
       //this->Main->camera_managed->camera_unmanaged->camera_vector[current_camera_id]->cap->set (cv::CAP_PROP_XI_AEAG,false);
-      this->current_camera_id = this->Ui->num_camera_id->value();
+      this->cameraID = this->Ui->num_camera_id->value();
       this->photo_id          = 0;
       //this->photo_interval            =   int::Parse(tb_photo_interval->Text)*10;
       this->photocount_user_input = this->Ui->txb_count_images_to_take->toPlainText().toInt();
@@ -237,7 +242,7 @@ void C_frm_Camera_Calibration::sm_Single_camera_calibration ()
 
       //Take pictures
     case 1:
-      this->Main->Camera_manager->camera_vector[current_camera_id]->save_picture (current_camera_id,photo_id,naming);
+      this->Main->Camera_manager->camera_vector[cameraID]->save_picture (cameraID,photo_id,naming);
       this->Ui->txb_img_count->setText(QString::number(this->photo_id + 1));
       this->photo_id++;
 
@@ -257,9 +262,9 @@ void C_frm_Camera_Calibration::sm_Single_camera_calibration ()
       this->Main->Camera_manager->numBoards_imgs   = this->photo_id;
       this->Main->Camera_manager->numCornersHeight = this->Ui->txb_edge_height->toPlainText().toInt();
       this->Main->Camera_manager->numCornersWidth  = this->Ui->txb_edge_width->toPlainText().toInt();
-      this->Main->Camera_manager->camera_id        = this->current_camera_id;
+      this->Main->Camera_manager->camera_id        = this->cameraID;
       this->Ui->lbl_calibration_running->setVisible(true);
-      this->Main->Camera_manager->camera_vector[current_camera_id]->set_undistord_active (false);
+      this->Main->Camera_manager->camera_vector[cameraID]->set_undistord_active (false);
 
       //Starte Hintergrund Thread zur Verarbeitung der aufgenommenen Bilder
       //TODO Add threading
@@ -278,8 +283,8 @@ void C_frm_Camera_Calibration::sm_Stereo_camera_calibration ()
   switch (this->sm_calibration_state)
     {
     case 0:
-      this->Main->Camera_manager->camera_vector[current_camera_id]->cap->set (cv::CAP_PROP_XI_AEAG,false);
-      this->current_camera_id = this->Ui->num_camera_id->value();
+      this->Main->Camera_manager->camera_vector[cameraID]->cap->set (cv::CAP_PROP_XI_AEAG,false);
+      this->cameraID = this->Ui->num_camera_id->value();
       photo_id          = 0;
       //photo_interval            =   int::Parse(tb_photo_interval->Text)*10;
       this->photocount_user_input = this->Ui->txb_count_images_to_take->toPlainText().toInt();
@@ -291,8 +296,8 @@ void C_frm_Camera_Calibration::sm_Stereo_camera_calibration ()
 
       //Take pictures
     case 1:
-      this->Main->Camera_manager->camera_vector[current_camera_id]->save_picture (current_camera_id,photo_id,naming);
-      this->Main->Camera_manager->camera_vector[current_camera_id]->save_picture (current_camera_id + 1,photo_id,naming);
+      this->Main->Camera_manager->camera_vector[cameraID]->save_picture (cameraID,photo_id,naming);
+      this->Main->Camera_manager->camera_vector[cameraID]->save_picture (cameraID + 1,photo_id,naming);
 
       this->Ui->txb_img_count->                                     setText(QString::number(this->photo_id + 1));
       this->photo_id++;
@@ -313,9 +318,9 @@ void C_frm_Camera_Calibration::sm_Stereo_camera_calibration ()
       this->Main->Camera_manager->numBoards_imgs   = this->photo_id;
       this->Main->Camera_manager->numCornersHeight = this->Ui->txb_edge_height->toPlainText().toInt();
       this->Main->Camera_manager->numCornersWidth  = this->Ui->txb_edge_width->toPlainText().toInt();
-      this->Main->Camera_manager->camera_id        = this->current_camera_id;
+      this->Main->Camera_manager->camera_id        = this->cameraID;
       this->Ui->lbl_calibration_running->setVisible(true);
-      this->Main->Camera_manager->camera_vector[current_camera_id]->set_undistord_active (false);
+      this->Main->Camera_manager->camera_vector[cameraID]->set_undistord_active (false);
 
       //Starte Hintergrund Thread zur Verarbeitung der aufgenommenen Bilder
       std::thread calibrate(&C_frm_Camera_Calibration::camera_calibration_thread, this);

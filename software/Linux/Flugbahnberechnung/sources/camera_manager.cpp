@@ -1,7 +1,6 @@
 /****************************************************************** Includes ****************************************************************/
 #include "headers/camera_manager.h"
 
-#include <thread>
 
 /****************************************************************** Namespaces***************************************************************/
 using namespace CameraManager;
@@ -11,18 +10,37 @@ using namespace GlobalObjects;
 C_CameraManager::C_CameraManager ( C_GlobalObjects* GlobalObjects)
   {
   this->GlobalObjects = GlobalObjects;
-  this->Loadmanager = new LoadManager::C_LoadManager;
-  this->SaveManager = new Savemanager::c_SaveManager;
-  this->ImageFilter = new imagefilter::C_ImageFilter;
+  this->Loadmanager   = new LoadManager::C_LoadManager;
+  this->SaveManager   = new Savemanager::c_SaveManager;
+  this->ImageFilter   = new imagefilter::C_ImageFilter;
+  this->lock          = new pthread_mutex_t;
+  this->camPipeline   = new pthread_t;
+  this->camSimple     = new pthread_t;
+  this->camPositioning= new pthread_t;
   }
 /**************************************************************** Destruktor ****************************************************************/
 C_CameraManager::~C_CameraManager ()
   {
+  delete (camPositioning);
+  delete (camSimple);
+  delete (camPipeline);
+  delete (lock);
   delete (ImageFilter);
   delete (SaveManager);
   delete (Loadmanager);
   delete (GlobalObjects);
   }
+
+volatile bool C_CameraManager::getCalibrationDone() const
+  {
+  return calibrationDone;
+  }
+
+void C_CameraManager::setCalibrationDone(volatile bool value)
+  {
+  calibrationDone = value;
+  }
+
 
 /*************************************************** Nicht öffentliche private Methoden *****************************************************/
 
@@ -113,7 +131,11 @@ void C_CameraManager::mvTemp2VecCamera (std::vector<Camera::C_Camera2*> vecCamer
     }
   }
 
-void C_CameraManager::calibrateSingleCamera (int current_camera_id, int absCornersWidth, int absCornersHeight, int absBoardImg )
+void C_CameraManager::calibrateSingleCamera (int current_camera_id,
+                                             int absCornersWidth,
+                                             int absCornersHeight,
+                                             int absBoardImg,
+                                             int absCornerLength)
   {
   // Deklaration benötigter Variablen
   cv::Mat                     Originalbild;
@@ -234,7 +256,11 @@ void C_CameraManager::calibrateSingleCamera (int current_camera_id, int absCorne
   //Reaktivierung der Bildentzerrung
   this->vecCameras[current_camera_id]->initRectifyMap();
   }
-void C_CameraManager::calibrate_stereo_camera (int current_camera_id, int absCornersWidth, int absCornersHeight, int absBoardImg)
+void C_CameraManager::calibrate_stereo_camera (int current_camera_id,
+                                               int absCornersWidth,
+                                               int absCornersHeight,
+                                               int absBoardImg,
+                                               int absCornerLength)
   {
     this->calibrationDone = false;
   vector<vector<cv::Point3f>>   object_points;
@@ -368,6 +394,34 @@ void C_CameraManager::calibrate_stereo_camera (int current_camera_id, int absCor
 //  std::cout << "P2" << P2 << endl;0
   }
 
+void C_CameraManager::threadCameraPositioning()
+  {
+  cv::Mat* img;
+  std::vector<cv::Mat*> vecImg;
+  if (pthread_mutex_init(lock, NULL) !=0)
+    printf("\n Mutex init failed for thread camera positioning");
+  while(!positioningDone)
+    {
+      for(auto it = std::begin(vecCameras); it < std::end(vecCameras); it++)
+        {
+        img = new cv::Mat;
+        (*it)->readImg(*img);
+        vecImg.push_back(img);
+        }
+      pthread_mutex_lock(lock);
+      vecImgShow.clear();
+      for(auto it = std::begin(vecImg); it < std::end(vecImg); it++)
+        {
+        vecImgShow.push_back(*it);
+        }
+      pthread_mutex_unlock(lock);
+      vecImg.clear();
+    }
+  }
+void C_CameraManager::threadCameraSimple()
+  {
+
+  }
 void C_CameraManager::sm_object_tracking ()
   {
   s_tracking_data                     tracked_data;
@@ -563,6 +617,8 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
     if(cntPipeline == 4) cntPipeline = 0;
     auto pData          = new S_Payload;
     pData->cameraID     = arrActiveCameras[cntPipeline];
+    if (pData->cameraID > GlobalObjects->absCameras) return 0;
+
     pData->Filter       = *vecCameras[arrActiveCameras[cntPipeline]]->getFilterproperties();
 
     vecCameras[arrActiveCameras[cntPipeline]]->readImg(pData->cpuSrcImg);
@@ -579,7 +635,7 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
   //STEP 2: UNDISTORT SRC TO CPUDISTORT
   tbb::make_filter<S_Payload*, S_Payload*>(tbb::filter::serial_in_order, [&] (S_Payload *pData)->S_Payload*
     {
-    this->ImageFilter->gpufUnidstord(pData->cpuSrcImg, pData->gpuUndistortedImg, vecCamera[pData->cameraID]->getMap1(), vecCamera[pData->cameraID]->getMap2());
+    this->ImageFilter->gpufUnidstord(pData->cpuSrcImg, pData->gpuUndistortedImg, *vecCamera[pData->cameraID]->getMap1(), *vecCamera[pData->cameraID]->getMap2());
     return pData;
     }
   )&
@@ -594,7 +650,7 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
   //STEP 4: FIND CONTOURS ON CPUHSV, DRAW ON UNDISTORT
   tbb::make_filter<S_Payload*, S_Payload*>(tbb::filter::serial_in_order, [&] (S_Payload *pData)->S_Payload*
     {
-    this->ImageFilter->findContours(pData->cpuHSVImg, pData->cpuConturedImg, pData->offset);
+    this->ImageFilter->findContours(pData->cpuHSVImg, pData->cpuConturedImg, pData->offset, *vecCamera[pData->cameraID]);
     }
   )&
   //STEP 5: ADJUST ROI ON CPU UNDISTORT
@@ -611,11 +667,21 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
       catch (...)
         {
         std::cout << "Pipeline caught an exception on the queue" << std::endl;
-        done = true;
+        pipelineDone = true;
         }//catch
       }//if (!done)
-    }//tbb::makefilter
+    }//STEP 5
     )//tbb::makefilter
   );//tbb pipeline
 
 }
+
+std::vector<cv::Mat *> C_CameraManager::getVecImgShow() const
+  {
+  return vecImgShow;
+  }
+
+void C_CameraManager::setVecImgShow(const std::vector<cv::Mat *> &value)
+  {
+  vecImgShow = value;
+  }

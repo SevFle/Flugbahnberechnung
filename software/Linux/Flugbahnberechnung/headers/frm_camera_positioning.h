@@ -23,6 +23,7 @@ private:
 
   C_GlobalObjects* GlobalObjects;
   C_Main*         Main;
+  pthread_mutex_t*  restrict    lock;
   QTimer*         Taktgeber;
   int             Taktgeber_Intervall;
   int TimerWait;

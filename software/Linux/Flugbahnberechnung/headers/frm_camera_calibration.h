@@ -17,24 +17,22 @@ public:
     ~C_frm_Camera_Calibration();
 
 private:
-  Ui::C_frm_camera_calibration* Ui;
+  Ui::C_frm_camera_calibration*     Ui;
+  C_GlobalObjects*                  GlobalObjects;
+  C_Main*                           Main;
+  pthread_mutex_t*  restrict        lock;
+  QTimer*                           Taktgeber;
+  int                               Taktgeber_Intervall;
+  int                               Zaehler;
+  int                               Timerwait;
 
-  C_GlobalObjects* GlobalObjects;
-  C_Main*         Main;
-  int Zaehler;
-  QTimer*         Taktgeber;
-  int             Taktgeber_Intervall;
-
-  int cameras_in_use;
-  int Timerwait;
-
-  bool calibration_running;
-  int  photo_interval;
-  int  intervall;
+  bool  calibration_running;
+  int                               photo_interval;
+  int                               intervall;
   int  photo_count;
   int  photo_id;
   int  method;
-  int  current_camera_id;
+  int  cameraID;
   int  sm_calibration_state;
   int photocount_user_input;
 

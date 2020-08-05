@@ -168,19 +168,6 @@
       <string>Stereo Calibration</string>
      </property>
     </widget>
-    <widget class="QTextEdit" name="txb_count_images_to_take">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>130</y>
-       <width>104</width>
-       <height>31</height>
-      </rect>
-     </property>
-     <property name="placeholderText">
-      <string>0</string>
-     </property>
-    </widget>
     <widget class="QLabel" name="label_5">
      <property name="geometry">
       <rect>
@@ -197,19 +184,6 @@
      </property>
      <property name="text">
       <string>Anzahl  Kalibrierungsbilder</string>
-     </property>
-    </widget>
-    <widget class="QTextEdit" name="txb_edge_length">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>200</y>
-       <width>104</width>
-       <height>31</height>
-      </rect>
-     </property>
-     <property name="placeholderText">
-      <string>mm</string>
      </property>
     </widget>
     <widget class="QLabel" name="label_6">
@@ -248,30 +222,44 @@
       <string>Anzahl Kanten (B x H)</string>
      </property>
     </widget>
-    <widget class="QTextEdit" name="txb_edge_width">
+    <widget class="QLineEdit" name="txb_edge_length">
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>260</y>
-       <width>104</width>
+       <y>200</y>
+       <width>101</width>
        <height>31</height>
       </rect>
      </property>
-     <property name="placeholderText">
-      <string>Breite</string>
+    </widget>
+    <widget class="QLineEdit" name="txb_edge_width">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>270</y>
+       <width>101</width>
+       <height>31</height>
+      </rect>
      </property>
     </widget>
-    <widget class="QTextEdit" name="txb_edge_height">
+    <widget class="QLineEdit" name="txb_edge_height">
      <property name="geometry">
       <rect>
        <x>130</x>
-       <y>260</y>
-       <width>104</width>
+       <y>270</y>
+       <width>91</width>
        <height>31</height>
       </rect>
      </property>
-     <property name="placeholderText">
-      <string>Höhe</string>
+    </widget>
+    <widget class="QLineEdit" name="txb_usrInput_images">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>130</y>
+       <width>101</width>
+       <height>31</height>
+      </rect>
      </property>
     </widget>
    </widget>

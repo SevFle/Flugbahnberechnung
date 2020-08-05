@@ -14,6 +14,7 @@
 #include <QtWidgets/QGroupBox>
 #include <QtWidgets/QHeaderView>
 #include <QtWidgets/QLabel>
+#include <QtWidgets/QLineEdit>
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QRadioButton>
@@ -39,13 +40,13 @@ public:
     QGroupBox *groupBox_2;
     QRadioButton *rb_single_calibration;
     QRadioButton *rb_stereo_calibration;
-    QTextEdit *txb_count_images_to_take;
     QLabel *label_5;
-    QTextEdit *txb_edge_length;
     QLabel *label_6;
     QLabel *label_7;
-    QTextEdit *txb_edge_width;
-    QTextEdit *txb_edge_height;
+    QLineEdit *txb_edge_length;
+    QLineEdit *txb_edge_width;
+    QLineEdit *txb_edge_height;
+    QLineEdit *txb_usrInput_images;
     QGroupBox *grpb_single_output;
     QTableView *tblv_single_parameters;
     QGroupBox *grpb_stereo_output;
@@ -103,16 +104,10 @@ public:
         rb_stereo_calibration->setObjectName(QString::fromUtf8("rb_stereo_calibration"));
         rb_stereo_calibration->setGeometry(QRect(10, 60, 201, 23));
         rb_stereo_calibration->setFont(font);
-        txb_count_images_to_take = new QTextEdit(groupBox_2);
-        txb_count_images_to_take->setObjectName(QString::fromUtf8("txb_count_images_to_take"));
-        txb_count_images_to_take->setGeometry(QRect(10, 130, 104, 31));
         label_5 = new QLabel(groupBox_2);
         label_5->setObjectName(QString::fromUtf8("label_5"));
         label_5->setGeometry(QRect(10, 100, 251, 21));
         label_5->setFont(font);
-        txb_edge_length = new QTextEdit(groupBox_2);
-        txb_edge_length->setObjectName(QString::fromUtf8("txb_edge_length"));
-        txb_edge_length->setGeometry(QRect(10, 200, 104, 31));
         label_6 = new QLabel(groupBox_2);
         label_6->setObjectName(QString::fromUtf8("label_6"));
         label_6->setGeometry(QRect(10, 170, 251, 21));
@@ -121,12 +116,18 @@ public:
         label_7->setObjectName(QString::fromUtf8("label_7"));
         label_7->setGeometry(QRect(10, 230, 251, 21));
         label_7->setFont(font);
-        txb_edge_width = new QTextEdit(groupBox_2);
+        txb_edge_length = new QLineEdit(groupBox_2);
+        txb_edge_length->setObjectName(QString::fromUtf8("txb_edge_length"));
+        txb_edge_length->setGeometry(QRect(10, 200, 101, 31));
+        txb_edge_width = new QLineEdit(groupBox_2);
         txb_edge_width->setObjectName(QString::fromUtf8("txb_edge_width"));
-        txb_edge_width->setGeometry(QRect(10, 260, 104, 31));
-        txb_edge_height = new QTextEdit(groupBox_2);
+        txb_edge_width->setGeometry(QRect(10, 270, 101, 31));
+        txb_edge_height = new QLineEdit(groupBox_2);
         txb_edge_height->setObjectName(QString::fromUtf8("txb_edge_height"));
-        txb_edge_height->setGeometry(QRect(130, 260, 104, 31));
+        txb_edge_height->setGeometry(QRect(130, 270, 91, 31));
+        txb_usrInput_images = new QLineEdit(groupBox_2);
+        txb_usrInput_images->setObjectName(QString::fromUtf8("txb_usrInput_images"));
+        txb_usrInput_images->setGeometry(QRect(10, 130, 101, 31));
         grpb_single_output = new QGroupBox(centralwidget);
         grpb_single_output->setObjectName(QString::fromUtf8("grpb_single_output"));
         grpb_single_output->setEnabled(false);
@@ -186,13 +187,9 @@ public:
         groupBox_2->setTitle(QCoreApplication::translate("C_frm_camera_calibration", "Parameter", nullptr));
         rb_single_calibration->setText(QCoreApplication::translate("C_frm_camera_calibration", "Single Calibration", nullptr));
         rb_stereo_calibration->setText(QCoreApplication::translate("C_frm_camera_calibration", "Stereo Calibration", nullptr));
-        txb_count_images_to_take->setPlaceholderText(QCoreApplication::translate("C_frm_camera_calibration", "0", nullptr));
         label_5->setText(QCoreApplication::translate("C_frm_camera_calibration", "Anzahl  Kalibrierungsbilder", nullptr));
-        txb_edge_length->setPlaceholderText(QCoreApplication::translate("C_frm_camera_calibration", "mm", nullptr));
         label_6->setText(QCoreApplication::translate("C_frm_camera_calibration", "Kantenl\303\244nge", nullptr));
         label_7->setText(QCoreApplication::translate("C_frm_camera_calibration", "Anzahl Kanten (B x H)", nullptr));
-        txb_edge_width->setPlaceholderText(QCoreApplication::translate("C_frm_camera_calibration", "Breite", nullptr));
-        txb_edge_height->setPlaceholderText(QCoreApplication::translate("C_frm_camera_calibration", "H\303\266he", nullptr));
         grpb_single_output->setTitle(QCoreApplication::translate("C_frm_camera_calibration", "Output", nullptr));
         grpb_stereo_output->setTitle(QCoreApplication::translate("C_frm_camera_calibration", "Output", nullptr));
         lbl_img_single_calibration->setText(QCoreApplication::translate("C_frm_camera_calibration", "TextLabel", nullptr));

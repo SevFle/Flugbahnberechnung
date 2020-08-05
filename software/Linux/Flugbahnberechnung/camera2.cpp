@@ -45,7 +45,7 @@ void C_Camera2::setMap1(cv::cuda::GpuMat *value)
     map1 = value;
     }
 
-S_filterProperties *C_Camera2::getFilterproperties() const
+C_Camera2::S_filterProperties *C_Camera2::getFilterproperties() const
     {
     return filterValues;
     }
@@ -136,7 +136,7 @@ int  C_Camera2::getROI() const
   }
 void C_Camera2::setCameraID                 (int &cameraID)
   {
-
+  this->cameraID = cameraID
   }
 int  C_Camera2::getCameraID                 () const
   {

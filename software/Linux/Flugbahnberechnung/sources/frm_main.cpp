@@ -78,35 +78,22 @@ bool               C_frm_Main::eventFilter                                      
   }
 /************************************** Nicht Ã¶ffentliche QT-Slots******************************/
 void ::C_frm_Main::on_bt_exit_clicked()
-{
-    for(auto it = std::begin(this->Main->Camera_manager->camera_vector); it< std::end(this->Main->Camera_manager->camera_vector); it++)
+  {
+  if(!this->Main->Camera_manager->closeCameras())
     {
-        (*it)->stop();
+    this->MsgBox->setText("Offene Kameraverbindungen konnten nicht geschlossen werden");
+    this->MsgBox->setIcon(QMessageBox::Critical);
+    this->MsgBox->exec();
+    return;
     }
-this->close();
-}
+  this->close();
+  }
 
 
 void C_frm_Main::Taktgeber_Tick()
-{
-    switch (state)
-      {
-      case 0:
-        this->Ui->txb_zaehler->setText(QString::number(this->Zaehler++));
-        break;
-      case 1:
-        this->Ui->txb_zaehler->setText(QString::number(this->Zaehler++));
-        if (this->Main->Camera_manager->camera_vector[GlobalObjects->absCameras-1]->is_thread_ready())
-          {
-          this->Ui->bt_tracking->setEnabled(true);
-            this->Ui->bt_camera_calibration->setEnabled(true);
-            this->Ui->bt_camera_positioning->setEnabled(true);
-          state                          = 0;
-          }
-        break;
-
-}
-}
+  {
+  this->Ui->txb_zaehler->setText(QString::number(this->Zaehler++));
+  }
 
 void ::C_frm_Main::on_bt_apply_clicked()
 {
@@ -117,6 +104,7 @@ void ::C_frm_Main::on_bt_apply_clicked()
       this->MsgBox->setText("Es muss eine gerade Anzahl an Kameras verwendet werden");
       this->MsgBox->setIcon(QMessageBox::Critical);
       this->MsgBox->exec();
+      return;
       }
     else
       {
@@ -124,19 +112,45 @@ void ::C_frm_Main::on_bt_apply_clicked()
       this->Ui->num_cameras->setEnabled(false);
       this->Ui->bt_apply->setEnabled     (false);
 
-      this->Main->Camera_manager->openCameras ();
-      this->state = 1;
+      if(!this->Main->Camera_manager->openCameras ())
+        {
+        this->MsgBox->setText("Kameras konnten nicht geöffnet werden");
+        this->MsgBox->setIcon(QMessageBox::Critical);
+        this->MsgBox->exec();
+        return;
+        }
+      else
+        {
+        this->Ui->bt_tracking->setEnabled(true);
+        this->Ui->bt_camera_calibration->setEnabled(true);
+        this->Ui->bt_camera_positioning->setEnabled(true);
+        }
     }
 
 }
 void frm_Main::C_frm_Main::on_bt_tracking_clicked()
   {
+  if(!this->Main->Camera_manager->startPipelineTracking())
+    {
+    this->MsgBox->setText("Pipeline konnte nicht gestartet werden");
+    this->MsgBox->setIcon(QMessageBox::Critical);
+    this->MsgBox->exec();
+    return;
+    }
   this->Main->frm_Object_Calibration->setWindowModality(Qt::ApplicationModal);
   this->Main->frm_Object_Calibration->show();
   }
 
 void frm_Main::C_frm_Main::on_bt_camera_calibration_clicked()
   {
+  if(!this->Main->Camera_manager->startThreadCameraPositioning())
+    {
+    this->MsgBox->setText("Thread zur Kamerakalibrierung konnte nicht gestartet werden");
+    this->MsgBox->setIcon(QMessageBox::Critical);
+    this->MsgBox->exec();
+    return;
+    }
+
     this->Main->frm_Camera_Calibration->setWindowModality(Qt::ApplicationModal);
     this->Main->frm_Camera_Calibration->show();
   }
@@ -148,12 +162,14 @@ void frm_Main::C_frm_Main::on_bt_camera_pose_clicked()
 }
 
 void frm_Main::C_frm_Main::on_bt_camera_positioning_clicked()
-{
-    for (auto it = std::begin(this->Main->Camera_manager->camera_vector); it != std::end(this->Main->Camera_manager->camera_vector); it++)
+  {
+  if(!this->Main->Camera_manager->startThreadCameraPositioning())
     {
-        (*it)->set_idle(false);
-        (*it)->set_undistord_active(false);
+    this->MsgBox->setText("Thread zur Kamerapositionierung konnte nicht gestartet werden");
+    this->MsgBox->setIcon(QMessageBox::Critical);
+    this->MsgBox->exec();
+    return;
     }
-    this->Main->frm_Camera_Positioning->setWindowModality(Qt::ApplicationModal);
-    this->Main->frm_Camera_Positioning->show();
-}
+  this->Main->frm_Camera_Positioning->setWindowModality(Qt::ApplicationModal);
+  this->Main->frm_Camera_Positioning->show();
+  }

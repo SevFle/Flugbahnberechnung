@@ -75,9 +75,11 @@ namespace CameraManager
     Savemanager::c_SaveManager*   SaveManager;
     LoadManager::C_LoadManager*   Loadmanager;
     imagefilter::C_ImageFilter*   ImageFilter;
-    pthread_t*                    pipelineCam;
-    pthread_t*                    simpleCam;
-
+    pthread_t*                    camPipeline;
+    pthread_t*                    camSimple;
+    pthread_t*                    camPositioning;
+    pthread_mutex_t*  restrict    lock;
+    std::vector<cv::Mat*>         vecImgShow;
     int                           camera_id;
     int                           absCameras;
     int                           frameWidth;
@@ -86,31 +88,56 @@ namespace CameraManager
     int                           cntPipeline;
     float                         SquareSize;
     volatile bool                 calibrationDone;
+    volatile bool                 positioningDone;
     volatile bool                 pipelineDone;
 
 
     /********************************************************* Öffentliche Klassenmethoden*******************************************************/
     public:
+
+    bool openCameras              ();
+    bool closeCameras             ();
     void mvVecCamera2Temp         (std::vector<int> vecCamOrder);
-    void mvTemp2VecCamera         (std::vector<Camera::C_Camera2*> temp_CameraVector);
+    void calibrateSingleCamera    (int current_camera_id,
+                                   int absCornersWidth,
+                                   int absCornersHeight,
+                                   int absBoardImg,
+                                   int absCornerLength);
 
-    void openCameras              ();
-    void closeCameras             ();
+    void calibrate_stereo_camera  (int current_camera_id,
+                                   int absCornersWidth,
+                                   int absCornersHeight,
+                                   int absBoardImg,
+                                   int absCornerLength);
 
-    void calibrateSingleCamera    (int current_camera_id, int absCornersWidth, int absCornersHeight, int absBoardImg );
-    void calibrate_stereo_camera  (int current_camera_id, int absCornersWidth, int absCornersHeight, int absBoardImg);
+    bool startThreadCameraPositioning();
+    bool stopThreadCameraPositioning();
+    bool startPipelineTracking();
+    bool stopPipelineTracking();
+
     void sm_object_tracking       ();
 
     void calculate_camera_pose    (int camera1, int camera2, cv::Vec3d T, cv::Mat R);
 
     void getDeviceList            ();
 
-    void pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera, tbb::concurrent_bounded_queue<S_Payload*> &que);
 
 
     /******************************************************* Private Klassenmethoden***************************************************************/
-    private:
+    std::vector<cv::Mat *> getVecImgShow() const;
+    void setVecImgShow(const std::vector<cv::Mat *> &value);
+
+    bool getCalibrationDone() const;
+    void setCalibrationDone(volatile bool value);
+
+
+  private:
     void start_camera_thread ();
+    void pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera, tbb::concurrent_bounded_queue<S_Payload*> &que);
+    void threadCameraPositioning  ();
+    void threadCameraSimple();
+    void mvTemp2VecCamera         (std::vector<Camera::C_Camera2*> temp_CameraVector);
+
     };// c_camera_unmanaged
   }//nmsp_c_camera_unmanaged
 #endif
