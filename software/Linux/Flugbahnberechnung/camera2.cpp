@@ -143,6 +143,12 @@ int  C_Camera2::getCameraID                 () const
   return this->cameraID;
   }
 
+void C_Camera2::save_picture (int photo_id, std::string definition, cv::Mat& srcImg)
+  {
+  imwrite (definition + std::to_string (this->cameraID) + "_Snapshot_" + std::to_string (photo_id) + ".png",*cpu_src_img);
+  }
+
+
 cv::Mat *C_Camera2::getDistCoeffs                         () const
   {
   return DistCoeffs;

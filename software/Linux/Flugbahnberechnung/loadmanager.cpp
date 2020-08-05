@@ -2,10 +2,15 @@
 
 using namespace LoadManager;
 
-C_LoadManager::C_LoadManager()
+C_LoadManager::C_LoadManager(C_GlobalObjects* GlobalObjects)
   {
-
+  this->GlobalObjects = GlobalObjects;
   }
+C_LoadManager::~C_LoadManager()
+  {
+  this->GlobalObjects = nullptr;
+  }
+
 
 void C_LoadManager::loadCameraSettings (Camera::C_Camera2 *Camera)
   {
@@ -89,48 +94,48 @@ void C_LoadManager::loadCameraSettings (Camera::C_Camera2 *Camera)
     GlobalObjects->csv_parameter_datei->Lesen (object_size_max);
 
 
-    Camera->set_hue_min (hue_min);
-    camera_vector[camera_id]->set_hue_max (hue_max);
-    camera_vector[camera_id]->set_saturation_min (saturation_min);
-    camera_vector[camera_id]->set_saturation_max (saturation_max);
-    camera_vector[camera_id]->set_value_min (value_min);
-    camera_vector[camera_id]->set_value_max (value_max);
+    Camera->filterValues->setHue_min(hue_min);
+    Camera->filterValues->setHue_max(hue_max);
+    Camera->filterValues->setSaturation_min(saturation_min);
+    Camera->filterValues->setSaturation_max(saturation_max);
+    Camera->filterValues->setValue_min(value_min);
+    Camera->filterValues->setValue_max(value_max);
 
-    camera_vector[camera_id]->set_erosion_iterations (erosion_iterations);
-    camera_vector[camera_id]->set_dilation_iterations (dilation_iterations);
-    camera_vector[camera_id]->set_opening_iterations (opening_iterations);
-    camera_vector[camera_id]->set_closing_iterations (closing_iterations);
-    camera_vector[camera_id]->set_morph_iterations (morph_iterations);
+    Camera->filterValues->setErosion_iterations(erosion_iterations);
+    Camera->filterValues->setDilation_iterations(dilation_iterations);
+    Camera->filterValues->setOpening_iterations(opening_iterations);
+    Camera->filterValues->setClosing_iterations(closing_iterations);
+    Camera->filterValues->setMorph_iterations(morph_iterations);
 
-    camera_vector[camera_id]->set_erosion_kernel_size (erosion_kernel_size);
-    camera_vector[camera_id]->set_dilation_kernel_size (dilation_kernel_size);
-    camera_vector[camera_id]->set_opening_kernel_size (opening_kernel_size);
-    camera_vector[camera_id]->set_closing_kernel_size (closing_kernel_size);
-    camera_vector[camera_id]->set_morph_kernel_size (morph_kernel_size);
-    camera_vector[camera_id]->set_gaussian_kernel_size (gaussian_kernel_size);
-    camera_vector[camera_id]->set_bilateral_kernel_size (bilateral_kernel_size);
+    Camera->filterValues->setErosion_kernel_size (erosion_kernel_size);
+    Camera->filterValues->setDilation_kernel_size (dilation_kernel_size);
+    Camera->filterValues->setOpening_kernel_size (opening_kernel_size);
+    Camera->filterValues->setClosing_kernel_size(closing_kernel_size);
+    Camera->filterValues->setMorph_kernel_size(morph_kernel_size);
+    Camera->filterValues->setGaussian_kernel_size(gaussian_kernel_size);
+    Camera->filterValues->setBilateral_kernel_size(bilateral_kernel_size);
 
-    camera_vector[camera_id]->set_gaussian_sigma (gaussian_sigma);
+    Camera->filterValues->setGaussian_sigma(gaussian_sigma);
 
-    camera_vector[camera_id]->set_bilateral_sigma_color (bilateral_sigma_color);
-    camera_vector[camera_id]->set_bilateral_sigma_spatial (bilateral_sigma_spatial);
+    Camera->filterValues->setBilateral_sigma_color(bilateral_sigma_color);
+    Camera->filterValues->setBilateral_sigma_spatial(bilateral_sigma_spatial);
 
-    camera_vector[camera_id]->set_dilate_active (dilation_active);
-    camera_vector[camera_id]->set_erode_active (erode_active);
-    camera_vector[camera_id]->set_morph_active (morph_active);
-    camera_vector[camera_id]->set_bilateral_active (bilateral_active);
-
-    camera_vector[camera_id]->set_object_size_min (object_size_min);
-    camera_vector[camera_id]->set_object_size_max (object_size_max);
+    Camera->filterValues->setObject_Size_min(object_size_min);
+    Camera->filterValues->setObject_Size_max(object_size_max);
     }
-  std::cout << "Loaded Settings for Camera " << camera_id << "." << endl;
+  else
+    {
+    printf("Filterwerte für Kamera %i wurden nicht geladen", cameraID);
+    }
+
+  std::cout << "Loaded Settings for Camera " << cameraID << "." << endl;
   }
 
-void C_LoadManager::loadCameraCalibration (int camera_id)
+void C_LoadManager::loadCameraCalibration (Camera::C_Camera2* Camera)
   {
-  string Dateiname = "../Parameter/Camera_Calibration_Parameter_CameraID_" + to_string (camera_id) + ".csv";
-  string Dateityp  = "Intrinisic and distortion parameters of camera-single-calibration";
-  int    numBoards;
+  int cameraID      = Camera->getCameraID();
+  string Dateiname  = "../Parameter/Camera_Calibration_Parameter_CameraID_" + to_string (cameraID) + ".csv";
+  string Dateityp   = "Intrinisic and distortion parameters of camera-single-calibration";
   double DistCoeffs[1][5];
   double Intrinsic[3][3];
   int    real_size_width = 800;
@@ -141,7 +146,6 @@ void C_LoadManager::loadCameraCalibration (int camera_id)
   if (this->GlobalObjects->csv_parameter_datei->IsOpen())
     {
     this->GlobalObjects->csv_parameter_datei->Lesen (Dateityp);
-    this->GlobalObjects->csv_parameter_datei->Lesen (numBoards);
     this->GlobalObjects->csv_parameter_datei->Lesen (DistCoeffs[0][0]);
     this->GlobalObjects->csv_parameter_datei->Lesen (DistCoeffs[0][1]);
     this->GlobalObjects->csv_parameter_datei->Lesen (DistCoeffs[0][2]);
@@ -162,7 +166,6 @@ void C_LoadManager::loadCameraCalibration (int camera_id)
     }
   else
     {
-    numBoards        = 50;
     DistCoeffs[0][0] = -0.422409;
     DistCoeffs[0][1] = -0.102515;
     DistCoeffs[0][2] = -0.005320;
@@ -179,20 +182,17 @@ void C_LoadManager::loadCameraCalibration (int camera_id)
     Intrinsic[2][2]  = 1.000000;
     }
 
-  this->camera_vector[camera_id]->set_calibration_parameter (DistCoeffs,Intrinsic);
-  this->camera_vector[camera_id]->set_resize_height (real_size_height);
-  this->camera_vector[camera_id]->set_resize_width (real_size_width);
-
-  std::cout << "Loaded Calibration for Camera " << camera_id << "." << endl;
+  Camera->setCalibrationParameter(DistCoeffs,Intrinsic);
+  std::cout << "Loaded Calibration for Camera " << cameraID << "." << endl;
   }
 
 std::vector<int> C_LoadManager::loadCameraPositioning ()
   {
   string                                                  Dateiname = "../Parameter/Camera_Positioning.csv";
   string                                                  Dateityp;
-  std::vector<int> vecCameraPosition;
-  int id;
-  int Camera_count;
+  std::vector<int>                                        vecCameraPosition;
+  int                                                     id;
+  int                                                     Camera_count;
 
   GlobalObjects->csv_parameter_datei->Oeffnen (Dateiname,Enum_CSV_Access::Read);
   if (GlobalObjects->csv_parameter_datei->IsOpen())
@@ -213,15 +213,17 @@ std::vector<int> C_LoadManager::loadCameraPositioning ()
         {
         vecCameraPosition.push_back(i);
         }
+      printf("Standardreihung geladen");
       }
     }
   GlobalObjects->csv_parameter_datei->Schliessen();
   return vecCameraPosition;
   }
 
-void C_LoadManager::loadCameraCos (int camera_id, C_AbsolutePose& WorldToCam_Param)
+void C_LoadManager::loadCameraCos (Camera::C_Camera2 &Camera)
   {
-  string Dateiname = "../Parameter/Pose_world_to_camera" + to_string (camera_id) + ".csv";
+  int camerID = Camera.getCameraID();
+  string Dateiname = "../Parameter/Pose_world_to_camera" + to_string (camerID) + ".csv";
   string Dateityp;
   double nx, ny, nz, ox, oy, oz, ax, ay, az, px, py, pz;
 
@@ -242,39 +244,25 @@ void C_LoadManager::loadCameraCos (int camera_id, C_AbsolutePose& WorldToCam_Par
     GlobalObjects->csv_parameter_datei->Lesen (py);
     GlobalObjects->csv_parameter_datei->Lesen (pz);
 
-    WorldToCam_Param.nx (nx);
-    WorldToCam_Param.ny (ny);
-    WorldToCam_Param.nz (nz);
-    WorldToCam_Param.ox (ox);
-    WorldToCam_Param.oy (oy);
-    WorldToCam_Param.oz (oz);
-    WorldToCam_Param.ax (ax);
-    WorldToCam_Param.ay (ay);
-    WorldToCam_Param.az (az);
-    WorldToCam_Param.px (px);
-    WorldToCam_Param.py (py);
-    WorldToCam_Param.pz (pz);
+    Camera.getCameraPose()->nx(nx);
+    Camera.getCameraPose()->ny (ny);
+    Camera.getCameraPose()->nz (nz);
+    Camera.getCameraPose()->ox (ox);
+    Camera.getCameraPose()->oy (oy);
+    Camera.getCameraPose()->oz (oz);
+    Camera.getCameraPose()->ax (ax);
+    Camera.getCameraPose()->ay (ay);
+    Camera.getCameraPose()->az (az);
+    Camera.getCameraPose()->px (px);
+    Camera.getCameraPose()->py (py);
+    Camera.getCameraPose()->pz (pz);
+    }
+  else
+    {
+    printf("Kameraposition für Kamera %i wurde nicht geladen", camerID);
     }
   GlobalObjects->csv_parameter_datei->Schliessen();
   }
 
-void C_LoadManager::load_camera_pipelines(std::vector<std::string> &vec_pipeline)
-{
-    int deviceNo = 0;
-for(auto i= 1; i <= this->GlobalObjects->absCameras; i++)
-    {
-    if(i < 7)
-    {
-        vec_pipeline.push_back("v4l2src device=/dev/video" + to_string(deviceNo) +" ! image/jpeg, format=BGR, framerate=60/1, width=1280,height=720 ! jpegdec ! videoconvert ! appsink");
-        deviceNo += 2;
-    }
-    else
-    {
-        vec_pipeline.push_back("v4l2src device=/dev/video" + to_string(deviceNo) +" ! image/jpeg, format=BGR, framerate=30/1, width=1280,height=720 ! jpegdec ! videoconvert ! appsink");
-        deviceNo += 2;
-    }
-    }
-
-}
 
 

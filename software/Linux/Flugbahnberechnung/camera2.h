@@ -141,6 +141,8 @@ namespace Camera
     void readImg                      (cv::Mat &dstImg);
     void savePicture                  (int camera_id, int photo_id, std::string definition);
     void initRectifyMap               ();
+    void save_picture                 (int photo_id, std::string definition, cv::Mat& srcImg);
+
 
     void setCalibrationParameter      (double (&DistCoeffs)[1][5], double (&Intrinsic)[3][3]);
     void getCalibrationParameter      (double (&DistCoeffs)[1][5], double (&Intrinsic)[3][3]) const;

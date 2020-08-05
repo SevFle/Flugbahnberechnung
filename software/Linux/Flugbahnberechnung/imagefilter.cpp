@@ -28,14 +28,14 @@ void C_ImageFilter::gpufDilate(cv::cuda::GpuMat &gpu_src, cv::cuda::GpuMat &gpu_
 void C_ImageFilter::gpufOpen(cv::cuda::GpuMat &gpu_src, cv::cuda::GpuMat &gpu_dst, Camera::C_Camera2::S_filterProperties &Filter)
   {
   cv::Mat                   opening_structuring_element = getStructuringElement (cv::MORPH_ELLIPSE,cv::Size (2 * Filter.getOpenKernelSize(),2 * Filter.getOpenKernelSize()));
-  cv::Ptr<cv::cuda::Filter> opening                     = cv::cuda::createMorphologyFilter (cv::MORPH_OPEN,gpu_src->type(),opening_structuring_element,cv::Point (-1,-1),Filter.getOpenIterations());
+  cv::Ptr<cv::cuda::Filter> opening                     = cv::cuda::createMorphologyFilter (cv::MORPH_OPEN,gpu_src.type(),opening_structuring_element,cv::Point (-1,-1),Filter.getOpenIterations());
   opening->apply (gpu_src,gpu_dst);
   }
 
 void C_ImageFilter::gpufClose(cv::cuda::GpuMat &gpu_src, cv::cuda::GpuMat &gpu_dst, Camera::C_Camera2::S_filterProperties &Filter)
   {
   cv::Mat                   closing_structuring_element = getStructuringElement (cv::MORPH_ELLIPSE,cv::Size (2 * Filter.getCloseKernelSize(),2 * Filter.getCloseKernelSize()));
-  cv::Ptr<cv::cuda::Filter> closing                     = cv::cuda::createMorphologyFilter (cv::MORPH_CLOSE,gpu_src->type(),closing_structuring_element,cv::Point (-1,-1),Filter.getCloseIterations());
+  cv::Ptr<cv::cuda::Filter> closing                     = cv::cuda::createMorphologyFilter (cv::MORPH_CLOSE,gpu_src.type(),closing_structuring_element,cv::Point (-1,-1),Filter.getCloseIterations());
   closing->apply (gpu_src,gpu_dst);
   }
 

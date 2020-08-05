@@ -60,7 +60,7 @@ namespace CameraManager
     /*************************************************************** Destruktor ****************************************************************/
     ~C_CameraManager ();
 
-
+    typedef void * (*THREADFUNCPTR)(void *);
     /**************************************************** Öffentliche Klassenobjekte ********************************************************/
     public:
     std::vector<Camera::C_Camera2*>        vecCameras;
@@ -68,7 +68,7 @@ namespace CameraManager
 
     /**************************************************** Öffentliche Anwender-Attribute ********************************************************/
     public:
-  	
+
     /******************************************** Nicht öffentliche private Anwender-Attribute **************************************************/
     private:
     C_GlobalObjects*              GlobalObjects;
@@ -134,7 +134,7 @@ namespace CameraManager
   private:
     void start_camera_thread ();
     void pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera, tbb::concurrent_bounded_queue<S_Payload*> &que);
-    void threadCameraPositioning  ();
+   static void* threadCameraPositioning  (void *This);
     void threadCameraSimple();
     void mvTemp2VecCamera         (std::vector<Camera::C_Camera2*> temp_CameraVector);
 

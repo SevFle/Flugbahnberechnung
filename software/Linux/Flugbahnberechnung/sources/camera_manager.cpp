@@ -31,7 +31,7 @@ C_CameraManager::~C_CameraManager ()
   delete (GlobalObjects);
   }
 
-volatile bool C_CameraManager::getCalibrationDone() const
+bool C_CameraManager::getCalibrationDone() const
   {
   return calibrationDone;
   }
@@ -49,7 +49,7 @@ void C_CameraManager::start_camera_thread ()
   }
 /******************************************************* Öffentliche Anwender-Methoden ******************************************************/
 
-void C_CameraManager::openCameras ()
+bool C_CameraManager::openCameras ()
   {
   GstDeviceMonitor *Monitor;
   GstCaps *caps;
@@ -95,6 +95,7 @@ void C_CameraManager::openCameras ()
     }
 
   //Reorder recently created Cameras
+  *GlobalObjects->camera_order = this->Loadmanager->loadCameraPositioning();
   this->mvVecCamera2Temp(this->Loadmanager->loadCameraPositioning());
 
   //Load Settings and Calibration for each camera created earlier
@@ -104,13 +105,66 @@ void C_CameraManager::openCameras ()
     this->Loadmanager->loadCameraSettings(vecCameras[i]);
     this->vecCameras[i]->initRectifyMap();
     }
+  return true;
   }
-void C_CameraManager::closeCameras ()
+bool C_CameraManager::closeCameras ()
   {
   for (auto it = std::begin(vecCameras); it < std::end(vecCameras); it++)
     {
     (*it)->close();
     }
+  return true;
+  }
+
+bool C_CameraManager::startThreadCameraPositioning()
+  {
+  if(int err = pthread_create(camPipeline,NULL, (THREADFUNCPTR) &CameraManager::C_CameraManager::threadCameraPositioning, this) !=0)
+    {
+      printf("**ERROR** Kamerathread konnte nicht gestartet werden");
+      return false;
+    }
+  else
+    {
+      return true;
+    }
+  }
+bool C_CameraManager::stopThreadCameraPositioning()
+  {
+  if(int err = pthread_join(*camPipeline, NULL))
+    {
+      printf("**ERROR** Kamerathread konnte nicht gestoppt werden **ABORT**");
+      return false;
+    }
+  else
+    {
+      return true;
+    }
+  }
+bool C_CameraManager::startPipelineTracking()
+  {
+  if(int err = pthread_create(camPipeline,NULL, (THREADFUNCPTR) &CameraManager::C_CameraManager::threadCameraPositioning, this) !=0)
+    {
+    printf("**ERROR** Kamerathread konnte nicht gestartet werden");
+    return false;
+    }
+  else
+    {
+    return true;
+    }
+  }
+bool C_CameraManager::stopPipelineTracking()
+  {
+  {
+  if(int err = pthread_join(*camPipeline, NULL))
+    {
+      printf("**ERROR** Kamerathread konnte nicht gestoppt werden **ABORT**");
+      return false;
+    }
+  else
+    {
+      return true;
+    }
+  }
   }
 
 void C_CameraManager::mvVecCamera2Temp (std::vector<int> vecCamOrder)
@@ -394,27 +448,29 @@ void C_CameraManager::calibrate_stereo_camera (int current_camera_id,
 //  std::cout << "P2" << P2 << endl;0
   }
 
-void C_CameraManager::threadCameraPositioning()
+void *C_CameraManager::threadCameraPositioning(void *This)
   {
   cv::Mat* img;
   std::vector<cv::Mat*> vecImg;
-  if (pthread_mutex_init(lock, NULL) !=0)
+  if (pthread_mutex_init(static_cast<CameraManager::C_CameraManager*>(This)->lock, NULL) !=0)
     printf("\n Mutex init failed for thread camera positioning");
-  while(!positioningDone)
+  while(!static_cast<CameraManager::C_CameraManager*>(This)->positioningDone)
     {
-      for(auto it = std::begin(vecCameras); it < std::end(vecCameras); it++)
+      for(auto it = std::begin(static_cast<CameraManager::C_CameraManager*>(This)->vecCameras);
+               it < std::end(static_cast<CameraManager::C_CameraManager*>(This)->vecCameras);
+               it++)
         {
         img = new cv::Mat;
         (*it)->readImg(*img);
         vecImg.push_back(img);
         }
-      pthread_mutex_lock(lock);
-      vecImgShow.clear();
+      pthread_mutex_lock(static_cast<CameraManager::C_CameraManager*>(This)->lock);
+      static_cast<CameraManager::C_CameraManager*>(This)->vecImgShow.clear();
       for(auto it = std::begin(vecImg); it < std::end(vecImg); it++)
         {
-        vecImgShow.push_back(*it);
+        static_cast<CameraManager::C_CameraManager*>(This)->vecImgShow.push_back(*it);
         }
-      pthread_mutex_unlock(lock);
+      pthread_mutex_unlock(static_cast<CameraManager::C_CameraManager*>(This)->lock);
       vecImg.clear();
     }
   }

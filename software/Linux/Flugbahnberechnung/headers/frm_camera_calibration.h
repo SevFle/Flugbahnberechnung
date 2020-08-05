@@ -21,41 +21,43 @@ private:
   C_GlobalObjects*                  GlobalObjects;
   C_Main*                           Main;
   pthread_mutex_t*  restrict        lock;
+  pthread_t*                        camThread;
   QTimer*                           Taktgeber;
   int                               Taktgeber_Intervall;
   int                               Zaehler;
   int                               Timerwait;
+   typedef void * (*THREADFUNCPTR)(void *);
 
-  bool  calibration_running;
+  bool                              calibration_running;
   int                               photo_interval;
   int                               intervall;
-  int  photo_count;
-  int  photo_id;
-  int  method;
-  int  cameraID;
-  int  sm_calibration_state;
-  int photocount_user_input;
+  int                               photo_count;
+  int                               photo_id;
+  int                               method;
+  int                               cameraID;
+  int                               sm_calibration_state;
+  int                               usrInputAbsPhoto;
 
 private:
-  void showEvent (QShowEvent* ShowEvent) override;
-  void closeEvent (QCloseEvent* CloseEvent) override;
-  bool eventFilter (QObject* Object, QEvent* Event) override;
+  void showEvent                    (QShowEvent* ShowEvent) override;
+  void closeEvent                   (QCloseEvent* CloseEvent) override;
+  bool eventFilter                  (QObject* Object, QEvent* Event) override;
 private slots:
-  void Taktgeber_Tick();
-  void Fill_Mat_2_Lbl(cv::Mat& img, QLabel* label);
+  void Taktgeber_Tick               ();
+  void Fill_Mat_2_Lbl               (cv::Mat& img, QLabel* label);
 
-  void camera_calibration_thread ();
-  void sm_Single_camera_calibration ();
-  void sm_Stereo_camera_calibration ();
+  static void camera_calibration_thread (void *This);
+  void sm_Single_camera_calibration     ();
+  void sm_Stereo_camera_calibration     ();
 
 
-  void on_bt_start_clicked();
-  void on_bt_exit_clicked();
-  void on_num_camera_id_valueChanged(int arg1);
-  void on_rb_single_calibration_clicked();
-  void on_rb_stereo_calibration_clicked();
-  void on_bt_photo_clicked();
-  void ShowTable();
+  void on_bt_start_clicked              ();
+  void on_bt_exit_clicked               ();
+  void on_num_camera_id_valueChanged    (int arg1);
+  void on_rb_single_calibration_clicked ();
+  void on_rb_stereo_calibration_clicked ();
+  void on_bt_photo_clicked              ();
+  void ShowTable                        ();
 
 };
 }

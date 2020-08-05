@@ -2,11 +2,16 @@
 
 using namespace Savemanager;
 
-c_SaveManager::c_SaveManager()
+c_SaveManager::c_SaveManager(C_GlobalObjects* GlobalObjects)
   {
-
+  this->GlobalObjects = GlobalObjects;
   }
-void c_SaveManager::saveCameraCos (Camera::C_Camera2 &Camera)
+c_SaveManager::~c_SaveManager()
+  {
+  this->GlobalObjects = nullptr;
+  }
+
+void c_SaveManager::saveCameraCos         (Camera::C_Camera2 &Camera)
   {
   string Dateiname = "../Parameter/Pose_world_to_camera" + to_string (Camera.getCameraID()) + ".csv";
   string Dateityp;
@@ -99,9 +104,9 @@ void c_SaveManager::saveCameraCalibration (Camera::C_Camera2 &Camera)
 
   this->GlobalObjects->csv_parameter_datei->Schliessen();
   }
-void c_SaveManager::saveCameraSettings (int camera_id)
+void c_SaveManager::saveCameraSettings    (Camera::C_Camera2 &Camera)
   {
-  string Dateiname = "../Parameter/Camera_setting" + to_string (camera_id) + ".csv";
+  string Dateiname = "../Parameter/Camera_setting" + to_string (Camera.getCameraID()) + ".csv";
   string Dateityp  = "Value of the individual setting";
 
 
@@ -113,39 +118,34 @@ void c_SaveManager::saveCameraSettings (int camera_id)
     GlobalObjects->csv_parameter_datei->Schreiben ("Dateityp",Dateityp,"[1]");
 
 
-    GlobalObjects->csv_parameter_datei->Schreiben ("hue_min",to_string (camera_vector[camera_id]->get_hue_min()),"[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben ("hue_max",to_string (camera_vector[camera_id]->get_hue_max()),"[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben ("saturation_min",to_string (camera_vector[camera_id]->get_saturation_min()),"[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben ("saturation_max",to_string (camera_vector[camera_id]->get_saturation_max()),"[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben ("value_min",to_string (camera_vector[camera_id]->get_value_min()),"[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben ("value_max",to_string (camera_vector[camera_id]->get_value_max()),"[1]");
+    GlobalObjects->csv_parameter_datei->Schreiben ("hue_min",to_string (Camera.filterValues->getHue_min()),"[1]");
+    GlobalObjects->csv_parameter_datei->Schreiben ("hue_max",to_string (Camera.filterValues->getHue_max()),"[1]");
+    GlobalObjects->csv_parameter_datei->Schreiben ("saturation_min",to_string (Camera.filterValues->getSaturation_min()),"[1]");
+    GlobalObjects->csv_parameter_datei->Schreiben ("saturation_max",to_string (Camera.filterValues->getSaturation_max()),"[1]");
+    GlobalObjects->csv_parameter_datei->Schreiben ("value_min",to_string (Camera.filterValues->getValue_min()),"[1]");
+    GlobalObjects->csv_parameter_datei->Schreiben ("value_max",to_string (Camera.filterValues->getValue_max()),"[1]");
 
-    GlobalObjects->csv_parameter_datei->Schreiben ("erosion_iterations",to_string (camera_vector[camera_id]->get_erosion_iterations()),"[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben ("dilation_iterations",to_string (camera_vector[camera_id]->get_dilation_iterations()),"[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben ("opening_iteration",to_string (camera_vector[camera_id]->get_opening_iterations()),"[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben ("closing_iteration",to_string (camera_vector[camera_id]->get_closing_iterations()),"[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben ("morph_iteration",to_string (camera_vector[camera_id]->get_morph_iterations()),"[1]");
+    GlobalObjects->csv_parameter_datei->Schreiben ("erosion_iterations",to_string (Camera.filterValues->getErodeIterations()),"[1]");
+    GlobalObjects->csv_parameter_datei->Schreiben ("dilation_iterations",to_string (Camera.filterValues->getDilateIterations()),"[1]");
+    GlobalObjects->csv_parameter_datei->Schreiben ("opening_iteration",to_string (Camera.filterValues->getOpenIterations()),"[1]");
+    GlobalObjects->csv_parameter_datei->Schreiben ("closing_iteration",to_string (Camera.filterValues->getCloseIterations()),"[1]");
+    GlobalObjects->csv_parameter_datei->Schreiben ("morph_iteration",to_string (Camera.filterValues->getMorphIterations()),"[1]");
 
-    GlobalObjects->csv_parameter_datei->Schreiben ("erosion_kernel_size",to_string (camera_vector[camera_id]->get_erosion_kernel_size()),"[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben ("dilation_kernel_size",to_string (camera_vector[camera_id]->get_dilation_kernel_size()),"[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben ("opening_kernel_size",to_string (camera_vector[camera_id]->get_opening_kernel_size()),"[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben ("closing_kernel_size",to_string (camera_vector[camera_id]->get_closing_kernel_size()),"[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben ("morph_kernel_size",to_string (camera_vector[camera_id]->get_morph_kernel_size()),"[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben ("gaussian_kernel_size",to_string (camera_vector[camera_id]->get_gaussian_kernel_size()),"[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben ("bilateral_kernel_size",to_string (camera_vector[camera_id]->get_bilateral_kernel_size()),"[1]");
+    GlobalObjects->csv_parameter_datei->Schreiben ("erosion_kernel_size",to_string (Camera.filterValues->getErodeKernelSize()),"[1]");
+    GlobalObjects->csv_parameter_datei->Schreiben ("dilation_kernel_size",to_string (Camera.filterValues->getDilateKernelSize()),"[1]");
+    GlobalObjects->csv_parameter_datei->Schreiben ("opening_kernel_size",to_string (Camera.filterValues->getOpenIterations()),"[1]");
+    GlobalObjects->csv_parameter_datei->Schreiben ("closing_kernel_size",to_string (Camera.filterValues->getCloseIterations()),"[1]");
+    GlobalObjects->csv_parameter_datei->Schreiben ("morph_kernel_size",to_string (Camera.filterValues->getMorphKernelSize()),"[1]");
+    GlobalObjects->csv_parameter_datei->Schreiben ("gaussian_kernel_size",to_string (Camera.filterValues->getGaussianKernelSize()),"[1]");
+    GlobalObjects->csv_parameter_datei->Schreiben ("bilateral_kernel_size",to_string (Camera.filterValues->getBilateralKernelSize()),"[1]");
 
-    GlobalObjects->csv_parameter_datei->Schreiben ("gaussian_sigma",to_string (camera_vector[camera_id]->get_gaussian_sigma()),"[1]");
+    GlobalObjects->csv_parameter_datei->Schreiben ("gaussian_sigma",to_string (Camera.filterValues->getGaussianSigma()),"[1]");
 
-    GlobalObjects->csv_parameter_datei->Schreiben ("bilateral_sigma_color",to_string (camera_vector[camera_id]->get_bilateral_sigma_color()),"[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben ("bilateral_sigma_spatial",to_string (camera_vector[camera_id]->get_bilateral_sigma_spatial()),"[1]");
+    GlobalObjects->csv_parameter_datei->Schreiben ("bilateral_sigma_color",to_string (Camera.filterValues->getBilateralSigmaColor()),"[1]");
+    GlobalObjects->csv_parameter_datei->Schreiben ("bilateral_sigma_spatial",to_string (Camera.filterValues->getBilateralSigmaSpatial()),"[1]");
 
-    GlobalObjects->csv_parameter_datei->Schreiben ("Erode_Active",to_string (camera_vector[camera_id]->is_erode_active()),"[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben ("Dilate_Active",to_string (camera_vector[camera_id]->is_dilate_active()),"[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben ("Morph_Active",to_string (camera_vector[camera_id]->is_morph_active()),"[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben ("Bilateral_Active",to_string (camera_vector[camera_id]->is_bilateral_active()),"[1]");
-
-    GlobalObjects->csv_parameter_datei->Schreiben ("Object_size_min",to_string (camera_vector[camera_id]->get_object_size_min()),"[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben ("Object_size_max",to_string (camera_vector[camera_id]->get_object_size_max()),"[1]");
+    GlobalObjects->csv_parameter_datei->Schreiben ("Object_size_min",to_string (Camera.filterValues->getObject_Size_min()),"[1]");
+    GlobalObjects->csv_parameter_datei->Schreiben ("Object_size_max",to_string (Camera.filterValues->getObject_Size_max()),"[1]");
     }
   this->GlobalObjects->csv_parameter_datei->Schliessen();
   }

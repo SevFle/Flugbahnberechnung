@@ -6,67 +6,51 @@ C_frm_Camera_Positioning::C_frm_Camera_Positioning(C_GlobalObjects* GlobalObject
 {
     this->Ui = new Ui::C_frm_camera_positioning();
     Ui->setupUi(this);
-    this->GlobalObjects  = GlobalObjects;
-    this->Main           = Main;
-    this->cameras_in_use = GlobalObjects->absCameras;
-    this->TimerWait      = 0;
-    this->Taktgeber = new QTimer(this);
+    this->GlobalObjects       = GlobalObjects;
+    this->Taktgeber           = new QTimer(this);
+    this->lock                = new pthread_mutex_t;
+    this->Main                = Main;
+    this->TimerWait           = 0;
     this->Taktgeber_Intervall = 25;
-    this->lock            = new pthread_mutex_t;
 
 }
 
 C_frm_Camera_Positioning::~C_frm_Camera_Positioning()
-{
-    delete(lock);
-    this->Taktgeber_Intervall = 0;
-    delete (this->Taktgeber);
-
-    this->TimerWait = 0;
-
-    this->Main          = nullptr;
-    this->GlobalObjects = nullptr;
-
-    delete Ui;
+  {
+  this->Taktgeber_Intervall = 0;
+  this->TimerWait           = 0;
+  this->Main                = nullptr;
+  delete                    (lock);
+  delete                    (this->Taktgeber);
+  this->GlobalObjects       = nullptr;
+  delete                    (Ui);
 }
 
 
 /************************************** QT-Events******************************/
 void C_frm_Camera_Positioning::showEvent(QShowEvent* ShowEvent)
-{
-Q_UNUSED(ShowEvent)
-this->Zaehler = 0;
-    connect(this->Taktgeber, &QTimer::timeout, this, &C_frm_Camera_Positioning::Taktgeber_Tick);
-this->Taktgeber->start(this->Taktgeber_Intervall);
-this->installEventFilter(this);
-this->Zaehler             = 0;
-this->TimerWait           = 50;
-this->cameras_in_use      = GlobalObjects->absCameras;
-pthread_mutex_init(lock, NULL);
-if (this->Main->Camera_manager->load_positioning) this->set_num_value (*GlobalObjects->camera_order);
-
-this->Ui->num_cam_0->setMaximum(GlobalObjects->absCameras);
-this->Ui->num_cam_1->setMaximum(GlobalObjects->absCameras);
-this->Ui->num_cam_2->setMaximum(GlobalObjects->absCameras);
-this->Ui->num_cam_3->setMaximum(GlobalObjects->absCameras);
-this->Ui->num_cam_4->setMaximum(GlobalObjects->absCameras);
-this->Ui->num_cam_5->setMaximum(GlobalObjects->absCameras);
-
-}
+  {
+  this->Zaehler               = 0;
+  connect                     (this->Taktgeber, &QTimer::timeout, this, &C_frm_Camera_Positioning::Taktgeber_Tick);
+  this->Taktgeber->start      (this->Taktgeber_Intervall);
+  this->installEventFilter    (this);
+  this->Zaehler               = 0;
+  this->TimerWait             = 50;
+  pthread_mutex_init          (lock, NULL);
+  this->Main->Camera_manager->startThreadCameraPositioning();
+  this->set_num_value(*GlobalObjects->camera_order);
+  Q_UNUSED                    (ShowEvent)
+  }
 
 void C_frm_Camera_Positioning::closeEvent(QCloseEvent* CloseEvent)
-{
- Q_UNUSED(CloseEvent);
- this->removeEventFilter(this);
- this->Taktgeber->stop();
- disconnect(this->Taktgeber, &QTimer::timeout, this, &C_frm_Camera_Positioning::Taktgeber_Tick);
- this->Zaehler = 0;
- for (int i = 0; i < GlobalObjects->absCameras; i++)
-   {
-   Main->Camera_manager->camera_vector[i]->set_idle (true);
-   }
-
- }
+  {
+  this->removeEventFilter(this);
+  this->Taktgeber->stop();
+  disconnect(this->Taktgeber, &QTimer::timeout, this, &C_frm_Camera_Positioning::Taktgeber_Tick);
+  this->Zaehler = 0;
+  this->Main->Camera_manager->stopThreadCameraPositioning();
+  Q_UNUSED(CloseEvent);
+  }
 
 bool               C_frm_Camera_Positioning::eventFilter                                       (QObject* Object, QEvent* Event)
   {
@@ -251,18 +235,26 @@ void C_frm_Camera_Positioning::set_num_value()
   }//set_numUD_value
 void C_frm_Camera_Positioning::set_num_value (std::vector<int> camera_list)
   {
-  switch (this->cameras_in_use)
+  switch (this->GlobalObjects->absCameras)
     {
     case 1:   //Nur zu Testzwecken fuer die Laptopverwendung
+      this->Ui->num_cam_0->setMaximum(GlobalObjects->absCameras-1);
       this->Ui->num_cam_0->setValue(camera_list[0]);
       break;
 
     case 2:
+      this->Ui->num_cam_0->setMaximum(GlobalObjects->absCameras-1);
+      this->Ui->num_cam_1->setMaximum(GlobalObjects->absCameras-1);
       this->Ui->num_cam_0->setValue(camera_list[0]);
       this->Ui->num_cam_1->setValue(camera_list[1]);
       break;
 
     case 4:
+      this->Ui->num_cam_0->setMaximum(GlobalObjects->absCameras-1);
+      this->Ui->num_cam_1->setMaximum(GlobalObjects->absCameras-1);
+      this->Ui->num_cam_2->setMaximum(GlobalObjects->absCameras-1);
+      this->Ui->num_cam_3->setMaximum(GlobalObjects->absCameras-1);
+
       this->Ui->num_cam_0->setValue(camera_list[0]);
       this->Ui->num_cam_1->setValue(camera_list[1]);
       this->Ui->num_cam_2->setValue(camera_list[2]);
@@ -270,6 +262,58 @@ void C_frm_Camera_Positioning::set_num_value (std::vector<int> camera_list)
       break;
 
     case 6:
+      this->Ui->num_cam_0->setMaximum(GlobalObjects->absCameras-1);
+      this->Ui->num_cam_1->setMaximum(GlobalObjects->absCameras-1);
+      this->Ui->num_cam_2->setMaximum(GlobalObjects->absCameras-1);
+      this->Ui->num_cam_3->setMaximum(GlobalObjects->absCameras-1);
+      this->Ui->num_cam_4->setMaximum(GlobalObjects->absCameras-1);
+      this->Ui->num_cam_5->setMaximum(GlobalObjects->absCameras-1);
+
+      this->Ui->num_cam_0->setValue(camera_list[0]);
+      this->Ui->num_cam_1->setValue(camera_list[1]);
+      this->Ui->num_cam_2->setValue(camera_list[2]);
+      this->Ui->num_cam_3->setValue(camera_list[3]);
+      this->Ui->num_cam_4->setValue(camera_list[4]);
+      this->Ui->num_cam_5->setValue(camera_list[5]);
+      break;
+    case 8:
+      this->Ui->num_cam_0->setMaximum(GlobalObjects->absCameras-1);
+      this->Ui->num_cam_1->setMaximum(GlobalObjects->absCameras-1);
+      this->Ui->num_cam_2->setMaximum(GlobalObjects->absCameras-1);
+      this->Ui->num_cam_3->setMaximum(GlobalObjects->absCameras-1);
+      this->Ui->num_cam_4->setMaximum(GlobalObjects->absCameras-1);
+      this->Ui->num_cam_5->setMaximum(GlobalObjects->absCameras-1);
+
+      this->Ui->num_cam_0->setValue(camera_list[0]);
+      this->Ui->num_cam_1->setValue(camera_list[1]);
+      this->Ui->num_cam_2->setValue(camera_list[2]);
+      this->Ui->num_cam_3->setValue(camera_list[3]);
+      this->Ui->num_cam_4->setValue(camera_list[4]);
+      this->Ui->num_cam_5->setValue(camera_list[5]);
+      break;
+    case 10:
+      this->Ui->num_cam_0->setMaximum(GlobalObjects->absCameras-1);
+      this->Ui->num_cam_1->setMaximum(GlobalObjects->absCameras-1);
+      this->Ui->num_cam_2->setMaximum(GlobalObjects->absCameras-1);
+      this->Ui->num_cam_3->setMaximum(GlobalObjects->absCameras-1);
+      this->Ui->num_cam_4->setMaximum(GlobalObjects->absCameras-1);
+      this->Ui->num_cam_5->setMaximum(GlobalObjects->absCameras-1);
+
+      this->Ui->num_cam_0->setValue(camera_list[0]);
+      this->Ui->num_cam_1->setValue(camera_list[1]);
+      this->Ui->num_cam_2->setValue(camera_list[2]);
+      this->Ui->num_cam_3->setValue(camera_list[3]);
+      this->Ui->num_cam_4->setValue(camera_list[4]);
+      this->Ui->num_cam_5->setValue(camera_list[5]);
+      break;
+    case 12:
+      this->Ui->num_cam_0->setMaximum(GlobalObjects->absCameras-1);
+      this->Ui->num_cam_1->setMaximum(GlobalObjects->absCameras-1);
+      this->Ui->num_cam_2->setMaximum(GlobalObjects->absCameras-1);
+      this->Ui->num_cam_3->setMaximum(GlobalObjects->absCameras-1);
+      this->Ui->num_cam_4->setMaximum(GlobalObjects->absCameras-1);
+      this->Ui->num_cam_5->setMaximum(GlobalObjects->absCameras-1);
+
       this->Ui->num_cam_0->setValue(camera_list[0]);
       this->Ui->num_cam_1->setValue(camera_list[1]);
       this->Ui->num_cam_2->setValue(camera_list[2]);

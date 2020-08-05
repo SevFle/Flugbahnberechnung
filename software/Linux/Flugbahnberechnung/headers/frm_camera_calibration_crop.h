@@ -17,11 +17,8 @@ public:
     ~C_frm_Camera_Calibration_Crop();
 
 private:
-  Ui::C_frm_camera_calibration_crop* Ui;
-
-
-
-  C_GlobalObjects* GlobalObjects;
+  Ui::C_frm_camera_calibration_crop*    Ui;
+  C_GlobalObjects*                      GlobalObjects;
   C_Main*         Main;
   int Zaehler;
   QTimer*         Taktgeber;
