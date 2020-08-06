@@ -136,7 +136,7 @@ int  C_Camera2::getROI() const
   }
 void C_Camera2::setCameraID                 (int &cameraID)
   {
-  this->cameraID = cameraID
+  this->cameraID = cameraID;
   }
 int  C_Camera2::getCameraID                 () const
   {
@@ -145,7 +145,7 @@ int  C_Camera2::getCameraID                 () const
 
 void C_Camera2::save_picture (int photo_id, std::string definition, cv::Mat& srcImg)
   {
-  imwrite (definition + std::to_string (this->cameraID) + "_Snapshot_" + std::to_string (photo_id) + ".png",*cpu_src_img);
+  cv::imwrite (definition + std::to_string (this->cameraID) + "_Snapshot_" + std::to_string (photo_id) + ".png",srcImg);
   }
 
 

@@ -2,7 +2,7 @@
 
 using namespace imagefilter;
 
-C_ImageFilter::C_ImageFilter()
+C_ImageFilter::C_ImageFilter(C_GlobalObjects* GlobalObjects)
   {
 
   }

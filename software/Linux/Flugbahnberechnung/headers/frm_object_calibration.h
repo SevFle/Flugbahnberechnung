@@ -9,6 +9,7 @@
 #include "ui_frm_object_calibration.h"
 using namespace Main;
 
+
 namespace frm_Object_Calibration
 {
 class C_frm_Object_Calibration : public QMainWindow
@@ -26,6 +27,8 @@ C_Main*                         Main;
 QTimer*                         Taktgeber;
 Ui::C_frm_object_calibration*   Ui;
 QMessageBox*                    MsgBox;
+CameraManager::S_Payload*       payload;
+
 
   int Zaehler;
   int             Taktgeber_Intervall;

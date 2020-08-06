@@ -8,6 +8,7 @@ C_frm_Object_Calibration::C_frm_Object_Calibration(C_GlobalObjects* GlobalObject
     Ui->setupUi(this);
     this->GlobalObjects = GlobalObjects;
     this->Main          = Main;
+    this->payload       = new CameraManager::S_Payload;
 
     camera_id_in_use = 0;
     TimerWait        = 0;
@@ -100,111 +101,99 @@ bool               C_frm_Object_Calibration::eventFilter                        
   }
 /************************************** Nicht öffentliche QT-Slots******************************/
 void ::C_frm_Object_Calibration::on_bt_exit_clicked()
-{
-    this->Main->frm_Object_Tracking->close();
-    for (auto it = std::begin(this->Main->Camera_manager->camera_vector); it != std::end(this->Main->Camera_manager->camera_vector); it++)
-      {
-      (*it)->set_idle (true);
-      (*it)->set_undistord_active (false);
-      (*it)->set_filtering_active (false);
-      (*it)->set_show_cropped_image(false);
-      (*it)->set_show_contoured_active(false);
-      }
-    //TODO Implement proper cv windows handling
-    //cv::destroyAllWindows();
-
-this->close();
+  {
+  if(!this->Main->Camera_manager->stopPipelineTracking())
+    return;
+  this->Main->frm_Object_Tracking->close();
+  this->close();
 }
 
 
 void C_frm_Object_Calibration::Taktgeber_Tick()
-{
-    this->Ui->txb_zaehler->setText(QString::number(this->Zaehler++));
-
-    //Initial Wait um das abgreifen nicht vorhandener Bilder zu verhindern
-    if (this->Main->Camera_manager->camera_vector[camera_id_in_use]->is_thread_ready())
-      {
-      this->Fill_Mat_2_Lbl(*Main->Camera_manager->camera_vector[camera_id_in_use]->cpu_src_img, this->Ui->lbl_src_img);
-      this->Fill_Mat_2_Lbl(*Main->Camera_manager->camera_vector[camera_id_in_use]->cpu_hsv_filtered, this->Ui->lbl_img_gray);
-      this->Fill_Mat_2_Lbl(*Main->Camera_manager->camera_vector[camera_id_in_use]->cpu_masked_img, this->Ui->lbl_hsv_filtered);
-      this->Fill_Mat_2_Lbl(*Main->Camera_manager->camera_vector[camera_id_in_use]->cpu_contoured, this->Ui->lbl_img_contoured);
-      }
-    this->Ui->txb_fps->         setText(QString::number(this->Main->Camera_manager->camera_vector[camera_id_in_use]->get_fps()));
-    this->Ui->txb_frametime->   setText(QString::number(this->Main->Camera_manager->camera_vector[camera_id_in_use]->get_frametime().count()));
-    this->Ui->txb_delta_x->     setText(QString::number(this->Main->Camera_manager->camera_vector[camera_id_in_use]->get_delta_x()));
-    this->Ui->txb_delta_y->     setText(QString::number(this->Main->Camera_manager->camera_vector[camera_id_in_use]->get_delta_y()));
-    this->Ui->txb_s_x->         setText(QString::number(this->Main->Camera_manager->camera_vector[camera_id_in_use]->get_schwerpunkt_x()));
-    this->Ui->txb_s_y->         setText(QString::number(this->Main->Camera_manager->camera_vector[camera_id_in_use]->get_schwerpunkt_y()));
-}
+  {
+  this->Ui->txb_zaehler->setText(QString::number(this->Zaehler++));
+  if(this->Main->Camera_manager->pollPipeline(payload))
+    {
+    this->                      Fill_Mat_2_Lbl(payload->cpuSrcImg, this->Ui->lbl_src_img);
+    this->                      Fill_Mat_2_Lbl(payload->cpuHSVImg, this->Ui->lbl_hsv_filtered);
+    this->                      Fill_Mat_2_Lbl(payload->cpuConturedImg, this->Ui->lbl_img_contoured);
+    this->Ui->txb_fps->         setText(QString::number(payload->fps));
+    this->Ui->txb_frametime->   setText(QString::number(payload->frametime));
+    this->Ui->txb_delta_x->     setText(QString::number(payload->delta_x));
+    this->Ui->txb_delta_y->     setText(QString::number(payload->delta_y));
+    this->Ui->txb_s_x->         setText(QString::number(payload->s_x));
+    this->Ui->txb_s_y->         setText(QString::number(payload->s_y));
+    }
+  }
 
 
 void C_frm_Object_Calibration::on_num_opening_iterations_valueChanged(int arg1)
 {
-    this->Main->Camera_manager->camera_vector[camera_id_in_use]->set_opening_iterations (arg1);
+    this->Main->Camera_manager->vecCameras[camera_id_in_use]->filterValues->setOpening_iterations(arg1);
 
 }
 
 void C_frm_Object_Calibration::on_num_opening_kernelsize_valueChanged(int arg1)
 {
-    this->Main->Camera_manager->camera_vector[camera_id_in_use]->set_opening_kernel_size (arg1);
+    this->Main->Camera_manager->vecCameras[camera_id_in_use]->filterValues->setOpening_kernel_size (arg1);
 }
 
 void C_frm_Object_Calibration::on_num_closing_iterations_valueChanged(int arg1)
 {
-    this->Main->Camera_manager->camera_vector[camera_id_in_use]->set_closing_iterations (arg1);
+    this->Main->Camera_manager->vecCameras[camera_id_in_use]->filterValues->setClosing_iterations(arg1);
 }
 
 void C_frm_Object_Calibration::on_num_closing_kernelsize_valueChanged(int arg1)
 {
-    this->Main->Camera_manager->camera_vector[camera_id_in_use]->set_closing_kernel_size (arg1);
+    this->Main->Camera_manager->vecCameras[camera_id_in_use]->filterValues->setClosing_kernel_size(arg1);
 }
 
 
 void C_frm_Object_Calibration::on_num_erode_kernelsize_valueChanged(int arg1)
 {
-    this->Main->Camera_manager->camera_vector[camera_id_in_use]->set_erosion_kernel_size (arg1);
+    this->Main->Camera_manager->vecCameras[camera_id_in_use]->filterValues->setErosion_kernel_size(arg1);
 }
 
 
 void C_frm_Object_Calibration::on_num_dilate_kernelsize_valueChanged(int arg1)
 {
-    this->Main->Camera_manager->camera_vector[camera_id_in_use]->set_dilation_kernel_size (arg1);
+    this->Main->Camera_manager->vecCameras[camera_id_in_use]->filterValues->setDilation_kernel_size(arg1);
 }
 void C_frm_Object_Calibration::on_num_gaussian_kernelsize_valueChanged(int arg1)
 {
-    this->Main->Camera_manager->camera_vector[camera_id_in_use]->set_gaussian_kernel_size (arg1);
+    this->Main->Camera_manager->vecCameras[camera_id_in_use]->filterValues->setGaussian_kernel_size(arg1);
 }
 
 void C_frm_Object_Calibration::on_num_morph_kernelsize_valueChanged(int arg1)
 {
-    this->Main->Camera_manager->camera_vector[camera_id_in_use]->set_morph_kernel_size (arg1);
+    this->Main->Camera_manager->vecCameras[camera_id_in_use]->filterValues->setMorph_kernel_size(arg1);
 }
 
 void C_frm_Object_Calibration::on_num_gaussian_sigma_valueChanged(int arg1)
 {
-    this->Main->Camera_manager->camera_vector[camera_id_in_use]->set_gaussian_sigma (arg1);
+    this->Main->Camera_manager->vecCameras[camera_id_in_use]->filterValues->setGaussian_sigma(arg1);
 }
 
 void C_frm_Object_Calibration::on_num_bilateral_color_valueChanged(int arg1)
 {
-    this->Main->Camera_manager->camera_vector[camera_id_in_use]->set_bilateral_sigma_color (arg1);
+    this->Main->Camera_manager->vecCameras[camera_id_in_use]->filterValues->setBilateral_sigma_color(arg1);
 }
 
 void C_frm_Object_Calibration::on_num_bilateral_spatial_valueChanged(int arg1)
 {
-    this->Main->Camera_manager->camera_vector[camera_id_in_use]->set_bilateral_sigma_spatial (arg1);
+    this->Main->Camera_manager->vecCameras[camera_id_in_use]->filterValues->setBilateral_sigma_spatial(arg1);
 }
 
 void C_frm_Object_Calibration::on_num_bilateral_kernelsize_valueChanged(int arg1)
 {
-    this->Main->Camera_manager->camera_vector[camera_id_in_use]->set_bilateral_kernel_size (arg1);
+    this->Main->Camera_manager->vecCameras[camera_id_in_use]->filterValues->setBilateral_kernel_size(arg1);
 }
 
 void C_frm_Object_Calibration::on_sld_hue_min_valueChanged(int value)
 {
     if (value > this->Ui->sld_hue_max->value()) this->Ui->sld_hue_min->setValue(this->Ui->sld_hue_max->value() - 1);
 
-    this->Main->Camera_manager->camera_vector[camera_id_in_use]->set_hue_min (value);
+    this->Main->Camera_manager->vecCameras[camera_id_in_use]->filterValues->setHue_min(value);
     this->Ui->txb_hue_min->setText(QString::number(value));
 
 }
@@ -213,7 +202,7 @@ void C_frm_Object_Calibration::on_sld_hue_max_valueChanged(int value)
 {
     if (this->Ui->sld_hue_min->value() > value) this->Ui->sld_hue_max->setValue(this->Ui->sld_hue_min->value() + 1);
 
-    this->Main->Camera_manager->camera_vector[camera_id_in_use]->set_hue_max (value);
+    this->Main->Camera_manager->vecCameras[camera_id_in_use]->filterValues->setHue_max (value);
     this->Ui->txb_hue_max->setText(QString::number(value));
 }
 
@@ -221,7 +210,7 @@ void C_frm_Object_Calibration::on_sld_saturation_min_valueChanged(int value)
 {
     if (this->Ui->sld_saturation_min->value() > this->Ui->sld_saturation_max->value()) this->Ui->sld_saturation_min->setValue(this->Ui->sld_saturation_max->value() - 1);
 
-    Main->Camera_manager->camera_vector[camera_id_in_use]->set_saturation_min (value);
+    Main->Camera_manager->vecCameras[camera_id_in_use]->filterValues->setSaturation_min(value);
     this->Ui->txb_saturation_min->setText(QString::number(value));
 }
 
@@ -229,7 +218,7 @@ void C_frm_Object_Calibration::on_sld_saturation_max_valueChanged(int value)
 {
     if (this->Ui->sld_saturation_min->value() > this->Ui->sld_saturation_max->value()) this->Ui->sld_saturation_max->setValue(this->Ui->sld_saturation_min->value() + 1);
 
-    Main->Camera_manager->camera_vector[camera_id_in_use]->set_saturation_max (value);
+    Main->Camera_manager->vecCameras[camera_id_in_use]->filterValues->setSaturation_max(value);
     this->Ui->txb_saturation_max->setText(QString::number(value));
 }
 
@@ -237,7 +226,7 @@ void C_frm_Object_Calibration::on_sld_value_min_valueChanged(int value)
 {
     if (value > this->Ui->sld_value_max->value()) this->Ui->sld_value_min->setValue(this->Ui->sld_value_max->value() - 1);
 
-    Main->Camera_manager->camera_vector[camera_id_in_use]->set_value_min (value);
+    Main->Camera_manager->vecCameras[camera_id_in_use]->filterValues->setValue_min(value);
     this->Ui->txb_value_min->setText(QString::number(value));
 }
 
@@ -245,7 +234,7 @@ void C_frm_Object_Calibration::on_sld_value_max_valueChanged(int value)
 {
     if (this->Ui->sld_value_min->value() > this->Ui->sld_value_max->value()) this->Ui->sld_value_max->setValue(this->Ui->sld_value_min->value() + 1);
 
-    Main->Camera_manager->camera_vector[camera_id_in_use]->set_value_max (value);
+    Main->Camera_manager->vecCameras[camera_id_in_use]->filterValues->setValue_max (value);
     this->Ui->txb_value_max->setText(QString::number(value));
 }
 
@@ -253,7 +242,7 @@ void C_frm_Object_Calibration::on_sld_objectsize_min_valueChanged(int value)
 {
     if (value > this->Ui->sld_objectsize_max->value()) this->Ui->sld_objectsize_min->setValue(this->Ui->sld_objectsize_max->value() - 1);
 
-    Main->Camera_manager->camera_vector[camera_id_in_use]->set_object_size_min (value);
+    Main->Camera_manager->vecCameras[camera_id_in_use]->filterValues->setObject_Size_min(value);
     this->Ui->txb_objectsize_min->setText(QString::number(value));
 }
 
@@ -261,7 +250,7 @@ void C_frm_Object_Calibration::on_sld_objectsize_max_valueChanged(int value)
 {
     if (this->Ui->sld_objectsize_min->value() > this->Ui->sld_objectsize_max->value()) this->Ui->sld_objectsize_max->setValue(this->Ui->sld_objectsize_min->value() + 1);
 
-    Main->Camera_manager->camera_vector[camera_id_in_use]->set_object_size_max (value);
+    Main->Camera_manager->vecCameras[camera_id_in_use]->filterValues->setObject_Size_max(value);
     this->Ui->txb_objectsize_max->setText(QString::number(value));
 }
 
@@ -269,11 +258,6 @@ void C_frm_Object_Calibration::on_num_camera_valueChanged(int arg1)
 {
     TimerWait              = Zaehler + 100;
     this->camera_id_in_use = arg1;
-    this->Main->Camera_manager->camera_vector[camera_id_in_use]->set_idle (false);
-    this->Main->Camera_manager->camera_vector[camera_id_in_use]->set_show_cropped_image (false);
-    this->Main->Camera_manager->camera_vector[camera_id_in_use]->set_undistord_active (true);
-    this->Main->Camera_manager->camera_vector[camera_id_in_use]->set_filtering_active (true);
-    this->Main->Camera_manager->camera_vector[camera_id_in_use]->set_show_contoured_active (true);
 
     this->get_camera_settings (arg1);
 }
@@ -282,28 +266,28 @@ void C_frm_Object_Calibration::on_num_camera_valueChanged(int arg1)
 
 void C_frm_Object_Calibration::on_num_dilate_iterations_valueChanged(int arg1)
 {
-    this->Main->Camera_manager->camera_vector[camera_id_in_use]->set_dilation_iterations (arg1);
+    this->Main->Camera_manager->vecCameras[camera_id_in_use]->filterValues->setDilation_iterations(arg1);
 }
 
 void C_frm_Object_Calibration::on_num_erode_iterations_valueChanged(int arg1)
 {
-    this->Main->Camera_manager->camera_vector[camera_id_in_use]->set_erosion_iterations (arg1);
+    this->Main->Camera_manager->vecCameras[camera_id_in_use]->filterValues->setErosion_iterations(arg1);
 }
 
 void C_frm_Object_Calibration::on_num_morph_iterations_valueChanged(int arg1)
 {
-    this->Main->Camera_manager->camera_vector[camera_id_in_use]->set_morph_iterations (arg1);
+    this->Main->Camera_manager->vecCameras[camera_id_in_use]->filterValues->setMorph_iterations(arg1);
 }
 
 void C_frm_Object_Calibration::on_bt_apply_all_clicked()
 {
-    for (auto it = std::begin(this->Main->Camera_manager->camera_vector); it != std::end(this->Main->Camera_manager->camera_vector); it++)
+    for (auto it = std::begin(this->Main->Camera_manager->vecCameras); it != std::end(this->Main->Camera_manager->vecCameras); it++)
       {
-      (*it)->set_value_min (this->Ui->sld_value_min->value());
-      (*it)->set_value_max (this->Ui->sld_value_max->value());
+      (*it)->filterValues->setHue_min (this->Ui->sld_value_min->value());
+      (*it)->filterValues->setHue_max (this->Ui->sld_value_max->value());
 
-      (*it)->set_saturation_min (this->Ui->sld_saturation_min->value());
-      (*it)->set_saturation_max (this->Ui->sld_saturation_max->value());
+      (*it)->filterValues->setSaturation_min (this->Ui->sld_saturation_min->value());
+      (*it)->filterValues->setSaturation_min (this->Ui->sld_saturation_max->value());
 
       (*it)->set_hue_min (this->Ui->sld_hue_min->value());
       (*it)->set_hue_max (this->Ui->sld_hue_max->value());

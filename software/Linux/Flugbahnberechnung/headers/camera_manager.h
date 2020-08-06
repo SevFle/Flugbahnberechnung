@@ -8,6 +8,7 @@
 #include "tbb/concurrent_queue.h"
 
 #include <pthread.h>
+#include <thread>
 
 #include "opencv2/opencv.hpp"
 #include "opencv2/highgui.hpp"
@@ -23,28 +24,16 @@
 #include "headers/GlobalObjects.h"
 #include "gst/gst.h"
 
+#include "tbb/pipeline.h"
+#include "tbb/concurrent_queue.h"
+
+
 using namespace Camera;
 using namespace tracking;
 using namespace object;
 using namespace posen;
 using namespace GlobalObjects;
 
-struct S_Payload
-{
- cv::Mat cpuSrcImg;
- cv::Mat cpuUndistortedImg;
- cv::Mat cpuHSVImg;
- cv::Mat cpuConturedImg;
-
- cv::cuda::GpuMat gpuUndistortedImg;
- double timestamp = 0;
- cv::Mat gray;
- cv::Mat final;
- Camera::C_Camera2::S_filterProperties Filter;
-
- int cameraID = 0;
- int offset[];
-};
 
 
 
@@ -52,6 +41,29 @@ struct S_Payload
 
 namespace CameraManager
   {
+    struct S_Payload
+    {
+     cv::Mat cpuSrcImg;
+     cv::Mat cpuUndistortedImg;
+     cv::Mat cpuHSVImg;
+     cv::Mat cpuConturedImg;
+
+     cv::cuda::GpuMat gpuUndistortedImg;
+     double timestamp = 0;
+     cv::Mat gray;
+     cv::Mat final;
+     Camera::C_Camera2::S_filterProperties Filter;
+
+     int cameraID = 0;
+     double fps = 0;
+     double frametime = 0;
+     int delta_x = 0;
+     int delta_y = 0;
+     int s_x = 0;
+     int s_y = 0;
+     int offset[];
+    };
+
   class C_CameraManager
     {
     public:
@@ -80,11 +92,13 @@ namespace CameraManager
     pthread_t*                    camPositioning;
     pthread_mutex_t*  restrict    lock;
     std::vector<cv::Mat*>         vecImgShow;
+    tbb::concurrent_bounded_queue<S_Payload*>* Que;
+    S_Payload*                    pData;
+
     int                           camera_id;
-    int                           absCameras;
     int                           frameWidth;
     int                           frameHeight;
-    int                           arrActiveCameras[4];
+    int                           *arrActiveCameras[4];
     int                           cntPipeline;
     float                         SquareSize;
     volatile bool                 calibrationDone;
@@ -114,29 +128,39 @@ namespace CameraManager
     bool stopThreadCameraPositioning();
     bool startPipelineTracking();
     bool stopPipelineTracking();
+    bool pollPipeline               (CameraManager::S_Payload* payload);
 
-    void sm_object_tracking       ();
+
 
     void calculate_camera_pose    (int camera1, int camera2, cv::Vec3d T, cv::Mat R);
 
     void getDeviceList            ();
 
 
-
     /******************************************************* Private Klassenmethoden***************************************************************/
-    std::vector<cv::Mat *> getVecImgShow() const;
-    void setVecImgShow(const std::vector<cv::Mat *> &value);
-
-    bool getCalibrationDone() const;
-    void setCalibrationDone(volatile bool value);
-
-
   private:
-    void start_camera_thread ();
-    void pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera, tbb::concurrent_bounded_queue<S_Payload*> &que);
-   static void* threadCameraPositioning  (void *This);
-    void threadCameraSimple();
-    void mvTemp2VecCamera         (std::vector<Camera::C_Camera2*> temp_CameraVector);
+    void start_camera_thread                ();
+    void pipelineTracking                   (std::vector<Camera::C_Camera2*> vecCamera,int* arrActiveCameras[4], tbb::concurrent_bounded_queue<S_Payload*> &que);
+    static void* threadCameraPositioning    (void *This);
+    static void *pipelineHelper             (void* This);
+
+    void threadCameraSimple                 ();
+    void mvTemp2VecCamera                   (std::vector<Camera::C_Camera2*> temp_CameraVector);
+    void sm_object_tracking       ();
+    /******************************************************* Getter-Setter Klassenmethoden***************************************************************/
+  public:
+    std::vector<cv::Mat *> getVecImgShow    () const;
+    void setVecImgShow                      (const std::vector<cv::Mat *> &value);
+
+    bool getCalibrationDone                 () const;
+    void setCalibrationDone                 (volatile bool value);
+
+
+    bool getPipelineDone                    () const;
+    void setPipelineDone                    (volatile bool value);
+
+    bool getPositioningDone                 () const;
+    void setPositioningDone                 (volatile bool value);
 
     };// c_camera_unmanaged
   }//nmsp_c_camera_unmanaged

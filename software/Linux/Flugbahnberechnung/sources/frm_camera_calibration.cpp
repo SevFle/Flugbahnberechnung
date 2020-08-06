@@ -46,7 +46,6 @@ C_frm_Camera_Calibration::~C_frm_Camera_Calibration()
 /************************************** QT-Events******************************/
 void C_frm_Camera_Calibration::showEvent(QShowEvent* ShowEvent)
 {
-Q_UNUSED(ShowEvent)
 this->Zaehler                     = 0;
 connect                           (this->Taktgeber, &QTimer::timeout, this, &C_frm_Camera_Calibration::Taktgeber_Tick);
 this->Taktgeber->start            (this->Taktgeber_Intervall);
@@ -56,6 +55,7 @@ this->Zaehler                     = 0;
 this->cameraID                    = 0;
 this->Timerwait                   = 50;
 this->on_rb_single_calibration_clicked();
+Q_UNUSED(ShowEvent)
 }
 
 void C_frm_Camera_Calibration::closeEvent(QCloseEvent* CloseEvent)
@@ -150,6 +150,8 @@ void C_frm_Camera_Calibration::on_bt_start_clicked()
 
 void frm_Camera_Calibration::C_frm_Camera_Calibration::on_bt_exit_clicked()
 {
+  if(this->Main->Camera_manager->stopThreadCameraPositioning())
+    printf("***ERROR*** Kamerathread konnte nicht gestoppt werden");
 this->close();
 }
 

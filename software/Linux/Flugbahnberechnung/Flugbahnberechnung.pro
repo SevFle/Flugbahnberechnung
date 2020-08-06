@@ -199,3 +199,9 @@ DEPENDPATH += $$PWD/../../../../../libs/opencv420/include
 
 CONFIG += link_pkgconfig
 PKGCONFIG += gstreamer-1.0 glib-2.0 gobject-2.0 gstreamer-app-1.0 gstreamer-pbutils-1.0
+
+unix:!macx: LIBS += -L$$PWD/../../../usr/local/lib/ -ltbb
+
+INCLUDEPATH += $$PWD/../../../usr/local/include
+DEPENDPATH += $$PWD/../../../usr/local/include
+
