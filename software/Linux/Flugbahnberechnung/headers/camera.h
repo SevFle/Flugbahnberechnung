@@ -171,7 +171,6 @@ private:
     int closing_kernel_size;
     int morph_kernel_size;
     int gaussian_kernel_size;
-
     int resize_width;
     int resize_height;
 

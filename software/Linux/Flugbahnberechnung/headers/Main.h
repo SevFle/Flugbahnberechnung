@@ -52,7 +52,7 @@ namespace Main
     C_Main                              (C_GlobalObjects* GlobalObjects);
     ~C_Main                             ();
 
-    C_CameraManager*                 Camera_manager;
+    C_CameraManager*                    cameraManager;
 
     C_frm_Main*                         frm_Main;
     C_frm_Object_Calibration*           frm_Object_Calibration;

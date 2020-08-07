@@ -28,7 +28,6 @@ SOURCES += \
     sources/camera_manager.cpp \
     sources/object.cpp \
     sources/posen.cpp \
-    sources/tracking.cpp \
     sources/Main.cpp \
     sources/frm_camera_calibration.cpp \
     sources/frm_camera_calibration_crop.cpp \
@@ -36,7 +35,8 @@ SOURCES += \
     sources/frm_camera_positioning_pose.cpp \
     sources/frm_object_calibration.cpp \
     sources/frm_object_tracking.cpp \
-    sources/frm_main.cpp
+    sources/frm_main.cpp \
+    sources/trackingManager.cpp
 
 HEADERS += \
     camera2.h \
@@ -50,7 +50,6 @@ HEADERS += \
     headers/object.h \
     headers/point.h \
     headers/posen.h \
-    headers/tracking.h \
     headers/Main.h \
     headers/frm_camera_calibration.h \
     headers/frm_camera_calibration_crop.h \
@@ -59,6 +58,7 @@ HEADERS += \
     headers/frm_main.h \
     headers/frm_object_calibration.h \
     headers/frm_object_tracking.h \
+    headers/trackingManager.h \
     imagefilter.h \
     loadmanager.h \
     savemanager.h

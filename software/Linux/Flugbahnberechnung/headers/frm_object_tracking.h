@@ -32,11 +32,13 @@ private:
   std::thread*    Tracking;
 
   QTimer*         Taktgeber;
+  CameraManager::S_Payload*       payload;
+
 
   int             Taktgeber_Intervall;
   int             TimerWait;
   int Zaehler;
-  int current_camera;
+  int cameraID;
 
 private:
   void showEvent (QShowEvent* ShowEvent) override;

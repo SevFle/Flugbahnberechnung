@@ -47,7 +47,7 @@ void C_Camera2::setMap1(cv::cuda::GpuMat *value)
 
 C_Camera2::S_filterProperties *C_Camera2::getFilterproperties() const
     {
-    return filterValues;
+    return this->filterValues;
     }
 
 void C_Camera2::setFilterproperties(S_filterProperties *value)

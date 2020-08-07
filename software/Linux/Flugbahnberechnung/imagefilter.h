@@ -23,7 +23,7 @@ namespace imagefilter
     void gpufGaussian                     (cv::cuda::GpuMat &gpuSrc,  cv::cuda::GpuMat &gpuDst, Camera::C_Camera2::S_filterProperties &Filter);
     void gpufMorphGradient                (cv::cuda::GpuMat& gpu_src, cv::cuda::GpuMat& gpu_dst, Camera::C_Camera2::S_filterProperties &Filter);
     void gpufHSV                          (cv::cuda::GpuMat &gpu_src, cv::Mat           &cpu_dst,Camera::C_Camera2::S_filterProperties &Filter);
-    void findContours                     (cv::Mat& cpuSrc,           cv::Mat& dst_contoured_image, int offset[2], Camera::C_Camera2 &Camera);
+    bool findContours                     (cv::Mat& cpuSrc,           cv::Mat& dst_contoured_image, int offset[2], Camera::C_Camera2 &Camera);
     void gpufUnidstord                    (cv::Mat &cpuSrc,           cv::cuda::GpuMat &gpuDst, cv::cuda::GpuMat &gpuMap1, cv::cuda::GpuMat &gpuMap2);
 
   private:

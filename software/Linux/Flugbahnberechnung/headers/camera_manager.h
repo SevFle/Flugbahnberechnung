@@ -19,7 +19,7 @@
 #include "savemanager.h"
 #include "imagefilter.h"
 
-#include "headers/tracking.h"
+#include "headers/trackingManager.h"
 #include "headers/object.h"
 #include "headers/GlobalObjects.h"
 #include "gst/gst.h"
@@ -29,7 +29,7 @@
 
 
 using namespace Camera;
-using namespace tracking;
+using namespace trackingManager;
 using namespace object;
 using namespace posen;
 using namespace GlobalObjects;
@@ -43,32 +43,33 @@ namespace CameraManager
   {
     struct S_Payload
     {
-     cv::Mat cpuSrcImg;
-     cv::Mat cpuUndistortedImg;
-     cv::Mat cpuHSVImg;
-     cv::Mat cpuConturedImg;
+     cv::Mat                                cpuSrcImg;
+     cv::Mat                                cpuUndistortedImg;
+     cv::Mat                                cpuHSVImg;
+     cv::Mat                                cpuConturedImg;
 
-     cv::cuda::GpuMat gpuUndistortedImg;
-     double timestamp = 0;
-     cv::Mat gray;
-     cv::Mat final;
-     Camera::C_Camera2::S_filterProperties Filter;
+     cv::cuda::GpuMat                       gpuUndistortedImg;
+     cv::Mat                                gray;
+     cv::Mat                                final;
+     Camera::C_Camera2::S_filterProperties  Filter;
 
-     int cameraID = 0;
-     double fps = 0;
-     double frametime = 0;
-     int delta_x = 0;
-     int delta_y = 0;
-     int s_x = 0;
-     int s_y = 0;
-     int offset[];
+     int                                    cameraID = 0;
+     int                                    delta_x = 0;
+     int                                    delta_y = 0;
+     int                                    s_x = 0;
+     int                                    s_y = 0;
+     bool                                   found = false;
+     double                                 fps = 0;
+     double                                 frametime = 0;
+     double                                 timestamp = 0;
+     int                                    offset[4];
     };
 
   class C_CameraManager
     {
     public:
     /*************************************************************** Konstruktoren *************************************************************/
-    C_CameraManager ( C_GlobalObjects* GlobalObjects);
+    C_CameraManager ( C_GlobalObjects* globalObjects);
     /*************************************************************** Destruktor ****************************************************************/
     ~C_CameraManager ();
 
@@ -80,27 +81,26 @@ namespace CameraManager
 
     /**************************************************** Öffentliche Anwender-Attribute ********************************************************/
     public:
-
+    Savemanager::c_SaveManager*   saveManager;
+    LoadManager::C_LoadManager*   loadManager;
+    trackingManager::C_trackingManager*         trackingManager;
     /******************************************** Nicht öffentliche private Anwender-Attribute **************************************************/
     private:
-    C_GlobalObjects*              GlobalObjects;
-    Savemanager::c_SaveManager*   SaveManager;
-    LoadManager::C_LoadManager*   Loadmanager;
+    C_GlobalObjects*              globalObjects;
     imagefilter::C_ImageFilter*   ImageFilter;
-    pthread_t*                    camPipeline;
-    pthread_t*                    camSimple;
-    pthread_t*                    camPositioning;
-    pthread_mutex_t*  restrict    lock;
-    std::vector<cv::Mat*>         vecImgShow;
-    tbb::concurrent_bounded_queue<S_Payload*>* Que;
+    pthread_t*                                camPipeline;
+    pthread_t*                                  camSimple;
+    pthread_t*                                  camPositioning;
+    pthread_mutex_t*  restrict                  lock;
+    std::vector<cv::Mat*>                       vecImgShow;
+    tbb::concurrent_bounded_queue<S_Payload*>*  Que;
     S_Payload*                    pData;
 
     int                           camera_id;
     int                           frameWidth;
     int                           frameHeight;
-    int                           *arrActiveCameras[4];
+    int                           arrActiveCameras[4];
     int                           cntPipeline;
-    float                         SquareSize;
     volatile bool                 calibrationDone;
     volatile bool                 positioningDone;
     volatile bool                 pipelineDone;
@@ -116,13 +116,13 @@ namespace CameraManager
                                    int absCornersWidth,
                                    int absCornersHeight,
                                    int absBoardImg,
-                                   int absCornerLength);
+                                   float absCornerLength);
 
     void calibrate_stereo_camera  (int current_camera_id,
                                    int absCornersWidth,
                                    int absCornersHeight,
                                    int absBoardImg,
-                                   int absCornerLength);
+                                   float absCornerLength);
 
     bool startThreadCameraPositioning();
     bool stopThreadCameraPositioning();
@@ -140,13 +140,12 @@ namespace CameraManager
     /******************************************************* Private Klassenmethoden***************************************************************/
   private:
     void start_camera_thread                ();
-    void pipelineTracking                   (std::vector<Camera::C_Camera2*> vecCamera,int* arrActiveCameras[4], tbb::concurrent_bounded_queue<S_Payload*> &que);
+    void pipelineTracking                   (std::vector<Camera::C_Camera2*> vecCamera, tbb::concurrent_bounded_queue<S_Payload*> &que);
     static void* threadCameraPositioning    (void *This);
     static void *pipelineHelper             (void* This);
-
     void threadCameraSimple                 ();
     void mvTemp2VecCamera                   (std::vector<Camera::C_Camera2*> temp_CameraVector);
-    void sm_object_tracking       ();
+    void smTracking                         (S_Payload* payload);
     /******************************************************* Getter-Setter Klassenmethoden***************************************************************/
   public:
     std::vector<cv::Mat *> getVecImgShow    () const;

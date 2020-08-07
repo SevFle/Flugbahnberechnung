@@ -88,7 +88,7 @@ void C_ImageFilter::gpufHSV (cv::cuda::GpuMat &gpu_src, cv::Mat &cpu_dst, Camera
   temp1.download(cpu_dst);
   }
 
-void C_ImageFilter::findContours(cv::Mat &thresholded_source_image, cv::Mat &dstCpuContouredImg, int offset[], Camera::C_Camera2 &Camera)
+bool C_ImageFilter::findContours(cv::Mat &thresholded_source_image, cv::Mat &dstCpuContouredImg, int offset[], Camera::C_Camera2 &Camera)
   {
   int KonturIndex             = 0;
   int objektAnzahl            = 0;
@@ -213,7 +213,7 @@ void C_ImageFilter::findContours(cv::Mat &thresholded_source_image, cv::Mat &dst
     //std::cout << "Objektgröße "<< std::to_string(Moment_0_Ordnung) << std::endl << std::endl;
     if (ObjectSizeMin > Moment_0_Ordnung || Moment_0_Ordnung > ObjectSizeMax)
       {
-      return;
+      return false;
       }
 
     // Bestimme Flchenmoment 1. Ordnung (Flche * x bzw.Flche * y) zur Bestimmung des Flchenschwerpunktes: x_ = summe(m1) / summe(m0);
@@ -269,19 +269,16 @@ void C_ImageFilter::findContours(cv::Mat &thresholded_source_image, cv::Mat &dst
 
     // Zeichne eine Linie zwischen kalibriertem Bildmittelpunkt und dem Objektschwerpunkt
     line (dstCpuContouredImg,cv::Point (static_cast<int> (Ist_x),static_cast<int> (Ist_y)),cv::Point (static_cast<int> (Soll_x),static_cast<int> (Soll_y)),cv::Scalar (0,0,255),4,8,0);
+    return true;
     }
   else
     {
     contourFound = false;
-    //this->Vec_Object[0] = 0.0;
-    //this->Vec_Object[1] = 0.0;
-    //this->Vec_Object[2] = 0.0;
+    Vec_Object[0] = 0.0;
+    Vec_Object[1] = 0.0;
+    Vec_Object[2] = 0.0;
     max_Moment_m00 = 0.0;
-
-    //putText (*dst_contoured_image,"S_x:     Object not found",cv::Point (0,20),1,1,cv::Scalar (255,255,255),2);
-    //putText (*dst_contoured_image,"S_y:     Object not found",cv::Point (0,50),1,1,cv::Scalar (255,255,255),2);
-    //putText (*dst_contoured_image,"Delta_x: Object not found",cv::Point (0,80),1,1,cv::Scalar (255,255,255),2);
-    //putText (*dst_contoured_image,"Delta_y: Object not found",cv::Point (0,110),1,1,cv::Scalar (255,255,255),2);
+    return false;
     }
   }
 

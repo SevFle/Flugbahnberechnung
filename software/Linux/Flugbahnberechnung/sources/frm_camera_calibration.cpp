@@ -106,16 +106,16 @@ void C_frm_Camera_Calibration::Taktgeber_Tick()
   switch (method)
     {
     case 0:
-      this->Fill_Mat_2_Lbl(*this->Main->Camera_manager->getVecImgShow()[cameraID], this->Ui->lbl_img_single_calibration);
+      this->Fill_Mat_2_Lbl(*this->Main->cameraManager->getVecImgShow()[cameraID], this->Ui->lbl_img_single_calibration);
       break;
 
     case 1:
-      this->Fill_Mat_2_Lbl(*this->Main->Camera_manager->getVecImgShow()[cameraID], this->Ui->lbl_img_single_calibration);
-      this->Fill_Mat_2_Lbl(*this->Main->Camera_manager->getVecImgShow()[cameraID+1], this->Ui->lbl_img_single_calibration);
+      this->Fill_Mat_2_Lbl(*this->Main->cameraManager->getVecImgShow()[cameraID], this->Ui->lbl_img_single_calibration);
+      this->Fill_Mat_2_Lbl(*this->Main->cameraManager->getVecImgShow()[cameraID+1], this->Ui->lbl_img_single_calibration);
       break;
      }
   pthread_mutex_unlock(lock);
-   if (this->Main->Camera_manager->getCalibrationDone())
+   if (this->Main->cameraManager->getCalibrationDone())
      {
      this->ShowTable();
      }
@@ -150,7 +150,7 @@ void C_frm_Camera_Calibration::on_bt_start_clicked()
 
 void frm_Camera_Calibration::C_frm_Camera_Calibration::on_bt_exit_clicked()
 {
-  if(this->Main->Camera_manager->stopThreadCameraPositioning())
+  if(this->Main->cameraManager->stopThreadCameraPositioning())
     printf("***ERROR*** Kamerathread konnte nicht gestoppt werden");
 this->close();
 }
@@ -204,8 +204,8 @@ void C_frm_Camera_Calibration::camera_calibration_thread (void* This)
   switch (static_cast<frm_Camera_Calibration::C_frm_Camera_Calibration*>(This)->method)
     {
     case 0:
-      (static_cast<frm_Camera_Calibration::C_frm_Camera_Calibration*>(This)->Main->Camera_manager->calibrateSingleCamera
-                                                       ((static_cast<frm_Camera_Calibration::C_frm_Camera_Calibration*>(This)->cameraID,
+      (static_cast<frm_Camera_Calibration::C_frm_Camera_Calibration*>(This)->Main->cameraManager->calibrateSingleCamera
+                                                       (static_cast<frm_Camera_Calibration::C_frm_Camera_Calibration*>(This)->cameraID,
                                                         static_cast<frm_Camera_Calibration::C_frm_Camera_Calibration*>(This)->Ui->txb_edge_width->text().toInt(),
                                                         static_cast<frm_Camera_Calibration::C_frm_Camera_Calibration*>(This)->Ui->txb_edge_height->text().toInt(),
                                                         static_cast<frm_Camera_Calibration::C_frm_Camera_Calibration*>(This)->Ui->txb_usrInput_images->text().toInt(),
@@ -213,8 +213,8 @@ void C_frm_Camera_Calibration::camera_calibration_thread (void* This)
       break;
 
     case 1:
-      (static_cast<frm_Camera_Calibration::C_frm_Camera_Calibration*>(This)->Main->Camera_manager->calibrate_stereo_camera(
-                                                       ((static_cast<frm_Camera_Calibration::C_frm_Camera_Calibration*>(This)->cameraID,
+      (static_cast<frm_Camera_Calibration::C_frm_Camera_Calibration*>(This)->Main->cameraManager->calibrate_stereo_camera
+                                                       (static_cast<frm_Camera_Calibration::C_frm_Camera_Calibration*>(This)->cameraID,
                                                         static_cast<frm_Camera_Calibration::C_frm_Camera_Calibration*>(This)->Ui->txb_edge_width->text().toInt(),
                                                         static_cast<frm_Camera_Calibration::C_frm_Camera_Calibration*>(This)->Ui->txb_edge_height->text().toInt(),
                                                         static_cast<frm_Camera_Calibration::C_frm_Camera_Calibration*>(This)->Ui->txb_usrInput_images->text().toInt(),
@@ -242,7 +242,7 @@ void C_frm_Camera_Calibration::sm_Single_camera_calibration ()
       //Take pictures
     case 1:
       pthread_mutex_lock(&threadlock);
-      this->Main->Camera_manager->vecCameras[cameraID]->save_picture    (photo_id,naming,*this->Main->Camera_manager->getVecImgShow()[cameraID]);
+      this->Main->cameraManager->vecCameras[cameraID]->save_picture    (photo_id,naming,*this->Main->cameraManager->getVecImgShow()[cameraID]);
       this->Ui->txb_img_count->setText(QString::number                  (this->photo_id + 1));
       this->photo_id++;
 
@@ -290,8 +290,8 @@ void C_frm_Camera_Calibration::sm_Stereo_camera_calibration ()
 
       //Take pictures
     case 1:
-      this->Main->Camera_manager->vecCameras[cameraID]->save_picture    (photo_id,naming,*this->Main->Camera_manager->getVecImgShow()[cameraID]);
-      this->Main->Camera_manager->vecCameras[cameraID]->save_picture    (photo_id,naming,*this->Main->Camera_manager->getVecImgShow()[cameraID+1]);
+      this->Main->cameraManager->vecCameras[cameraID]->save_picture    (photo_id,naming,*this->Main->cameraManager->getVecImgShow()[cameraID]);
+      this->Main->cameraManager->vecCameras[cameraID]->save_picture    (photo_id,naming,*this->Main->cameraManager->getVecImgShow()[cameraID+1]);
 
       this->Ui->txb_img_count->                                     setText(QString::number(this->photo_id + 1));
       this->photo_id++;

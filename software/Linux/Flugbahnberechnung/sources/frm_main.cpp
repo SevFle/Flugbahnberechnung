@@ -79,7 +79,7 @@ bool               C_frm_Main::eventFilter                                      
 /************************************** Nicht Ã¶ffentliche QT-Slots******************************/
 void ::C_frm_Main::on_bt_exit_clicked()
   {
-  if(!this->Main->Camera_manager->closeCameras())
+  if(!this->Main->cameraManager->closeCameras())
     {
     this->MsgBox->setText("Offene Kameraverbindungen konnten nicht geschlossen werden");
     this->MsgBox->setIcon(QMessageBox::Critical);
@@ -112,7 +112,7 @@ void ::C_frm_Main::on_bt_apply_clicked()
       this->Ui->num_cameras->setEnabled(false);
       this->Ui->bt_apply->setEnabled     (false);
 
-      if(!this->Main->Camera_manager->openCameras ())
+      if(!this->Main->cameraManager->openCameras ())
         {
         this->MsgBox->setText("Kameras konnten nicht geöffnet werden");
         this->MsgBox->setIcon(QMessageBox::Critical);
@@ -130,7 +130,7 @@ void ::C_frm_Main::on_bt_apply_clicked()
 }
 void frm_Main::C_frm_Main::on_bt_tracking_clicked()
   {
-  if(!this->Main->Camera_manager->startPipelineTracking())
+  if(!this->Main->cameraManager->startPipelineTracking())
     {
     this->MsgBox->setText("Pipeline konnte nicht gestartet werden");
     this->MsgBox->setIcon(QMessageBox::Critical);
@@ -143,7 +143,7 @@ void frm_Main::C_frm_Main::on_bt_tracking_clicked()
 
 void frm_Main::C_frm_Main::on_bt_camera_calibration_clicked()
   {
-  if(!this->Main->Camera_manager->startThreadCameraPositioning())
+  if(!this->Main->cameraManager->startThreadCameraPositioning())
     {
     this->MsgBox->setText("Thread zur Kamerakalibrierung konnte nicht gestartet werden");
     this->MsgBox->setIcon(QMessageBox::Critical);
@@ -163,7 +163,7 @@ void frm_Main::C_frm_Main::on_bt_camera_pose_clicked()
 
 void frm_Main::C_frm_Main::on_bt_camera_positioning_clicked()
   {
-  if(!this->Main->Camera_manager->startThreadCameraPositioning())
+  if(!this->Main->cameraManager->startThreadCameraPositioning())
     {
     this->MsgBox->setText("Thread zur Kamerapositionierung konnte nicht gestartet werden");
     this->MsgBox->setIcon(QMessageBox::Critical);

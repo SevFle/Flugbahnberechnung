@@ -9,20 +9,22 @@ using namespace GlobalObjects;
 /*************************************************************** Konstruktoren **************************************************************/
 C_CameraManager::C_CameraManager ( C_GlobalObjects* GlobalObjects)
   {
-  this->GlobalObjects = GlobalObjects;
-  this->Loadmanager   = new LoadManager::C_LoadManager(GlobalObjects);
-  this->SaveManager   = new Savemanager::c_SaveManager(GlobalObjects);
-  this->ImageFilter   = new imagefilter::C_ImageFilter(GlobalObjects);
-  this->lock          = new pthread_mutex_t;
-  this->camPipeline   = new pthread_t;
-  this->camSimple     = new pthread_t;
-  this->camPositioning= new pthread_t;
-  this->Que           = new tbb::concurrent_bounded_queue<S_Payload*>;
-  this->pData         = new S_Payload;
+  this->globalObjects   = GlobalObjects;
+  this->loadManager     = new LoadManager::C_LoadManager(GlobalObjects);
+  this->saveManager     = new Savemanager::c_SaveManager(GlobalObjects);
+  this->ImageFilter     = new imagefilter::C_ImageFilter(GlobalObjects);
+  this->lock            = new pthread_mutex_t;
+  this->camPipeline     = new pthread_t;
+  this->camSimple       = new pthread_t;
+  this->camPositioning  = new pthread_t;
+  this->Que             = new tbb::concurrent_bounded_queue<S_Payload*>;
+  this->pData           = new S_Payload;
+  this->trackingManager = new trackingManager::C_trackingManager(GlobalObjects);
   }
 /**************************************************************** Destruktor ****************************************************************/
 C_CameraManager::~C_CameraManager ()
   {
+  delete (trackingManager);
   delete (pData);
   delete (Que);
   delete (camPositioning);
@@ -30,9 +32,9 @@ C_CameraManager::~C_CameraManager ()
   delete (camPipeline);
   delete (lock);
   delete (ImageFilter);
-  delete (SaveManager);
-  delete (Loadmanager);
-  delete (GlobalObjects);
+  delete (saveManager);
+  delete (loadManager);
+  this->globalObjects = nullptr;
   }
 
 bool C_CameraManager::getPositioningDone() const
@@ -109,24 +111,24 @@ bool C_CameraManager::openCameras ()
 
       auto              camera        = new Camera::C_Camera2;
       camera->setPipeline(Pipeline);
-      camera->setCameraID(absCameras);
+      camera->setCameraID(this->globalObjects->absCameras);
       if(!camera->open())
         std::cout << "Could not open device on path" << devicePath << std::endl;
       vecCameras.push_back(camera);
-      absCameras++;
+      this->globalObjects->absCameras++;
       }
-    std::cout << "Created " << std::to_string(absCameras) << " Devices" << std::endl;
+    std::cout << "Created " << std::to_string(this->globalObjects->absCameras) << " Devices" << std::endl;
     }
 
   //Reorder recently created Cameras
-  *GlobalObjects->camera_order = this->Loadmanager->loadCameraPositioning();
-  this->mvVecCamera2Temp(this->Loadmanager->loadCameraPositioning());
+  *globalObjects->camera_order = this->loadManager->loadCameraPositioning();
+  this->mvVecCamera2Temp(this->loadManager->loadCameraPositioning());
 
   //Load Settings and Calibration for each camera created earlier
-  for (int i = 0; i < GlobalObjects->absCameras; i++)
+  for (int i = 0; i < globalObjects->absCameras; i++)
     {
-    this->Loadmanager->loadCameraCalibration(vecCameras[i]);
-    this->Loadmanager->loadCameraSettings(vecCameras[i]);
+    this->loadManager->loadCameraCalibration(vecCameras[i]);
+    this->loadManager->loadCameraSettings(vecCameras[i]);
     this->vecCameras[i]->initRectifyMap();
     }
   return true;
@@ -194,8 +196,8 @@ bool C_CameraManager::stopPipelineTracking()
 void C_CameraManager::mvVecCamera2Temp (std::vector<int> vecCamOrder)
   {
   std::vector<Camera::C_Camera2*> vecCamerastemp;
-  vecCamerastemp.resize(GlobalObjects->absCameras);
-  for(int i =0; i < GlobalObjects->absCameras; i++)
+  vecCamerastemp.resize(globalObjects->absCameras);
+  for(int i =0; i < globalObjects->absCameras; i++)
     {
     vecCamerastemp[i] = std::move(this->vecCameras[vecCamOrder[i]]);
     }
@@ -203,7 +205,7 @@ void C_CameraManager::mvVecCamera2Temp (std::vector<int> vecCamOrder)
   }
 void C_CameraManager::mvTemp2VecCamera (std::vector<Camera::C_Camera2*> vecCamerastemp)
   {
-  for (int i = 0; i < GlobalObjects->absCameras; i++)
+  for (int i = 0; i < globalObjects->absCameras; i++)
     {
     vecCameras[i] = std::move (vecCamerastemp[i]);
     }
@@ -213,7 +215,7 @@ void C_CameraManager::calibrateSingleCamera (int current_camera_id,
                                              int absCornersWidth,
                                              int absCornersHeight,
                                              int absBoardImg,
-                                             int absCornerLength)
+                                             float absCornerLength)
   {
   // Deklaration benötigter Variablen
   cv::Mat                     Originalbild;
@@ -241,7 +243,7 @@ void C_CameraManager::calibrateSingleCamera (int current_camera_id,
     {
     for (int j = 0; j < absCornersWidth; j++)
       {
-      Obj.push_back (cv::Point3f ((float)j * this->SquareSize,(float)i * this->SquareSize,0.0f));
+      Obj.push_back (cv::Point3f ((float)j * absCornerLength,(float)i * absCornerLength,0.0f));
       }
     }
 
@@ -330,7 +332,7 @@ void C_CameraManager::calibrateSingleCamera (int current_camera_id,
   vecCameras[current_camera_id]->setDistCoeffs(distCoeffs);
 
   //Speichern der berechenten Daten in CSV Datei
-  this->SaveManager->saveCameraCalibration(*vecCameras[current_camera_id]);
+  this->saveManager->saveCameraCalibration(*vecCameras[current_camera_id]);
   //Reaktivierung der Bildentzerrung
   this->vecCameras[current_camera_id]->initRectifyMap();
   }
@@ -338,7 +340,7 @@ void C_CameraManager::calibrate_stereo_camera (int current_camera_id,
                                                int absCornersWidth,
                                                int absCornersHeight,
                                                int absBoardImg,
-                                               int absCornerLength)
+                                               float absCornerLength)
   {
     this->calibrationDone = false;
   vector<vector<cv::Point3f>>   object_points;
@@ -407,7 +409,7 @@ void C_CameraManager::calibrate_stereo_camera (int current_camera_id,
     cv::imwrite ("../Parameter/Bilder/Camera_Stereo_Calibration_" + std::to_string (camera_id + 1) + "_Gray_DrawCorners_" + std::to_string (photoID) + ".png",gray2);
 
     vector<cv::Point3f> obj;
-    for (int i = 0; i < absCornersHeight; i++) for (int j = 0; j < absCornersWidth; j++) obj.emplace_back (static_cast<float> (j) * SquareSize,static_cast<float> (i) * SquareSize,0);
+    for (int i = 0; i < absCornersHeight; i++) for (int j = 0; j < absCornersWidth; j++) obj.emplace_back (static_cast<float> (j) * absCornerLength,static_cast<float> (i) * absCornerLength,0);
 
     if (found1 && found2)
       {
@@ -502,142 +504,6 @@ void C_CameraManager::threadCameraSimple()
   {
 
   }
-//void C_CameraManager::sm_object_tracking ()
-//  {
-//  s_tracking_data                     tracked_data;
-//  C_object*                           tracked_object;
-//  std::vector<C_object*>              v_tracked_objects;
-//  std::vector<C_AbsolutePose>*        vec_WorldToCam_Poses = 0; //AKA WORLD TO CAMERA POS
-//  int statemachine_state                = 0;
-//  int ID_Cam_Links = 0;
-//  int ID_Cam_Rechts = 0;
-//  bool object_in_init_zone = false;
-//  double temp1 = 0;
-//  double temp2 = 0;
-//  std::vector<S_Positionsvektor> v_positions;
-//  while (this->tracking_active)
-//    {
-//    switch (statemachine_state)
-//      {
-//      case 0:
-//        tracked_data.positionsvektor.X = 0.0;
-//        tracked_data.positionsvektor.Y = 0.0;
-//        tracked_data.positionsvektor.Z = 0.0;
-//        //Lade alle fest definierten Welt-Kamera Posen und erstelle einen Vektor mit allen Posen. Vektor[0] bezieht sich auf Kamera[0], usw.
-//        for (int i = 0; i < GlobalObjects->absCameras; i++)
-//          {
-//          C_AbsolutePose abs_WorldToCam;
-//          load_camera_cos (i,abs_WorldToCam);
-//          vec_WorldToCam_Poses->push_back (abs_WorldToCam);
-//          }
-//        statemachine_state = 1;
-//        break;
-//    case 1:
-//        //Wenn kein Objekt aus v_tracked_objects innerhalb der Init_ROI (100px x 600 px) in Camera 0+1 || v_tracked_objects leer
-//        //->Suche Aktiv nach neuen Objekten
-//        if(!object_in_init_zone || v_tracked_objects.size() != 0)
-//          {
-//          if(this->camera_vector[0]->is_contour_found())
-//            statemachine_state = 2;
-//          }
-//        else //Führe Berechnungen der aktuellen Objekte durch
-//          {
-//          statemachine_state = 3;
-//          }
-//        break;
-//    case 2:
-//        //Erstelle neues Ballobjekt
-//        object_in_init_zone = true;
-//        tracked_object = new C_object();
-//        tracked_object->set_ID_Cam_Links(0);
-//        tracked_object->set_ID_Cam_Rechts(0);
-//        v_tracked_objects.push_back(tracked_object);
-//        //ROI für die ersten Kameras ist selbstgeführt.
-//        statemachine_state = 3;
-//        break;
-//    case 3:
-//        //Iterator über v_tracked_objects
-//        for (auto it = std::begin(v_tracked_objects); it != std::end(v_tracked_objects); it++)
-//          {
-//          //Get zugewiesene Kameras für Objekt an stelle it
-//          ID_Cam_Links  = (*it)->get_ID_Cam_Links();
-//          ID_Cam_Rechts = (*it)->get_ID_Cam_Rechts();
-//          //Get_2D_Pixel für zugewiesene Kamera
-//          this->camera_vector[ID_Cam_Links]->get_objectPosition_2D_Pixel (tracked_data.found_0, tracked_data.Richtungsvektor_0, temp1);
-//          this->camera_vector[ID_Cam_Rechts]->get_objectPosition_2D_Pixel (tracked_data.found_1, tracked_data.Richtungsvektor_1, temp2);
-//          //Wenn Ball gefunden
-//          if (tracked_data.found_0 && tracked_data.found_1)
-//            {
-//              //Berechne Pixel Velocity
-//              //Berechne POS + m/s
-//            (*it)->calculate_px_speed();
-//            (*it)->calculate_ms_speed();
-//            (*it)->calculate_pose();
-//            //Wenn 2D Pixel im Bereich x = 700-800
-//             if(tracked_data.Richtungsvektor_0.X > 700  || tracked_data.Richtungsvektor_1.X > 700)
-//             {
-//             //Assign nächstes Kamerapaar für Objekt
-//             (*it)->set_ID_Cam_Links((*it)->get_ID_Cam_Links()+1);
-//             (*it)->sCameraManager::S_Payload *payloadet_ID_Cam_Rechts((*it)->get_ID_Cam_Rechts()+1);
-//             //Set ROI für nächstes Kamerapaar
-//             //this->camera_vector[(*it)->get_ID_Cam_Links()]->
-//             //thisCameraManager::S_Payload *payload->camera_vector[(*it)->get_ID_Cam_Rechts()]->
-//             }
-//          break;
-//          }
-//       }
-//    }
-//}
-//  }
-//      case 0:
-//        //Lade alle fest definierten Welt-Kamera Posen und erstelle einen Vektor mit allen Posen. Vektor[0] bezieht sich auf Kamera[0], usw.
-//        for (int i = 0; i < GlobalObjects->cameras_in_use; i++)
-//          {
-//          C_AbsolutePose abs_WorldToCam;
-//          load_camera_cos (i,abs_WorldToCam);
-//          vec_WorldToCam_Poses->push_back (abs_WorldToCam);
-//          }
-
-//        statemachine_state = 1;
-
-//        break;
-//      case 1:
-//        //Überprüfe ob eine Kameras das Objekt gefunden hat. Gehe dazu durch die komplette linke Reihe (+2).
-//        //Hat eine Kamera (0) das Objekt gesichtet, wird es wahrscheinlich
-//        //auch von der gegenüberliegenden Kamera (1) auffindbar sein.
-//          if (this->camera_vector[0]->is_contour_found() == true)
-//            {
-//			  auto detected_object = new C_object();
-//			  this->v_objects.push_back(detected_object);
-//			  object_found_camID = 0;
-//            statemachine_state = 2;
-//            break;
-//            }
-//        break;
-
-//      case 2:
-//        //Hole die 2D-Koordinaten des Objektes aus dem Kamerabild
-//		for (auto it = std::begin(v_objects); it != std::end(v_objects); it++)
-//		{
-//            //this->camera_vector[v_objects(it)->ID_Cam_Links]->get_objectPosition_2D_Pixel (tracked_data->found_0, tracked_data->Richtungsvektor_0, temp1);
-//			this->camera_vector[object_found_camID + 1]->get_objectPosition_2D_Pixel (tracked_data->found_1, tracked_data->Richtungsvektor_1, temp2);
-//			this->tracked_data->timestamp = (temp1 + temp2) / 2;
-			
-//		}
-
-//        statemachine_state = 3;
-//        break;
-
-//      case 3:
-//        this->tracking_thread->Get_Position_ObjectTracking (*tracked_data,*vec_WorldToCam_Poses);
-//        statemachine_state = 4;
-//		v_positions.push_back(tracked_data->positionsvektor);
-//        break;
-//      case 4:
-//        break;
-      //switch(statemachine_state)
-    //while(tracking_active)
-  //void sm_object_tracking
 void C_CameraManager::calculate_camera_pose(int camera1, int camera2, cv::Vec3d T, cv::Mat R)
   {
    //P02 = P01*P12
@@ -670,22 +536,22 @@ void C_CameraManager::calculate_camera_pose(int camera1, int camera2, cv::Vec3d 
                                HomogenePosenMatrixTempPuffer[k][j];
       }
     }
-  this->SaveManager->saveCameraCos(*this->vecCameras[camera2]);
+  this->saveManager->saveCameraCos(*this->vecCameras[camera2]);
   }//calculate_camera_pose
 
-void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera,int *arrActive[4], tbb::concurrent_bounded_queue<S_Payload*> &que)
+void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera, tbb::concurrent_bounded_queue<S_Payload*> &que)
   {
+  int smTrackingState = 0;
   //STEP 1: GRAB PICTURE FROM ARRAY-ACTIVE_CAMERAS
   tbb::parallel_pipeline(7, tbb::make_filter<void, S_Payload*>(tbb::filter::serial_in_order, [&](tbb::flow_control& fc)->S_Payload*
     {
     if(cntPipeline == 4) cntPipeline = 0;
     auto pData          = new S_Payload;
-    pData->cameraID     = *arrActive[cntPipeline];
-    if (pData->cameraID > GlobalObjects->absCameras) return 0;
+    pData->cameraID     = arrActiveCameras[cntPipeline];
+    if (pData->cameraID > globalObjects->absCameras) return 0;
 
     pData->Filter       = *vecCameras[arrActiveCameras[cntPipeline]]->getFilterproperties();
 
-    vecCameras[arrActiveCameras[cntPipeline]]->readImg(pData->cpuSrcImg);
     if(pipelineDone || pData->cpuSrcImg.empty())
       {
       this->pipelineDone = true;
@@ -714,10 +580,77 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
   //STEP 4: FIND CONTOURS ON CPUHSV, DRAW ON UNDISTORT
   tbb::make_filter<S_Payload*, S_Payload*>(tbb::filter::serial_in_order, [&] (S_Payload *pData)->S_Payload*
     {
+    if(this->ImageFilter->findContours(pData->cpuHSVImg, pData->cpuConturedImg, pData->offset, *vecCamera[pData->cameraID]))
+      pData->found = true;
+    else
+      pData->found = false;
+    return pData;
+    }
+  )&
+  //STEP 5: ADJUST ROI ON CPU UNDISTORT ****NOT NEEDED******
+  tbb::make_filter<S_Payload*, S_Payload*>(tbb::filter::serial_in_order, [&] (S_Payload *pData)->S_Payload*
+    {
     this->ImageFilter->findContours(pData->cpuHSVImg, pData->cpuConturedImg, pData->offset, *vecCamera[pData->cameraID]);
     }
   )&
-  //STEP 5: ADJUST ROI ON CPU UNDISTORT
+  //STEP 6: CALCULATE OBJECT POSITION
+  tbb::make_filter<S_Payload*, S_Payload*>(tbb::filter::serial_in_order, [&] (S_Payload *pData)->S_Payload*
+    {
+    switch (this->trackingManager->getAlive())
+      {
+      case 0:
+          //Lade alle fest definierten Welt-Kamera Posen und erstelle einen Vektor mit allen Posen. Vektor[0] bezieht sich auf Kamera[0], usw.
+          smTrackingState = 1;
+          break;
+      case 1:
+          if(!pData->found)
+            {
+              smTrackingState = 1;
+            }
+          else //Führe Berechnungen der aktuellen Objekte durch
+            {
+            smTrackingState = 2;
+            }
+          break;
+      case 2:
+          //Erstelle neues Ballobjekt
+          tracked_object->set_ID_Cam_Links(0);
+          tracked_object->set_ID_Cam_Rechts(0);
+          v_tracked_objects.push_back(tracked_object);
+          //ROI für die ersten Kameras ist selbstgeführt.
+          statemachine_state = 3;
+          break;
+      case 3:
+            //Get zugewiesene Kameras für Objekt an stelle it
+            ID_Cam_Rechts = (*it)->get_ID_Cam_Rechts();
+            //Get_2D_Pixel für zugewiesene Kamera
+            this->camera_vector[ID_Cam_Links]->get_objectPosition_2D_Pixel (tracked_data.found_0, tracked_data.Richtungsvektor_0, temp1);
+            this->camera_vector[ID_Cam_Rechts]->get_objectPosition_2D_Pixel (tracked_data.found_1, tracked_data.Richtungsvektor_1, temp2);
+            //Wenn Ball gefunden
+            if (tracked_data.found_0 && tracked_data.found_1)
+              {
+                //Berechne Pixel Velocity
+                //Berechne POS + m/s
+              (*it)->calculate_px_speed();
+              (*it)->calculate_ms_speed();
+              (*it)->calculate_pose();
+              //Wenn 2D Pixel im Bereich x = 700-800
+               if(tracked_data.Richtungsvektor_0.X > 700  || tracked_data.Richtungsvektor_1.X > 700)
+               {
+               //Assign nächstes Kamerapaar für Objekt
+               (*it)->set_ID_Cam_Links((*it)->get_ID_Cam_Links()+1);
+               (*it)->sCameraManager::S_Payload *payloadet_ID_Cam_Rechts((*it)->get_ID_Cam_Rechts()+1);
+               //Set ROI für nächstes Kamerapaar
+               //this->camera_vector[(*it)->get_ID_Cam_Links()]->
+               //thisCameraManager::S_Payload *payload->camera_vector[(*it)->get_ID_Cam_Rechts()]->
+               }
+            break;
+            }
+         }
+      }
+  }
+  )&
+
   tbb::make_filter<S_Payload*,void>(tbb::filter::serial_in_order, [&] (S_Payload *pData)
     {
     pData->gray.copyTo(pData->final);
@@ -739,11 +672,12 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
   );//tbb pipeline
 
 }
+void C_CameraManager::smTracking (S_Payload* payload)
+
 void *C_CameraManager::pipelineHelper(void* This)
   {
   static_cast<CameraManager::C_CameraManager*>(This)->pipelineTracking(static_cast<CameraManager::C_CameraManager*>(This)->vecCameras,
-                                                                       static_cast<CameraManager::C_CameraManager*>(This)->arrActiveCameras,
-                                                                       *static_cast<CameraManager::C_CameraManager*>(This)->Que);
+                                                                      *static_cast<CameraManager::C_CameraManager*>(This)->Que);
   }
 std::vector<cv::Mat *> C_CameraManager::getVecImgShow() const
   {
@@ -762,3 +696,4 @@ bool C_CameraManager::pollPipeline               (CameraManager::S_Payload* payl
       }
   return false;
   }
+
