@@ -51,13 +51,13 @@ public:
     QTableView *tblv_single_parameters;
     QGroupBox *grpb_stereo_output;
     QTableView *tblv_stereo_output;
-    QLabel *lbl_img_single_calibration;
     QLabel *lbl_img_stereo_left;
     QLabel *lbl_img_stereo_right;
     QPushButton *bt_start;
     QLabel *lbl_calibration_running;
     QSpinBox *num_camera_id;
     QPushButton *bt_photo;
+    QLabel *lbl_img_single_calibration;
 
     void setupUi(QMainWindow *C_frm_camera_calibration)
     {
@@ -142,10 +142,6 @@ public:
         tblv_stereo_output = new QTableView(grpb_stereo_output);
         tblv_stereo_output->setObjectName(QString::fromUtf8("tblv_stereo_output"));
         tblv_stereo_output->setGeometry(QRect(10, 30, 251, 421));
-        lbl_img_single_calibration = new QLabel(centralwidget);
-        lbl_img_single_calibration->setObjectName(QString::fromUtf8("lbl_img_single_calibration"));
-        lbl_img_single_calibration->setEnabled(false);
-        lbl_img_single_calibration->setGeometry(QRect(650, 20, 771, 681));
         lbl_img_stereo_left = new QLabel(centralwidget);
         lbl_img_stereo_left->setObjectName(QString::fromUtf8("lbl_img_stereo_left"));
         lbl_img_stereo_left->setGeometry(QRect(650, 10, 441, 441));
@@ -166,7 +162,11 @@ public:
         num_camera_id->setFont(font);
         bt_photo = new QPushButton(centralwidget);
         bt_photo->setObjectName(QString::fromUtf8("bt_photo"));
+        bt_photo->setEnabled(false);
         bt_photo->setGeometry(QRect(650, 750, 141, 71));
+        lbl_img_single_calibration = new QLabel(centralwidget);
+        lbl_img_single_calibration->setObjectName(QString::fromUtf8("lbl_img_single_calibration"));
+        lbl_img_single_calibration->setGeometry(QRect(640, 20, 941, 671));
         C_frm_camera_calibration->setCentralWidget(centralwidget);
 
         retranslateUi(C_frm_camera_calibration);
@@ -192,12 +192,12 @@ public:
         label_7->setText(QCoreApplication::translate("C_frm_camera_calibration", "Anzahl Kanten (B x H)", nullptr));
         grpb_single_output->setTitle(QCoreApplication::translate("C_frm_camera_calibration", "Output", nullptr));
         grpb_stereo_output->setTitle(QCoreApplication::translate("C_frm_camera_calibration", "Output", nullptr));
-        lbl_img_single_calibration->setText(QCoreApplication::translate("C_frm_camera_calibration", "TextLabel", nullptr));
-        lbl_img_stereo_left->setText(QCoreApplication::translate("C_frm_camera_calibration", "TextLabel", nullptr));
-        lbl_img_stereo_right->setText(QCoreApplication::translate("C_frm_camera_calibration", "TextLabel", nullptr));
+        lbl_img_stereo_left->setText(QString());
+        lbl_img_stereo_right->setText(QString());
         bt_start->setText(QCoreApplication::translate("C_frm_camera_calibration", "Start", nullptr));
         lbl_calibration_running->setText(QCoreApplication::translate("C_frm_camera_calibration", "Calibration being calculated. Please wait.", nullptr));
         bt_photo->setText(QCoreApplication::translate("C_frm_camera_calibration", "Bild aufnehmen", nullptr));
+        lbl_img_single_calibration->setText(QString());
     } // retranslateUi
 
 };

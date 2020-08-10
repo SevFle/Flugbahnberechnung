@@ -29,6 +29,7 @@ private:
    typedef void * (*THREADFUNCPTR)(void *);
 
   bool                              calibration_running;
+  bool                              imgPopOut;
   int                               photo_interval;
   int                               intervall;
   int                               photo_count;
@@ -44,7 +45,7 @@ private:
   bool eventFilter                  (QObject* Object, QEvent* Event) override;
 private slots:
   void Taktgeber_Tick               ();
-  void Fill_Mat_2_Lbl               (cv::Mat& img, QLabel* label);
+  void FillMat2Lbl                  (cv::Mat& img, QLabel* label);
 
   static void camera_calibration_thread (void *This);
   void sm_Single_camera_calibration     ();

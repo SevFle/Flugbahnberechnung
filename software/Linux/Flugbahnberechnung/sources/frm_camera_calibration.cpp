@@ -14,11 +14,12 @@ C_frm_Camera_Calibration::C_frm_Camera_Calibration(C_GlobalObjects* GlobalObject
     this->photo_count           = 0;
     this->photo_id              = 0;
     this->intervall             = 0;
-    this->usrInputAbsPhoto = 3;
-    this->Taktgeber = new QTimer(this);
-    this->Taktgeber_Intervall = 100;
+    this->usrInputAbsPhoto      = 3;
+    this->Taktgeber             = new QTimer(this);
+    this->Taktgeber_Intervall   = 25;
     this->lock                  = new pthread_mutex_t;
     this->camThread             = new pthread_t;
+    this->imgPopOut             =  false;
 
 }
 
@@ -55,6 +56,8 @@ this->Zaehler                     = 0;
 this->cameraID                    = 0;
 this->Timerwait                   = 50;
 this->on_rb_single_calibration_clicked();
+this->Ui->num_camera_id->setMaximum(GlobalObjects->absCameras-1);
+
 Q_UNUSED(ShowEvent)
 }
 
@@ -103,17 +106,19 @@ void C_frm_Camera_Calibration::Taktgeber_Tick()
   {
   this->Ui->txb_zaehler->setText(QString::number(this->Zaehler++));
   pthread_mutex_lock(lock);
-  switch (method)
+  if(!this->Main->cameraManager->getVecImgShow().empty())
     {
-    case 0:
-      this->Fill_Mat_2_Lbl(*this->Main->cameraManager->getVecImgShow()[cameraID], this->Ui->lbl_img_single_calibration);
-      break;
-
-    case 1:
-      this->Fill_Mat_2_Lbl(*this->Main->cameraManager->getVecImgShow()[cameraID], this->Ui->lbl_img_single_calibration);
-      this->Fill_Mat_2_Lbl(*this->Main->cameraManager->getVecImgShow()[cameraID+1], this->Ui->lbl_img_single_calibration);
-      break;
-     }
+    switch (method)
+      {
+      case 0:
+        this->FillMat2Lbl(*this->Main->cameraManager->getVecImgShow()[cameraID], this->Ui->lbl_img_single_calibration);
+        break;
+      case 1:
+        this->FillMat2Lbl(*this->Main->cameraManager->getVecImgShow()[cameraID], this->Ui->lbl_img_stereo_left);
+        this->FillMat2Lbl(*this->Main->cameraManager->getVecImgShow()[cameraID+1], this->Ui->lbl_img_stereo_right);
+        break;
+       }
+    }
   pthread_mutex_unlock(lock);
    if (this->Main->cameraManager->getCalibrationDone())
      {
@@ -121,12 +126,12 @@ void C_frm_Camera_Calibration::Taktgeber_Tick()
      }
   }
 
-void C_frm_Camera_Calibration::Fill_Mat_2_Lbl(cv::Mat& img, QLabel* label)
-{
-QImage imgIn= QImage((uchar*) img.data, img.cols, img.rows, img.step, QImage::Format_BGR888);
+void C_frm_Camera_Calibration::FillMat2Lbl(cv::Mat& img, QLabel* label)
+  {
+  QImage imgIn= QImage((uchar*) img.data, img.cols, img.rows, img.step, QImage::Format_BGR888);
+  label->setPixmap(QPixmap::fromImage(imgIn).scaled(label->size(),Qt::KeepAspectRatio));
+  }
 
-label->setPixmap(QPixmap::fromImage(imgIn));
-}
 
 
 void C_frm_Camera_Calibration::on_bt_start_clicked()
@@ -150,9 +155,9 @@ void C_frm_Camera_Calibration::on_bt_start_clicked()
 
 void frm_Camera_Calibration::C_frm_Camera_Calibration::on_bt_exit_clicked()
 {
-  if(this->Main->cameraManager->stopThreadCameraPositioning())
-    printf("***ERROR*** Kamerathread konnte nicht gestoppt werden");
-this->close();
+  this->Main->cameraManager->setPositioningDone(true);
+  if(!this->Main->cameraManager->stopThreadCameraPositioning()) return;
+  this->close();
 }
 
 void C_frm_Camera_Calibration::on_num_camera_id_valueChanged(int arg1)
@@ -171,7 +176,7 @@ void C_frm_Camera_Calibration::on_rb_single_calibration_clicked()
     this->Ui->rb_stereo_calibration->setChecked   (false);
     this->Ui->rb_single_calibration->setChecked   (true);
 
-    this->Ui->lbl_img_stereo_left->setVisible     (false);
+    this->Ui->lbl_img_stereo_right->setVisible     (false);
     this->Ui->lbl_img_stereo_left->setVisible     (false);
 
    this->Ui->lbl_img_single_calibration->setVisible(true);
@@ -180,25 +185,33 @@ void C_frm_Camera_Calibration::on_rb_single_calibration_clicked()
 
 void C_frm_Camera_Calibration::on_rb_stereo_calibration_clicked()
 {
-    this->method                   = 1;
-    this->Ui->num_camera_id->setValue(0);
-    this->Ui->num_camera_id->setSingleStep(2);
-    this->cameraID        = 0;
+    this->method                              = 1;
+    this->Ui->num_camera_id->setValue         (0);
+    this->Ui->num_camera_id->setSingleStep    (2);
+    this->cameraID                            = 0;
 
     this->Ui->rb_stereo_calibration->setChecked(true);
     this->Ui->rb_single_calibration->setChecked(false);
 
+    this->Ui->lbl_img_single_calibration->setVisible(false);
     this->Ui->lbl_img_stereo_left->setVisible(true);
-    this->Ui->lbl_img_stereo_left->setVisible(true);
+    this->Ui->lbl_img_stereo_right->setVisible(true);
 
-   this->Ui->lbl_img_single_calibration->setVisible(false);
 
 }
 
 void C_frm_Camera_Calibration::on_bt_photo_clicked()
-{
-
-}
+  {
+  switch(method)
+    {
+    case 0:
+      sm_Single_camera_calibration();
+      break;
+    case 1:
+      sm_Stereo_camera_calibration();
+      break;
+    }
+  }
 void C_frm_Camera_Calibration::camera_calibration_thread (void* This)
   {
   switch (static_cast<frm_Camera_Calibration::C_frm_Camera_Calibration*>(This)->method)
@@ -235,6 +248,7 @@ void C_frm_Camera_Calibration::sm_Single_camera_calibration ()
       this->cameraID                        = this->Ui->num_camera_id->value();
       this->photo_id                        = 0;
       this->usrInputAbsPhoto                = this->Ui->txb_usrInput_images->text().toInt();
+      this->Ui->bt_photo->setEnabled        (true);
       this->Ui->bt_start->setText           ("Beenden");
       this->sm_calibration_state            = 1;
       break;
@@ -271,7 +285,7 @@ void C_frm_Camera_Calibration::sm_Single_camera_calibration ()
         {
           photo_id = 0;
         }
-      break;
+      return;
     }
   }
 
@@ -284,6 +298,7 @@ void C_frm_Camera_Calibration::sm_Stereo_camera_calibration ()
       this->cameraID                        = this->Ui->num_camera_id->value();
       this->photo_id                        = 0;
       this->usrInputAbsPhoto                = this->Ui->txb_usrInput_images->text().toInt();
+      this->Ui->bt_photo->setEnabled        (true);
       this->Ui->bt_start->setText           ("Beenden");
       this->sm_calibration_state            = 1;
       break;
@@ -310,8 +325,6 @@ void C_frm_Camera_Calibration::sm_Stereo_camera_calibration ()
       this->Ui->lbl_calibration_running->setVisible(true);
 
       //Starte Hintergrund Thread zur Verarbeitung der aufgenommenen Bilder
-      //TODO Add threading
-      //Thread^ calibrate = gcnew Thread (gcnew ThreadStart (this,&C_frm_CameraCalibration_Single::camera_calibration_thread));
       if(int err = pthread_create(camThread,NULL, (THREADFUNCPTR) &frm_Camera_Calibration::C_frm_Camera_Calibration::camera_calibration_thread, this) !=0)
         {
           printf("**ERROR** Kamerathread konnte nicht gestartet werden");

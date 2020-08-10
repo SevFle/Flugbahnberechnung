@@ -4,21 +4,23 @@ using namespace Camera;
 
 C_Camera2::C_Camera2                        ()
   {
-  this->cap = new cv::VideoCapture;
-  this->cpuSrc = new cv::Mat;
-  this->distCoeffs = new cv::Mat;
-  this->intrinsic = new cv::Mat;
-  this->roi      = new cv::Rect;
-  this->gpuSrc = new cv::cuda::GpuMat;
-  this->map1 = new cv::cuda::GpuMat;
-  this->map2 = new cv::cuda::GpuMat;
-  this->cameraPose = new posen::C_AbsolutePose;
+  this->cap           = new cv::VideoCapture;
+  this->cpuSrc        = new cv::Mat;
+  this->distCoeffs    = new cv::Mat(cv::Mat_<double>(1,5));//new Mat(1, 5, CV_64F);
+  this->intrinsic     = new cv::Mat(cv::Mat_<double>(3,3));//new Mat(3, 3, CV_32FC1);;
+  this->roi           = new cv::Rect;
+  this->gpuSrc        = new cv::cuda::GpuMat;
+  this->xMap          = new cv::cuda::GpuMat(CV_32FC1);
+  this->yMap          = new cv::cuda::GpuMat(CV_32FC1);
+  this->cameraPose    = new posen::C_AbsolutePose;
+  this->filterValues  = new C_Camera2::S_filterProperties;
   }
 C_Camera2::~C_Camera2                       ()
   {
+  delete (filterValues);
   delete (cameraPose);
-  delete (map1);
-  delete (map2);
+  delete (xMap);
+  delete (yMap);
   delete (gpuSrc);
   delete (intrinsic);
   delete (distCoeffs);
@@ -51,12 +53,12 @@ void C_Camera2::initialize                  ()
   }
 void C_Camera2::initRectifyMap              ()
   {
-  cv::Mat cpu_map1;
-  cv::Mat cpu_map2;
-  initUndistortRectifyMap (*intrinsic,*distCoeffs,cv::Mat(),*intrinsic,cv::Size (cpuSrc->cols,cpuSrc->rows), CV_32FC1,cpu_map1,cpu_map2);
+  cv::Mat cpuXMap;
+  cv::Mat cpuYMap;
+  initUndistortRectifyMap (*intrinsic,*distCoeffs,cv::Mat(),*intrinsic,cv::Size (frameWidth,frameHeight), CV_32FC1,cpuXMap,cpuYMap);
 
-  this->map1->upload (cpu_map1);
-  this->map2->upload (cpu_map2);
+  this->xMap->upload (cpuXMap);
+  this->yMap->upload (cpuYMap);
 
   }
 void C_Camera2::readImg                      (cv::Mat &dstImg)
@@ -172,24 +174,24 @@ void C_Camera2::setRoi(cv::Rect *value)
   roi = value;
   }
 
-cv::cuda::GpuMat *C_Camera2::getMap2() const
+cv::cuda::GpuMat *C_Camera2::getYMap() const
   {
-  return map2;
+  return yMap;
   }
 
-void C_Camera2::setMap2(cv::cuda::GpuMat *value)
+void C_Camera2::setYMap(cv::cuda::GpuMat *value)
     {
-    map2 = value;
+    yMap = value;
     }
 
-cv::cuda::GpuMat *C_Camera2::getMap1() const
+cv::cuda::GpuMat *C_Camera2::getXMap() const
     {
-    return map1;
+    return xMap;
     }
 
-void C_Camera2::setMap1(cv::cuda::GpuMat *value)
+void C_Camera2::setXMap(cv::cuda::GpuMat *value)
     {
-    map1 = value;
+    xMap = value;
     }
 
 C_Camera2::S_filterProperties *C_Camera2::getFilterproperties() const

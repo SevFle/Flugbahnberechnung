@@ -516,8 +516,7 @@ void frm_Object_Calibration::C_frm_Object_Calibration::on_chkb_bilateral_stateCh
 }
 void C_frm_Object_Calibration::Fill_Mat_2_Lbl(cv::Mat& img, QLabel* label)
 {
-    QImage imgIn= QImage((uchar*) img.data, img.cols, img.rows, img.step, QImage::Format_BGR888);
-
-label->setPixmap(QPixmap::fromImage(imgIn));
+  QImage imgIn= QImage((uchar*) img.data, img.cols, img.rows, img.step, QImage::Format_BGR888);
+  label->setPixmap(QPixmap::fromImage(imgIn).scaled(label->size(),Qt::KeepAspectRatio));
 }
 

@@ -186,11 +186,10 @@ void C_LoadManager::loadCameraCalibration (Camera::C_Camera2* Camera)
   std::cout << "Loaded Calibration for Camera " << cameraID << "." << endl;
   }
 
-std::vector<int> C_LoadManager::loadCameraPositioning ()
+bool C_LoadManager::loadCameraPositioning   (std::vector<int>* order)
   {
   string                                                  Dateiname = "../Parameter/Camera_Positioning.csv";
   string                                                  Dateityp;
-  std::vector<int>                                        vecCameraPosition;
   int                                                     id;
   int                                                     Camera_count;
 
@@ -204,20 +203,21 @@ std::vector<int> C_LoadManager::loadCameraPositioning ()
       for (int i = 0; i < Camera_count; i++)
         {
         GlobalObjects->csv_parameter_datei->Lesen (id);
-        vecCameraPosition.push_back(id);
+        order->push_back(id);
         }
       }
     else
       {
       for (int i = 0; i < GlobalObjects->absCameras; i++)
         {
-        vecCameraPosition.push_back(i);
+        order->push_back(i);
         }
       printf("Standardreihung geladen");
       }
+    GlobalObjects->csv_parameter_datei->Schliessen();
+    return  true;
     }
-  GlobalObjects->csv_parameter_datei->Schliessen();
-  return vecCameraPosition;
+  return false;
   }
 
 void C_LoadManager::loadCameraCos (Camera::C_Camera2* Camera)

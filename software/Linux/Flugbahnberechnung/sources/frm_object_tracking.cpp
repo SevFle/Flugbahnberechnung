@@ -111,7 +111,8 @@ void C_frm_Object_Tracking::Taktgeber_Tick()
 
 void C_frm_Object_Tracking::Fill_Mat_2_Lbl(cv::Mat& img, QLabel* label)
   {
-  label->setPixmap(QPixmap::fromImage(QImage(img.data, img.cols, img.rows, img.step, QImage::Format_RGB888)));
+  QImage imgIn= QImage((uchar*) img.data, img.cols, img.rows, img.step, QImage::Format_BGR888);
+  label->setPixmap(QPixmap::fromImage(imgIn).scaled(label->size(),Qt::KeepAspectRatio));
   }
 
 void frm_Object_Tracking::C_frm_Object_Tracking::on_bt_start_clicked()

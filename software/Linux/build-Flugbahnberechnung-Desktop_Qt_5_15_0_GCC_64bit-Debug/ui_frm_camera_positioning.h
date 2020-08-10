@@ -118,13 +118,13 @@ public:
         C_frm_camera_positioning->setWindowTitle(QCoreApplication::translate("C_frm_camera_positioning", "Dialog", nullptr));
         bt_exit->setText(QCoreApplication::translate("C_frm_camera_positioning", "Exit", nullptr));
         groupBox->setTitle(QCoreApplication::translate("C_frm_camera_positioning", "Links", nullptr));
-        lbl_cam_0->setText(QCoreApplication::translate("C_frm_camera_positioning", "TextLabel", nullptr));
-        lbl_cam_2->setText(QCoreApplication::translate("C_frm_camera_positioning", "TextLabel", nullptr));
-        lbl_cam_4->setText(QCoreApplication::translate("C_frm_camera_positioning", "TextLabel", nullptr));
+        lbl_cam_0->setText(QString());
+        lbl_cam_2->setText(QString());
+        lbl_cam_4->setText(QString());
         groupBox_2->setTitle(QCoreApplication::translate("C_frm_camera_positioning", "Rechts", nullptr));
-        lbl_cam_1->setText(QCoreApplication::translate("C_frm_camera_positioning", "TextLabel", nullptr));
-        lbl_cam_3->setText(QCoreApplication::translate("C_frm_camera_positioning", "TextLabel", nullptr));
-        lbl_cam_5->setText(QCoreApplication::translate("C_frm_camera_positioning", "TextLabel", nullptr));
+        lbl_cam_1->setText(QString());
+        lbl_cam_3->setText(QString());
+        lbl_cam_5->setText(QString());
         bt_apply->setText(QCoreApplication::translate("C_frm_camera_positioning", "Apply", nullptr));
     } // retranslateUi
 

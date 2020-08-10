@@ -126,8 +126,8 @@ namespace Camera
     cv::Mat*                          distCoeffs;
     cv::Mat*                          intrinsic;
     cv::cuda::GpuMat*                 gpuSrc;
-    cv::cuda::GpuMat*                 map1;
-    cv::cuda::GpuMat*                 map2;
+    cv::cuda::GpuMat*                 xMap;
+    cv::cuda::GpuMat*                 yMap;
     std::string                       pipeline;
     int                               cameraID;
     int                               frameWidth;
@@ -165,10 +165,10 @@ public:
     void setCameraPose(C_AbsolutePose *value);
     S_filterProperties *getFilterproperties() const;
     void setFilterproperties(S_filterProperties *value);
-    cv::cuda::GpuMat *getMap1() const;
-    void setMap1(cv::cuda::GpuMat *value);
-    cv::cuda::GpuMat *getMap2() const;
-    void setMap2(cv::cuda::GpuMat *value);
+    cv::cuda::GpuMat *getXMap() const;
+    void setXMap(cv::cuda::GpuMat *value);
+    cv::cuda::GpuMat *getYMap() const;
+    void setYMap(cv::cuda::GpuMat *value);
     cv::Rect *getRoi() const;
     void setRoi(cv::Rect *value);
     };

@@ -293,6 +293,5 @@ void C_ImageFilter::gpufUnidstord (cv::Mat* cpuSrc,           cv::cuda::GpuMat& 
   cv::cuda::GpuMat gpuSrcImg;
   gpuSrcImg.upload (*cpuSrc);
   cv::cuda::remap (gpuSrcImg,gpuDst,gpuMap1,gpuMap2,cv::INTER_NEAREST,cv::BORDER_CONSTANT,0);
-
   }
 

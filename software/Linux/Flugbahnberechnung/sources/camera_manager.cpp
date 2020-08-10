@@ -20,6 +20,18 @@ C_CameraManager::C_CameraManager ( C_GlobalObjects* GlobalObjects)
   this->Que             = new tbb::concurrent_bounded_queue<S_Payload*>;
   this->pData           = new S_Payload;
   this->trackingManager = new trackingManager::C_trackingManager(GlobalObjects);
+  this->camera_id       = 0;
+  this->frameWidth      = 1280;
+  this->frameHeight     = 720;
+  this->arrActiveCameras[0] = 0;
+  this->arrActiveCameras[1] = 0;
+  this->arrActiveCameras[2] = 0;
+  this->arrActiveCameras[3] = 0;
+  this->cntPipeline         = 0;
+  this->calibrationDone     = false;
+  this->positioningDone     = false;
+  this->pipelineDone        = 0;
+
   }
 /**************************************************************** Destruktor ****************************************************************/
 C_CameraManager::~C_CameraManager ()
@@ -100,12 +112,12 @@ bool C_CameraManager::openCameras ()
 
   if (!gst_device_monitor_start(Monitor))
     {
-    printf("\n PTB-INFO: GstDeviceMonitor unsupported. May not be able to enumerate all video devices.\n");
+    printf("\n GST-INFO: GstDeviceMonitor unsupported. May not be able to enumerate all video devices.\n");
     }
   else
     {
     devlist = gst_device_monitor_get_devices(Monitor);
-
+    printf("\n GST-INFO: GstDeviceMonitor startet. \n");
     for (devIter = g_list_first(devlist); devIter != NULL; devIter = g_list_next(devIter))
       {
       device                          = (GstDevice*) devIter->data;
@@ -126,15 +138,16 @@ bool C_CameraManager::openCameras ()
       vecCameras.push_back(camera);
       this->globalObjects->absCameras++;
       }
-    std::cout << "Created " << std::to_string(this->globalObjects->absCameras) << " Devices" << std::endl;
+    std::cout << "**INFO** Created " << std::to_string(this->globalObjects->absCameras) << " Devices" << std::endl;
 
     }
 
   //Reorder recently created Cameras
-  *globalObjects->camera_order = this->loadManager->loadCameraPositioning();
-  this->mvVecCamera2Temp(this->loadManager->loadCameraPositioning());
+  if(this->loadManager->loadCameraPositioning(globalObjects->camera_order))
+                  this->mvVecCamera2Temp(*globalObjects->camera_order);
 
   //Load Settings and Calibration for each camera created earlier
+  loadCameras();
   return true;
   }
 bool C_CameraManager::closeCameras ()
@@ -161,51 +174,44 @@ bool C_CameraManager::startThreadCameraPositioning()
   {
   if(int err = pthread_create(camPositioning,NULL, (THREADFUNCPTR) &CameraManager::C_CameraManager::threadCameraPositioning, this) !=0)
     {
-      printf("**ERROR** Kamerathread konnte nicht gestartet werden");
+      std::cout << "**ERROR** Kamerathread konnte nicht gestartet werden" << std::endl;
       return false;
     }
-  else
-    {
-      return true;
-    }
+  std::cout << "**INFO** Kamerathread wurde gestartet" << std::endl;
+  return true;
   }
 bool C_CameraManager::stopThreadCameraPositioning()
   {
-  if(int err = pthread_join(*camPositioning, NULL) !=0)
+  if(pthread_join(*camPositioning, NULL) !=0)
     {
-      printf("**ERROR** Kamerathread konnte nicht gestoppt werden **ABORT**");
+      std::cout << "**ERROR** Kamerathread konnte nicht gestoppt werden" << std::endl;
       return false;
     }
-  else
-    {
-      return true;
-    }
-  }
+  std::cout << "**INFO** Kamerathread wurde gestoppt" << std::endl;
+  return true;
+   }
 bool C_CameraManager::startPipelineTracking()
   {
   Que->set_capacity(7);
 
   if(int err = pthread_create(camPipeline,NULL, (THREADFUNCPTR) &CameraManager::C_CameraManager::pipelineHelper, this) !=0)
     {
-    printf("**ERROR** Kamerapipeline konnte nicht gestartet werden");
+    printf("\n**ERROR** Kamerapipeline konnte nicht gestartet werden");
     return false;
     }
-  else
-    {
-    return true;
-    }
+  printf("\n**INFO** Kamerapipeline wurde gestartet");
+  return true;
   }
 bool C_CameraManager::stopPipelineTracking()
   {
-  if(int err = pthread_join(*camPipeline, NULL) !=0)
+  this->pipelineDone = true;
+  if(pthread_join(*camPipeline, NULL) !=0)
     {
-      printf("**ERROR** Kamerathread konnte nicht gestoppt werden **ABORT**");
+      printf("\n**ERROR** Kamerathread konnte nicht gestoppt werden");
       return false;
     }
-  else
-    {
-      return true;
-    }
+  printf("\n**INFO** Kamerapipeline wurde gestoppt");
+  return true;
   }
 
 void C_CameraManager::mvVecCamera2Temp (std::vector<int> vecCamOrder)
@@ -514,6 +520,7 @@ void *C_CameraManager::threadCameraPositioning(void *This)
       pthread_mutex_unlock(static_cast<CameraManager::C_CameraManager*>(This)->lock);
       vecImg.clear();
     }
+  return 0;
   }
 void C_CameraManager::threadCameraSimple()
   {
@@ -616,7 +623,8 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
     int i = 0;
     for(auto it = std::begin(pData->cpuSrcImg); it< std::end(pData->cpuSrcImg); it++)
       {
-      this->ImageFilter->gpufUnidstord(it, pData->gpuUndistortedImg[i], *vecCamera[pData->cameraID[i]]->getMap1(), *vecCamera[pData->cameraID[i]]->getMap2());
+      if(it->empty()) return pData;
+      this->ImageFilter->gpufUnidstord(it, pData->gpuUndistortedImg[i], *vecCamera[pData->cameraID[i]]->getXMap(), *vecCamera[pData->cameraID[i]]->getYMap());
       i++;
       }
 
@@ -629,6 +637,7 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
     int i = 0;
     for(auto it = std::begin(pData->gpuUndistortedImg); it< std::end(pData->gpuUndistortedImg); it++)
       {
+      if(it->empty()) return pData;
       this->ImageFilter->gpufHSV(*it, pData->cpuHSVImg[i], pData->Filter[i]);
       i++;
       }
@@ -641,6 +650,7 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
     int i = 0;
     for(auto it = std::begin(pData->cpuHSVImg); it< std::end(pData->cpuHSVImg); it +=2)
       {
+      if(it->empty()) return pData;
       int offsetL[2];
       int offsetR[2];
       this->vecCameras[pData->cameraID[i]]->filterValues->getOffset(offsetL);
