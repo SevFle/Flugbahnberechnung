@@ -65,21 +65,21 @@ void C_ImageFilter::gpufMorphGradient(cv::cuda::GpuMat &gpu_src, cv::cuda::GpuMa
   morph->apply (gpu_src,gpu_dst);
   }
 
-void C_ImageFilter::gpufHSV (cv::cuda::GpuMat &gpu_src, cv::Mat &cpu_dst, Camera::C_Camera2 &Camera)
+void C_ImageFilter::gpufHSV (cv::cuda::GpuMat &gpu_src, cv::Mat &cpu_dst, Camera::C_Camera2::S_filterProperties &Filter)
   {
   cv::cuda::GpuMat temp1, temp2;
-  cv::Scalar min(Camera.filterValues->getHue_min(),Camera.filterValues->getSaturation_min(),Camera.filterValues->getValue_min());
-  cv::Scalar max(Camera.filterValues->getHue_max(),Camera.filterValues->getSaturation_max(),Camera.filterValues->getValue_max());
+  cv::Scalar min(Filter.getHue_min(),Filter.getSaturation_min(),Filter.getValue_min());
+  cv::Scalar max(Filter.getHue_max(),Filter.getSaturation_max(),Filter.getValue_max());
 
-  this->gpufGaussian(gpu_src,temp1, *Camera.filterValues);
+  this->gpufGaussian(gpu_src,temp1, Filter);
 
   cv::cuda::cvtColor (temp1,temp2,cv::COLOR_BGR2HSV);
 
   cudaKernel::inRange_gpu (temp2,min, max,temp1);
 
-  gpufOpen( temp1,temp2, *Camera.filterValues);
+  gpufOpen( temp1,temp2, Filter);
 
-  gpufClose(temp2,temp1, *Camera.filterValues);
+  gpufClose(temp2,temp1, Filter);
 
   //LAST CHANCE TO GRAB GRAYSCALE FOR GPU MAT
   cv::cuda::cvtColor (temp1, temp2 ,cv::COLOR_GRAY2BGR);
@@ -88,7 +88,8 @@ void C_ImageFilter::gpufHSV (cv::cuda::GpuMat &gpu_src, cv::Mat &cpu_dst, Camera
   temp1.download(cpu_dst);
   }
 
-bool C_ImageFilter::findContours(cv::Mat &thresholded_source_image, cv::Mat &dstCpuContouredImg, int offset[], Camera::C_Camera2 &Camera)
+bool C_ImageFilter::findContours                     (cv::Mat* cpuSrc, cv::Mat& dstCpuContouredImg, int offset[2], Camera::C_Camera2 &Camera,
+                                       S_Positionsvektor& vecPosition, int& istX, int& istY, int& radius)
   {
   int KonturIndex             = 0;
   int objektAnzahl            = 0;
@@ -155,7 +156,7 @@ bool C_ImageFilter::findContours(cv::Mat &thresholded_source_image, cv::Mat &dst
   circle (dstCpuContouredImg,cv::Point (static_cast<int> (cx),static_cast<int> (cy)),15,cv::Scalar (255,255,0));
 
 
-  cv::findContours (thresholded_source_image,contours,hirarchy,cv::RETR_TREE,cv::CHAIN_APPROX_SIMPLE,cv::Point (offset[0],offset[1]));
+  cv::findContours (*cpuSrc,contours,hirarchy,cv::RETR_TREE,cv::CHAIN_APPROX_SIMPLE,cv::Point (offset[0],offset[1]));
 
 
   objektAnzahl = hirarchy.size();
@@ -241,6 +242,9 @@ bool C_ImageFilter::findContours(cv::Mat &thresholded_source_image, cv::Mat &dst
     contourFound = true;
     Ist_x         = Schwerpunkt_x;
     Ist_y         = Schwerpunkt_y;
+    istX          = Ist_x;
+    istY          = Ist_y;
+    radius        = Radius;
     Soll_x        = cx;
     Soll_y        = cy;
     Delta_x       = Ist_x - Soll_x;
@@ -259,6 +263,7 @@ bool C_ImageFilter::findContours(cv::Mat &thresholded_source_image, cv::Mat &dst
     Vec_Object[0] /= Vec_Object_Abs;
     Vec_Object[1] /= Vec_Object_Abs;
     Vec_Object[2] /= Vec_Object_Abs;
+
 
 
     // Schreibe die Delta-Werte auf das Bild
@@ -283,10 +288,10 @@ bool C_ImageFilter::findContours(cv::Mat &thresholded_source_image, cv::Mat &dst
   }
 
 
-void gpufUnidstord(cv::Mat &cpuSrc, cv::cuda::GpuMat &gpuDst, cv::cuda::GpuMat &gpuMap1, cv::cuda::GpuMat &gpuMap2)
+void C_ImageFilter::gpufUnidstord (cv::Mat* cpuSrc,           cv::cuda::GpuMat& gpuDst, cv::cuda::GpuMat& gpuMap1, cv::cuda::GpuMat& gpuMap2)
   {
   cv::cuda::GpuMat gpuSrcImg;
-  gpuSrcImg.upload (cpuSrc);
+  gpuSrcImg.upload (*cpuSrc);
   cv::cuda::remap (gpuSrcImg,gpuDst,gpuMap1,gpuMap2,cv::INTER_NEAREST,cv::BORDER_CONSTANT,0);
 
   }

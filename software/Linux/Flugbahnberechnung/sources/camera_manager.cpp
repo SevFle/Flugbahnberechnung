@@ -67,6 +67,15 @@ void C_CameraManager::setCalibrationDone(volatile bool value)
   calibrationDone = value;
   }
 
+int  C_CameraManager::getArrActiveCameras(int position) const
+  {
+  return this->arrActiveCameras[position];
+  }
+void C_CameraManager::setArrActiveCameras                (int value, int position)
+  {
+  if (value > this->globalObjects->absCameras) return;
+  this->arrActiveCameras[position] = value;
+  }
 
 /*************************************************** Nicht öffentliche private Methoden *****************************************************/
 
@@ -118,6 +127,7 @@ bool C_CameraManager::openCameras ()
       this->globalObjects->absCameras++;
       }
     std::cout << "Created " << std::to_string(this->globalObjects->absCameras) << " Devices" << std::endl;
+
     }
 
   //Reorder recently created Cameras
@@ -125,12 +135,6 @@ bool C_CameraManager::openCameras ()
   this->mvVecCamera2Temp(this->loadManager->loadCameraPositioning());
 
   //Load Settings and Calibration for each camera created earlier
-  for (int i = 0; i < globalObjects->absCameras; i++)
-    {
-    this->loadManager->loadCameraCalibration(vecCameras[i]);
-    this->loadManager->loadCameraSettings(vecCameras[i]);
-    this->vecCameras[i]->initRectifyMap();
-    }
   return true;
   }
 bool C_CameraManager::closeCameras ()
@@ -142,6 +146,17 @@ bool C_CameraManager::closeCameras ()
   return true;
   }
 
+void C_CameraManager::loadCameras              ()
+  {
+  for (auto it = std::begin(vecCameras); it < std::end(vecCameras); it++)
+    {
+    this->loadManager->loadCameraCalibration(*it);
+    this->loadManager->loadCameraSettings(*it);
+    this->loadManager->loadCameraCos(*it);
+    this->trackingManager->load_posen(*(*it)->getCameraPose());
+    (*it)->initRectifyMap();
+    }
+  }
 bool C_CameraManager::startThreadCameraPositioning()
   {
   if(int err = pthread_create(camPositioning,NULL, (THREADFUNCPTR) &CameraManager::C_CameraManager::threadCameraPositioning, this) !=0)
@@ -539,141 +554,16 @@ void C_CameraManager::calculate_camera_pose(int camera1, int camera2, cv::Vec3d 
   this->saveManager->saveCameraCos(*this->vecCameras[camera2]);
   }//calculate_camera_pose
 
-void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera, tbb::concurrent_bounded_queue<S_Payload*> &que)
+bool C_CameraManager::getObjectPosition2D                (trackingManager::S_trackingPayload& trackingPayload)
   {
-  int smTrackingState = 0;
-  //STEP 1: GRAB PICTURE FROM ARRAY-ACTIVE_CAMERAS
-  tbb::parallel_pipeline(7, tbb::make_filter<void, S_Payload*>(tbb::filter::serial_in_order, [&](tbb::flow_control& fc)->S_Payload*
-    {
-    if(cntPipeline == 4) cntPipeline = 0;
-    auto pData          = new S_Payload;
-    pData->cameraID     = arrActiveCameras[cntPipeline];
-    if (pData->cameraID > globalObjects->absCameras) return 0;
 
-    pData->Filter       = *vecCameras[arrActiveCameras[cntPipeline]]->getFilterproperties();
-
-    if(pipelineDone || pData->cpuSrcImg.empty())
-      {
-      this->pipelineDone = true;
-      fc.stop();
-      return 0;
-      }
-    cntPipeline++;
-    return pData;
-    }
-  )&
-  //STEP 2: UNDISTORT SRC TO CPUDISTORT
-  tbb::make_filter<S_Payload*, S_Payload*>(tbb::filter::serial_in_order, [&] (S_Payload *pData)->S_Payload*
-    {
-    this->ImageFilter->gpufUnidstord(pData->cpuSrcImg, pData->gpuUndistortedImg, *vecCamera[pData->cameraID]->getMap1(), *vecCamera[pData->cameraID]->getMap2());
-    return pData;
-    }
-  )&
-  //STEP 3: FILTER UNDISTORT TO CPUHSV; USE CUDA
-  tbb::make_filter<S_Payload*, S_Payload*>(tbb::filter::serial_in_order, [&] (S_Payload *pData)->S_Payload*
-    {
-    this->ImageFilter->gpufHSV(pData->gpuUndistortedImg, pData->cpuHSVImg, pData->Filter);
-    cv::circle(pData->gray, cv::Point(pData->gray.rows/2, pData->gray.cols/2), 50, cv::Scalar(0, 140, 50), cv::FILLED);
-    return pData;
-    }
-  )&
-  //STEP 4: FIND CONTOURS ON CPUHSV, DRAW ON UNDISTORT
-  tbb::make_filter<S_Payload*, S_Payload*>(tbb::filter::serial_in_order, [&] (S_Payload *pData)->S_Payload*
-    {
-    if(this->ImageFilter->findContours(pData->cpuHSVImg, pData->cpuConturedImg, pData->offset, *vecCamera[pData->cameraID]))
-      pData->found = true;
-    else
-      pData->found = false;
-    return pData;
-    }
-  )&
-  //STEP 5: ADJUST ROI ON CPU UNDISTORT ****NOT NEEDED******
-  tbb::make_filter<S_Payload*, S_Payload*>(tbb::filter::serial_in_order, [&] (S_Payload *pData)->S_Payload*
-    {
-    this->ImageFilter->findContours(pData->cpuHSVImg, pData->cpuConturedImg, pData->offset, *vecCamera[pData->cameraID]);
-    }
-  )&
-  //STEP 6: CALCULATE OBJECT POSITION
-  tbb::make_filter<S_Payload*, S_Payload*>(tbb::filter::serial_in_order, [&] (S_Payload *pData)->S_Payload*
-    {
-    switch (this->trackingManager->getAlive())
-      {
-      case 0:
-          //Lade alle fest definierten Welt-Kamera Posen und erstelle einen Vektor mit allen Posen. Vektor[0] bezieht sich auf Kamera[0], usw.
-          smTrackingState = 1;
-          break;
-      case 1:
-          if(!pData->found)
-            {
-              smTrackingState = 1;
-            }
-          else //Führe Berechnungen der aktuellen Objekte durch
-            {
-            smTrackingState = 2;
-            }
-          break;
-      case 2:
-          //Erstelle neues Ballobjekt
-          tracked_object->set_ID_Cam_Links(0);
-          tracked_object->set_ID_Cam_Rechts(0);
-          v_tracked_objects.push_back(tracked_object);
-          //ROI für die ersten Kameras ist selbstgeführt.
-          statemachine_state = 3;
-          break;
-      case 3:
-            //Get zugewiesene Kameras für Objekt an stelle it
-            ID_Cam_Rechts = (*it)->get_ID_Cam_Rechts();
-            //Get_2D_Pixel für zugewiesene Kamera
-            this->camera_vector[ID_Cam_Links]->get_objectPosition_2D_Pixel (tracked_data.found_0, tracked_data.Richtungsvektor_0, temp1);
-            this->camera_vector[ID_Cam_Rechts]->get_objectPosition_2D_Pixel (tracked_data.found_1, tracked_data.Richtungsvektor_1, temp2);
-            //Wenn Ball gefunden
-            if (tracked_data.found_0 && tracked_data.found_1)
-              {
-                //Berechne Pixel Velocity
-                //Berechne POS + m/s
-              (*it)->calculate_px_speed();
-              (*it)->calculate_ms_speed();
-              (*it)->calculate_pose();
-              //Wenn 2D Pixel im Bereich x = 700-800
-               if(tracked_data.Richtungsvektor_0.X > 700  || tracked_data.Richtungsvektor_1.X > 700)
-               {
-               //Assign nächstes Kamerapaar für Objekt
-               (*it)->set_ID_Cam_Links((*it)->get_ID_Cam_Links()+1);
-               (*it)->sCameraManager::S_Payload *payloadet_ID_Cam_Rechts((*it)->get_ID_Cam_Rechts()+1);
-               //Set ROI für nächstes Kamerapaar
-               //this->camera_vector[(*it)->get_ID_Cam_Links()]->
-               //thisCameraManager::S_Payload *payload->camera_vector[(*it)->get_ID_Cam_Rechts()]->
-               }
-            break;
-            }
-         }
-      }
   }
-  )&
 
-  tbb::make_filter<S_Payload*,void>(tbb::filter::serial_in_order, [&] (S_Payload *pData)
-    {
-    pData->gray.copyTo(pData->final);
-    // TBB NOTE: pipeline end point. dispatch to GUI
-    if (! pipelineDone)
-      {
-      try
-        {
-        que.push(pData);
-        }
-      catch (...)
-        {
-        std::cout << "Pipeline caught an exception on the queue" << std::endl;
-        pipelineDone = true;
-        }//catch
-      }//if (!done)
-    }//STEP 5
-    )//tbb::makefilter
-  );//tbb pipeline
 
-}
 void C_CameraManager::smTracking (S_Payload* payload)
+  {
 
+  }
 void *C_CameraManager::pipelineHelper(void* This)
   {
   static_cast<CameraManager::C_CameraManager*>(This)->pipelineTracking(static_cast<CameraManager::C_CameraManager*>(This)->vecCameras,
@@ -696,4 +586,137 @@ bool C_CameraManager::pollPipeline               (CameraManager::S_Payload* payl
       }
   return false;
   }
+void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera, tbb::concurrent_bounded_queue<S_Payload*> &que)
+  {
+  //STEP 1: GRAB PICTURE FROM ARRAY-ACTIVE_CAMERAS
+  tbb::parallel_pipeline(7, tbb::make_filter<void, S_Payload*>(tbb::filter::serial_in_order, [&](tbb::flow_control& fc)->S_Payload*
+    {
+    if(cntPipeline == 4) cntPipeline = 0;
+    auto pData          = new S_Payload;
+    for(int i = 0; i <  payloadSize; i++)
+    {
+    pData->cameraID[i]     = arrActiveCameras[cntPipeline];
+    if (pData->cameraID[i] > globalObjects->absCameras) return 0;
+    pData->Filter[i]       = *vecCameras[arrActiveCameras[cntPipeline]]->getFilterproperties();
+    vecCameras[arrActiveCameras[cntPipeline]]->readImg(pData->cpuSrcImg[i]);
+    }
+    if(pipelineDone)
+      {
+      this->pipelineDone = true;
+      fc.stop();
+      return 0;
+      }
+    cntPipeline++;
+    return pData;
+    }
+  )&
+  //STEP 2: UNDISTORT SRC TO CPUDISTORT
+  tbb::make_filter<S_Payload*, S_Payload*>(tbb::filter::serial_in_order, [&] (S_Payload *pData)->S_Payload*
+    {
+    int i = 0;
+    for(auto it = std::begin(pData->cpuSrcImg); it< std::end(pData->cpuSrcImg); it++)
+      {
+      this->ImageFilter->gpufUnidstord(it, pData->gpuUndistortedImg[i], *vecCamera[pData->cameraID[i]]->getMap1(), *vecCamera[pData->cameraID[i]]->getMap2());
+      i++;
+      }
+
+    return pData;
+    }
+  )&
+  //STEP 3: FILTER UNDISTORT TO CPUHSV; USE CUDA
+  tbb::make_filter<S_Payload*, S_Payload*>(tbb::filter::serial_in_order, [&] (S_Payload *pData)->S_Payload*
+    {
+    int i = 0;
+    for(auto it = std::begin(pData->gpuUndistortedImg); it< std::end(pData->gpuUndistortedImg); it++)
+      {
+      this->ImageFilter->gpufHSV(*it, pData->cpuHSVImg[i], pData->Filter[i]);
+      i++;
+      }
+    return pData;
+    }
+  )&
+  //STEP 4: FIND CONTOURS ON CPUHSV, DRAW ON UNDISTORT
+  tbb::make_filter<S_Payload*, S_Payload*>(tbb::filter::serial_in_order, [&] (S_Payload *pData)->S_Payload*
+    {
+    int i = 0;
+    for(auto it = std::begin(pData->cpuHSVImg); it< std::end(pData->cpuHSVImg); it +=2)
+      {
+      int offsetL[2];
+      int offsetR[2];
+      this->vecCameras[pData->cameraID[i]]->filterValues->getOffset(offsetL);
+      this->vecCameras[pData->cameraID[i+1]]->filterValues->getOffset(offsetR);
+
+      if(this->ImageFilter->findContours(it,   pData->cpuConturedImg[i], offsetL, *vecCamera[pData->cameraID[i]], *pData->Richtungsvektoren[i], pData->ist_X[i], pData->ist_Y[i], pData->radius[i]) &&
+         this->ImageFilter->findContours(it++, pData->cpuConturedImg[i], offsetR, *vecCamera[pData->cameraID[i+1]],*pData->Richtungsvektoren[i+1], pData->ist_X[i+1], pData->ist_Y[i+1], pData->radius[i+1] ))
+      pData->found = true;
+    else
+        {
+        pData->found = false;
+        pData->Richtungsvektoren[i]->X = 0;
+        pData->Richtungsvektoren[i]->Y = 0;
+        pData->Richtungsvektoren[i]->Z = 0;
+        pData->Richtungsvektoren[i+1]->X = 0;
+        pData->Richtungsvektoren[i+1]->Y = 0;
+        pData->Richtungsvektoren[i+1]->Z = 0;
+        }
+      i++;
+      }
+    return pData;
+    }
+  )&
+  //STEP 5: ADJUST ROI ON CPU UNDISTORT ****NOT NEEDED******
+  tbb::make_filter<S_Payload*, S_Payload*>(tbb::filter::serial_in_order, [&] (S_Payload *pData)->S_Payload*
+    {
+      for(int i = 0; i < payloadSize; i++)
+        {
+        if(pData->found)
+          {
+          this->vecCameras[pData->cameraID[i]]->setROI(pData->radius[i], pData->ist_X[i],pData->ist_Y[i]);
+          }
+        else
+          {
+          this->vecCameras[pData->cameraID[i]]->filterValues->setOffset(0, 0);
+          this->vecCameras[pData->cameraID[i]]->filterValues->setOffset(0, 0);
+          this->vecCameras[pData->cameraID[i]]->getRoi()->x = 0;
+          this->vecCameras[pData->cameraID[i]]->getRoi()->y = 0;
+          this->vecCameras[pData->cameraID[i]]->getRoi()->width = this->frameWidth;
+          this->vecCameras[pData->cameraID[i]]->getRoi()->height = this->frameHeight;
+          }//else
+        }//for
+      return pData;
+    }//make_filter
+  )&
+  //STEP 6: CALCULATE OBJECT POSITION
+  tbb::make_filter<S_Payload*, S_Payload*>(tbb::filter::serial_in_order, [&] (S_Payload *pData)->S_Payload*
+    {
+    if(pData->found)    this->trackingManager->Get_Position_ObjectTracking(pData->objektVektor, pData->Richtungsvektoren);
+
+    return pData;
+    }
+
+  )&
+
+  tbb::make_filter<S_Payload*,void>(tbb::filter::serial_in_order, [&] (S_Payload *pData)
+    {
+    // TBB NOTE: pipeline end point. dispatch to GUI
+    if (! pipelineDone)
+      {
+      try
+        {
+        que.push(pData);
+        }
+      catch (...)
+        {
+        std::cout << "Pipeline caught an exception on the queue" << std::endl;
+        pipelineDone = true;
+        }//catch
+      }//if (!done)
+    }//STEP 5
+    )//tbb::makefilter
+  );//tbb pipeline
+
+}
+
+
+
 

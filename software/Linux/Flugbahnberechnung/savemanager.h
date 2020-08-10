@@ -1,4 +1,5 @@
-#pragma once
+#ifndef __Savemanager_H
+#define __Savemanager_H
 #include "headers/posen.h"
 #include "headers/GlobalObjects.h"
 #include "camera2.h"
@@ -26,3 +27,4 @@ namespace Savemanager
 
   }
 
+#endif //Savemanager_H

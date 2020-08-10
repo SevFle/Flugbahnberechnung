@@ -1,6 +1,6 @@
-#pragma once
 #ifndef __Tracking_H
 #define __Tracking_H
+
 
 #include "posen.h"
 #include "GlobalObjects.h"
@@ -9,20 +9,22 @@
 
 using namespace posen;
 using namespace GlobalObjects;
+/********************************************** DEFINE PAYLOAD SIZE ******************************************************/
+const int payloadSize =  2;
 
 
 namespace trackingManager
   {
   struct S_trackingPayload
     {
-    S_Positionsvektor positionsvektor;
-    bool              found_0;
-    bool              found_1;
-    S_Positionsvektor Richtungsvektor_0;
-    S_Positionsvektor Richtungsvektor_1;
-    int               ID_Cam_Links;
-    int               ID_Cam_Rechts;
+    int               ID_Cam_Links[2];
+    int               ID_Cam_Rechts[2];
     double            timestamp;
+
+    //GET_OBJECTPOSITION_FROM_CAMERA()
+    bool              found[4];
+    S_Positionsvektor vecRichtung[4];
+
     };
 
   class C_trackingManager
@@ -31,15 +33,17 @@ namespace trackingManager
     C_trackingManager                   (C_GlobalObjects* GlobalObject);
     ~C_trackingManager                  ();
 
-    S_Positionsvektor*                  Positionsvektor_alt;
     private:
     C_GlobalObjects*                    globalObjects;
     S_trackingPayload*                  trackingPayload;
+    S_Positionsvektor*                  Positionsvektor_alt;
 
     bool                                alive;
     object::C_object*                   trackedObject;
-    std::vector<C_AbsolutePose>*        vecWorldtoCamPose;
+    std::vector<C_AbsolutePose>         vecWorldtoCamPose;
     std::vector<S_Positionsvektor>*     vecPositions;
+    vector<C_AbsolutePose>              vecEinheitsVektor;
+
     int                                 smState;
     int                                 camIDLeft;
     int                                 camIDRight;
@@ -48,11 +52,11 @@ namespace trackingManager
 
     public:
     void init_posen                     ();
-    void load_posen                     ();
+    void load_posen                     (C_AbsolutePose& cameraPose);
 
-    void Get_Position_ObjectTracking                  (S_trackingPayload&             StructofTrackingData,   std::vector<C_AbsolutePose>&    vec_WorldToCam_Poses);
-    void Calc_Position_ObjectTracking                 (S_Positionsvektor&             Positionsvektor,        std::vector<S_Positionsvektor>  vec_Richtungsvektoren_World, std::vector<C_AbsolutePose> vec_WorldToTCP_Poses);
-    void Calc_RichtungsvektorenToWorld                (std::vector<S_Positionsvektor> vec_Richtungsvektoren,  std::vector<S_Positionsvektor>& vec_Richtungsvektoren_World, std::vector<C_AbsolutePose> vec_TCP_Poses);
+    void Get_Position_ObjectTracking                  (S_Positionsvektor&             objektVektor, S_Positionsvektor* Richtungsvektoren   [payloadSize]);
+    void Calc_Position_ObjectTracking                 (S_Positionsvektor&             objektVektor, vector<S_Positionsvektor>  vec_Richtungsvektoren_World);
+    void Calc_RichtungsvektorenToWorld (S_Positionsvektor* vec_Richtungsvektoren[payloadSize], std::vector<S_Positionsvektor>& vec_Richtungsvektoren_World, std::vector<C_AbsolutePose> vecEinheitsMatrix);
 
     bool getAlive                                     () const;
     void setAlive                                     (bool value);

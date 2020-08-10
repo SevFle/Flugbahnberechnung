@@ -1,4 +1,5 @@
-#pragma once
+#ifndef __Loadmanager_H
+#define __Loadmanager_H
 #include "headers/posen.h"
 #include "headers/GlobalObjects.h"
 
@@ -23,7 +24,7 @@ namespace LoadManager
 
     void              loadCameraCalibration   (Camera::C_Camera2* Camera);
     std::vector<int>  loadCameraPositioning   ();
-    void              loadCameraCos           (Camera::C_Camera2 &Camera);
+    void              loadCameraCos           (Camera::C_Camera2* Camera);
     void              loadCameraSettings      (Camera::C_Camera2* Camera);
 
 
@@ -32,3 +33,4 @@ namespace LoadManager
 
   }
 
+#endif //Loadmanager_H

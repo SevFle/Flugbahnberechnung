@@ -1,5 +1,5 @@
 
-#include "CudaKernels.cuh"
+#include "../include/libCuda.h"
 
 #include <stdio.h>
 
@@ -17,9 +17,8 @@ __global__ void inRange_kernel (const cv::cuda::PtrStepSz<uchar3> src, cv::cuda:
   else dst (y,x)                                                                                        = 0;
   }
 
-namespace cudaKernel
-  {
-  void inRange_gpu (cv::cuda::GpuMat& src, cv::Scalar& lowerb, cv::Scalar& upperb,
+
+  void cudaKernel::inRange_gpu (cv::cuda::GpuMat& src, cv::Scalar& lowerb, cv::Scalar& upperb,
                     cv::cuda::GpuMat& dst)
     {
     const int m       = 32;
@@ -32,4 +31,4 @@ namespace cudaKernel
     inRange_kernel<<<gridSize, blockSize>>> (src,dst,lowerb[0],upperb[0],lowerb[1],upperb[1],
                                              lowerb[2],upperb[2]);
     }
-  }
+

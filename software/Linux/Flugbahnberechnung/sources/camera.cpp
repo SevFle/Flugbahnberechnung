@@ -646,7 +646,7 @@ void C_Camera::gpu_filter_hsv (cv::cuda::GpuMat* gpu_src, cv::cuda::GpuMat* gpu_
 
   cv::cuda::cvtColor (*gpu_temp,*gpu_filtered,cv::COLOR_BGR2HSV);
 
-  cudaKernel::inRange_gpu (*gpu_filtered,min, max,*gpu_color_threshold);
+  //cudaKernel::inRange_gpu (*gpu_filtered,min, max,*gpu_color_threshold);
 
   gpu_open (gpu_color_threshold,gpu_temp);
 
@@ -764,6 +764,7 @@ void C_Camera::find_contours (cv::Mat* thresholded_source_image, cv::Mat* dst_co
     contour_found = true;
     Ist_x         = Schwerpunkt_x;
     Ist_y         = Schwerpunkt_y;
+
     Soll_x        = cx;
     Soll_y        = cy;
     Delta_x       = Ist_x - Soll_x;

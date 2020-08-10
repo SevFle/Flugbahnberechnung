@@ -436,9 +436,10 @@ void frm_Camera_Positioning_Pose::C_frm_Camera_Positioning_Pose::on_bt_exit_clic
 }
 
 void frm_Camera_Positioning_Pose::C_frm_Camera_Positioning_Pose::on_bt_appy_clicked()
-{
-    this->Main->Camera_manager->save_camera_cos (camera_id,*pose_);
-}
+  {
+  this->Main->cameraManager->vecCameras[camera_id]->setCameraPose(pose_);
+  this->Main->cameraManager->saveManager->saveCameraCos(*this->Main->cameraManager->vecCameras[camera_id]);
+  }
 
 void frm_Camera_Positioning_Pose::C_frm_Camera_Positioning_Pose::on_num_camera_valueChanged(int arg1)
 {

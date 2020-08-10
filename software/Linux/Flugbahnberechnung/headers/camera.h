@@ -5,7 +5,6 @@
 
 #include <opencv2/opencv.hpp>
 #include <opencv2/highgui.hpp>
-#include "cuda/CudaKernels.cuh"
 #include <opencv2/core/cuda.hpp>
 
 #include <thread>

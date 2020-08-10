@@ -1,4 +1,3 @@
-#pragma once
 #ifndef __Point_H
 #define __Point_H
 #include <cuda.h>

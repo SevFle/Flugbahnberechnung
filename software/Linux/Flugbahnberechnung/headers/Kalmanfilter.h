@@ -1,7 +1,6 @@
-﻿#pragma once
-#ifndef __Kalmanfilter_H
+﻿#ifndef __Kalmanfilter_H
 #define __Kalmanfilter_H
-#include "cuda/kalman_cuda.cuh"
+//#include "cuda/kalman_cuda.cuh"
 
 namespace nmsp_kalman_filter
   {

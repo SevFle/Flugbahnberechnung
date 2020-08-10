@@ -40,6 +40,7 @@ namespace Camera
       int     gaussian_kernel_size;
       int     Object_Size_min;
       int     Object_Size_max;
+      int     offset[2];
       double  gaussian_sigma;
 
       float   bilateral_sigma_color;
@@ -65,6 +66,8 @@ namespace Camera
       void setValue_min(const uchar &value);
       uchar getValue_max() const;
       void setValue_max(const uchar &value);
+      int getOffset(int* offset) const;
+      void setOffset(int arg1, int arg2);
       int getErodeIterations() const;
       void setErosion_iterations(int value);
       int getDilateIterations() const;
@@ -115,26 +118,23 @@ namespace Camera
     ~C_Camera2();
 
   private:
-    C_GlobalObjects* GlobalObjects;
-    C_AbsolutePose* CameraPose;
-
-    cv::VideoCapture* cap;
-    cv::Mat* CpuSrc;
-    cv::Mat* DistCoeffs;
-    cv::Mat* Intrinsic;
-
-    cv::cuda::GpuMat* GpuSrc;
-    cv::cuda::GpuMat* map1;
-    cv::cuda::GpuMat* map2;
-
-    std::string Pipeline;
-
-    int cameraID;
+    C_GlobalObjects*                  globalObjects;
+    C_AbsolutePose*                   cameraPose;
+    cv::VideoCapture*                 cap;
+    cv::Mat*                          cpuSrc;
+    cv::Rect*                         roi;
+    cv::Mat*                          distCoeffs;
+    cv::Mat*                          intrinsic;
+    cv::cuda::GpuMat*                 gpuSrc;
+    cv::cuda::GpuMat*                 map1;
+    cv::cuda::GpuMat*                 map2;
+    std::string                       pipeline;
+    int                               cameraID;
+    int                               frameWidth;
+    int                               frameHeight;
 
   public:
-    S_filterProperties* filterValues;
-
-
+    S_filterProperties*               filterValues;
   public:
     bool open                         ();
     bool close                        ();
@@ -142,14 +142,16 @@ namespace Camera
     void savePicture                  (int camera_id, int photo_id, std::string definition);
     void initRectifyMap               ();
     void save_picture                 (int photo_id, std::string definition, cv::Mat& srcImg);
-    void fit_to_roi (int width, int height);
-
-
+  private:
+    void fit_to_roi                   (int Radius, int istX, int istY);
+    void initialize                   ();
+    /********************************************** GETTER & SETTER METHODEN ******************************************************/
+public:
 
     void setCalibrationParameter      (double (&DistCoeffs)[1][5], double (&Intrinsic)[3][3]);
     void getCalibrationParameter      (double (&DistCoeffs)[1][5], double (&Intrinsic)[3][3]) const;
     void setPipeline                  (std::string Pipeline);
-    void setROI                       (int &width, int &height);
+    void setROI                       (int Radius, int istX, int istY);
     int  getROI                       () const;
     void setCameraID                  (int &cameraID);
     int  getCameraID                  () const;
@@ -167,6 +169,8 @@ namespace Camera
     void setMap1(cv::cuda::GpuMat *value);
     cv::cuda::GpuMat *getMap2() const;
     void setMap2(cv::cuda::GpuMat *value);
+    cv::Rect *getRoi() const;
+    void setRoi(cv::Rect *value);
     };
 
   }

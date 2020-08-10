@@ -100,29 +100,27 @@ bool               C_frm_Object_Calibration::eventFilter                        
     }
   }
 /************************************** Nicht öffentliche QT-Slots******************************/
-void ::C_frm_Object_Calibration::on_bt_exit_clicked()
+void C_frm_Object_Calibration::on_bt_exit_clicked()
   {
   if(!this->Main->cameraManager->stopPipelineTracking())
     return;
   this->Main->frm_Object_Tracking->close();
   this->close();
 }
-
-
 void C_frm_Object_Calibration::Taktgeber_Tick()
   {
   this->Ui->txb_zaehler->setText(QString::number(this->Zaehler++));
   if(this->Main->cameraManager->pollPipeline(payload))
     {
-    this->                      Fill_Mat_2_Lbl(payload->cpuSrcImg, this->Ui->lbl_src_img);
-    this->                      Fill_Mat_2_Lbl(payload->cpuHSVImg, this->Ui->lbl_hsv_filtered);
-    this->                      Fill_Mat_2_Lbl(payload->cpuConturedImg, this->Ui->lbl_img_contoured);
+    this->                      Fill_Mat_2_Lbl(payload->cpuSrcImg[0], this->Ui->lbl_src_img);
+    this->                      Fill_Mat_2_Lbl(payload->cpuHSVImg[0], this->Ui->lbl_hsv_filtered);
+    this->                      Fill_Mat_2_Lbl(payload->cpuConturedImg[0], this->Ui->lbl_img_contoured);
     this->Ui->txb_fps->         setText(QString::number(payload->fps));
     this->Ui->txb_frametime->   setText(QString::number(payload->frametime));
-    this->Ui->txb_delta_x->     setText(QString::number(payload->delta_x));
-    this->Ui->txb_delta_y->     setText(QString::number(payload->delta_y));
-    this->Ui->txb_s_x->         setText(QString::number(payload->s_x));
-    this->Ui->txb_s_y->         setText(QString::number(payload->s_y));
+//    this->Ui->txb_delta_x->     setText(QString::number(payload->delta_x));
+//    this->Ui->txb_delta_y->     setText(QString::number(payload->delta_y));
+//    this->Ui->txb_s_x->         setText(QString::number(payload->s_x));
+//    this->Ui->txb_s_y->         setText(QString::number(payload->s_y));
     }
   }
 
@@ -258,7 +256,7 @@ void C_frm_Object_Calibration::on_num_camera_valueChanged(int arg1)
 {
     TimerWait              = Zaehler + 100;
     this->camera_id_in_use = arg1;
-
+    this->Main->cameraManager->setArrActiveCameras(arg1, 0);
     this->get_camera_settings (arg1);
 }
 

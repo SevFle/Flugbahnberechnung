@@ -1,5 +1,4 @@
 #include "headers/trackingManager.h"
-#include "headers/object.h"
 
 using namespace trackingManager;
 using namespace GlobalObjects;
@@ -7,12 +6,27 @@ using namespace GlobalObjects;
 C_trackingManager::C_trackingManager (C_GlobalObjects* GlobalObjects)
   {
   this->Positionsvektor_alt = new S_Positionsvektor();
-  this->GlobalObjects       = GlobalObjects;
+  this->globalObjects       = GlobalObjects;
   }
 C_trackingManager::~C_trackingManager ()
   {
-  this->GlobalObjects = nullptr;
+  this->globalObjects = nullptr;
   delete(Positionsvektor_alt);
+  }
+
+void C_trackingManager::init_posen                     ()
+  {
+  // REMOVE LATER
+  for(int i = 0; i < payloadSize; i++)
+    {
+      C_AbsolutePose            absEinheitsVektor;
+      vecEinheitsVektor.push_back(absEinheitsVektor);
+    }
+  }
+void C_trackingManager::load_posen                     (C_AbsolutePose& cameraPose)
+  {
+  this->vecWorldtoCamPose.push_back(cameraPose);
+  init_posen();
   }
 
 bool C_trackingManager::getInitZoneAlive() const
@@ -66,63 +80,21 @@ void C_trackingManager::setAlive(bool value)
     }
 
 
-void C_trackingManager::Get_Position_ObjectTracking (S_trackingPayload& trackingPayload, std::vector<C_AbsolutePose>& vec_WorldToCam_Poses)
+void C_trackingManager::Get_Position_ObjectTracking (S_Positionsvektor& objektVektor, S_Positionsvektor* Richtungsvektoren   [payloadSize])
   {
-  std::vector<C_AbsolutePose> vec_TCP_Poses;
-  vec_TCP_Poses.resize (2);
-
-  C_AbsolutePose abs_TCP_Pose_0;
-  C_AbsolutePose abs_TCP_Pose_1;
-  vec_TCP_Poses[0] = abs_TCP_Pose_0;
-  vec_TCP_Poses[1] = abs_TCP_Pose_1;
+  //objektVektor = aktuelle Position des objektes
 
 
-  // Kameradaten abholen
-  std::vector<bool>              vec_Object_Found;
-  std::vector<S_Positionsvektor> vec_Richtungsvektoren;
-
-  vec_Richtungsvektoren.push_back (trackingPayload.Richtungsvektor_0);
-  vec_Richtungsvektoren.push_back (trackingPayload.Richtungsvektor_1);
-  vec_Object_Found.push_back (trackingPayload.found_0);
-  vec_Object_Found.push_back (trackingPayload2.found_0);
 
   // Richtungsvektoren der Objekt-Lichtstrahlen auf das Welt-KS transformieren
-  std::vector<S_Positionsvektor> vec_Richtungsvektoren_World;
-  this->Calc_RichtungsvektorenToWorld (vec_Richtungsvektoren,vec_Richtungsvektoren_World,vec_WorldToCam_Poses);
+  vector<S_Positionsvektor> vec_Richtungsvektoren_World;
+    this->Calc_RichtungsvektorenToWorld(Richtungsvektoren, vec_Richtungsvektoren_World, vecEinheitsVektor);
 
-  // Berechnung der Objektposition
-  // Die Enum Objecte werden nur zur Verhaltensbestimmung der Roboter verwendet. 
-  //E_ObjectTracking enum_ObjectTracking_0;
-  //E_ObjectTracking enum_ObjectTracking_1;
+    this->Calc_Position_ObjectTracking(objektVektor, vec_Richtungsvektoren_World);
+    *this->Positionsvektor_alt = objektVektor;
 
-  if (vec_Object_Found[0] && vec_Object_Found[1])
-    {
-    this->Calc_Position_ObjectTracking (StructofTrackingData.positionsvektor,vec_Richtungsvektoren_World,vec_WorldToCam_Poses);
-    Positionsvektor_alt = &StructofTrackingData.positionsvektor;
-
-    //  enum_ObjectTracking_0     = E_ObjectTracking::Stereo_Object;
-    //  enum_ObjectTracking_1     = E_ObjectTracking::Stereo_Object;
-    }
-  else if (vec_Object_Found[0] && !vec_Object_Found[1])
-    {
-    StructofTrackingData.positionsvektor = *Positionsvektor_alt;
-    //  enum_ObjectTracking_0     = E_ObjectTracking::Mono_Object;
-    //  enum_ObjectTracking_1     = E_ObjectTracking::Object_Not_Found;
-    }
-  else if (!vec_Object_Found[0] && vec_Object_Found[1])
-    {
-    StructofTrackingData.positionsvektor = *Positionsvektor_alt;
-    //  enum_ObjectTracking_0     = E_ObjectTracking::Object_Not_Found;
-    //  enum_ObjectTracking_1     = E_ObjectTracking::Mono_Object;
-    }
-  else
-    {
-    StructofTrackingData.positionsvektor = *Positionsvektor_alt;
-    //  enum_ObjectTracking_0     = E_ObjectTracking::Object_Not_Found;
-    //  enum_ObjectTracking_1     = E_ObjectTracking::Object_Not_Found;
-    }
   }
-void C_trackingManager::Calc_Position_ObjectTracking (S_Positionsvektor& Positionsvektor, std::vector<S_Positionsvektor> vec_Richtungsvektoren_World, std::vector<C_AbsolutePose> vec_WorldToTCP_Poses)
+void C_trackingManager::Calc_Position_ObjectTracking (S_Positionsvektor& Positionsvektor, std::vector<S_Positionsvektor> vec_Richtungsvektoren_World)
   {
   // Berechnung der aktuellen Objecktposition bezogen auf das Welt-koordinatensystem in Abhngigkeit aller TCP- / Kameraposen. Hierbei wird ber
   // Matrizen die Position bestimmt, bei der die Summe aller Abstandsquadrate der optischen Achsen zum Objekt am geringsten ist (Minimierungsproblem).
@@ -199,15 +171,14 @@ void C_trackingManager::Calc_Position_ObjectTracking (S_Positionsvektor& Positio
     {
     Matrix_b[i][0] = 0.0;
     }
-
   for (int i = 0; i < Anzahl_Posen; i++)
     {
-    Matrix_b[0][0] += (-vec_WorldToTCP_Poses[i].pz() * vec_Richtungsvektoren_World[i].X + vec_WorldToTCP_Poses[i].px() * vec_Richtungsvektoren_World[i].Z) * vec_Richtungsvektoren_World[i].Z +
-      (-vec_WorldToTCP_Poses[i].px() * vec_Richtungsvektoren_World[i].Y + vec_WorldToTCP_Poses[i].py() * vec_Richtungsvektoren_World[i].X) * (-vec_Richtungsvektoren_World[i].Y);
-    Matrix_b[1][0] += (-vec_WorldToTCP_Poses[i].px() * vec_Richtungsvektoren_World[i].Y + vec_WorldToTCP_Poses[i].py() * vec_Richtungsvektoren_World[i].X) * vec_Richtungsvektoren_World[i].X +
-      (-vec_WorldToTCP_Poses[i].py() * vec_Richtungsvektoren_World[i].Z + vec_WorldToTCP_Poses[i].pz() * vec_Richtungsvektoren_World[i].Y) * (-vec_Richtungsvektoren_World[i].Z);
-    Matrix_b[2][0] += (-vec_WorldToTCP_Poses[i].py() * vec_Richtungsvektoren_World[i].Z + vec_WorldToTCP_Poses[i].pz() * vec_Richtungsvektoren_World[i].Y) * vec_Richtungsvektoren_World[i].Y +
-      (-vec_WorldToTCP_Poses[i].pz() * vec_Richtungsvektoren_World[i].X + vec_WorldToTCP_Poses[i].px() * vec_Richtungsvektoren_World[i].Z) * (-vec_Richtungsvektoren_World[i].X);
+    Matrix_b[0][0] += (-this->vecWorldtoCamPose[i].pz() * vec_Richtungsvektoren_World[i].X + this->vecWorldtoCamPose[i].px() * vec_Richtungsvektoren_World[i].Z) * vec_Richtungsvektoren_World[i].Z +
+      (-this->vecWorldtoCamPose[i].px() * vec_Richtungsvektoren_World[i].Y + this->vecWorldtoCamPose[i].py() * vec_Richtungsvektoren_World[i].X) * (-vec_Richtungsvektoren_World[i].Y);
+    Matrix_b[1][0] += (-this->vecWorldtoCamPose[i].px() * vec_Richtungsvektoren_World[i].Y + this->vecWorldtoCamPose[i].py() * vec_Richtungsvektoren_World[i].X) * vec_Richtungsvektoren_World[i].X +
+      (-this->vecWorldtoCamPose[i].py() * vec_Richtungsvektoren_World[i].Z + this->vecWorldtoCamPose[i].pz() * vec_Richtungsvektoren_World[i].Y) * (-vec_Richtungsvektoren_World[i].Z);
+    Matrix_b[2][0] += (-this->vecWorldtoCamPose[i].py() * vec_Richtungsvektoren_World[i].Z + this->vecWorldtoCamPose[i].pz() * vec_Richtungsvektoren_World[i].Y) * vec_Richtungsvektoren_World[i].Y +
+      (-this->vecWorldtoCamPose[i].pz() * vec_Richtungsvektoren_World[i].X + this->vecWorldtoCamPose[i].px() * vec_Richtungsvektoren_World[i].Z) * (-vec_Richtungsvektoren_World[i].X);
     }
 
   // Bestimmung der Hilfsmatrix "y" -> L*y=b
@@ -221,14 +192,13 @@ void C_trackingManager::Calc_Position_ObjectTracking (S_Positionsvektor& Positio
   Positionsvektor.Y = (Matrix_y[1][0] - Matrix_L_T[1][2] * Positionsvektor.Z) / Matrix_L_T[1][1];
   Positionsvektor.X = (Matrix_y[0][0] - Matrix_L_T[0][1] * Positionsvektor.Y - Matrix_L_T[0][2] * Positionsvektor.Z) / Matrix_L_T[0][0];
   }
-
-void C_trackingManager::Calc_RichtungsvektorenToWorld (std::vector<S_Positionsvektor> vec_Richtungsvektoren, std::vector<S_Positionsvektor>& vec_Richtungsvektoren_World, std::vector<C_AbsolutePose> vec_TCP_Poses)
+void C_trackingManager::Calc_RichtungsvektorenToWorld (S_Positionsvektor* vec_Richtungsvektoren[payloadSize], std::vector<S_Positionsvektor>& vec_Richtungsvektoren_World, std::vector<C_AbsolutePose> vecEinheitsMatrix)
   {
   // Die Orientierung von Welt- und Roboter-KS sind identisch. Es gilt:
   // w_r_R = Einheitsmatrix
   // w_o_P = w_r_R * r_c_R * c_o_P = r_c_R * c_o_P
 
-  int Anzahl_Posen = (int)vec_TCP_Poses.size();
+  int Anzahl_Posen = (int)vecEinheitsMatrix.size();
 
   for (int i = 0; i < Anzahl_Posen; i++)
     {
@@ -239,17 +209,17 @@ void C_trackingManager::Calc_RichtungsvektorenToWorld (std::vector<S_Positionsve
 
     vec_Richtungsvektoren_World.push_back (Richtungsvektor);
 
-    vec_Richtungsvektoren_World[i].X = vec_TCP_Poses[i].nx() * vec_Richtungsvektoren[i].X
-      + vec_TCP_Poses[i].ox() * vec_Richtungsvektoren[i].Y
-      + vec_TCP_Poses[i].ax() * vec_Richtungsvektoren[i].Z;
+    vec_Richtungsvektoren_World[i].X = vecEinheitsMatrix[i].nx() * vec_Richtungsvektoren[i]->X
+      + vecEinheitsMatrix[i].ox() * vec_Richtungsvektoren[i]->Y
+      + vecEinheitsMatrix[i].ax() * vec_Richtungsvektoren[i]->Z;
 
-    vec_Richtungsvektoren_World[i].Y = vec_TCP_Poses[i].ny() * vec_Richtungsvektoren[i].X
-      + vec_TCP_Poses[i].oy() * vec_Richtungsvektoren[i].Y
-      + vec_TCP_Poses[i].ay() * vec_Richtungsvektoren[i].Z;
+    vec_Richtungsvektoren_World[i].Y = vecEinheitsMatrix[i].ny() * vec_Richtungsvektoren[i]->X
+      + vecEinheitsMatrix[i].oy() * vec_Richtungsvektoren[i]->Y
+      + vecEinheitsMatrix[i].ay() * vec_Richtungsvektoren[i]->Z;
 
-    vec_Richtungsvektoren_World[i].Z = vec_TCP_Poses[i].nz() * vec_Richtungsvektoren[i].X
-      + vec_TCP_Poses[i].oz() * vec_Richtungsvektoren[i].Y
-      + vec_TCP_Poses[i].az() * vec_Richtungsvektoren[i].Z;
+    vec_Richtungsvektoren_World[i].Z = vecEinheitsMatrix[i].nz() * vec_Richtungsvektoren[i]->X
+      + vecEinheitsMatrix[i].oz() * vec_Richtungsvektoren[i]->Y
+      + vecEinheitsMatrix[i].az() * vec_Richtungsvektoren[i]->Z;
     }
   }
 

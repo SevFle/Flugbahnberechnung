@@ -5,8 +5,6 @@ using namespace object;
 
 C_object::C_object()
   {
-  this->ID_Cam_Links = 0;
-  this->ID_Cam_Rechts = 0;
   this->objekt_id = 0;
   this->state = 0;
   this->translation[0] = 0;
@@ -53,21 +51,17 @@ void C_object::save_trajectory()
 
 void C_object::set_ID_Cam_Links(int ID_Cam_Links)
 {
-this->ID_Cam_Links = ID_Cam_Links;
 }
 void C_object::set_ID_Cam_Rechts(int ID_Cam_Rechts)
 {
-this->ID_Cam_Rechts = ID_Cam_Rechts;
 }
 
 
 int C_object::get_ID_Cam_Links()
 {
-return this->ID_Cam_Links;
 }
 int C_object::get_ID_Cam_Rechts()
 {
-return this->ID_Cam_Rechts;
 }
 
 double C_object::get_pose_x(int vec_position)

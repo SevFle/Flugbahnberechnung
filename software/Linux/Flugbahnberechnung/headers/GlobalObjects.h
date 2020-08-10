@@ -1,4 +1,3 @@
-#pragma once
 #ifndef __GlobalObjects_H
 #define __GlobalObjects_H
 #include "CSV_Datei.h"

@@ -15,6 +15,11 @@ DEFINES += QT_DEPRECATED_WARNINGS
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
+DESTDIR     = $$system(pwd)
+OBJECTS_DIR = $$DESTDIR/Obj
+# C++ flags
+QMAKE_CXXFLAGS_RELEASE =-03
+
 SOURCES += \
     camera2.cpp \
     imagefilter.cpp \
@@ -36,17 +41,18 @@ SOURCES += \
     sources/frm_object_calibration.cpp \
     sources/frm_object_tracking.cpp \
     sources/frm_main.cpp \
-    sources/trackingManager.cpp
+    sources/trackingManager.cpp \
+
 
 HEADERS += \
+    ../libCuda/CudaKernels.cuh \
+    ../libCuda/kalman_cuda.cuh \
     camera2.h \
     headers/CSV_Datei.h \
     headers/GlobalObjects.h \
     headers/Kalmanfilter.h \
     headers/camera.h \
     headers/camera_manager.h \
-    cuda/CudaKernels.cuh \
-    cuda/kalman_cuda.cuh \
     headers/object.h \
     headers/point.h \
     headers/posen.h \
@@ -72,136 +78,174 @@ FORMS += \
     forms/frm_object_calibration.ui \
     forms/frm_object_tracking.ui
 
-################################# CUDA INCLUDES #################################
-#CUDA_SOURCES = \
-#     Code/CudaKernels.cu
-
-#CUDA_DIR = /usr/local/cuda-10.1
-
-#CUDA_ARCH = sm_75       # 75 RTX 2070 / GTX 1650          # 61 GTX 1080
-
-#INCLUDEPATH += $$CUDA_DIR/include
-
-#LIBS += -L $$CUDA_DIR/lib64 -lcudart -lcuda
-
-
-############################## CUDA NVCC ############################################
-
-
-
-# The following makes sure all path names (which often include spaces) are put between quotation marks
-#CUDA_INC = $$join(INCLUDEPATH,'" -I"','-I"','"')
-
-#cuda.input = CUDA_SOURCES
-
-#cuda.output = ${QMAKE_FILE_BASE}_cuda.o
-
-
-#cuda.commands = $$CUDA_DIR/bin/nvcc -c -arch=$$CUDA_ARCH -o ${QMAKE_FILE_OUT} ${QMAKE_FILE_NAME}
-
-#cuda.dependency_type = TYPE_C
-
-#cuda.depend_command = $$CUDA_DIR/bin/nvcc -M ${QMAKE_FILE_NAME}
-
-
-#CUDA_DIR = $$system(which nvcc | sed 's,/bin/nvcc$,,')
-
-# INCLUDEPATH += $$CUDA_DIR/include
-
-# QMAKE_LIBDIR += $$CUDA_DIR/lib
-
-# LIBS += -lcudart -lcuda
-
-#cuda.output = ${OBJECTS_DIR}${QMAKE_FILE_BASE}_cuda.obj
-
-# cuda.commands = nvcc -c -Xcompiler $$join(QMAKE_CXXFLAGS,",") $$join(INCLUDEPATH,'" -I "','-I "','"') ${QMAKE_FILE_NAME} -o ${QMAKE_FILE_OUT}
-
-# cuda.depends = nvcc -M -Xcompiler $$join(QMAKE_CXXFLAGS,",") $$join(INCLUDEPATH,'" -I "','-I "','"') ${QMAKE_FILE_NAME} | sed "s,^.*: ,," | sed "s,^ *,," | tr -d '\\n'
-
-#QMAKE_EXTRA_COMPILERS += cuda
-
-## Cuda sources
-#CUDA_SOURCES += Code/CudaKernels.cu
-
-## Path to cuda toolkit install
-#CUDA_DIR      = /usr/local/cuda-10.1
-## Path to header and libs files
-#INCLUDEPATH  += $$CUDA_DIR/include
-#QMAKE_LIBDIR += $$CUDA_DIR/lib64     # Note I'm using a 64 bits Operating system
-## libs used in your code
-#LIBS += -lcudart -lcuda
-## GPU architecture
-#CUDA_ARCH     = sm_75                # Yeah! I've a new device. Adjust with your compute capability
-## Here are some NVCC flags I've always used by default.
-#NVCCFLAGS     = --compiler-options -fno-strict-aliasing -use_fast_math --ptxas-options=-v
-## Prepare the extra compiler configuration (taken from the nvidia forum - i'm not an expert in this part)
-#CUDA_INC = $$join(INCLUDEPATH,' -I','-I',' ')
-
-#cuda.commands = $$CUDA_DIR/bin/nvcc -m64 -g -G -arch=$$CUDA_ARCH -c $$NVCCFLAGS $$CUDA_INC $$LIBS  ${QMAKE_FILE_NAME} -o ${QMAKE_FILE_OUT}
-## nvcc error printout format ever so slightly different from gcc
-## http://forums.nvidia.com/index.php?showtopic=171651
-
-#cuda.dependency_type = TYPE_C # there was a typo here. Thanks workmate!
-#cuda.depend_command = $$CUDA_DIR/bin/nvcc -O3 -M $$CUDA_INC $$NVCCFLAGS   ${QMAKE_FILE_NAME}
-
-#cuda.input = CUDA_SOURCES
-#cuda.output = ${OBJECTS_DIR}${QMAKE_FILE_BASE}_cuda.o
-## Tell Qt that we want add more stuff to the Makefile
-#QMAKE_EXTRA_COMPILERS += cuda
-CUDA_SOURCES += cuda/CudaKernels.cu
-
-CUDA_SDK += "/usr/local/cuda-10.1"
-CUDA_DIR += "/usr/local/cuda-10.1"
-
-SYSTEM_NAME = unix
-SYSTEM_TYPE = 64
-CUDA_ARCH = sm_75
-NVCC_OPTIONS = --use_fast_math -O2
-
-INCLUDEPATH += $$CUDA_DIR/include
-
-QMAKE_LIBDIR += $$CUDA_DIR/lib64/
-
-CUDA_OBJECTS_DIR = ./
-
-CUDA_LIBS = -lcuda -lcudart
-CUDA_INC = $$join(INCLUDEPATH,'" -I"','-I"','"')
-
-LIBS += $$CUDA_LIBS
-
-cuda_d.input = CUDA_SOURCES
-cuda_d.output = $$CUDA_OBJECTS_DIR/${QMAKE_FILE_BASE}.o
-cuda_d.commands = $$CUDA_DIR/bin/nvcc -D_DEBUG $$NVCC_OPTIONS $$CUDA_INC $$NVCC_LIBS --machine $$SYSTEM_TYPE -arch=$$CUDA_ARCH -c -o {QMAKE_FILE_OUT} ${QMAKE_FILE_NAME}
-cuda_d.dependency_type = TYPE_C
-QMAKE_EXTRA_COMPILERS += cuda_d
-
-
-
-
-# Default rules for deployment.
-qnx: target.path = /tmp/$${TARGET}/bin
-else: unix:!android: target.path = /opt/$${TARGET}/bin
-!isEmpty(target.path): INSTALLS += target
-
-
 ################################################## OPENCV INCLUDE ###########################################
-
-DISTFILES += \
-  Code/CudaKernels.cu \
-  Code/kalman.cuCudaKernels
-
-
 
 unix:!macx: LIBS += -L$$PWD/../../../../../libs/opencv420/lib/ -lopencv_world
 
 INCLUDEPATH += $$PWD/../../../../../libs/opencv420/include
 DEPENDPATH += $$PWD/../../../../../libs/opencv420/include
 
+################################################## GSTREAMER INCLUDE ###########################################
+
 CONFIG += link_pkgconfig
 PKGCONFIG += gstreamer-1.0 glib-2.0 gobject-2.0 gstreamer-app-1.0 gstreamer-pbutils-1.0
+
+################################################## TBB INCLUDE ###########################################
 
 unix:!macx: LIBS += -L$$PWD/../../../usr/local/lib/ -ltbb
 
 INCLUDEPATH += $$PWD/../../../usr/local/include
 DEPENDPATH += $$PWD/../../../usr/local/include
 
+################################################## QMAKE RULES ###########################################
+# Default rules for deployment.
+qnx: target.path = /tmp/$${TARGET}/bin
+else: unix:!android: target.path = /opt/$${TARGET}/bin
+!isEmpty(target.path): INSTALLS += target
+
+
+
+
+############################## CUDA NVCC ############################################
+#CUDA_SOURCES += cuda/CudaKernels.cu
+#PROJECT_DIR = $$system(pwd)
+#OBJECTS_DIR = $$PROJECT_DIR/Obj
+#DESTDIR = ../bin
+#CUDA_DIR = /usr/local/cuda-10.1
+#CUDA_ARCH = sm_75
+#NVCCFLAGS = --compiler-options -fno-strict-aliasing -use_fast_math --ptxas-options=-v
+#INCLUDEPATH += $$CUDA_DIR/include
+#QMAKE_LIBDIR += $$CUDA_DIR/lib64
+#LIBS += -lcudart -lcutil_x86_64
+## join the includes in a line
+#CUDA_INC = $$join(INCLUDEPATH,' -I','-I',' ')
+
+#cuda.input = CUDA_SOURCES
+#cuda.output = ${OBJECTS_DIR}${QMAKE_FILE_BASE}.o
+
+#cuda.commands = $$CUDA_DIR/bin/nvcc -m64 -g -G -arch=$$CUDA_ARCH -c $$NVCCFLAGS $$CUDA_INC $$LIBS  ${QMAKE_FILE_NAME} -o ${QMAKE_FILE_OUT}
+
+#cuda.dependency_type = TYPE_C # there was a typo here. Thanks workmate!
+#cuda.depend_command = $$CUDA_DIR/bin/nvcc -g -G -M $$CUDA_INC $$NVCCFLAGS   ${QMAKE_FILE_NAME}
+## Tell Qt that we want add more stuff to the Makefile
+#QMAKE_EXTRA_UNIX_COMPILERS += cuda
+
+
+## File(s) containing my CUDA code
+#CUDA_SOURCES += cuda/CudaKernels.cu
+
+## Location of CUDA on my system (Arch Linux)
+#CUDA_DIR = /usr/local/cuda-10.1
+
+#INCLUDEPATH += $$CUDA_DIR/include
+#QMAKE_LIBDIR += $$CUDA_DIR/lib64
+#LIBS += -lcudart -lcuda
+
+## Compute capability of my GPU
+#CUDA_ARCH = sm_75 # 75 RTX 2070 / GTX 1650          # 61 GTX 1080
+
+#NVCCFLAGS     = --compiler-options -fno-strict-aliasing -use_fast_math --ptxas-options=-v
+
+#CUDA_INC = $$join(INCLUDEPATH,' -I','-I',' ')
+#cuda.commands = $$CUDA_DIR/bin/nvcc -m64 -O3 -arch=$$CUDA_ARCH -c $$NVCCFLAGS \
+#                $$CUDA_INC $$LIBS  ${QMAKE_FILE_NAME} -o ${QMAKE_FILE_OUT} \
+#                2>&1 | sed -r \"s/\\(([0-9]+)\\)/:\\1/g\" 1>&2
+#cuda.dependency_type = TYPE_C
+
+#cuda.depend_command = $$CUDA_DIR/bin/nvcc -O3 -M $$CUDA_INC $$NVCCFLAGS ${QMAKE_FILE_NAME}| sed \"s/^.*: //\"
+#cuda.input = CUDA_SOURCES
+#cuda.output = $${OBJECTS_DIR}/${QMAKE_FILE_BASE}$${QMAKE_EXT_OBJ}
+
+#QMAKE_EXTRA_COMPILERS += cuda
+#DEFINES += PROJECT_PATH=\\"$_PRO_FILE_PWD_\\"
+##----------------------------------------------------------------
+##-------------------------Cuda setup-----------------------------
+##----------------------------------------------------------------
+
+#CUDA_SOURCES += \
+#          cuda/CudaKernels.cu
+
+## Path to cuda toolkit install (System specific)
+#CUDA_DIR = /usr/local/cuda-10.1
+#INCLUDEPATH += $CUDA_DIR/include
+#INCLUDEPATH += $CUDA_DIR/samples/common/inc
+
+## Cuda libs dir
+#QMAKE_LIBDIR += $CUDA_DIR/lib64
+
+### note: for dynamic parallelism you need libcudadevrt
+#LIBS += -lcudart -lcudadevrt -lcuda
+
+## GPU ARCH
+## This gets passed as the gpu-architecture flag to nvcc compiler
+## specifying particular architectures enable certain features, limited to the compute capability
+## of the GPU. compute capabilities listed here http://en.wikipedia.org/wiki/CUDA
+#CUDA_ARCH = 75
+
+## Join the includes in a line
+#CUDA_INC = $join(INCLUDEPATH,' -I','-I',' ') -I$_PRO_FILE_PWD_
+
+## Flags used by the CUDA compiler
+#NVCCFLAGS = 	--compiler-options -fno-strict-aliasing \
+#    --ptxas-options=-v \
+#    -rdc=true \
+#    -prec-div=true -ftz=false -prec-sqrt=true -fmad=true
+
+## Flags used by both the CUDA compiler and linker
+#NVCCFLAG_COMMON = -m64 -arch=sm_$CUDA_ARCH
+#CONFIG(debug, debug|release) {
+#  #DEBUG
+#  NVCCFLAG_COMMON += -g -G
+#} else {
+#  #RELEASE
+#  NVCCFLAG_COMMON += -O2
+#}
+
+##------------------------- Cuda intermediat compiler
+## Prepare intermediat cuda compiler
+#cudaIntr.input = CUDA_SOURCES
+##cudaIntr.output = ${OBJECTS_DIR}${QMAKE_FILE_BASE}_cuda.o
+#cudaIntr.output = ${QMAKE_FILE_BASE}_cuda.o
+
+#cudaIntr.commands = 	$CUDA_DIR/bin/nvcc $NVCCFLAG_COMMON \
+#      -dc $NVCCFLAGS $CUDA_INC $LIBS \
+#      ${QMAKE_FILE_NAME} -o ${QMAKE_FILE_OUT}
+
+##Set our variable out. These obj files need to be used to create the link obj file and used in our final gcc compilation
+#cudaIntr.variable_out = CUDA_OBJ
+#cudaIntr.variable_out += OBJECTS
+
+## Tell Qt that we want add more stuff to the Makefile
+#QMAKE_EXTRA_UNIX_COMPILERS += cudaIntr
+
+##------------------------- Cuda linker (required for dynamic parallelism)
+## Prepare the linking compiler step
+#cuda.input = CUDA_OBJ
+#cuda.output = link.o
+#cuda.CONFIG += combine	# Generate 1 output file
+
+## Tweak arch according to your hw's compute capability
+#cuda.commands = $CUDA_DIR/bin/nvcc $NVCCFLAG_COMMON \
+#    -dlink *_cuda.o -o link.o
+#cuda.dependency_type = TYPE_C
+#cuda.depend_command = 	$CUDA_DIR/bin/nvcc -g -G \
+#      -M $CUDA_INC $NVCCFLAGS ${QMAKE_FILE_NAME}
+
+## Tell Qt that we want add more stuff to the Makefile
+#QMAKE_EXTRA_UNIX_COMPILERS += cuda
+
+
+
+
+
+unix:!macx: LIBS += -L$$PWD/../libCuda/lib/ -lgpu
+
+INCLUDEPATH += $$PWD/../libCuda/include
+DEPENDPATH += $$PWD/../libCuda/include
+
+unix:!macx: PRE_TARGETDEPS += $$PWD/../libCuda/lib/libgpu.a
+
+unix:!macx: LIBS += -L$$PWD/../../../../../../../usr/local/cuda-10.1/lib64/ -lcudart -lcudadevrt -lcuda
+
+INCLUDEPATH += $$PWD/../../../../../../../usr/local/cuda-10.1/include
+DEPENDPATH += $$PWD/../../../../../../../usr/local/cuda-10.1/include

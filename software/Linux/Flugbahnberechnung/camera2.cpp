@@ -4,31 +4,178 @@ using namespace Camera;
 
 C_Camera2::C_Camera2                        ()
   {
-  auto cap = new cv::Mat;
-  auto cpuSrc = new cv::Mat;
-  auto DistCoeffs = new cv::Mat;
-  auto Intrinsic = new cv::Mat;
-  auto gpuSrc = new cv::cuda::GpuMat;
-  auto map1 = new cv::cuda::GpuMat;
-  auto map2 = new cv::cuda::GpuMat;
-  auto CameraPose = new posen::C_AbsolutePose;
+  this->cap = new cv::VideoCapture;
+  this->cpuSrc = new cv::Mat;
+  this->distCoeffs = new cv::Mat;
+  this->intrinsic = new cv::Mat;
+  this->roi      = new cv::Rect;
+  this->gpuSrc = new cv::cuda::GpuMat;
+  this->map1 = new cv::cuda::GpuMat;
+  this->map2 = new cv::cuda::GpuMat;
+  this->cameraPose = new posen::C_AbsolutePose;
   }
 C_Camera2::~C_Camera2                       ()
   {
-  delete (CameraPose);
+  delete (cameraPose);
   delete (map1);
   delete (map2);
-  delete (GpuSrc);
-  delete (Intrinsic);
-  delete (DistCoeffs);
-  delete (CpuSrc);
+  delete (gpuSrc);
+  delete (intrinsic);
+  delete (distCoeffs);
+  delete (cpuSrc);
   delete (cap);
+  }
+
+
+bool C_Camera2::open                        ()
+    {
+    this->cap->open(pipeline, cv::CAP_GSTREAMER);
+    this->initialize();
+    if(!this->cap->isOpened()) return false;
+    else return true;
     }
+bool C_Camera2::close                       ()
+  {
+  this->cap->release();
+  if(!this->cap->isOpened()) return true;
+  else return false;
+  }
+void C_Camera2::initialize                  ()
+  {
+  this->frameWidth = cap->get(cv::CAP_PROP_FRAME_WIDTH);
+  this->frameHeight = cap->get(cv::CAP_PROP_FRAME_HEIGHT);
+  this->roi->x = 0;
+  this->roi->y = 0;
+  this->roi->height = frameHeight;
+  this->roi->width = frameWidth;
+  }
+void C_Camera2::initRectifyMap              ()
+  {
+  cv::Mat cpu_map1;
+  cv::Mat cpu_map2;
+  initUndistortRectifyMap (*intrinsic,*distCoeffs,cv::Mat(),*intrinsic,cv::Size (cpuSrc->cols,cpuSrc->rows), CV_32FC1,cpu_map1,cpu_map2);
+
+  this->map1->upload (cpu_map1);
+  this->map2->upload (cpu_map2);
+
+  }
+void C_Camera2::readImg                      (cv::Mat &dstImg)
+  {
+  this->cap->read(*cpuSrc);
+  dstImg= cpuSrc->operator()(*roi);
+  }
+
+void C_Camera2::fit_to_roi(int Radius, int istX, int istY)
+  {
+    this->filterValues->offset[0] = istX-Radius*2;
+    this->filterValues->offset[1] = istY-Radius*2;
+
+    int breite = Radius*4;
+    int hoehe = Radius*4;
+
+    if ((this->filterValues->offset[0] >= 0 && this->filterValues->offset[1] >= 0) && (
+         this->filterValues->offset[0]+breite <= this->frameWidth && this->filterValues->offset[1] + hoehe <= this->frameHeight ))
+      {
+      this->roi->x = this->filterValues->offset[0];
+      this->roi->y = this->filterValues->offset[1];
+
+      this->roi->width = Radius*4;
+      this->roi->height = Radius*4;
+      }
+    else
+      {
+      this->filterValues->offset[0] = 0;
+      this->filterValues->offset[1] = 0;
+
+      this->roi->x = 0;
+      this->roi->y = 0;
+
+      this->roi->width =   this->frameWidth;
+      this->roi->height =  this->frameHeight;
+
+      }
+   }
+void C_Camera2::setCalibrationParameter     (double (&DistCoeffs)[1][5], double (&Intrinsic)[3][3])
+{
+for (int i = 0; i < 1; i++)
+  {
+  for (int j = 0; j < 5; j++)
+    {
+    this->distCoeffs->at<double> (i,j) = DistCoeffs[i][j];
+    }
+  }
+
+for (int i = 0; i < 3; i++)
+  {
+  for (int j = 0; j < 3; j++)
+    {
+    this->intrinsic->at<double> (i,j) = Intrinsic[i][j];
+    }
+  }
+}
+void C_Camera2::getCalibrationParameter     (double (&DistCoeffs)[1][5], double (&Intrinsic)[3][3]) const
+{
+for (int i = 0; i < 1; i++)
+  {
+  for (int j = 0; j < 5; j++)
+    {
+    //temp = this->DistCoeffs->at<double>(i, j);
+    //temp.replace(temp.begin(), temp.end(), );
+    DistCoeffs[i][j] = this->distCoeffs->at<double> (i,j);
+    }
+  }
+
+for (int i = 0; i < 3; i++)
+  {
+  for (int j = 0; j < 3; j++)
+    {
+    Intrinsic[i][j] = this->intrinsic->at<double> (i,j);
+    }
+  }
+}
+
+void C_Camera2::setPipeline                 (std::string Pipeline)
+  {
+  this->pipeline = Pipeline;
+  }
+void C_Camera2::setROI                      (int Radius, int istX, int istY)
+  {
+  this->fit_to_roi( Radius,  istX,  istY);
+  }
+int  C_Camera2::getROI() const
+  {
+  return this->getROI();
+  }
+void C_Camera2::setCameraID                 (int &cameraID)
+  {
+  this->cameraID = cameraID;
+  }
+int  C_Camera2::getCameraID                 () const
+  {
+  return this->cameraID;
+  }
+
+void C_Camera2::save_picture (int photo_id, std::string definition, cv::Mat& srcImg)
+  {
+  cv::imwrite (definition + std::to_string (this->cameraID) + "_Snapshot_" + std::to_string (photo_id) + ".png",srcImg);
+  }
+
+/********************************************** GETTER & SETTER METHODEN ******************************************************/
+
+cv::Rect *C_Camera2::getRoi() const
+  {
+  return roi;
+  }
+
+void C_Camera2::setRoi(cv::Rect *value)
+  {
+  roi = value;
+  }
 
 cv::cuda::GpuMat *C_Camera2::getMap2() const
-    {
-    return map2;
-    }
+  {
+  return map2;
+  }
 
 void C_Camera2::setMap2(cv::cuda::GpuMat *value)
     {
@@ -54,117 +201,22 @@ void C_Camera2::setFilterproperties(S_filterProperties *value)
     {
     filterValues = value;
     }
-
-
-bool C_Camera2::open                        ()
-    {
-    this->cap->open(Pipeline, cv::CAP_GSTREAMER);
-    if(!this->cap->isOpened()) return false;
-    else return true;
-    }
-bool C_Camera2::close                       ()
-  {
-  this->cap->release();
-  if(!this->cap->isOpened()) return true;
-  else return false;
-  }
-void C_Camera2::savePicture                 (int camera_id, int photo_id, std::string definition)
-  {
-  imwrite (definition + std::to_string (camera_id) + "_Snapshot_" + std::to_string (photo_id) + ".png",*CpuSrc);
-  }
-void C_Camera2::initRectifyMap              ()
-  {
-  cv::Mat cpu_map1;
-  cv::Mat cpu_map2;
-  initUndistortRectifyMap (*Intrinsic,*DistCoeffs,cv::Mat(),*Intrinsic,cv::Size (CpuSrc->cols,CpuSrc->rows), CV_32FC1,cpu_map1,cpu_map2);
-
-  this->map1->upload (cpu_map1);
-  this->map2->upload (cpu_map2);
-
-  }
-
-void C_Camera2::setCalibrationParameter     (double (&DistCoeffs)[1][5], double (&Intrinsic)[3][3])
-{
-for (int i = 0; i < 1; i++)
-  {
-  for (int j = 0; j < 5; j++)
-    {
-    this->DistCoeffs->at<double> (i,j) = DistCoeffs[i][j];
-    }
-  }
-
-for (int i = 0; i < 3; i++)
-  {
-  for (int j = 0; j < 3; j++)
-    {
-    this->Intrinsic->at<double> (i,j) = Intrinsic[i][j];
-    }
-  }
-}
-void C_Camera2::getCalibrationParameter     (double (&DistCoeffs)[1][5], double (&Intrinsic)[3][3]) const
-{
-for (int i = 0; i < 1; i++)
-  {
-  for (int j = 0; j < 5; j++)
-    {
-    //temp = this->DistCoeffs->at<double>(i, j);
-    //temp.replace(temp.begin(), temp.end(), );
-    DistCoeffs[i][j] = this->DistCoeffs->at<double> (i,j);
-    }
-  }
-
-for (int i = 0; i < 3; i++)
-  {
-  for (int j = 0; j < 3; j++)
-    {
-    Intrinsic[i][j] = this->Intrinsic->at<double> (i,j);
-    }
-  }
-}
-
-void C_Camera2::setPipeline                 (std::string Pipeline)
-  {
-  this->Pipeline = Pipeline;
-  }
-void C_Camera2::setROI                      (int &width, int &height)
-  {
-
-  }
-int  C_Camera2::getROI() const
-  {
-
-  }
-void C_Camera2::setCameraID                 (int &cameraID)
-  {
-  this->cameraID = cameraID;
-  }
-int  C_Camera2::getCameraID                 () const
-  {
-  return this->cameraID;
-  }
-
-void C_Camera2::save_picture (int photo_id, std::string definition, cv::Mat& srcImg)
-  {
-  cv::imwrite (definition + std::to_string (this->cameraID) + "_Snapshot_" + std::to_string (photo_id) + ".png",srcImg);
-  }
-
-
 cv::Mat *C_Camera2::getDistCoeffs                         () const
   {
-  return DistCoeffs;
+  return distCoeffs;
   }
 void C_Camera2::setDistCoeffs                             (cv::Mat &value)
   {
-  *DistCoeffs = value;
+  *distCoeffs = value;
   }
 
 cv::Mat *C_Camera2::getIntrinsic                          () const
   {
-  return Intrinsic;
+  return intrinsic;
   }
 void C_Camera2::setIntrinsic                              (cv::Mat &value)
   {
-  *Intrinsic = value;
+  *intrinsic = value;
   }
 
 uchar C_Camera2::S_filterProperties::getHue_min           () const
@@ -220,7 +272,16 @@ void C_Camera2::S_filterProperties::setValue_max(const uchar &value)
   {
   value_max = value;
   }
-
+int C_Camera2::S_filterProperties::getOffset(int* offset) const
+  {
+  offset[0] = this->offset[0];
+  offset[1] = this->offset[1];
+  };
+void C_Camera2::S_filterProperties::setOffset(int arg1, int arg2)
+  {
+  this->offset[0] = arg1;
+  this->offset[1] = arg2;
+  }
 int C_Camera2::S_filterProperties::getErodeIterations() const
   {
   return erosion_iterations;
@@ -421,11 +482,11 @@ void C_Camera2::S_filterProperties::setBilateral_active(bool value)
 
 C_AbsolutePose *C_Camera2::getCameraPose() const
   {
-  return CameraPose;
+  return cameraPose;
   }
 
 void C_Camera2::setCameraPose(C_AbsolutePose *value)
   {
-  CameraPose = value;
+  cameraPose = value;
   }
 

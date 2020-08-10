@@ -1,4 +1,3 @@
-#pragma once
 #ifndef __Object_H
 #define __Object_H
 #include <vector>

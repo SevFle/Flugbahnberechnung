@@ -220,9 +220,9 @@ std::vector<int> C_LoadManager::loadCameraPositioning ()
   return vecCameraPosition;
   }
 
-void C_LoadManager::loadCameraCos (Camera::C_Camera2 &Camera)
+void C_LoadManager::loadCameraCos (Camera::C_Camera2* Camera)
   {
-  int camerID = Camera.getCameraID();
+  int camerID = Camera->getCameraID();
   string Dateiname = "../Parameter/Pose_world_to_camera" + to_string (camerID) + ".csv";
   string Dateityp;
   double nx, ny, nz, ox, oy, oz, ax, ay, az, px, py, pz;
@@ -244,18 +244,18 @@ void C_LoadManager::loadCameraCos (Camera::C_Camera2 &Camera)
     GlobalObjects->csv_parameter_datei->Lesen (py);
     GlobalObjects->csv_parameter_datei->Lesen (pz);
 
-    Camera.getCameraPose()->nx(nx);
-    Camera.getCameraPose()->ny (ny);
-    Camera.getCameraPose()->nz (nz);
-    Camera.getCameraPose()->ox (ox);
-    Camera.getCameraPose()->oy (oy);
-    Camera.getCameraPose()->oz (oz);
-    Camera.getCameraPose()->ax (ax);
-    Camera.getCameraPose()->ay (ay);
-    Camera.getCameraPose()->az (az);
-    Camera.getCameraPose()->px (px);
-    Camera.getCameraPose()->py (py);
-    Camera.getCameraPose()->pz (pz);
+    Camera->getCameraPose()->nx(nx);
+    Camera->getCameraPose()->ny (ny);
+    Camera->getCameraPose()->nz (nz);
+    Camera->getCameraPose()->ox (ox);
+    Camera->getCameraPose()->oy (oy);
+    Camera->getCameraPose()->oz (oz);
+    Camera->getCameraPose()->ax (ax);
+    Camera->getCameraPose()->ay (ay);
+    Camera->getCameraPose()->az (az);
+    Camera->getCameraPose()->px (px);
+    Camera->getCameraPose()->py (py);
+    Camera->getCameraPose()->pz (pz);
     }
   else
     {
