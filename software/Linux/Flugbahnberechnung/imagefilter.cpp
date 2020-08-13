@@ -67,25 +67,6 @@ void C_ImageFilter::gpufMorphGradient(cv::cuda::GpuMat &gpu_src, cv::cuda::GpuMa
 
 void C_ImageFilter::gpufHSV (cv::cuda::GpuMat &gpu_src, cv::Mat &cpu_dst, Camera::C_Camera2::S_filterProperties &Filter)
   {
-  cv::cuda::GpuMat temp1, temp2;
-  cv::Scalar min(Filter.getHue_min(),Filter.getSaturation_min(),Filter.getValue_min());
-  cv::Scalar max(Filter.getHue_max(),Filter.getSaturation_max(),Filter.getValue_max());
-
-  this->gpufGaussian(gpu_src,temp1, Filter);
-
-  cv::cuda::cvtColor (temp1,temp2,cv::COLOR_BGR2HSV);
-
-  cudaKernel::inRange_gpu (temp2,min, max,temp1);
-
-  gpufOpen( temp1,temp2, Filter);
-
-  gpufClose(temp2,temp1, Filter);
-
-  //LAST CHANCE TO GRAB GRAYSCALE FOR GPU MAT
-  cv::cuda::cvtColor (temp1, temp2 ,cv::COLOR_GRAY2BGR);
-
-  bitwise_and (gpu_src,temp2,temp1);
-  temp1.download(cpu_dst);
   }
 
 bool C_ImageFilter::findContours                     (cv::Mat* cpuSrc, cv::Mat& dstCpuContouredImg, int offset[2], Camera::C_Camera2 &Camera,

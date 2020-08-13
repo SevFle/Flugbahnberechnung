@@ -223,3 +223,46 @@ void C_trackingManager::Calc_RichtungsvektorenToWorld (S_Positionsvektor* vec_Ri
     }
   }
 
+void C_trackingManager::calcPixelVeloctiy(int dTimestamp, S_Positionsvektor* Richtungsvektoren   [payloadSize], int camID)
+  {
+  int dPixelX[payloadSize][2];
+  int dPixelY[payloadSize];
+
+  dPixelX[camID][0] = Richtungsvektoren[camID]->X - RichtungsvektorenTm1[camID]->X;
+  dPixelX[camID][1] = Richtungsvektoren[camID]->Y - RichtungsvektorenTm1[camID]->Y;
+  dPixelX[camID][2] = Richtungsvektoren[camID]->Z - RichtungsvektorenTm1[camID]->Z;
+
+  this->pixelVelocity[camID][0] = dPixelX[camID][0]/dTimestamp;
+  this->pixelVelocity[camID][1] = dPixelX[camID][1]/dTimestamp;
+  this->pixelVelocity[camID][2] = dPixelX[camID][2]/dTimestamp;
+
+  }
+
+void C_trackingManager::calcObjectVeloctiy(int dTimestamp, S_Positionsvektor&             objektVektor)
+  {
+  S_Positionsvektor dObjektVektor;
+  dObjektVektor.X = objektVektor.X - this->objektVektorTm1->X;
+  dObjektVektor.Y = objektVektor.Y - this->objektVektorTm1->Y;
+  dObjektVektor.Z = objektVektor.Z - this->objektVektorTm1->Z;
+  this->objectVelocity[0] = dObjektVektor.X/dTimestamp;
+  this->objectVelocity[1] = dObjektVektor.Y/dTimestamp;
+  this->objectVelocity[2] = dObjektVektor.Z/dTimestamp;
+  this->calcObjectAcceleration(dTimestamp);
+
+  }
+
+void C_trackingManager::calcPixelAcceleration(int dTimestamp)
+  {
+
+  }
+void C_trackingManager::calcObjectAcceleration(int dTimestamp)
+  {
+  float dObjectVelocity [3];
+  dObjectVelocity[0] = this->objectVelocityTm1[0]-this->objectVelocity[0];
+  dObjectVelocity[1] = this->objectVelocityTm1[1]-this->objectVelocity[1];
+  dObjectVelocity[2] = this->objectVelocityTm1[2]-this->objectVelocity[2];
+
+  this->objectAcceleration[0] = dObjectVelocity[0]/dTimestamp;
+  this->objectAcceleration[1] = dObjectVelocity[1]/dTimestamp;
+  this->objectAcceleration[2] = dObjectVelocity[2]/dTimestamp;
+  }

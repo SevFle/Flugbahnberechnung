@@ -14,28 +14,35 @@ C_CameraManager::C_CameraManager ( C_GlobalObjects* GlobalObjects)
   this->saveManager     = new Savemanager::c_SaveManager(GlobalObjects);
   this->ImageFilter     = new imagefilter::C_ImageFilter(GlobalObjects);
   this->lock            = new pthread_mutex_t;
-  this->camPipeline     = new pthread_t;
   this->camSimple       = new pthread_t;
   this->camPositioning  = new pthread_t;
-  this->Que             = new tbb::concurrent_bounded_queue<S_Payload*>;
+  this->Que             = new tbb::concurrent_queue<CameraManager::S_Payload*>;
   this->pData           = new S_Payload;
+  this->testpayload     = new S_Payload;
+
   this->trackingManager = new trackingManager::C_trackingManager(GlobalObjects);
+  this->vecImgShow      = new std::vector<cv::Mat*>;
+  this->filterFlags     = new S_filterflags;
   this->camera_id       = 0;
   this->frameWidth      = 1280;
   this->frameHeight     = 720;
   this->arrActiveCameras[0] = 0;
-  this->arrActiveCameras[1] = 0;
+  this->arrActiveCameras[1] = 1;
   this->arrActiveCameras[2] = 0;
   this->arrActiveCameras[3] = 0;
   this->cntPipeline         = 0;
   this->calibrationDone     = false;
   this->positioningDone     = false;
   this->pipelineDone        = 0;
+  this->test = "Print test string successfull";
 
   }
 /**************************************************************** Destruktor ****************************************************************/
 C_CameraManager::~C_CameraManager ()
   {
+  delete (testpayload);
+  delete (filterFlags);
+  delete (vecImgShow);
   delete (trackingManager);
   delete (pData);
   delete (Que);
@@ -47,6 +54,26 @@ C_CameraManager::~C_CameraManager ()
   delete (saveManager);
   delete (loadManager);
   this->globalObjects = nullptr;
+  }
+
+pthread_mutex_t *C_CameraManager::getLock() const
+  {
+  return lock;
+  }
+
+void C_CameraManager::setLock(pthread_mutex_t *value)
+  {
+  lock = value;
+  }
+
+S_filterflags *C_CameraManager::getFilterFlags() const
+  {
+  return filterFlags;
+  }
+
+void C_CameraManager::setFilterFlags(S_filterflags *value)
+  {
+  filterFlags = value;
   }
 
 bool C_CameraManager::getPositioningDone() const
@@ -192,24 +219,28 @@ bool C_CameraManager::stopThreadCameraPositioning()
    }
 bool C_CameraManager::startPipelineTracking()
   {
-  Que->set_capacity(7);
+  //Que->set_capacity(10);
 
-  if(int err = pthread_create(camPipeline,NULL, (THREADFUNCPTR) &CameraManager::C_CameraManager::pipelineHelper, this) !=0)
-    {
-    printf("\n**ERROR** Kamerapipeline konnte nicht gestartet werden");
-    return false;
-    }
+  this->camPipeline     = new thread(&CameraManager::C_CameraManager::pipelineHelper,this);
+
+  //                std::thread(grabAndConvertTBB, std::ref(cam_vector), std::ref(Que));
+//  if(int err = pthread_create(camPipeline,NULL, (THREADFUNCPTR) &CameraManager::C_CameraManager::pipelineHelper, this) !=0)
+//    {
+//    printf("\n**ERROR** Kamerapipeline konnte nicht gestartet werden");
+//    return false;
+//    }
   printf("\n**INFO** Kamerapipeline wurde gestartet");
   return true;
   }
 bool C_CameraManager::stopPipelineTracking()
   {
   this->pipelineDone = true;
-  if(pthread_join(*camPipeline, NULL) !=0)
-    {
-      printf("\n**ERROR** Kamerathread konnte nicht gestoppt werden");
-      return false;
-    }
+  this->camPipeline->join();
+//  if(pthread_join(*camPipeline, NULL) !=0)
+//    {
+//      printf("\n**ERROR** Kamerathread konnte nicht gestoppt werden");
+//      return false;
+//    }
   printf("\n**INFO** Kamerapipeline wurde gestoppt");
   return true;
   }
@@ -462,7 +493,7 @@ void C_CameraManager::calibrate_stereo_camera (int current_camera_id,
 
   //cv::Vec3d T;
   cv::Mat   D1, D2;
-  //cv::InputOutputArray R, T;
+  //cv::InputOutputArfilterFlagsray R, T;
   this->vecCameras[current_camera_id]->getIntrinsic()->copyTo(K1);
   this->vecCameras[current_camera_id + 1]->getIntrinsic()->copyTo(K2);
   this->vecCameras[current_camera_id]->getDistCoeffs()->copyTo(D1);
@@ -497,8 +528,9 @@ void C_CameraManager::calibrate_stereo_camera (int current_camera_id,
 
 void *C_CameraManager::threadCameraPositioning(void *This)
   {
-  cv::Mat* img;
-  std::vector<cv::Mat*> vecImg;
+
+   std::vector<cv::Mat*> vecImg;
+
   if (pthread_mutex_init(static_cast<CameraManager::C_CameraManager*>(This)->lock, NULL) !=0)
     printf("\n Mutex init failed for thread camera positioning");
   while(!static_cast<CameraManager::C_CameraManager*>(This)->positioningDone)
@@ -507,15 +539,24 @@ void *C_CameraManager::threadCameraPositioning(void *This)
                it < std::end(static_cast<CameraManager::C_CameraManager*>(This)->vecCameras);
                it++)
         {
-        img = new cv::Mat;
-        (*it)->readImg(*img);
-        vecImg.push_back(img);
+        //std::unique_ptr<cv::Mat> img = std::make_unique<cv::Mat>();
+        (*it)->grabImg();
         }
+      for(auto it = std::begin(static_cast<CameraManager::C_CameraManager*>(This)->vecCameras);
+               it < std::end(static_cast<CameraManager::C_CameraManager*>(This)->vecCameras);
+               it++)
+        {
+          auto img = new cv::Mat;
+          (*it)->retrieveImg(*img);
+          vecImg.push_back(img);
+
+        }
+
       pthread_mutex_lock(static_cast<CameraManager::C_CameraManager*>(This)->lock);
-      static_cast<CameraManager::C_CameraManager*>(This)->vecImgShow.clear();
+      static_cast<CameraManager::C_CameraManager*>(This)->vecImgShow->clear();
       for(auto it = std::begin(vecImg); it < std::end(vecImg); it++)
         {
-        static_cast<CameraManager::C_CameraManager*>(This)->vecImgShow.push_back(*it);
+        static_cast<CameraManager::C_CameraManager*>(This)->vecImgShow->push_back(*it);
         }
       pthread_mutex_unlock(static_cast<CameraManager::C_CameraManager*>(This)->lock);
       vecImg.clear();
@@ -576,55 +617,80 @@ void *C_CameraManager::pipelineHelper(void* This)
   static_cast<CameraManager::C_CameraManager*>(This)->pipelineTracking(static_cast<CameraManager::C_CameraManager*>(This)->vecCameras,
                                                                       *static_cast<CameraManager::C_CameraManager*>(This)->Que);
   }
-std::vector<cv::Mat *> C_CameraManager::getVecImgShow() const
+std::vector<cv::Mat*> C_CameraManager::getVecImgShow() const
   {
-  return vecImgShow;
+  return *vecImgShow;
   }
 
-void C_CameraManager::setVecImgShow(const std::vector<cv::Mat *> &value)
+void C_CameraManager::setVecImgShow             (const std::vector<cv::Mat*> &value)
   {
-  vecImgShow = value;
+  *vecImgShow = value;
   }
-bool C_CameraManager::pollPipeline               (CameraManager::S_Payload* payload)
+bool C_CameraManager::pollPipeline               (CameraManager::S_Payload* arg1)
   {
-  if(Que->try_pop(payload))
+  if(this->Que->try_pop(arg1))
       {
       return true;
       }
   return false;
   }
-void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera, tbb::concurrent_bounded_queue<S_Payload*> &que)
+void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCameras, tbb::concurrent_queue<S_Payload*> &que)
   {
-  //STEP 1: GRAB PICTURE FROM ARRAY-ACTIVE_CAMERAS
+  int frameheight = this->vecCameras[0]->getFrameHeight();
+  int framewidth = this->vecCameras[0]->getFrameWidth();
   tbb::parallel_pipeline(7, tbb::make_filter<void, S_Payload*>(tbb::filter::serial_in_order, [&](tbb::flow_control& fc)->S_Payload*
     {
-    if(cntPipeline == 4) cntPipeline = 0;
-    auto pData          = new S_Payload;
-    for(int i = 0; i <  payloadSize; i++)
-    {
-    pData->cameraID[i]     = arrActiveCameras[cntPipeline];
-    if (pData->cameraID[i] > globalObjects->absCameras) return 0;
-    pData->Filter[i]       = *vecCameras[arrActiveCameras[cntPipeline]]->getFilterproperties();
-    vecCameras[arrActiveCameras[cntPipeline]]->readImg(pData->cpuSrcImg[i]);
-    }
     if(pipelineDone)
       {
       this->pipelineDone = true;
       fc.stop();
       return 0;
       }
+    //SET IMAGES
+    auto pData          = new S_Payload;
+    for(int i = 0; i < payloadSize; i++)
+      {
+      pData->cpuSrcImg[i].create (frameheight, framewidth, CV_32FC1);
+      }
+    return pData;
+    }
+  )&
+
+  //STEP 1: GRAB PICTURE FROM ARRAY-ACTIVE_CAMERAS
+  tbb::make_filter<S_Payload*, S_Payload*>(tbb::filter::serial_in_order, [&] (S_Payload *pData)->S_Payload*
+    {
+    if(cntPipeline == 4) cntPipeline = 0;
+    for(int i = 0; i <  payloadSize; i++)
+    {
+    pData->cameraID[i]     = arrActiveCameras[i];
+    if (pData->cameraID[i] > globalObjects->absCameras) return 0;
+    pData->Filter[i]       = *vecCameras[arrActiveCameras[i]]->getFilterproperties();
+    vecCameras[arrActiveCameras[i]]->grabImg();
+
+    }
     cntPipeline++;
+    return pData;
+    }
+  )&
+  tbb::make_filter<S_Payload*, S_Payload*>(tbb::filter::serial_in_order, [&] (S_Payload *pData)->S_Payload*
+    {
+    for(int i = 0; i <  payloadSize; i++)
+      {
+        vecCameras[arrActiveCameras[i]]->retrieveImg(pData->cpuSrcImg[i]);
+
+      }
     return pData;
     }
   )&
   //STEP 2: UNDISTORT SRC TO CPUDISTORT
   tbb::make_filter<S_Payload*, S_Payload*>(tbb::filter::serial_in_order, [&] (S_Payload *pData)->S_Payload*
     {
+    if(!this->filterFlags->undistordActive) return pData;
     int i = 0;
     for(auto it = std::begin(pData->cpuSrcImg); it< std::end(pData->cpuSrcImg); it++)
       {
       if(it->empty()) return pData;
-      this->ImageFilter->gpufUnidstord(it, pData->gpuUndistortedImg[i], *vecCamera[pData->cameraID[i]]->getXMap(), *vecCamera[pData->cameraID[i]]->getYMap());
+      this->ImageFilter->gpufUnidstord(it, pData->gpuUndistortedImg[i], *vecCameras[pData->cameraID[i]]->getXMap(), *vecCameras[pData->cameraID[i]]->getYMap());
       i++;
       }
 
@@ -634,19 +700,36 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
   //STEP 3: FILTER UNDISTORT TO CPUHSV; USE CUDA
   tbb::make_filter<S_Payload*, S_Payload*>(tbb::filter::serial_in_order, [&] (S_Payload *pData)->S_Payload*
     {
+    if(!this->filterFlags->filterActive) return pData;
     int i = 0;
+    cv::cuda::GpuMat temp1(720, 1280, CV_8UC1), temp2(720, 1280, CV_8UC1), gputhresholded (720, 1280, CV_8UC1);
     for(auto it = std::begin(pData->gpuUndistortedImg); it< std::end(pData->gpuUndistortedImg); it++)
       {
       if(it->empty()) return pData;
-      this->ImageFilter->gpufHSV(*it, pData->cpuHSVImg[i], pData->Filter[i]);
-      i++;
-      }
+        cv::Scalar min( pData->Filter[i].getHue_min(),
+                        pData->Filter[i].getSaturation_min(),
+                        pData->Filter[i].getValue_min());
+        cv::Scalar max( pData->Filter[i].getHue_max(),
+                        pData->Filter[i].getSaturation_max(),
+                        pData->Filter[i].getValue_max());
+
+        this->ImageFilter->gpufGaussian   (*it,temp1, pData->Filter[i]);
+        cv::cuda::cvtColor                (temp1,temp2,cv::COLOR_BGR2HSV);
+        cudaKernel::inRange_gpu           (temp2,min, max,temp1);
+        this->ImageFilter->gpufOpen       (temp1,temp2, pData->Filter[i]);
+        this->ImageFilter->gpufClose      (temp2,temp1, pData->Filter[i]);
+        cv::cuda::cvtColor                (temp1, temp2 ,cv::COLOR_GRAY2BGR);
+        cv::bitwise_and                   (pData->cpuSrcImg[i],temp2,temp1);
+        temp1.download                    (pData->cpuHSVImg[i]);
+        i++;
+        }
     return pData;
     }
   )&
   //STEP 4: FIND CONTOURS ON CPUHSV, DRAW ON UNDISTORT
   tbb::make_filter<S_Payload*, S_Payload*>(tbb::filter::serial_in_order, [&] (S_Payload *pData)->S_Payload*
     {
+    if(!this->filterFlags->objectDetectionActive) return pData;
     int i = 0;
     for(auto it = std::begin(pData->cpuHSVImg); it< std::end(pData->cpuHSVImg); it +=2)
       {
@@ -656,8 +739,8 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
       this->vecCameras[pData->cameraID[i]]->filterValues->getOffset(offsetL);
       this->vecCameras[pData->cameraID[i+1]]->filterValues->getOffset(offsetR);
 
-      if(this->ImageFilter->findContours(it,   pData->cpuConturedImg[i], offsetL, *vecCamera[pData->cameraID[i]], *pData->Richtungsvektoren[i], pData->ist_X[i], pData->ist_Y[i], pData->radius[i]) &&
-         this->ImageFilter->findContours(it++, pData->cpuConturedImg[i], offsetR, *vecCamera[pData->cameraID[i+1]],*pData->Richtungsvektoren[i+1], pData->ist_X[i+1], pData->ist_Y[i+1], pData->radius[i+1] ))
+      if(this->ImageFilter->findContours(it,   pData->cpuConturedImg[i], offsetL, *vecCameras[pData->cameraID[i]], *pData->Richtungsvektoren[i], pData->ist_X[i], pData->ist_Y[i], pData->radius[i]) &&
+         this->ImageFilter->findContours(it++, pData->cpuConturedImg[i], offsetR, *vecCameras[pData->cameraID[i+1]],*pData->Richtungsvektoren[i+1], pData->ist_X[i+1], pData->ist_Y[i+1], pData->radius[i+1] ))
       pData->found = true;
     else
         {
@@ -677,6 +760,7 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
   //STEP 5: ADJUST ROI ON CPU UNDISTORT ****NOT NEEDED******
   tbb::make_filter<S_Payload*, S_Payload*>(tbb::filter::serial_in_order, [&] (S_Payload *pData)->S_Payload*
     {
+    if(!this->filterFlags->roiAdjustmentActive) return pData;
       for(int i = 0; i < payloadSize; i++)
         {
         if(pData->found)
@@ -699,13 +783,12 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
   //STEP 6: CALCULATE OBJECT POSITION
   tbb::make_filter<S_Payload*, S_Payload*>(tbb::filter::serial_in_order, [&] (S_Payload *pData)->S_Payload*
     {
+    if(!this->filterFlags->trackingActive) return pData;
     if(pData->found)    this->trackingManager->Get_Position_ObjectTracking(pData->objektVektor, pData->Richtungsvektoren);
 
     return pData;
     }
-
   )&
-
   tbb::make_filter<S_Payload*,void>(tbb::filter::serial_in_order, [&] (S_Payload *pData)
     {
     // TBB NOTE: pipeline end point. dispatch to GUI
@@ -713,7 +796,14 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
       {
       try
         {
-        que.push(pData);
+        for(int i = 0; i < payloadSize; i ++)
+          {
+          pData->cpuSrcImg[i].copyTo(arrImgShow[i]);
+          }
+        if(Que->unsafe_size() >= 8) Que->clear();
+        Que->push(pData);
+        //que.push(pData);
+        //delete pData;
         }
       catch (...)
         {
@@ -730,3 +820,123 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
 
 
 
+
+bool S_filterflags::getOpenActive() const
+  {
+  return openActive;
+  }
+
+void S_filterflags::setOpenActive(bool value)
+  {
+  openActive = value;
+  }
+
+bool S_filterflags::getCloseActive() const
+  {
+  return closeActive;
+  }
+
+void S_filterflags::setCloseActive(bool value)
+  {
+  closeActive = value;
+  }
+
+bool S_filterflags::getFilterActive() const
+  {
+  return filterActive;
+  }
+
+void S_filterflags::setFilterActive(bool value)
+  {
+  filterActive = value;
+  }
+
+bool S_filterflags::getObjectDetection() const
+  {
+  return objectDetectionActive;
+  }
+
+void S_filterflags::setObjectDetection(bool value)
+  {
+  objectDetectionActive = value;
+  }
+
+bool S_filterflags::getRoiAdjustment() const
+  {
+  return roiAdjustmentActive;
+  }
+
+void S_filterflags::setRoiAdjustment(bool value)
+  {
+  roiAdjustmentActive = value;
+  }
+
+bool S_filterflags::getTracking() const
+  {
+  return trackingActive;
+  }
+
+void S_filterflags::setTracking(bool value)
+  {
+  trackingActive = value;
+  }
+
+bool S_filterflags::getErosionActive() const
+  {
+  return erosionActive;
+  }
+
+void S_filterflags::setErosionActive(bool value)
+  {
+  erosionActive = value;
+  }
+
+bool S_filterflags::getDilationActive() const
+  {
+  return dilationActive;
+  }
+
+void S_filterflags::setDilationActive(bool value)
+  {
+  dilationActive = value;
+  }
+
+bool S_filterflags::getGaussianActive() const
+  {
+  return gaussianActive;
+  }
+
+void S_filterflags::setGaussianActive(bool value)
+  {
+  gaussianActive = value;
+  }
+
+bool S_filterflags::getMorphActive() const
+  {
+  return morphActive;
+  }
+
+void S_filterflags::setMorphActive(bool value)
+  {
+  morphActive = value;
+  }
+
+bool S_filterflags::getBilateralActive() const
+  {
+  return bilateralActive;
+  }
+
+void S_filterflags::setBilateralActive(bool value)
+  {
+  bilateralActive = value;
+  }
+
+bool S_filterflags::getUndistordActive() const
+  {
+  return undistordActive;
+  }
+
+void S_filterflags::setUndistordActive(bool value)
+  {
+  undistordActive = value;
+  }

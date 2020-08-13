@@ -27,8 +27,7 @@ C_Main*                         Main;
 QTimer*                         Taktgeber;
 Ui::C_frm_object_calibration*   Ui;
 QMessageBox*                    MsgBox;
-CameraManager::S_Payload*       payload;
-
+CameraManager::S_Payload*       pData;
 
   int Zaehler;
   int             Taktgeber_Intervall;

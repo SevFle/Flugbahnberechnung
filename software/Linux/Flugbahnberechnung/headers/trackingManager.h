@@ -44,6 +44,19 @@ namespace trackingManager
     std::vector<S_Positionsvektor>*     vecPositions;
     vector<C_AbsolutePose>              vecEinheitsVektor;
 
+    /****************** Positionsbuffer T-1 *******************/
+  private:
+    S_Positionsvektor*                  RichtungsvektorenTm1   [payloadSize];
+    S_Positionsvektor*                  objektVektorTm1;
+    float                               pixelVelocityTm1 [3];
+    float                               objectVelocityTm1 [3];
+  public:
+    float                               pixelVelocity [payloadSize][3];
+    float                               pixelAcceleration [payloadSize][3];
+    float                               objectVelocity [3];
+    float                               objectAcceleration [3];
+  private:
+
     int                                 smState;
     int                                 camIDLeft;
     int                                 camIDRight;
@@ -57,6 +70,13 @@ namespace trackingManager
     void Get_Position_ObjectTracking                  (S_Positionsvektor&             objektVektor, S_Positionsvektor* Richtungsvektoren   [payloadSize]);
     void Calc_Position_ObjectTracking                 (S_Positionsvektor&             objektVektor, vector<S_Positionsvektor>  vec_Richtungsvektoren_World);
     void Calc_RichtungsvektorenToWorld (S_Positionsvektor* vec_Richtungsvektoren[payloadSize], std::vector<S_Positionsvektor>& vec_Richtungsvektoren_World, std::vector<C_AbsolutePose> vecEinheitsMatrix);
+
+    void calcPixelVeloctiy(int dTimestamp, S_Positionsvektor* Richtungsvektoren   [payloadSize], int camID);
+    void calcObjectVeloctiy(int dTimestamp, S_Positionsvektor&             objektVektor);
+
+    void calcPixelAcceleration(int dTimestamp);
+    void calcObjectAcceleration(int dTimestamp);
+
 
     bool getAlive                                     () const;
     void setAlive                                     (bool value);

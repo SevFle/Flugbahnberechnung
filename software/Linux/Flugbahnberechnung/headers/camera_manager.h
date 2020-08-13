@@ -8,6 +8,7 @@
 
 #include <pthread.h>
 #include <thread>
+#include <memory>
 
 #include "opencv2/opencv.hpp"
 #include "opencv2/highgui.hpp"
@@ -65,15 +66,58 @@ namespace CameraManager
      int                                    radius              [payloadSize];
      bool                                   found = false;
      double                                 fps = 0;
-     double                                 frametime = 0;
-     double                                 timestamp = 0;
+     double                                 frametime           = 0;
+     double                                 timestampT0 = 0;
+     double                                 dTimestamp = 0;
      int                                    offset              [payloadSize];
     };
+    struct S_filterflags
+      {
+      bool undistordActive  = false;
+      bool openActive       = false;
+      bool closeActive      = false;
+      bool filterActive     = false;
+      bool objectDetectionActive   = false;
+      bool roiAdjustmentActive = false;
+      bool trackingActive         = false;
+      bool erosionActive     = false;
+      bool dilationActive     = false;
+      bool gaussianActive   = false;
+      bool morphActive      = false;
+      bool bilateralActive  = false;
 
-  class C_CameraManager
-    {
+
     public:
-    /*************************************************************** Konstruktoren *************************************************************/
+      bool getUndistordActive() const;
+      void setUndistordActive(bool value);
+      bool getOpenActive() const;
+      void setOpenActive(bool value);
+      bool getCloseActive() const;
+      void setCloseActive(bool value);
+      bool getFilterActive() const;
+      void setFilterActive(bool value);
+      bool getObjectDetection() const;
+      void setObjectDetection(bool value);
+      bool getRoiAdjustment() const;
+      void setRoiAdjustment(bool value);
+      bool getTracking() const;
+      void setTracking(bool value);
+      bool getErosionActive() const;
+      void setErosionActive(bool value);
+      bool getDilationActive() const;
+      void setDilationActive(bool value);
+      bool getGaussianActive() const;
+      void setGaussianActive(bool value);
+      bool getMorphActive() const;
+      void setMorphActive(bool value);
+      bool getBilateralActive() const;
+      void setBilateralActive(bool value);
+      };
+
+    class C_CameraManager
+      {
+    public:
+      /*************************************************************** Konstruktoren *************************************************************/
     C_CameraManager                         ( C_GlobalObjects* globalObjects);
     /*************************************************************** Destruktor ****************************************************************/
     ~C_CameraManager                        ();
@@ -82,6 +126,7 @@ namespace CameraManager
     /**************************************************** Öffentliche Klassenobjekte ********************************************************/
     public:
     std::vector<Camera::C_Camera2*>         vecCameras;
+    std::string                            test;
 
 
     /**************************************************** Öffentliche Anwender-Attribute ********************************************************/
@@ -89,23 +134,28 @@ namespace CameraManager
     Savemanager::c_SaveManager*             saveManager;
     LoadManager::C_LoadManager*             loadManager;
     trackingManager::C_trackingManager*     trackingManager;
+    cv::Mat                                 arrImgShow[payloadSize];
     /******************************************** Nicht öffentliche private Anwender-Attribute **************************************************/
     private:
     C_GlobalObjects*                        globalObjects;
     imagefilter::C_ImageFilter*             ImageFilter;
-    pthread_t*                              camPipeline;
+    thread*                                 camPipeline;
     pthread_t*                              camSimple;
     pthread_t*                              camPositioning;
     pthread_mutex_t*  restrict              lock;
-    std::vector<cv::Mat*>                   vecImgShow;
-    tbb::concurrent_bounded_queue<S_Payload*>*  Que;
+    std::vector<cv::Mat*>*                   vecImgShow;
+    tbb::concurrent_queue<CameraManager::S_Payload*>*  Que;
     S_Payload*                              pData;
+    S_Payload*                              testpayload;
+
+    S_filterflags*                            filterFlags;
 
     int                           camera_id;
     int                           frameWidth;
     int                           frameHeight;
     int                           arrActiveCameras[4];
     int                           cntPipeline;
+    int                           timestampTm1;
     volatile bool                 calibrationDone;
     volatile bool                 positioningDone;
     volatile bool                 pipelineDone;
@@ -133,7 +183,7 @@ namespace CameraManager
     bool stopThreadCameraPositioning();
     bool startPipelineTracking();
     bool stopPipelineTracking();
-    bool pollPipeline               (CameraManager::S_Payload* payload);
+    bool pollPipeline               (CameraManager::S_Payload* arg1);
 
 
 
@@ -146,17 +196,18 @@ namespace CameraManager
   private:
     void start_camera_thread                ();
     void loadCameras                        ();
-    void pipelineTracking                   (std::vector<Camera::C_Camera2*> vecCamera, tbb::concurrent_bounded_queue<S_Payload*> &que);
+    void pipelineTracking                   (std::vector<Camera::C_Camera2*> vecCameras, tbb::concurrent_queue<S_Payload*> &que);
     static void* threadCameraPositioning    (void *This);
     static void *pipelineHelper             (void* This);
     void threadCameraSimple                 ();
     void mvTemp2VecCamera                   (std::vector<Camera::C_Camera2*> temp_CameraVector);
     void smTracking                         (S_Payload* payload);
     bool getObjectPosition2D                (trackingManager::S_trackingPayload& trackingPayload);
+    void helper() const;
     /******************************************************* Getter-Setter Klassenmethoden***************************************************************/
   public:
-    std::vector<cv::Mat *> getVecImgShow    () const;
-    void setVecImgShow                      (const std::vector<cv::Mat *> &value);
+    std::vector<cv::Mat*> getVecImgShow    () const;
+    void setVecImgShow                      (const std::vector<cv::Mat*> &value);
 
     bool getCalibrationDone                 () const;
     void setCalibrationDone                 (volatile bool value);
@@ -170,6 +221,10 @@ namespace CameraManager
     bool getPositioningDone                 () const;
     void setPositioningDone                 (volatile bool value);
 
+    S_filterflags *getFilterFlags() const;
+    void setFilterFlags(S_filterflags *value);
+    pthread_mutex_t *getLock() const;
+    void setLock(pthread_mutex_t *value);
     };// c_camera_unmanaged
   }//nmsp_c_camera_unmanaged
 #endif

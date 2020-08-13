@@ -138,7 +138,8 @@ namespace Camera
   public:
     bool open                         ();
     bool close                        ();
-    void readImg                      (cv::Mat &dstImg);
+    bool grabImg                      ();
+    void retrieveImg                  (cv::Mat &dstImg);
     void savePicture                  (int camera_id, int photo_id, std::string definition);
     void initRectifyMap               ();
     void save_picture                 (int photo_id, std::string definition, cv::Mat& srcImg);
@@ -171,6 +172,10 @@ public:
     void setYMap(cv::cuda::GpuMat *value);
     cv::Rect *getRoi() const;
     void setRoi(cv::Rect *value);
+    int getFrameWidth() const;
+    void setFrameWidth(int value);
+    int getFrameHeight() const;
+    void setFrameHeight(int value);
     };
 
   }

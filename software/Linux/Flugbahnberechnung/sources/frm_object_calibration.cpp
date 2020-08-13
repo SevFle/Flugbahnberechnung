@@ -3,33 +3,28 @@ using namespace frm_Object_Calibration;
 
 C_frm_Object_Calibration::C_frm_Object_Calibration(C_GlobalObjects* GlobalObjects, C_Main* Main, QWidget *parent) :
     QMainWindow(parent)
-{
-    this->Ui = new Ui::C_frm_object_calibration();
-    Ui->setupUi(this);
-    this->GlobalObjects = GlobalObjects;
-    this->Main          = Main;
-    this->payload       = new CameraManager::S_Payload;
-
-    camera_id_in_use = 0;
-    TimerWait        = 0;
-    camera_id_in_use = 0;
-    this->Taktgeber = new QTimer(this);
-    this->Taktgeber_Intervall = 100;
-
-
-}
+  {
+  this->Ui                    = new Ui::C_frm_object_calibration();
+  Ui->setupUi                 (this);
+  this->GlobalObjects         = GlobalObjects;
+  this->Main                  = Main;
+  this->Taktgeber             = new QTimer(this);
+  this->pData                 = new CameraManager::S_Payload;
+  this->Taktgeber_Intervall   = 25;
+  this->camera_id_in_use      = 0;
+  this->TimerWait             = 0;
+  }
 
 C_frm_Object_Calibration::~C_frm_Object_Calibration()
-{
-    this->Taktgeber_Intervall = 0;
-    delete (this->Taktgeber);
-
-    TimerWait = 0;
-
-    this->Main          = nullptr;
-    this->GlobalObjects = nullptr;
-
-    delete Ui;
+  {
+  this->TimerWait             = 0;
+  this->camera_id_in_use      = 0;
+  this->Taktgeber_Intervall   = 0;
+  delete                      (pData);
+  delete                      (Taktgeber);
+  this->Main                  = nullptr;
+  this->GlobalObjects         = nullptr;
+  delete                      (Ui);
 }
 
 
@@ -43,7 +38,6 @@ this->Taktgeber->start(this->Taktgeber_Intervall);
 this->installEventFilter(this);
 
 this->Zaehler                   = 0;
-this->TimerWait                 = 75;
 this->Ui->num_camera->setMaximum(GlobalObjects->absCameras);
 this->Ui->sld_hue_min->setValue(0);
 this->Ui->sld_hue_max->setValue(50);
@@ -52,6 +46,7 @@ this->Ui->sld_saturation_max->setValue(255);
 this->Ui->sld_value_min->setValue(0);
 this->Ui->sld_value_max->setValue(255);
 
+this->Main->cameraManager->getFilterFlags()->setFilterActive(true);
 this->set_gui();
 this->get_camera_settings (0);
 }
@@ -65,8 +60,6 @@ void C_frm_Object_Calibration::closeEvent(QCloseEvent* CloseEvent)
  this->Taktgeber->stop();
  disconnect(this->Taktgeber, &QTimer::timeout, this, &C_frm_Object_Calibration::Taktgeber_Tick);
  this->Zaehler = 0;
- cv::destroyAllWindows();
-
  }
 
 bool               C_frm_Object_Calibration::eventFilter                                       (QObject* Object, QEvent* Event)
@@ -102,6 +95,7 @@ bool               C_frm_Object_Calibration::eventFilter                        
 /************************************** Nicht öffentliche QT-Slots******************************/
 void C_frm_Object_Calibration::on_bt_exit_clicked()
   {
+  this->Main->cameraManager->setPipelineDone(true);
   if(!this->Main->cameraManager->stopPipelineTracking())
     return;
   this->Main->frm_Object_Tracking->close();
@@ -109,18 +103,24 @@ void C_frm_Object_Calibration::on_bt_exit_clicked()
 }
 void C_frm_Object_Calibration::Taktgeber_Tick()
   {
+  //CameraManager::S_Payload*       pData= 0;
+  cv::Mat img;
   this->Ui->txb_zaehler->setText(QString::number(this->Zaehler++));
-  if(this->Main->cameraManager->pollPipeline(payload))
+  if(this->Main->cameraManager->pollPipeline(pData))
     {
-    this->                      Fill_Mat_2_Lbl(payload->cpuSrcImg[0], this->Ui->lbl_src_img);
-    this->                      Fill_Mat_2_Lbl(payload->cpuHSVImg[0], this->Ui->lbl_hsv_filtered);
-    this->                      Fill_Mat_2_Lbl(payload->cpuConturedImg[0], this->Ui->lbl_img_contoured);
-    this->Ui->txb_fps->         setText(QString::number(payload->fps));
-    this->Ui->txb_frametime->   setText(QString::number(payload->frametime));
+     pData->cpuSrcImg[0].copyTo(img);
+    //this->                      Fill_Mat_2_Lbl(this->Main->cameraManager->arrImgShow[camera_id_in_use], this->Ui->lbl_src_img);
+      this->                      Fill_Mat_2_Lbl(pData->cpuSrcImg[0], this->Ui->lbl_src_img);
+
+    //this->                      Fill_Mat_2_Lbl(payload->cpuHSVImg[camera_id_in_use], this->Ui->lbl_hsv_filtered);
+    this->                      Fill_Mat_2_Lbl(pData->cpuSrcImg[0], this->Ui->lbl_hsv_filtered);
+    this->Ui->txb_fps->         setText(QString::number(pData->fps));
+    this->Ui->txb_frametime->   setText(QString::number(pData->frametime));
 //    this->Ui->txb_delta_x->     setText(QString::number(payload->delta_x));
 //    this->Ui->txb_delta_y->     setText(QString::number(payload->delta_y));
 //    this->Ui->txb_s_x->         setText(QString::number(payload->s_x));
 //    this->Ui->txb_s_y->         setText(QString::number(payload->s_y));
+
     }
   }
 

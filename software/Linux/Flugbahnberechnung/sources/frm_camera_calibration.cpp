@@ -115,7 +115,7 @@ void C_frm_Camera_Calibration::Taktgeber_Tick()
         break;
       case 1:
         this->FillMat2Lbl(*this->Main->cameraManager->getVecImgShow()[cameraID], this->Ui->lbl_img_stereo_left);
-        this->FillMat2Lbl(*this->Main->cameraManager->getVecImgShow()[cameraID+1], this->Ui->lbl_img_stereo_right);
+        this->FillMat2Lbl(*this->Main->cameraManager->getVecImgShow()[cameraID+1], this->Ui->lbl_img_stereo_right);        
         break;
        }
     }

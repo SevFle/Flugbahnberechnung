@@ -95,7 +95,7 @@ void C_frm_Camera_Positioning::Taktgeber_Tick()
     this->Ui->txb_zaehler->setText(QString::number(this->Zaehler++));
     if (Zaehler > TimerWait)
       {
-      pthread_mutex_lock(lock);
+      pthread_mutex_lock(this->Main->cameraManager->getLock());
       if(!this->Main->cameraManager->getVecImgShow().empty())
         {
           switch (this->GlobalObjects->absCameras)
@@ -127,7 +127,7 @@ void C_frm_Camera_Positioning::Taktgeber_Tick()
             }
 
         }
-      pthread_mutex_unlock(lock);
+      pthread_mutex_unlock(this->Main->cameraManager->getLock());
       }
 }
 

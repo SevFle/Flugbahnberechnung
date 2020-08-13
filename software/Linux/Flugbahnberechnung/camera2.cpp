@@ -26,7 +26,27 @@ C_Camera2::~C_Camera2                       ()
   delete (distCoeffs);
   delete (cpuSrc);
   delete (cap);
-  }
+    }
+
+int C_Camera2::getFrameHeight() const
+    {
+    return frameHeight;
+    }
+
+void C_Camera2::setFrameHeight(int value)
+    {
+    frameHeight = value;
+    }
+
+int C_Camera2::getFrameWidth() const
+    {
+    return frameWidth;
+    }
+
+void C_Camera2::setFrameWidth(int value)
+    {
+    frameWidth = value;
+    }
 
 
 bool C_Camera2::open                        ()
@@ -61,10 +81,16 @@ void C_Camera2::initRectifyMap              ()
   this->yMap->upload (cpuYMap);
 
   }
-void C_Camera2::readImg                      (cv::Mat &dstImg)
+void C_Camera2::retrieveImg                      (cv::Mat &dstImg)
   {
-  this->cap->read(*cpuSrc);
-  dstImg= cpuSrc->operator()(*roi);
+  this->cap->retrieve(dstImg);
+  //dstImg= cpuSrc->operator()(*roi);
+  }
+
+bool C_Camera2::grabImg                      ()
+  {
+  if(this->cap->grab()) return true;
+  return false;
   }
 
 void C_Camera2::fit_to_roi(int Radius, int istX, int istY)
