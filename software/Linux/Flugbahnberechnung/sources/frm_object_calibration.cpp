@@ -47,6 +47,7 @@ this->Ui->sld_value_min->setValue(0);
 this->Ui->sld_value_max->setValue(255);
 
 this->Main->cameraManager->getFilterFlags()->setFilterActive(true);
+this->Main->cameraManager->getFilterFlags()->setUndistordActive(true);
 this->set_gui();
 this->get_camera_settings (0);
 }
@@ -103,17 +104,12 @@ void C_frm_Object_Calibration::on_bt_exit_clicked()
 }
 void C_frm_Object_Calibration::Taktgeber_Tick()
   {
-  //CameraManager::S_Payload*       pData= 0;
   cv::Mat img;
   this->Ui->txb_zaehler->setText(QString::number(this->Zaehler++));
-  if(this->Main->cameraManager->pollPipeline(pData))
+  if(this->Main->cameraManager->Que->try_pop(pData))
     {
-     pData->cpuSrcImg[0].copyTo(img);
-    //this->                      Fill_Mat_2_Lbl(this->Main->cameraManager->arrImgShow[camera_id_in_use], this->Ui->lbl_src_img);
-      this->                      Fill_Mat_2_Lbl(pData->cpuSrcImg[0], this->Ui->lbl_src_img);
-
-    //this->                      Fill_Mat_2_Lbl(payload->cpuHSVImg[camera_id_in_use], this->Ui->lbl_hsv_filtered);
-    this->                      Fill_Mat_2_Lbl(pData->cpuSrcImg[0], this->Ui->lbl_hsv_filtered);
+    this->                      Fill_Mat_2_Lbl(pData->cpuSrcImg[camera_id_in_use], this->Ui->lbl_src_img);
+    this->                      Fill_Mat_2_Lbl(pData->cpuHSVImg[camera_id_in_use], this->Ui->lbl_hsv_filtered);
     this->Ui->txb_fps->         setText(QString::number(pData->fps));
     this->Ui->txb_frametime->   setText(QString::number(pData->frametime));
 //    this->Ui->txb_delta_x->     setText(QString::number(payload->delta_x));

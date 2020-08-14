@@ -48,6 +48,7 @@ namespace CameraManager
   {
     struct S_Payload
     {
+      std::string                           test;
      cv::Mat                                cpuSrcImg           [payloadSize];
      cv::Mat                                cpuUndistortedImg   [payloadSize];
      cv::Mat                                cpuHSVImg           [payloadSize];
@@ -144,7 +145,9 @@ namespace CameraManager
     pthread_t*                              camPositioning;
     pthread_mutex_t*  restrict              lock;
     std::vector<cv::Mat*>*                   vecImgShow;
-    tbb::concurrent_queue<CameraManager::S_Payload*>*  Que;
+    public:
+    tbb::concurrent_bounded_queue<CameraManager::S_Payload*>*  Que;
+    private:
     S_Payload*                              pData;
     S_Payload*                              testpayload;
 
@@ -196,7 +199,7 @@ namespace CameraManager
   private:
     void start_camera_thread                ();
     void loadCameras                        ();
-    void pipelineTracking                   (std::vector<Camera::C_Camera2*> vecCameras, tbb::concurrent_queue<S_Payload*> &que);
+    void pipelineTracking                   (std::vector<Camera::C_Camera2*> vecCameras, tbb::concurrent_bounded_queue<S_Payload*> *que);
     static void* threadCameraPositioning    (void *This);
     static void *pipelineHelper             (void* This);
     void threadCameraSimple                 ();

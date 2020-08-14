@@ -16,7 +16,7 @@ C_CameraManager::C_CameraManager ( C_GlobalObjects* GlobalObjects)
   this->lock            = new pthread_mutex_t;
   this->camSimple       = new pthread_t;
   this->camPositioning  = new pthread_t;
-  this->Que             = new tbb::concurrent_queue<CameraManager::S_Payload*>;
+  this->Que             = new tbb::concurrent_bounded_queue<CameraManager::S_Payload*>;
   this->pData           = new S_Payload;
   this->testpayload     = new S_Payload;
 
@@ -219,7 +219,7 @@ bool C_CameraManager::stopThreadCameraPositioning()
    }
 bool C_CameraManager::startPipelineTracking()
   {
-  //Que->set_capacity(10);
+  Que->set_capacity(10);
 
   this->camPipeline     = new thread(&CameraManager::C_CameraManager::pipelineHelper,this);
 
@@ -615,7 +615,8 @@ void C_CameraManager::smTracking (S_Payload* payload)
 void *C_CameraManager::pipelineHelper(void* This)
   {
   static_cast<CameraManager::C_CameraManager*>(This)->pipelineTracking(static_cast<CameraManager::C_CameraManager*>(This)->vecCameras,
-                                                                      *static_cast<CameraManager::C_CameraManager*>(This)->Que);
+                                                                      static_cast<CameraManager::C_CameraManager*>(This)->Que);
+  return 0;
   }
 std::vector<cv::Mat*> C_CameraManager::getVecImgShow() const
   {
@@ -628,13 +629,17 @@ void C_CameraManager::setVecImgShow             (const std::vector<cv::Mat*> &va
   }
 bool C_CameraManager::pollPipeline               (CameraManager::S_Payload* arg1)
   {
+  std::cout << std::to_string(this->Que->size()) << std::endl;
+  if(this->Que->size() < 2) return false;
   if(this->Que->try_pop(arg1))
       {
       return true;
       }
   return false;
   }
-void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCameras, tbb::concurrent_queue<S_Payload*> &que)
+
+
+void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCameras, tbb::concurrent_bounded_queue<S_Payload*>* pipelineQue)
   {
   int frameheight = this->vecCameras[0]->getFrameHeight();
   int framewidth = this->vecCameras[0]->getFrameWidth();
@@ -719,6 +724,29 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
         this->ImageFilter->gpufOpen       (temp1,temp2, pData->Filter[i]);
         this->ImageFilter->gpufClose      (temp2,temp1, pData->Filter[i]);
         cv::cuda::cvtColor                (temp1, temp2 ,cv::COLOR_GRAY2BGR);
+        if(this->filterFlags->erosionActive)
+          {
+          this->ImageFilter->gpufErode(temp2, temp1, pData->Filter[i]);
+          temp1.copyTo(temp2);
+          }
+
+        if(this->filterFlags->dilationActive)
+          {
+          this->ImageFilter->gpufDilate(temp2, temp1, pData->Filter[i]);
+          temp1.copyTo(temp2);
+          }
+
+        if(this->filterFlags->morphActive)
+          {
+          this->ImageFilter->gpufDilate(temp2, temp1, pData->Filter[i]);
+          temp1.copyTo(temp2);
+          }
+
+        if(this->filterFlags->bilateralActive)
+          {
+          this->ImageFilter->gpufBilateral(temp2, temp1, pData->Filter[i]);
+          temp1.copyTo(temp2);
+          }
         cv::bitwise_and                   (pData->cpuSrcImg[i],temp2,temp1);
         temp1.download                    (pData->cpuHSVImg[i]);
         i++;
@@ -791,6 +819,7 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
   )&
   tbb::make_filter<S_Payload*,void>(tbb::filter::serial_in_order, [&] (S_Payload *pData)
     {
+    pData->test = "TestString ***TEST***";
     // TBB NOTE: pipeline end point. dispatch to GUI
     if (! pipelineDone)
       {
@@ -800,8 +829,7 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
           {
           pData->cpuSrcImg[i].copyTo(arrImgShow[i]);
           }
-        if(Que->unsafe_size() >= 8) Que->clear();
-        Que->push(pData);
+        pipelineQue->push(pData);
         //que.push(pData);
         //delete pData;
         }
