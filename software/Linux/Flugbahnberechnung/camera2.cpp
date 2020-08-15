@@ -64,6 +64,7 @@ bool C_Camera2::close                       ()
   }
 void C_Camera2::initialize                  ()
   {
+  this->cap->set(cv::CAP_PROP_BUFFERSIZE, 20);
   this->frameWidth = cap->get(cv::CAP_PROP_FRAME_WIDTH);
   this->frameHeight = cap->get(cv::CAP_PROP_FRAME_HEIGHT);
   this->roi->x = 0;
@@ -83,8 +84,8 @@ void C_Camera2::initRectifyMap              ()
   }
 void C_Camera2::retrieveImg                      (cv::Mat &dstImg)
   {
-  this->cap->retrieve(dstImg);
-  //dstImg= cpuSrc->operator()(*roi);
+  this->cap->retrieve(*cpuSrc);
+  dstImg= cpuSrc->operator()(*roi);
   }
 
 bool C_Camera2::grabImg                      ()
@@ -219,6 +220,51 @@ void C_Camera2::setXMap(cv::cuda::GpuMat *value)
     {
     xMap = value;
     }
+
+
+C_Camera2::S_filterProperties::S_filterProperties()
+  {
+  this->hue_min = 0;
+  this->hue_max= 255;
+  this->saturation_min= 0;
+  this->saturation_max= 255;
+  this->value_min= 0;
+  this->value_max= 255;
+
+  this->erosion_iterations= 1;
+  this->dilation_iterations= 1;
+  this->opening_iterations= 1;
+  this->closing_iterations= 1;
+  this->morph_iterations= 1;
+
+  this->erosion_kernel_size= 1;
+  this->dilation_kernel_size= 1;
+  this->bilateral_kernel_size= 1;
+  this->opening_kernel_size= 1;
+  this->closing_kernel_size= 1;
+  this->morph_kernel_size= 1;
+  this->gaussian_kernel_size= 1;
+  this->Object_Size_min= 0;
+  this->Object_Size_max= 10000;
+  this->offset[0]= 0;
+  this->offset[1]= 0;
+
+  this->gaussian_sigma= 1;
+
+  this->bilateral_sigma_color= 1;
+  this->bilateral_sigma_spatial= 1;
+
+  this->erode_active= false;
+  this->dilate_active= false;
+  this->gaussian_active= false;
+  this->morph_active= false;
+  this->bilateral_active= false;
+
+  }
+C_Camera2::S_filterProperties::~S_filterProperties()
+  {
+
+  }
 
 C_Camera2::S_filterProperties *C_Camera2::getFilterproperties() const
     {

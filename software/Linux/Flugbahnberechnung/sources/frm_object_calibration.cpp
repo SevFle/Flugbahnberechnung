@@ -9,7 +9,6 @@ C_frm_Object_Calibration::C_frm_Object_Calibration(C_GlobalObjects* GlobalObject
   this->GlobalObjects         = GlobalObjects;
   this->Main                  = Main;
   this->Taktgeber             = new QTimer(this);
-  this->pData                 = new CameraManager::S_Payload;
   this->Taktgeber_Intervall   = 25;
   this->camera_id_in_use      = 0;
   this->TimerWait             = 0;
@@ -20,7 +19,6 @@ C_frm_Object_Calibration::~C_frm_Object_Calibration()
   this->TimerWait             = 0;
   this->camera_id_in_use      = 0;
   this->Taktgeber_Intervall   = 0;
-  delete                      (pData);
   delete                      (Taktgeber);
   this->Main                  = nullptr;
   this->GlobalObjects         = nullptr;
@@ -48,6 +46,7 @@ this->Ui->sld_value_max->setValue(255);
 
 this->Main->cameraManager->getFilterFlags()->setFilterActive(true);
 this->Main->cameraManager->getFilterFlags()->setUndistordActive(true);
+this->Main->cameraManager->getFilterFlags()->setObjectDetection(true);
 this->set_gui();
 this->get_camera_settings (0);
 }
@@ -116,7 +115,15 @@ void C_frm_Object_Calibration::Taktgeber_Tick()
 //    this->Ui->txb_delta_y->     setText(QString::number(payload->delta_y));
 //    this->Ui->txb_s_x->         setText(QString::number(payload->s_x));
 //    this->Ui->txb_s_y->         setText(QString::number(payload->s_y));
-
+      this->Ui->txb_worker_1->         setText(QString::number(pData->executionTime[0].count()));
+      this->Ui->txb_worker_2->         setText(QString::number(pData->executionTime[1].count()));
+      this->Ui->txb_worker_3->         setText(QString::number(pData->executionTime[2].count()));
+      this->Ui->txb_worker_4->         setText(QString::number(pData->executionTime[3].count()));
+      this->Ui->txb_worker_5->         setText(QString::number(pData->executionTime[4].count()));
+      this->Ui->txb_worker_6->         setText(QString::number(pData->executionTime[5].count()));
+      this->Ui->txb_worker_7->         setText(QString::number(pData->executionTime[6].count()));
+      this->Ui->txb_worker_8->         setText(QString::number(pData->executionTime[7].count()));
+    delete(pData);
     }
   }
 

@@ -54,6 +54,8 @@ namespace Camera
 
 
     public:
+      S_filterProperties();
+      ~S_filterProperties();
       uchar getHue_min() const;
       void setHue_min(const uchar &value);
       uchar getHue_max() const;
@@ -113,6 +115,7 @@ namespace Camera
       bool getBilateral_active() const;
       void setBilateral_active(bool value);
       };
+
   public:
     C_Camera2();
     ~C_Camera2();

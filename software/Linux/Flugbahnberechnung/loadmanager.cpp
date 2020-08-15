@@ -122,13 +122,14 @@ void C_LoadManager::loadCameraSettings (Camera::C_Camera2 *Camera)
 
     Camera->filterValues->setObject_Size_min(object_size_min);
     Camera->filterValues->setObject_Size_max(object_size_max);
+    std::cout << "**INFO** Filterwerte fuer Kamera " << std::to_string(cameraID) << " wurde geladen" << std::endl;
+
     }
   else
     {
-    printf("Filterwerte für Kamera %i wurden nicht geladen", cameraID);
+      std::cout << "**ERROR** Filterwerte fuer Kamera " << std::to_string(cameraID) << " wurde nicht geladen" << std::endl;
     }
 
-  std::cout << "Loaded Settings for Camera " << cameraID << "." << endl;
   }
 
 void C_LoadManager::loadCameraCalibration (Camera::C_Camera2* Camera)
@@ -163,6 +164,7 @@ void C_LoadManager::loadCameraCalibration (Camera::C_Camera2* Camera)
     this->GlobalObjects->csv_parameter_datei->Lesen (real_size_width);
     this->GlobalObjects->csv_parameter_datei->Lesen (real_size_height);
     this->GlobalObjects->csv_parameter_datei->Schliessen();
+    std::cout << "**INFO** Gespeicherte Kalibrierung fuer Kamera " << std::to_string(cameraID) << " wurde geladen" << std::endl;
     }
   else
     {
@@ -180,10 +182,11 @@ void C_LoadManager::loadCameraCalibration (Camera::C_Camera2* Camera)
     Intrinsic[1][0]  = 0.000000;
     Intrinsic[2][1]  = 0.000000;
     Intrinsic[2][2]  = 1.000000;
+    std::cout << "**INFO** Standardkalibrierung fuer Kamera " << std::to_string(cameraID) << " wurde geladen" << std::endl;
+
     }
 
   Camera->setCalibrationParameter(DistCoeffs,Intrinsic);
-  std::cout << "Loaded Calibration for Camera " << cameraID << "." << endl;
   }
 
 bool C_LoadManager::loadCameraPositioning   (std::vector<int>* order)
@@ -205,6 +208,7 @@ bool C_LoadManager::loadCameraPositioning   (std::vector<int>* order)
         GlobalObjects->csv_parameter_datei->Lesen (id);
         order->push_back(id);
         }
+      std::cout << "**INFO** Positionierung wurde geladen" << std::endl;
       }
     else
       {
@@ -212,7 +216,7 @@ bool C_LoadManager::loadCameraPositioning   (std::vector<int>* order)
         {
         order->push_back(i);
         }
-      printf("Standardreihung geladen");
+      std::cout << "**ERROR** Standardpositionierung wurde geladen" << std::endl;
       }
     GlobalObjects->csv_parameter_datei->Schliessen();
     return  true;
@@ -256,10 +260,12 @@ void C_LoadManager::loadCameraCos (Camera::C_Camera2* Camera)
     Camera->getCameraPose()->px (px);
     Camera->getCameraPose()->py (py);
     Camera->getCameraPose()->pz (pz);
+    std::cout << "**INFO** Kameraposition fuer Kamera " << std::to_string(camerID) << " wurde geladen" << std::endl;
+
     }
   else
     {
-    printf("Kameraposition für Kamera %i wurde nicht geladen", camerID);
+    std::cout << "**ERROR** Kameraposition fuer Kamera " << std::to_string(camerID) << " wurde nicht geladen" << std::endl;
     }
   GlobalObjects->csv_parameter_datei->Schliessen();
   }

@@ -39,7 +39,8 @@ using namespace object;
 using namespace posen;
 using namespace GlobalObjects;
 
-
+typedef std::chrono::high_resolution_clock Clock;
+typedef std::chrono::milliseconds milliseconds;
 
 
 
@@ -47,16 +48,18 @@ using namespace GlobalObjects;
 namespace CameraManager
   {
     struct S_Payload
-    {
-      std::string                           test;
+      {
+      milliseconds executionTime[8];
+      Clock::time_point start;
+      Clock::time_point time;
+      Clock::time_point end;
+
      cv::Mat                                cpuSrcImg           [payloadSize];
      cv::Mat                                cpuUndistortedImg   [payloadSize];
      cv::Mat                                cpuHSVImg           [payloadSize];
      cv::Mat                                cpuConturedImg      [payloadSize];
 
      cv::cuda::GpuMat                       gpuUndistortedImg   [payloadSize];
-     cv::Mat                                gray                [payloadSize];
-     cv::Mat                                final               [payloadSize];
      Camera::C_Camera2::S_filterProperties  Filter              [payloadSize];
 
      S_Positionsvektor                      objektVektor;
