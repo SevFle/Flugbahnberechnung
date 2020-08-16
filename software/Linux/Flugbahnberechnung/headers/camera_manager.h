@@ -39,8 +39,6 @@ using namespace object;
 using namespace posen;
 using namespace GlobalObjects;
 
-typedef std::chrono::high_resolution_clock Clock;
-typedef std::chrono::milliseconds milliseconds;
 
 
 
@@ -51,7 +49,7 @@ namespace CameraManager
       {
       milliseconds executionTime[8];
       Clock::time_point start;
-      Clock::time_point time;
+      Clock::time_point timestamp;
       Clock::time_point end;
 
      cv::Mat                                cpuSrcImg           [payloadSize];

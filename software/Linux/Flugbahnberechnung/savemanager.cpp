@@ -49,8 +49,13 @@ void c_SaveManager::saveCameraCos         (Camera::C_Camera2 &Camera)
     GlobalObjects->csv_parameter_datei->Schreiben ("px",px,"[mm]");
     GlobalObjects->csv_parameter_datei->Schreiben ("py",py,"[mm]");
     GlobalObjects->csv_parameter_datei->Schreiben ("pz",pz,"[mm]");
+    GlobalObjects->csv_parameter_datei->Schliessen();
+    std::cout << "**INFO** Pose fuer Kamera " << std::to_string(Camera.getCameraID()) << " wurde gespeichert" << std::endl;
     }
-  GlobalObjects->csv_parameter_datei->Schliessen();
+  else
+    {
+    std::cout << "**ERROR** Pose fuer Kamera " << std::to_string(Camera.getCameraID()) << " wurde nicht gespeichert" << std::endl;
+    }
   }
 void c_SaveManager::saveCameraPositioning (std::vector<int> camera_list) const
   {
@@ -58,19 +63,24 @@ void c_SaveManager::saveCameraPositioning (std::vector<int> camera_list) const
   string Dateityp  = "Correct Camera position in vector corresponding to their ID";
 
   GlobalObjects->csv_parameter_datei->Oeffnen (Dateiname,Enum_CSV_Access::Write);
-
-  GlobalObjects->csv_parameter_datei->Schreiben ("Dateityp",Dateityp,"[1]");
-  GlobalObjects->csv_parameter_datei->Schreiben ("Anzahl Kameras",to_string (GlobalObjects->absCameras),"[1]");
-
-
-  for (int i = 0; i < GlobalObjects->absCameras; i++)
+  if (GlobalObjects->csv_parameter_datei->IsOpen())
     {
-    GlobalObjects->csv_parameter_datei->Schreiben ("Cameravector[" + to_string (i) + "]",to_string (camera_list[i]),"[1]");
-    std::cout << "Saving Camera " << i << " to position " << camera_list[i];
+    GlobalObjects->csv_parameter_datei->Schreiben ("Dateityp",Dateityp,"[1]");
+    GlobalObjects->csv_parameter_datei->Schreiben ("Anzahl Kameras",to_string (GlobalObjects->absCameras),"[1]");
+    for (int i = 0; i < GlobalObjects->absCameras; i++)
+      {
+      GlobalObjects->csv_parameter_datei->Schreiben ("Cameravector[" + to_string (i) + "]",to_string (camera_list[i]),"[1]");
+      std::cout << "Saving Camera " << i << " to position " << camera_list[i];
+      }
+    GlobalObjects->csv_parameter_datei->Schliessen();
+    std::cout << "**INFO** Reihung wurde gespeichert" << std::endl;
+    }
+  else
+    {
+    std::cout << "**ERROR** Reihung wurde nicht gespeichert" << std::endl;
     }
 
 
-  GlobalObjects->csv_parameter_datei->Schliessen();
   }
 void c_SaveManager::saveCameraCalibration (Camera::C_Camera2 &Camera)
   {
@@ -83,26 +93,33 @@ void c_SaveManager::saveCameraCalibration (Camera::C_Camera2 &Camera)
   Camera.getCalibrationParameter(DistCoeffs,Intrinsic);
 
   this->GlobalObjects->csv_parameter_datei->Oeffnen (Dateiname,Enum_CSV_Access::Write);
+  if (GlobalObjects->csv_parameter_datei->IsOpen())
+    {
+    this->GlobalObjects->csv_parameter_datei->Schreiben ("Dateityp",Dateityp,"[1]");
+    this->GlobalObjects->csv_parameter_datei->Schreiben ("Distortion k1",DistCoeffs[0][0],"[1]");
+    this->GlobalObjects->csv_parameter_datei->Schreiben ("Distortion k2",DistCoeffs[0][1],"[1]");
+    this->GlobalObjects->csv_parameter_datei->Schreiben ("Distortion p1",DistCoeffs[0][2],"[1]");
+    this->GlobalObjects->csv_parameter_datei->Schreiben ("Distortion p2",DistCoeffs[0][3],"[1]");
+    this->GlobalObjects->csv_parameter_datei->Schreiben ("Distortion k3",DistCoeffs[0][4],"[1]");
+    this->GlobalObjects->csv_parameter_datei->Schreiben ("Intrinsic fx",Intrinsic[0][0],"[Px]");
+    this->GlobalObjects->csv_parameter_datei->Schreiben ("Intrinsic 01",Intrinsic[0][1],"[Px]");
+    this->GlobalObjects->csv_parameter_datei->Schreiben ("Intrinsic cx",Intrinsic[0][2],"[Px]");
+    this->GlobalObjects->csv_parameter_datei->Schreiben ("Intrinsic 10",Intrinsic[1][0],"[Px]");
+    this->GlobalObjects->csv_parameter_datei->Schreiben ("Intrinsic fy",Intrinsic[1][1],"[Px]");
+    this->GlobalObjects->csv_parameter_datei->Schreiben ("Intrinsic cy",Intrinsic[1][2],"[Px]");
+    this->GlobalObjects->csv_parameter_datei->Schreiben ("Intrinsic 20",Intrinsic[2][0],"[Px]");
+    this->GlobalObjects->csv_parameter_datei->Schreiben ("Intrinsic 21",Intrinsic[2][1],"[Px]");
+    this->GlobalObjects->csv_parameter_datei->Schreiben ("Intrinsic 22",Intrinsic[2][2],"[Px]");
+    this->GlobalObjects->csv_parameter_datei->Schreiben ("Intrinsic 21",Intrinsic[2][1],"[Px]");
+    this->GlobalObjects->csv_parameter_datei->Schreiben ("Intrinsic 22",Intrinsic[2][2],"[Px]");
 
-  this->GlobalObjects->csv_parameter_datei->Schreiben ("Dateityp",Dateityp,"[1]");
-  this->GlobalObjects->csv_parameter_datei->Schreiben ("Distortion k1",DistCoeffs[0][0],"[1]");
-  this->GlobalObjects->csv_parameter_datei->Schreiben ("Distortion k2",DistCoeffs[0][1],"[1]");
-  this->GlobalObjects->csv_parameter_datei->Schreiben ("Distortion p1",DistCoeffs[0][2],"[1]");
-  this->GlobalObjects->csv_parameter_datei->Schreiben ("Distortion p2",DistCoeffs[0][3],"[1]");
-  this->GlobalObjects->csv_parameter_datei->Schreiben ("Distortion k3",DistCoeffs[0][4],"[1]");
-  this->GlobalObjects->csv_parameter_datei->Schreiben ("Intrinsic fx",Intrinsic[0][0],"[Px]");
-  this->GlobalObjects->csv_parameter_datei->Schreiben ("Intrinsic 01",Intrinsic[0][1],"[Px]");
-  this->GlobalObjects->csv_parameter_datei->Schreiben ("Intrinsic cx",Intrinsic[0][2],"[Px]");
-  this->GlobalObjects->csv_parameter_datei->Schreiben ("Intrinsic 10",Intrinsic[1][0],"[Px]");
-  this->GlobalObjects->csv_parameter_datei->Schreiben ("Intrinsic fy",Intrinsic[1][1],"[Px]");
-  this->GlobalObjects->csv_parameter_datei->Schreiben ("Intrinsic cy",Intrinsic[1][2],"[Px]");
-  this->GlobalObjects->csv_parameter_datei->Schreiben ("Intrinsic 20",Intrinsic[2][0],"[Px]");
-  this->GlobalObjects->csv_parameter_datei->Schreiben ("Intrinsic 21",Intrinsic[2][1],"[Px]");
-  this->GlobalObjects->csv_parameter_datei->Schreiben ("Intrinsic 22",Intrinsic[2][2],"[Px]");
-  this->GlobalObjects->csv_parameter_datei->Schreiben ("Intrinsic 21",Intrinsic[2][1],"[Px]");
-  this->GlobalObjects->csv_parameter_datei->Schreiben ("Intrinsic 22",Intrinsic[2][2],"[Px]");
-
-  this->GlobalObjects->csv_parameter_datei->Schliessen();
+    this->GlobalObjects->csv_parameter_datei->Schliessen();
+    std::cout << "**INFO** Kalibrierung fuer Kamera " << std::to_string(Camera.getCameraID()) << " wurde gespeichert" << std::endl;
+    }
+  else
+    {
+    std::cout << "**ERROR** Kalibrierung fuer Kamera " << std::to_string(Camera.getCameraID()) << " wurde nicht gespeichert" << std::endl;
+    }
   }
 void c_SaveManager::saveCameraSettings    (Camera::C_Camera2 &Camera)
   {
@@ -116,8 +133,6 @@ void c_SaveManager::saveCameraSettings    (Camera::C_Camera2 &Camera)
   if (GlobalObjects->csv_parameter_datei->IsOpen())
     {
     GlobalObjects->csv_parameter_datei->Schreiben ("Dateityp",Dateityp,"[1]");
-
-
     GlobalObjects->csv_parameter_datei->Schreiben ("hue_min",to_string (Camera.filterValues->getHue_min()),"[1]");
     GlobalObjects->csv_parameter_datei->Schreiben ("hue_max",to_string (Camera.filterValues->getHue_max()),"[1]");
     GlobalObjects->csv_parameter_datei->Schreiben ("saturation_min",to_string (Camera.filterValues->getSaturation_min()),"[1]");
@@ -146,6 +161,11 @@ void c_SaveManager::saveCameraSettings    (Camera::C_Camera2 &Camera)
 
     GlobalObjects->csv_parameter_datei->Schreiben ("Object_size_min",to_string (Camera.filterValues->getObject_Size_min()),"[1]");
     GlobalObjects->csv_parameter_datei->Schreiben ("Object_size_max",to_string (Camera.filterValues->getObject_Size_max()),"[1]");
+    this->GlobalObjects->csv_parameter_datei->Schliessen();
+    std::cout << "**INFO** Filtereinstellungen fuer Kamera " << std::to_string(Camera.getCameraID()) << " wurden gespeichert" << std::endl;
     }
-  this->GlobalObjects->csv_parameter_datei->Schliessen();
+  else
+    {
+    std::cout << "**ERROR** Filtereinstellungen fuer Kamera " << std::to_string(Camera.getCameraID()) << " wurden nicht gespeichert" << std::endl;
+    }
   }

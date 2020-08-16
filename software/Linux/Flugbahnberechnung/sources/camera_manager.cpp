@@ -540,7 +540,6 @@ void *C_CameraManager::threadCameraPositioning(void *This)
                it < std::end(static_cast<CameraManager::C_CameraManager*>(This)->vecCameras);
                it++)
         {
-        //std::unique_ptr<cv::Mat> img = std::make_unique<cv::Mat>();
         (*it)->grabImg();
         }
       for(auto it = std::begin(static_cast<CameraManager::C_CameraManager*>(This)->vecCameras);
@@ -675,6 +674,7 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
       vecCameras[pData->cameraID[i]]->grabImg();
       }
     //cntPipeline++;
+    pData->timestamp = Clock::now();
     pData->end = Clock::now();
     pData->executionTime[0] = std::chrono::duration_cast<milliseconds>(pData->end - pData->start);
 
@@ -830,7 +830,11 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
     {
     pData->start = Clock::now();
     if(!this->filterFlags->trackingActive) return pData;
-    if(pData->found)    this->trackingManager->Get_Position_ObjectTracking(pData->objektVektor, pData->Richtungsvektoren);
+    if(pData->found)
+      {
+      this->trackingManager->Get_Position_ObjectTracking(pData->objektVektor, pData->Richtungsvektoren);
+      this->trackingManager->calcObjectVeloctiy(pData->timestamp, pData->objektVektor);
+      }
     pData->end = Clock::now();
     pData->executionTime[6] = std::chrono::duration_cast<milliseconds>(pData->end - pData->start);
     return pData;

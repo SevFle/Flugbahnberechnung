@@ -5,12 +5,17 @@
 #include "posen.h"
 #include "GlobalObjects.h"
 #include "object.h"
+#include <chrono>
+
 #include <vector>
 
 using namespace posen;
 using namespace GlobalObjects;
 /********************************************** DEFINE PAYLOAD SIZE ******************************************************/
 const int payloadSize =  2;
+typedef std::chrono::system_clock Clock;
+typedef std::chrono::milliseconds milliseconds;
+
 
 
 namespace trackingManager
@@ -20,6 +25,7 @@ namespace trackingManager
     int               ID_Cam_Links[2];
     int               ID_Cam_Rechts[2];
     double            timestamp;
+
 
     //GET_OBJECTPOSITION_FROM_CAMERA()
     bool              found[4];
@@ -48,6 +54,8 @@ namespace trackingManager
   private:
     S_Positionsvektor*                  RichtungsvektorenTm1   [payloadSize];
     S_Positionsvektor*                  objektVektorTm1;
+    Clock::time_point                   timestampTm1;
+
     float                               pixelVelocityTm1 [3];
     float                               objectVelocityTm1 [3];
   public:
@@ -71,8 +79,8 @@ namespace trackingManager
     void Calc_Position_ObjectTracking                 (S_Positionsvektor&             objektVektor, vector<S_Positionsvektor>  vec_Richtungsvektoren_World);
     void Calc_RichtungsvektorenToWorld (S_Positionsvektor* vec_Richtungsvektoren[payloadSize], std::vector<S_Positionsvektor>& vec_Richtungsvektoren_World, std::vector<C_AbsolutePose> vecEinheitsMatrix);
 
-    void calcPixelVeloctiy(int dTimestamp, S_Positionsvektor* Richtungsvektoren   [payloadSize], int camID);
-    void calcObjectVeloctiy(int dTimestamp, S_Positionsvektor&             objektVektor);
+    void calcPixelVeloctiy(Clock::time_point Timestamp, S_Positionsvektor* Richtungsvektoren   [payloadSize], int camID);
+    void calcObjectVeloctiy(Clock::time_point Timestamp, S_Positionsvektor&             objektVektor);
 
     void calcPixelAcceleration(int dTimestamp);
     void calcObjectAcceleration(int dTimestamp);
@@ -80,6 +88,7 @@ namespace trackingManager
 
     bool getAlive                                     () const;
     void setAlive                                     (bool value);
+
     S_Positionsvektor *getPositionsvektor_alt         () const;
     void setPositionsvektor_alt                       (S_Positionsvektor *value);
 

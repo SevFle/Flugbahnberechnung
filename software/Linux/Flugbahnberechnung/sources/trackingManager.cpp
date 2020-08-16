@@ -7,9 +7,19 @@ C_trackingManager::C_trackingManager (C_GlobalObjects* GlobalObjects)
   {
   this->Positionsvektor_alt = new S_Positionsvektor();
   this->globalObjects       = GlobalObjects;
+  this->timestampTm1        = 0;
+  this->trackingPayload     = new S_trackingPayload;
+
+  for(int i = 0; i < payloadSize; i++)
+    {
+    this->RichtungsvektorenTm1[i]  = new S_Positionsvektor;
+    }
+  this->objektVektorTm1     = new S_Positionsvektor;
+
   }
 C_trackingManager::~C_trackingManager ()
   {
+  this->timestampTm1        = 0;
   this->globalObjects = nullptr;
   delete(Positionsvektor_alt);
   }
@@ -223,7 +233,7 @@ void C_trackingManager::Calc_RichtungsvektorenToWorld (S_Positionsvektor* vec_Ri
     }
   }
 
-void C_trackingManager::calcPixelVeloctiy(int dTimestamp, S_Positionsvektor* Richtungsvektoren   [payloadSize], int camID)
+void C_trackingManager::calcPixelVeloctiy(Clock::time_point Timestamp, S_Positionsvektor* Richtungsvektoren   [payloadSize], int camID)
   {
   int dPixelX[payloadSize][2];
   int dPixelY[payloadSize];
@@ -238,7 +248,7 @@ void C_trackingManager::calcPixelVeloctiy(int dTimestamp, S_Positionsvektor* Ric
 
   }
 
-void C_trackingManager::calcObjectVeloctiy(int dTimestamp, S_Positionsvektor&             objektVektor)
+void C_trackingManager::calcObjectVeloctiy(Clock::time_point Timestamp, S_Positionsvektor&             objektVektor)
   {
   S_Positionsvektor dObjektVektor;
   dObjektVektor.X = objektVektor.X - this->objektVektorTm1->X;

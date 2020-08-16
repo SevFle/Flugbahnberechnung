@@ -24,6 +24,19 @@ C_object::C_object()
 
 C_object::~C_object()
   {
+  this->objekt_id = 0;
+  this->state = 0;
+  this->translation[0] = 0;
+  this->translation[1] = 0;
+  this->translation[2] = 0;
+  this->velocity[0] = 0;
+  this->velocity[1] = 0;
+  this->velocity[2] = 0;
+  this->pixel_coordinates[0] = 0;
+  this->pixel_coordinates[1] = 0;
+  this->pixel_coordinates[2] = 0;
+  this->active = false;
+
   }
 
 void C_object::get_pixel_coordinates()

@@ -45,8 +45,6 @@ SOURCES += \
 
 
 HEADERS += \
-    ../libCuda/CudaKernels.cuh \
-    ../libCuda/kalman_cuda.cuh \
     camera2.h \
     headers/CSV_Datei.h \
     headers/GlobalObjects.h \
