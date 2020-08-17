@@ -21,10 +21,10 @@ OBJECTS_DIR = $$DESTDIR/Obj
 QMAKE_CXXFLAGS_RELEASE =-03
 
 SOURCES += \
-    camera2.cpp \
-    imagefilter.cpp \
-    loadmanager.cpp \
-    savemanager.cpp \
+    sources/camera2.cpp \
+    sources/imagefilter.cpp \
+    sources/loadmanager.cpp \
+    sources/savemanager.cpp \
     sources/App_main.cpp \
     sources/CSV_Datei.cpp \
     sources/GlobalObjects.cpp \
@@ -45,7 +45,7 @@ SOURCES += \
 
 
 HEADERS += \
-    camera2.h \
+    headers/camera2.h \
     headers/CSV_Datei.h \
     headers/GlobalObjects.h \
     headers/Kalmanfilter.h \
@@ -63,9 +63,9 @@ HEADERS += \
     headers/frm_object_calibration.h \
     headers/frm_object_tracking.h \
     headers/trackingManager.h \
-    imagefilter.h \
-    loadmanager.h \
-    savemanager.h
+    headers/imagefilter.h \
+    headers/loadmanager.h \
+    headers/savemanager.h
 
 FORMS += \
     forms/frm_camera_calibration.ui \
