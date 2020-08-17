@@ -7,7 +7,6 @@ C_trackingManager::C_trackingManager (C_GlobalObjects* GlobalObjects)
   {
   this->Positionsvektor_alt = new S_Positionsvektor();
   this->globalObjects       = GlobalObjects;
-  this->timestampTm1        = 0;
   this->trackingPayload     = new S_trackingPayload;
 
   for(int i = 0; i < payloadSize; i++)
@@ -19,7 +18,6 @@ C_trackingManager::C_trackingManager (C_GlobalObjects* GlobalObjects)
   }
 C_trackingManager::~C_trackingManager ()
   {
-  this->timestampTm1        = 0;
   this->globalObjects = nullptr;
   delete(Positionsvektor_alt);
   }
@@ -32,6 +30,9 @@ void C_trackingManager::init_posen                     ()
       C_AbsolutePose            absEinheitsVektor;
       vecEinheitsVektor.push_back(absEinheitsVektor);
     }
+    this->vecIstX.resize(globalObjects->absCameras);
+    this->vecIstY.resize(globalObjects->absCameras);
+    this->vecPixelVelocity.resize(globalObjects->absCameras);
   }
 void C_trackingManager::load_posen                     (C_AbsolutePose& cameraPose)
   {
@@ -233,22 +234,20 @@ void C_trackingManager::Calc_RichtungsvektorenToWorld (S_Positionsvektor* vec_Ri
     }
   }
 
-void C_trackingManager::calcPixelVeloctiy(Clock::time_point Timestamp, S_Positionsvektor* Richtungsvektoren   [payloadSize], int camID)
+void C_trackingManager::calcPixelVeloctiy             (int dTimestamp, int ist_X, int ist_Y, int camID, int& pred_X, int& pred_Y)
   {
-  int dPixelX[payloadSize][2];
-  int dPixelY[payloadSize];
+  int dPixelX;
+  int dPixelY;
 
-  dPixelX[camID][0] = Richtungsvektoren[camID]->X - RichtungsvektorenTm1[camID]->X;
-  dPixelX[camID][1] = Richtungsvektoren[camID]->Y - RichtungsvektorenTm1[camID]->Y;
-  dPixelX[camID][2] = Richtungsvektoren[camID]->Z - RichtungsvektorenTm1[camID]->Z;
+  dPixelX = ist_X - this->vecIstX[camID];
+  dPixelY = ist_Y - this->vecIstY[camID];
 
-  this->pixelVelocity[camID][0] = dPixelX[camID][0]/dTimestamp;
-  this->pixelVelocity[camID][1] = dPixelX[camID][1]/dTimestamp;
-  this->pixelVelocity[camID][2] = dPixelX[camID][2]/dTimestamp;
-
+  this->vecPixelVelocity[camID][0] = dPixelX/dTimestamp;
+  this->vecPixelVelocity[camID][1] = dPixelX/dTimestamp;
+  this->predictPixelMovement(dTimestamp, pred_X, pred_Y, this->vecPixelVelocity[camID][0], this->vecPixelVelocity[camID][1]);
   }
 
-void C_trackingManager::calcObjectVeloctiy(Clock::time_point Timestamp, S_Positionsvektor&             objektVektor)
+void C_trackingManager::calcObjectVeloctiy(int dTimestamp, S_Positionsvektor&             objektVektor)
   {
   S_Positionsvektor dObjektVektor;
   dObjektVektor.X = objektVektor.X - this->objektVektorTm1->X;
@@ -258,7 +257,6 @@ void C_trackingManager::calcObjectVeloctiy(Clock::time_point Timestamp, S_Positi
   this->objectVelocity[1] = dObjektVektor.Y/dTimestamp;
   this->objectVelocity[2] = dObjektVektor.Z/dTimestamp;
   this->calcObjectAcceleration(dTimestamp);
-
   }
 
 void C_trackingManager::calcPixelAcceleration(int dTimestamp)
@@ -275,4 +273,9 @@ void C_trackingManager::calcObjectAcceleration(int dTimestamp)
   this->objectAcceleration[0] = dObjectVelocity[0]/dTimestamp;
   this->objectAcceleration[1] = dObjectVelocity[1]/dTimestamp;
   this->objectAcceleration[2] = dObjectVelocity[2]/dTimestamp;
+  }
+
+void C_trackingManager::predictPixelMovement           (int dTimestamp,int& predX, int& predY, int pixelVelocityX, int pixelVelocityY)
+  {
+
   }

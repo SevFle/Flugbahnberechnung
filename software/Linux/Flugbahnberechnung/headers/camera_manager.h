@@ -65,6 +65,8 @@ namespace CameraManager
      int                                    cameraID            [payloadSize];
      int                                    ist_X               [payloadSize];
      int                                    ist_Y               [payloadSize];
+     int                                    pred_X              [payloadSize];
+     int                                    pred_Y              [payloadSize];
      int                                    radius              [payloadSize];
      bool                                   found = false;
      double                                 fps = 0;
@@ -146,6 +148,8 @@ namespace CameraManager
     pthread_t*                              camPositioning;
     pthread_mutex_t*  restrict              lock;
     std::vector<cv::Mat*>*                   vecImgShow;
+    Clock::time_point                   timestampTm1;
+
     public:
     tbb::concurrent_bounded_queue<CameraManager::S_Payload*>*  Que;
     private:

@@ -50,21 +50,23 @@ namespace trackingManager
     std::vector<S_Positionsvektor>*     vecPositions;
     vector<C_AbsolutePose>              vecEinheitsVektor;
 
+    std::vector<int>                    vecIstX;
+    std::vector<int>                    vecIstY;
+    std::vector<int[2]>                 vecPixelVelocity;
+
     /****************** Positionsbuffer T-1 *******************/
   private:
     S_Positionsvektor*                  RichtungsvektorenTm1   [payloadSize];
     S_Positionsvektor*                  objektVektorTm1;
-    Clock::time_point                   timestampTm1;
 
     float                               pixelVelocityTm1 [3];
     float                               objectVelocityTm1 [3];
   public:
-    float                               pixelVelocity [payloadSize][3];
-    float                               pixelAcceleration [payloadSize][3];
+    float                               pixelVelocity [payloadSize][2];
+    float                               pixelAcceleration [payloadSize][2];
     float                               objectVelocity [3];
     float                               objectAcceleration [3];
   private:
-
     int                                 smState;
     int                                 camIDLeft;
     int                                 camIDRight;
@@ -75,16 +77,16 @@ namespace trackingManager
     void init_posen                     ();
     void load_posen                     (C_AbsolutePose& cameraPose);
 
-    void Get_Position_ObjectTracking                  (S_Positionsvektor&             objektVektor, S_Positionsvektor* Richtungsvektoren   [payloadSize]);
-    void Calc_Position_ObjectTracking                 (S_Positionsvektor&             objektVektor, vector<S_Positionsvektor>  vec_Richtungsvektoren_World);
-    void Calc_RichtungsvektorenToWorld (S_Positionsvektor* vec_Richtungsvektoren[payloadSize], std::vector<S_Positionsvektor>& vec_Richtungsvektoren_World, std::vector<C_AbsolutePose> vecEinheitsMatrix);
+    void Get_Position_ObjectTracking    (S_Positionsvektor&             objektVektor, S_Positionsvektor* Richtungsvektoren   [payloadSize]);
+    void Calc_Position_ObjectTracking   (S_Positionsvektor&             objektVektor, vector<S_Positionsvektor>  vec_Richtungsvektoren_World);
+    void Calc_RichtungsvektorenToWorld  (S_Positionsvektor* vec_Richtungsvektoren[payloadSize], std::vector<S_Positionsvektor>& vec_Richtungsvektoren_World, std::vector<C_AbsolutePose> vecEinheitsMatrix);
+    void calcPixelVeloctiy              (int dTimestamp, int ist_X, int ist_Y, int camID, int& pred_X, int& pred_Y);
+    void calcObjectVeloctiy             (int dTimestamp, S_Positionsvektor&             objektVektor);
 
-    void calcPixelVeloctiy(Clock::time_point Timestamp, S_Positionsvektor* Richtungsvektoren   [payloadSize], int camID);
-    void calcObjectVeloctiy(Clock::time_point Timestamp, S_Positionsvektor&             objektVektor);
+    void calcPixelAcceleration          (int dTimestamp);
+    void calcObjectAcceleration         (int dTimestamp);
 
-    void calcPixelAcceleration(int dTimestamp);
-    void calcObjectAcceleration(int dTimestamp);
-
+    void predictPixelMovement           (int dTimestamp,int& predX, int& predY, int pixelVelocityX, int pixelVelocityY);
 
     bool getAlive                                     () const;
     void setAlive                                     (bool value);

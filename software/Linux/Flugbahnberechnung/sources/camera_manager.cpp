@@ -799,7 +799,31 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
     return pData;
     }
   )&
-  //STEP 5: ADJUST ROI ON CPU UNDISTORT ****NOT NEEDED******
+  //STEP 5: CALCULATE OBJECT POSITION
+  tbb::make_filter<S_Payload*, S_Payload*>(tbb::filter::serial_in_order, [&] (S_Payload *pData)->S_Payload*
+    {
+    pData->start = Clock::now();
+    if(!this->filterFlags->trackingActive) return pData;
+    if(pData->found)
+      {
+      milliseconds dTimestamp_ms;
+      dTimestamp_ms = std::chrono::duration_cast<milliseconds>(pData->timestamp - this->timestampTm1);
+      int dTimestamp = dTimestamp_ms.count();
+
+      this->trackingManager->Get_Position_ObjectTracking    (pData->objektVektor, pData->Richtungsvektoren);
+      this->trackingManager->calcObjectVeloctiy             (dTimestamp,          pData->objektVektor);
+      for(int i =0; i < payloadSize; i++)
+        {
+        this->trackingManager->calcPixelVeloctiy              (dTimestamp, pData->ist_X[i], pData->ist_Y[i], pData->cameraID[i], pData->pred_X[i], pData->pred_Y[i]);
+        }
+      this->timestampTm1 = pData->timestamp;
+      }
+    pData->end = Clock::now();
+    pData->executionTime[6] = std::chrono::duration_cast<milliseconds>(pData->end - pData->start);
+    return pData;
+    }
+  )&
+  //STEP 6: ADJUST ROI ON CPU UNDISTORT ****NOT NEEDED******
   tbb::make_filter<S_Payload*, S_Payload*>(tbb::filter::serial_in_order, [&] (S_Payload *pData)->S_Payload*
     {
     pData->start = Clock::now();
@@ -825,21 +849,7 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
       return pData;
     }//make_filter
   )&
-  //STEP 6: CALCULATE OBJECT POSITION
-  tbb::make_filter<S_Payload*, S_Payload*>(tbb::filter::serial_in_order, [&] (S_Payload *pData)->S_Payload*
-    {
-    pData->start = Clock::now();
-    if(!this->filterFlags->trackingActive) return pData;
-    if(pData->found)
-      {
-      this->trackingManager->Get_Position_ObjectTracking(pData->objektVektor, pData->Richtungsvektoren);
-      this->trackingManager->calcObjectVeloctiy(pData->timestamp, pData->objektVektor);
-      }
-    pData->end = Clock::now();
-    pData->executionTime[6] = std::chrono::duration_cast<milliseconds>(pData->end - pData->start);
-    return pData;
-    }
-  )&
+
   tbb::make_filter<S_Payload*,void>(tbb::filter::serial_in_order, [&] (S_Payload *pData)
     {
     pData->start = Clock::now();
