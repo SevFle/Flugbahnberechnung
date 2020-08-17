@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="BranchesTreeState">
+    <expand>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="LOCAL_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:origin" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+    </expand>
+    <select />
+  </component>
+  <component name="CMakeRunConfigurationManager" shouldGenerate="true" shouldDeleteObsolete="true">
+    <generated>
+      <config projectName="Flugbahnberechnung" targetName="Flugbahnberechnung_autogen" />
+    </generated>
+  </component>
+  <component name="CMakeSettings" AUTO_RELOAD="true">
+    <configurations>
+      <configuration PROFILE_NAME="Debug" CONFIG_NAME="Debug" GENERATION_OPTIONS="-DCMAKE_PREFIX_PATH=//home/severin/Qt/5.15.0/gcc_64/lib/cmake/Qt5 -DWITH_QT5=1" GENERATION_DIR="../cmake-build-debug" BUILD_OPTIONS="-j 12" />
+      <configuration PROFILE_NAME="Release" CONFIG_NAME="Release" GENERATION_DIR="../cmake-build-release" BUILD_OPTIONS="-j 12" />
+    </configurations>
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="0cc48fd1-564d-414a-88c6-d9cf6e32ec25" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/Flugbahnberechnung.pro" beforeDir="false" afterPath="$PROJECT_DIR$/Flugbahnberechnung.pro" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/camera2.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/camera2.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/camera2.h" beforeDir="false" afterPath="$PROJECT_DIR$/camera2.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/headers/camera_manager.h" beforeDir="false" afterPath="$PROJECT_DIR$/headers/camera_manager.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/imagefilter.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/imagefilter.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sources/camera_manager.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/sources/camera_manager.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sources/frm_camera_calibration.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/sources/frm_camera_calibration.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sources/frm_object_calibration.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/sources/frm_object_calibration.cpp" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ClangdSettings">
+    <option name="formatViaClangd" value="false" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../../.." />
+  </component>
+  <component name="ProjectId" id="1dgFSWoCciVEdTq82rWxfj8IHML" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="cf.first.check.clang-format" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/.." />
+    <property name="run.code.analysis.last.selected.profile" value="pProject Default" />
+    <property name="settings.editor.selected.configurable" value="CMakeSettings" />
+  </component>
+  <component name="RunManager" selected="CMake Application.Flugbahnberechnung">
+    <configuration name="Flugbahnberechnung" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" WORKING_DIR="file://$PROJECT_DIR$/.." PASS_PARENT_ENVS_2="true" CONFIG_NAME="Debug" RUN_PATH="$PROJECT_DIR$/../build-Flugbahnberechnung-Desktop_Qt_5_15_0_GCC_64bit-Debug/Flugbahnberechnung" EXPLICIT_BUILD_TARGET_NAME="all">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Flugbahnberechnung_autogen" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Flugbahnberechnung" TARGET_NAME="Flugbahnberechnung_autogen" CONFIG_NAME="Debug">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <list>
+      <item itemvalue="CMake Application.Flugbahnberechnung" />
+      <item itemvalue="CMake Application.Flugbahnberechnung_autogen" />
+    </list>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="0cc48fd1-564d-414a-88c6-d9cf6e32ec25" name="Default Changelist" comment="" />
+      <created>1592838829475</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1592838829475</updated>
+      <workItem from="1592838831402" duration="302000" />
+      <workItem from="1592839134244" duration="1083000" />
+      <workItem from="1592843386671" duration="13000" />
+      <workItem from="1592848936789" duration="2005000" />
+      <workItem from="1592851031940" duration="435000" />
+      <workItem from="1592851524873" duration="198000" />
+      <workItem from="1593334707233" duration="230000" />
+      <workItem from="1593335458757" duration="286000" />
+      <workItem from="1593335745238" duration="885000" />
+      <workItem from="1593336637191" duration="71000" />
+      <workItem from="1593336714904" duration="39000" />
+      <workItem from="1593337426248" duration="6000" />
+      <workItem from="1593337446468" duration="724000" />
+      <workItem from="1593338244642" duration="3669000" />
+      <workItem from="1593341915954" duration="4202000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="2" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="oldMeFiltersMigrated" value="true" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="451" y="241" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1593344964919">
+      <screen x="67" y="27" width="1853" height="1053" />
+    </state>
+    <state x="451" y="241" key="#com.intellij.execution.impl.EditConfigurationsDialog/67.27.1853.1053@67.27.1853.1053" timestamp="1593344964919" />
+    <state x="633" y="354" width="710" height="396" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1593339496527">
+      <screen x="67" y="27" width="1853" height="1053" />
+    </state>
+    <state x="633" y="354" width="710" height="396" key="#com.intellij.fileTypes.FileTypeChooser/67.27.1853.1053@67.27.1853.1053" timestamp="1593339496527" />
+    <state x="922" y="384" width="497" height="337" key="#com.intellij.tools.ToolEditorDialog" timestamp="1593340145302">
+      <screen x="67" y="27" width="1853" height="1053" />
+    </state>
+    <state x="922" y="384" width="497" height="337" key="#com.intellij.tools.ToolEditorDialog/67.27.1853.1053@67.27.1853.1053" timestamp="1593340145302" />
+    <state x="729" y="405" width="519" height="294" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1" timestamp="1593344988079">
+      <screen x="67" y="27" width="1853" height="1053" />
+    </state>
+    <state x="729" y="405" width="519" height="294" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1/67.27.1853.1053@67.27.1853.1053" timestamp="1593344988079" />
+    <state x="833" y="309" width="309" height="488" key="EnvironmentVariablesDialog" timestamp="1593335953802">
+      <screen x="67" y="27" width="1853" height="1053" />
+    </state>
+    <state x="833" y="309" width="309" height="488" key="EnvironmentVariablesDialog/67.27.1853.1053@67.27.1853.1053" timestamp="1593335953802" />
+    <state x="776" y="310" width="424" height="484" key="FileChooserDialogImpl" timestamp="1593341911317">
+      <screen x="67" y="27" width="1853" height="1053" />
+    </state>
+    <state x="776" y="310" width="424" height="484" key="FileChooserDialogImpl/67.27.1853.1053@67.27.1853.1053" timestamp="1593341911317" />
+    <state width="640" height="204" key="ImportCMakeProjectWizard.bottomPanel" timestamp="1592839127246">
+      <screen x="67" y="27" width="1853" height="1053" />
+    </state>
+    <state width="640" height="204" key="ImportCMakeProjectWizard.bottomPanel/67.27.1853.1053@67.27.1853.1053" timestamp="1592839127246" />
+    <state width="640" height="476" key="ImportCMakeProjectWizard.topPanel" timestamp="1592839127245">
+      <screen x="67" y="27" width="1853" height="1053" />
+    </state>
+    <state width="640" height="476" key="ImportCMakeProjectWizard.topPanel/67.27.1853.1053@67.27.1853.1053" timestamp="1592839127245" />
+    <state x="482" y="188" width="1371" height="730" key="SettingsEditor" timestamp="1593343665704">
+      <screen x="67" y="27" width="1853" height="1053" />
+    </state>
+    <state x="482" y="188" width="1371" height="730" key="SettingsEditor/67.27.1853.1053@67.27.1853.1053" timestamp="1593343665704" />
+  </component>
+</project>
