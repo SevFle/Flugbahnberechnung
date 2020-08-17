@@ -1,4 +1,4 @@
-#include "camera2.h"
+#include "headers/camera2.h"
 
 using namespace Camera;
 

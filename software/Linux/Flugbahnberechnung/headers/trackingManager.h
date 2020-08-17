@@ -5,6 +5,7 @@
 #include "posen.h"
 #include "GlobalObjects.h"
 #include "object.h"
+#include "plotter.h"
 #include <chrono>
 
 #include <vector>
@@ -39,6 +40,8 @@ namespace trackingManager
     C_trackingManager                   (C_GlobalObjects* GlobalObject);
     ~C_trackingManager                  ();
 
+    plotter::C_plotter*                 dataPlotter;
+
     private:
     C_GlobalObjects*                    globalObjects;
     S_trackingPayload*                  trackingPayload;
@@ -52,7 +55,9 @@ namespace trackingManager
 
     std::vector<int>                    vecIstX;
     std::vector<int>                    vecIstY;
-    std::vector<int>                    vecPixelVelocity;
+    std::vector<int>*                   vecPixelVelocityX;
+    std::vector<int>*                   vecPixelVelocityY;
+    std::vector<int>*                   vecPixelVelocityZ;
 
     /****************** Positionsbuffer T-1 *******************/
   private:
@@ -86,7 +91,7 @@ namespace trackingManager
     void calcPixelAcceleration          (int dTimestamp);
     void calcObjectAcceleration         (int dTimestamp);
 
-    void predictPixelMovement           (int dTimestamp,int& predX, int& predY, int pixelVelocityX, int pixelVelocityY);
+    void predictPixelMovement           (int dTimestamp,int& predX, int& predY, int pixelVelocityX, int pixelVelocityY, int ist_X, int ist_Y);
 
     bool getAlive                                     () const;
     void setAlive                                     (bool value);

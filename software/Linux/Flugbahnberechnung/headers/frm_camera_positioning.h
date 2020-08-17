@@ -28,7 +28,7 @@ private:
   int                               Taktgeber_Intervall;
   int                               TimerWait;
   int                               Zaehler;
-  std::vector<cv::Mat>*             tData;
+  CameraManager::S_threadPayload*   tData;
 
 
 private:

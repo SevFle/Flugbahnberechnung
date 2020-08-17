@@ -98,28 +98,28 @@ void C_frm_Camera_Positioning::Taktgeber_Tick()
           switch (this->GlobalObjects->absCameras)
             {
             case 1:   //Nur zu Testzwecken fuer die Laptopverwendung
-              FillMat2Lbl(tDa, this->Ui->lbl_cam_0);
+              FillMat2Lbl(tData->srcImg[this->Ui->num_cam_0->value()], this->Ui->lbl_cam_0);
               break;
 
             case 2:
-              FillMat2Lbl(*this->Main->cameraManager->getVecImgShow()[this->Ui->num_cam_0->value()], this->Ui->lbl_cam_0);
-              FillMat2Lbl(*this->Main->cameraManager->getVecImgShow()[this->Ui->num_cam_1->value()], this->Ui->lbl_cam_1);
+              FillMat2Lbl(tData->srcImg[this->Ui->num_cam_0->value()], this->Ui->lbl_cam_0);
+              FillMat2Lbl(tData->srcImg[this->Ui->num_cam_1->value()], this->Ui->lbl_cam_1);
               break;
 
             case 4:
-              FillMat2Lbl(*this->Main->cameraManager->getVecImgShow()[this->Ui->num_cam_0->value()], this->Ui->lbl_cam_0);
-              FillMat2Lbl(*this->Main->cameraManager->getVecImgShow()[this->Ui->num_cam_1->value()], this->Ui->lbl_cam_1);
-              FillMat2Lbl(*this->Main->cameraManager->getVecImgShow()[this->Ui->num_cam_2->value()], this->Ui->lbl_cam_2);
-              FillMat2Lbl(*this->Main->cameraManager->getVecImgShow()[this->Ui->num_cam_3->value()], this->Ui->lbl_cam_3);
+              FillMat2Lbl(tData->srcImg[this->Ui->num_cam_0->value()], this->Ui->lbl_cam_0);
+              FillMat2Lbl(tData->srcImg[this->Ui->num_cam_1->value()], this->Ui->lbl_cam_1);
+              FillMat2Lbl(tData->srcImg[this->Ui->num_cam_2->value()], this->Ui->lbl_cam_2);
+              FillMat2Lbl(tData->srcImg[this->Ui->num_cam_3->value()], this->Ui->lbl_cam_3);
               break;
 
             case 6:
-              FillMat2Lbl(*this->Main->cameraManager->getVecImgShow()[this->Ui->num_cam_0->value()], this->Ui->lbl_cam_0);
-              FillMat2Lbl(*this->Main->cameraManager->getVecImgShow()[this->Ui->num_cam_1->value()], this->Ui->lbl_cam_1);
-              FillMat2Lbl(*this->Main->cameraManager->getVecImgShow()[this->Ui->num_cam_2->value()], this->Ui->lbl_cam_2);
-              FillMat2Lbl(*this->Main->cameraManager->getVecImgShow()[this->Ui->num_cam_3->value()], this->Ui->lbl_cam_3);
-              FillMat2Lbl(*this->Main->cameraManager->getVecImgShow()[this->Ui->num_cam_4->value()], this->Ui->lbl_cam_4);
-              FillMat2Lbl(*this->Main->cameraManager->getVecImgShow()[this->Ui->num_cam_5->value()], this->Ui->lbl_cam_5);
+              FillMat2Lbl(tData->srcImg[this->Ui->num_cam_0->value()], this->Ui->lbl_cam_0);
+              FillMat2Lbl(tData->srcImg[this->Ui->num_cam_1->value()], this->Ui->lbl_cam_1);
+              FillMat2Lbl(tData->srcImg[this->Ui->num_cam_2->value()], this->Ui->lbl_cam_2);
+              FillMat2Lbl(tData->srcImg[this->Ui->num_cam_3->value()], this->Ui->lbl_cam_3);
+              FillMat2Lbl(tData->srcImg[this->Ui->num_cam_4->value()], this->Ui->lbl_cam_4);
+              FillMat2Lbl(tData->srcImg[this->Ui->num_cam_5->value()], this->Ui->lbl_cam_5);
               break;
             }
 
@@ -275,50 +275,6 @@ void C_frm_Camera_Positioning::set_num_value (std::vector<int> camera_list)
       this->Ui->num_cam_4->setValue(camera_list[4]);
       this->Ui->num_cam_5->setValue(camera_list[5]);
       break;
-    case 8:
-      this->Ui->num_cam_0->setMaximum(GlobalObjects->absCameras-1);
-      this->Ui->num_cam_1->setMaximum(GlobalObjects->absCameras-1);
-      this->Ui->num_cam_2->setMaximum(GlobalObjects->absCameras-1);
-      this->Ui->num_cam_3->setMaximum(GlobalObjects->absCameras-1);
-      this->Ui->num_cam_4->setMaximum(GlobalObjects->absCameras-1);
-      this->Ui->num_cam_5->setMaximum(GlobalObjects->absCameras-1);
-      if(camera_list.empty()) return;
-      this->Ui->num_cam_0->setValue(camera_list[0]);
-      this->Ui->num_cam_1->setValue(camera_list[1]);
-      this->Ui->num_cam_2->setValue(camera_list[2]);
-      this->Ui->num_cam_3->setValue(camera_list[3]);
-      this->Ui->num_cam_4->setValue(camera_list[4]);
-      this->Ui->num_cam_5->setValue(camera_list[5]);
-      break;
-    case 10:
-      this->Ui->num_cam_0->setMaximum(GlobalObjects->absCameras-1);
-      this->Ui->num_cam_1->setMaximum(GlobalObjects->absCameras-1);
-      this->Ui->num_cam_2->setMaximum(GlobalObjects->absCameras-1);
-      this->Ui->num_cam_3->setMaximum(GlobalObjects->absCameras-1);
-      this->Ui->num_cam_4->setMaximum(GlobalObjects->absCameras-1);
-      this->Ui->num_cam_5->setMaximum(GlobalObjects->absCameras-1);
-      if(camera_list.empty()) return;
-      this->Ui->num_cam_0->setValue(camera_list[0]);
-      this->Ui->num_cam_1->setValue(camera_list[1]);
-      this->Ui->num_cam_2->setValue(camera_list[2]);
-      this->Ui->num_cam_3->setValue(camera_list[3]);
-      this->Ui->num_cam_4->setValue(camera_list[4]);
-      this->Ui->num_cam_5->setValue(camera_list[5]);
-      break;
-    case 12:
-      this->Ui->num_cam_0->setMaximum(GlobalObjects->absCameras-1);
-      this->Ui->num_cam_1->setMaximum(GlobalObjects->absCameras-1);
-      this->Ui->num_cam_2->setMaximum(GlobalObjects->absCameras-1);
-      this->Ui->num_cam_3->setMaximum(GlobalObjects->absCameras-1);
-      this->Ui->num_cam_4->setMaximum(GlobalObjects->absCameras-1);
-      this->Ui->num_cam_5->setMaximum(GlobalObjects->absCameras-1);
-      if(camera_list.empty()) return;
-      this->Ui->num_cam_0->setValue(camera_list[0]);
-      this->Ui->num_cam_1->setValue(camera_list[1]);
-      this->Ui->num_cam_2->setValue(camera_list[2]);
-      this->Ui->num_cam_3->setValue(camera_list[3]);
-      this->Ui->num_cam_4->setValue(camera_list[4]);
-      this->Ui->num_cam_5->setValue(camera_list[5]);
       break;
     }
   }//set_numUD_value

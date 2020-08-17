@@ -49,7 +49,6 @@ namespace CameraManager
     {
      std::vector<cv::Mat> srcImg;
     };
-
     struct S_pipelinePayload
       {
       milliseconds executionTime[8];
@@ -152,7 +151,6 @@ namespace CameraManager
     thread*                                 camPositioning;
     pthread_mutex_t*  restrict              lock;
     Clock::time_point                   timestampTm1;
-    std::vector<cv::Mat>*                   tData;
 
     public:
     tbb::concurrent_bounded_queue<CameraManager::S_pipelinePayload*>*  pipelineQue;

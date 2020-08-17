@@ -97,7 +97,6 @@ void C_frm_Main::Taktgeber_Tick()
 
 void ::C_frm_Main::on_bt_apply_clicked()
 {
-
     if (this->Ui->num_cameras->value() % 2 != 0)
       {
       //MessageBox::Show ("Es muss eine gerade Anzahl an Kameras verwendet werden","Fehler",MessageBoxButtons::OK,MessageBoxIcon::Error);

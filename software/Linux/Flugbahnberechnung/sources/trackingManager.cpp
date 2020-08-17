@@ -14,10 +14,19 @@ C_trackingManager::C_trackingManager (C_GlobalObjects* GlobalObjects)
     this->RichtungsvektorenTm1[i]  = new S_Positionsvektor;
     }
   this->objektVektorTm1     = new S_Positionsvektor;
+  this->dataPlotter         = new plotter::C_plotter;
+  this->vecPixelVelocityX   = new std::vector<int>;
+  this->vecPixelVelocityY   = new std::vector<int>;
+  this->vecPixelVelocityZ   = new std::vector<int>;
 
   }
 C_trackingManager::~C_trackingManager ()
   {
+  delete (vecPixelVelocityX);
+  delete (vecPixelVelocityY);
+  delete (vecPixelVelocityZ);
+
+  delete (dataPlotter);
   this->globalObjects = nullptr;
   delete(Positionsvektor_alt);
   }
@@ -32,7 +41,10 @@ void C_trackingManager::init_posen                     ()
     }
     this->vecIstX.resize(globalObjects->absCameras);
     this->vecIstY.resize(globalObjects->absCameras);
-    this->vecPixelVelocity.resize(globalObjects->absCameras);
+    this->vecPixelVelocityX->resize(globalObjects->absCameras);
+  this->vecPixelVelocityY->resize(globalObjects->absCameras);
+  this->vecPixelVelocityZ->resize(globalObjects->absCameras);
+
   }
 void C_trackingManager::load_posen                     (C_AbsolutePose& cameraPose)
   {
@@ -103,6 +115,15 @@ void C_trackingManager::Get_Position_ObjectTracking (S_Positionsvektor& objektVe
 
     this->Calc_Position_ObjectTracking(objektVektor, vec_Richtungsvektoren_World);
     *this->Positionsvektor_alt = objektVektor;
+
+  QVector3D vec3d;
+  vec3d.setX(objektVektor.X);
+  vec3d.setY(objektVektor.Y);
+  vec3d.setZ(objektVektor.Z);
+
+  this->dataPlotter->addSingleData(vec3d);
+  this->dataPlotter->pushData();
+
 
   }
 void C_trackingManager::Calc_Position_ObjectTracking (S_Positionsvektor& Positionsvektor, std::vector<S_Positionsvektor> vec_Richtungsvektoren_World)
@@ -242,9 +263,13 @@ void C_trackingManager::calcPixelVeloctiy             (int dTimestamp, int ist_X
   dPixelX = ist_X - this->vecIstX[camID];
   dPixelY = ist_Y - this->vecIstY[camID];
 
-  //this->vecPixelVelocity[camID][0] = dPixelX/dTimestamp;
-  //this->vecPixelVelocity[camID][1] = dPixelX/dTimestamp;
-  //this->predictPixelMovement(dTimestamp, pred_X, pred_Y, this->vecPixelVelocity[camID][0], this->vecPixelVelocity[camID][1]);
+  int velX = dPixelX/dTimestamp;
+  int velY = dPixelY/dTimestamp;
+  auto itPos = vecPixelVelocityX->begin() + camID;
+
+  this->vecPixelVelocityX->insert(itPos, velX);
+  this->vecPixelVelocityY->insert(itPos, velY);
+  this->predictPixelMovement(dTimestamp, pred_X, pred_Y, this->vecPixelVelocityX->at(camID), this->vecPixelVelocityY->at(camID), ist_X, ist_Y);
   }
 
 void C_trackingManager::calcObjectVeloctiy(int dTimestamp, S_Positionsvektor&             objektVektor)
@@ -275,7 +300,8 @@ void C_trackingManager::calcObjectAcceleration(int dTimestamp)
   this->objectAcceleration[2] = dObjectVelocity[2]/dTimestamp;
   }
 
-void C_trackingManager::predictPixelMovement           (int dTimestamp,int& predX, int& predY, int pixelVelocityX, int pixelVelocityY)
+void C_trackingManager::predictPixelMovement           (int dTimestamp,int& predX, int& predY, int pixelVelocityX, int pixelVelocityY, int ist_X, int ist_Y)
   {
-
+  predX = ist_X +  dTimestamp*pixelVelocityX;
+  predY = ist_Y + dTimestamp*pixelVelocityY;
   }

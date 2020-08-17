@@ -4,10 +4,10 @@ cd $SCRIPTPATH/lib
 pwd
 echo "linking"
 
-nvcc -arch=sm_75 -rdc=true -c -o temp1.o ../src/inRange.cu
-nvcc -dlink -arch=sm_75 -o inRange.o temp1.o -lcudart
-nvcc -arch=sm_75 -rdc=true -c -o temp2.o ../src/kalmanfilter.cu
-nvcc -dlink -arch=sm_75 -o kalmanfilter.o temp2.o -lcudart
+/usr/local/cuda-10.1/bin/nvcc -arch=sm_75 -rdc=true -c -o temp1.o ../src/inRange.cu
+/usr/local/cuda-10.1/bin/nvcc -dlink -arch=sm_75 -o inRange.o temp1.o -lcudart
+/usr/local/cuda-10.1/bin/nvcc -arch=sm_75 -rdc=true -c -o temp2.o ../src/kalmanfilter.cu
+/usr/local/cuda-10.1/bin/nvcc -dlink -arch=sm_75 -o kalmanfilter.o temp2.o -lcudart
 
 echo "removing old libraries"
 rm -f libgpu.a

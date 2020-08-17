@@ -1,4 +1,5 @@
 QT       += core gui
+QT       += datavisualization
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -21,6 +22,7 @@ OBJECTS_DIR = $$DESTDIR/Obj
 QMAKE_CXXFLAGS_RELEASE =-03
 
 SOURCES += \
+  plotter.cpp \
     sources/camera2.cpp \
     sources/imagefilter.cpp \
     sources/loadmanager.cpp \
@@ -65,7 +67,8 @@ HEADERS += \
     headers/trackingManager.h \
     headers/imagefilter.h \
     headers/loadmanager.h \
-    headers/savemanager.h
+    headers/savemanager.h \
+    plotter.h
 
 FORMS += \
     forms/frm_camera_calibration.ui \

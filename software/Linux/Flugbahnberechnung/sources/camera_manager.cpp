@@ -14,9 +14,9 @@ C_CameraManager::C_CameraManager ( C_GlobalObjects* GlobalObjects)
   this->saveManager     = new Savemanager::c_SaveManager(GlobalObjects);
   this->ImageFilter     = new imagefilter::C_ImageFilter(GlobalObjects);
   this->lock            = new pthread_mutex_t;
-  this->pipelineQue             = new tbb::concurrent_bounded_queue<CameraManager::S_pipelinePayload*>;
+  this->pipelineQue     = new tbb::concurrent_bounded_queue<CameraManager::S_pipelinePayload*>;
   this->threadQue       = new tbb::concurrent_bounded_queue<S_threadPayload*>;
-    this->threadpayload = new S_threadPayload;
+  this->tData           = new S_threadPayload;
 
   this->pData           = new S_pipelinePayload;
   this->testpayload     = new S_pipelinePayload;
@@ -40,7 +40,7 @@ C_CameraManager::C_CameraManager ( C_GlobalObjects* GlobalObjects)
 /**************************************************************** Destruktor ****************************************************************/
 C_CameraManager::~C_CameraManager ()
   {
-    delete threadpayload;
+  delete (tData);
   delete (testpayload);
   delete (filterFlags);
   delete (trackingManager);
@@ -206,6 +206,7 @@ void C_CameraManager::loadCameras              ()
 bool C_CameraManager::startThreadCameraPositioning()
   {
     threadQue->set_capacity(10);
+
     this->camPositioning     = new thread(&CameraManager::C_CameraManager::threadHelper,this);
 //  if(int err = pthread_create(camPositioning,NULL, (THREADFUNCPTR) &CameraManager::C_CameraManager::threadCameraPositioning, this) !=0)
 //    {
@@ -543,7 +544,7 @@ void C_CameraManager::threadCameraPositioning(std::vector<Camera::C_Camera2*> ve
    std::vector<cv::Mat> vecImg;
   while(!this->positioningDone)
     {
-      this->tData = new std::vector<cv::Mat>;
+      this->tData = new S_threadPayload;
       for(auto it = std::begin(vecCameras);
                it < std::end(vecCameras);
                it++)
@@ -562,7 +563,7 @@ void C_CameraManager::threadCameraPositioning(std::vector<Camera::C_Camera2*> ve
 
       for(auto it = std::begin(vecImg); it < std::end(vecImg); it++)
         {
-        this->tData->push_back(*it);
+        this->tData->srcImg.push_back(*it);
         }
       que->try_push(tData);
       vecImg.clear();
@@ -834,7 +835,7 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
         {
         if(pData->found)
           {
-          this->vecCameras[pData->cameraID[i]]->setROI(pData->radius[i], pData->ist_X[i],pData->ist_Y[i]);
+          this->vecCameras[pData->cameraID[i]]->setROI(pData->radius[i], pData->pred_X[i],pData->pred_Y[i]);
           }
         else
           {

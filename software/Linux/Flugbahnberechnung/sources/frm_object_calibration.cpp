@@ -49,6 +49,7 @@ this->Main->cameraManager->getFilterFlags()->setUndistordActive(true);
 this->Main->cameraManager->getFilterFlags()->setObjectDetection(true);
 this->set_gui();
 this->get_camera_settings (0);
+this->Main->cameraManager->trackingManager->dataPlotter->show();
 }
 
 

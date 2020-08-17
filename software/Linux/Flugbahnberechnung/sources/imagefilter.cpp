@@ -1,4 +1,4 @@
-#include "imagefilter.h"
+#include "headers/imagefilter.h"
 
 using namespace imagefilter;
 
