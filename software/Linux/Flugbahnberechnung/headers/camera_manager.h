@@ -45,7 +45,12 @@ using namespace GlobalObjects;
 
 namespace CameraManager
   {
-    struct S_Payload
+    struct S_threadPayload
+    {
+     std::vector<cv::Mat> srcImg;
+    };
+
+    struct S_pipelinePayload
       {
       milliseconds executionTime[8];
       Clock::time_point start;
@@ -144,18 +149,19 @@ namespace CameraManager
     C_GlobalObjects*                        globalObjects;
     imagefilter::C_ImageFilter*             ImageFilter;
     thread*                                 camPipeline;
-    pthread_t*                              camSimple;
-    pthread_t*                              camPositioning;
+    thread*                                 camPositioning;
     pthread_mutex_t*  restrict              lock;
-    std::vector<cv::Mat*>*                   vecImgShow;
     Clock::time_point                   timestampTm1;
+    std::vector<cv::Mat>*                   tData;
 
     public:
-    tbb::concurrent_bounded_queue<CameraManager::S_Payload*>*  Que;
-    private:
-    S_Payload*                              pData;
-    S_Payload*                              testpayload;
+    tbb::concurrent_bounded_queue<CameraManager::S_pipelinePayload*>*  pipelineQue;
+    tbb::concurrent_bounded_queue<CameraManager::S_threadPayload*>*                    threadQue;
 
+    private:
+    S_pipelinePayload*                              pData;
+    S_pipelinePayload*                              testpayload;
+    S_threadPayload*                                tData;
     S_filterflags*                            filterFlags;
 
     int                           camera_id;
@@ -163,7 +169,6 @@ namespace CameraManager
     int                           frameHeight;
     int                           arrActiveCameras[4];
     int                           cntPipeline;
-    int                           timestampTm1;
     volatile bool                 calibrationDone;
     volatile bool                 positioningDone;
     volatile bool                 pipelineDone;
@@ -191,7 +196,7 @@ namespace CameraManager
     bool stopThreadCameraPositioning();
     bool startPipelineTracking();
     bool stopPipelineTracking();
-    bool pollPipeline               (CameraManager::S_Payload* arg1);
+    bool pollPipeline               (CameraManager::S_pipelinePayload* arg1);
 
 
 
@@ -204,12 +209,13 @@ namespace CameraManager
   private:
     void start_camera_thread                ();
     void loadCameras                        ();
-    void pipelineTracking                   (std::vector<Camera::C_Camera2*> vecCameras, tbb::concurrent_bounded_queue<S_Payload*> *que);
-    static void* threadCameraPositioning    (void *This);
-    static void *pipelineHelper             (void* This);
-    void threadCameraSimple                 ();
+    void pipelineTracking                   (std::vector<Camera::C_Camera2*> vecCameras, tbb::concurrent_bounded_queue<S_pipelinePayload*> *que);
+    void threadCameraPositioning(std::vector<Camera::C_Camera2*> vecCameras, tbb::concurrent_bounded_queue<S_threadPayload*> *que);
+    static void *threadHelper                 (void* This);
+    static void *pipelineHelper(void* This);
+
     void mvTemp2VecCamera                   (std::vector<Camera::C_Camera2*> temp_CameraVector);
-    void smTracking                         (S_Payload* payload);
+    void smTracking                         (S_pipelinePayload* payload);
     bool getObjectPosition2D                (trackingManager::S_trackingPayload& trackingPayload);
     void helper() const;
     /******************************************************* Getter-Setter Klassenmethoden***************************************************************/

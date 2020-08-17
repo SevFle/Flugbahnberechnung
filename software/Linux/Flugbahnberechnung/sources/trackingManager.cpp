@@ -242,9 +242,9 @@ void C_trackingManager::calcPixelVeloctiy             (int dTimestamp, int ist_X
   dPixelX = ist_X - this->vecIstX[camID];
   dPixelY = ist_Y - this->vecIstY[camID];
 
-  this->vecPixelVelocity[camID][0] = dPixelX/dTimestamp;
-  this->vecPixelVelocity[camID][1] = dPixelX/dTimestamp;
-  this->predictPixelMovement(dTimestamp, pred_X, pred_Y, this->vecPixelVelocity[camID][0], this->vecPixelVelocity[camID][1]);
+  //this->vecPixelVelocity[camID][0] = dPixelX/dTimestamp;
+  //this->vecPixelVelocity[camID][1] = dPixelX/dTimestamp;
+  //this->predictPixelMovement(dTimestamp, pred_X, pred_Y, this->vecPixelVelocity[camID][0], this->vecPixelVelocity[camID][1]);
   }
 
 void C_trackingManager::calcObjectVeloctiy(int dTimestamp, S_Positionsvektor&             objektVektor)

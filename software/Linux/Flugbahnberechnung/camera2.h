@@ -179,6 +179,8 @@ public:
     void setFrameWidth(int value);
     int getFrameHeight() const;
     void setFrameHeight(int value);
+    std::string getFPS() const;
+
     };
 
   }

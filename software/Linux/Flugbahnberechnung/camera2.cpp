@@ -27,6 +27,12 @@ C_Camera2::~C_Camera2                       ()
   delete (cpuSrc);
   delete (cap);
     }
+std::string C_Camera2::getFPS() const
+{
+   std::string fps;
+   fps = std::to_string(this->cap->get(cv::CAP_PROP_FPS));
+   return fps;
+}
 
 int C_Camera2::getFrameHeight() const
     {

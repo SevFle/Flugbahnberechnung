@@ -93,15 +93,12 @@ void C_frm_Camera_Positioning::on_bt_exit_clicked()
 void C_frm_Camera_Positioning::Taktgeber_Tick()
 {
     this->Ui->txb_zaehler->setText(QString::number(this->Zaehler++));
-    if (Zaehler > TimerWait)
-      {
-      pthread_mutex_lock(this->Main->cameraManager->getLock());
-      if(!this->Main->cameraManager->getVecImgShow().empty())
+      if(!this->Main->cameraManager->threadQue->try_pop(this->tData))
         {
           switch (this->GlobalObjects->absCameras)
             {
             case 1:   //Nur zu Testzwecken fuer die Laptopverwendung
-              FillMat2Lbl(*this->Main->cameraManager->getVecImgShow()[this->Ui->num_cam_0->value()], this->Ui->lbl_cam_0);
+              FillMat2Lbl(tDa, this->Ui->lbl_cam_0);
               break;
 
             case 2:
@@ -128,7 +125,6 @@ void C_frm_Camera_Positioning::Taktgeber_Tick()
 
         }
       pthread_mutex_unlock(this->Main->cameraManager->getLock());
-      }
 }
 
 void C_frm_Camera_Positioning::on_bt_apply_clicked()

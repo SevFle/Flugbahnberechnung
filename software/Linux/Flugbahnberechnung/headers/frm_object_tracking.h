@@ -32,7 +32,7 @@ private:
   std::thread*    Tracking;
 
   QTimer*         Taktgeber;
-  CameraManager::S_Payload*       payload;
+  CameraManager::S_pipelinePayload*       payload;
 
 
   int             Taktgeber_Intervall;

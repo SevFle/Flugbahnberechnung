@@ -52,7 +52,7 @@ namespace trackingManager
 
     std::vector<int>                    vecIstX;
     std::vector<int>                    vecIstY;
-    std::vector<int[2]>                 vecPixelVelocity;
+    std::vector<int>                    vecPixelVelocity;
 
     /****************** Positionsbuffer T-1 *******************/
   private:

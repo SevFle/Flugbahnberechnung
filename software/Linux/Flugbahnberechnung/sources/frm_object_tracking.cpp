@@ -12,7 +12,7 @@ C_frm_Object_Tracking::C_frm_Object_Tracking(C_GlobalObjects* GlobalObjects, C_M
     this->TimerWait     = 0;
     this->Taktgeber = new QTimer(this);
     this->Taktgeber_Intervall = 100;
-    this->payload       = new CameraManager::S_Payload;
+    this->payload       = new CameraManager::S_pipelinePayload;
     }
 
 C_frm_Object_Tracking::~C_frm_Object_Tracking()

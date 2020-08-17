@@ -105,7 +105,7 @@ void C_frm_Object_Calibration::Taktgeber_Tick()
   {
   cv::Mat img;
   this->Ui->txb_zaehler->setText(QString::number(this->Zaehler++));
-  if(this->Main->cameraManager->Que->try_pop(pData))
+  if(this->Main->cameraManager->pipelineQue->try_pop(pData))
     {
     this->                      Fill_Mat_2_Lbl(pData->cpuSrcImg[camera_id_in_use], this->Ui->lbl_src_img);
     this->                      Fill_Mat_2_Lbl(pData->cpuHSVImg[camera_id_in_use], this->Ui->lbl_hsv_filtered);

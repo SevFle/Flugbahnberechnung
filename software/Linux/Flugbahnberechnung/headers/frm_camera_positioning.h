@@ -23,9 +23,12 @@ private:
   C_Main*                           Main;
   pthread_mutex_t*  restrict        lock;
   QTimer*                           Taktgeber;
+  CameraManager::S_threadPayload*       pData;
+
   int                               Taktgeber_Intervall;
   int                               TimerWait;
   int                               Zaehler;
+  std::vector<cv::Mat>*             tData;
 
 
 private:

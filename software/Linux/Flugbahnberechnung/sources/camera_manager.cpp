@@ -14,14 +14,14 @@ C_CameraManager::C_CameraManager ( C_GlobalObjects* GlobalObjects)
   this->saveManager     = new Savemanager::c_SaveManager(GlobalObjects);
   this->ImageFilter     = new imagefilter::C_ImageFilter(GlobalObjects);
   this->lock            = new pthread_mutex_t;
-  this->camSimple       = new pthread_t;
-  this->camPositioning  = new pthread_t;
-  this->Que             = new tbb::concurrent_bounded_queue<CameraManager::S_Payload*>;
-  this->pData           = new S_Payload;
-  this->testpayload     = new S_Payload;
+  this->pipelineQue             = new tbb::concurrent_bounded_queue<CameraManager::S_pipelinePayload*>;
+  this->threadQue       = new tbb::concurrent_bounded_queue<S_threadPayload*>;
+    this->threadpayload = new S_threadPayload;
+
+  this->pData           = new S_pipelinePayload;
+  this->testpayload     = new S_pipelinePayload;
 
   this->trackingManager = new trackingManager::C_trackingManager(GlobalObjects);
-  this->vecImgShow      = new std::vector<cv::Mat*>;
   this->filterFlags     = new S_filterflags;
   this->camera_id       = 0;
   this->frameWidth      = 1280;
@@ -40,14 +40,13 @@ C_CameraManager::C_CameraManager ( C_GlobalObjects* GlobalObjects)
 /**************************************************************** Destruktor ****************************************************************/
 C_CameraManager::~C_CameraManager ()
   {
+    delete threadpayload;
   delete (testpayload);
   delete (filterFlags);
-  delete (vecImgShow);
   delete (trackingManager);
   delete (pData);
-  delete (Que);
-  delete (camPositioning);
-  delete (camSimple);
+  delete (threadQue);
+  delete (pipelineQue);
   delete (camPipeline);
   delete (lock);
   delete (ImageFilter);
@@ -165,7 +164,8 @@ bool C_CameraManager::openCameras ()
       vecCameras.push_back            (camera);
       this->globalObjects->absCameras++;
       }
-    std::cout << "**INFO** Created " << std::to_string(this->globalObjects->absCameras) << " Devices" << std::endl;
+    std::cout << "**INFO** Cameraspeed is " << this->vecCameras[0]->getFPS() << " fps" << std::endl;
+    std::cout << "**INFO** Created " << std::to_string(this->globalObjects->absCameras + 1) << " Devices" << std::endl;
 
     }
 
@@ -175,6 +175,11 @@ bool C_CameraManager::openCameras ()
 
   //Load Settings and Calibration for each camera created earlier
   loadCameras();
+
+
+  if (pthread_mutex_init(lock, NULL) !=0)
+    printf("\n Mutex init failed for thread camera positioning");
+
   return true;
   }
 bool C_CameraManager::closeCameras ()
@@ -200,27 +205,31 @@ void C_CameraManager::loadCameras              ()
   }
 bool C_CameraManager::startThreadCameraPositioning()
   {
-  if(int err = pthread_create(camPositioning,NULL, (THREADFUNCPTR) &CameraManager::C_CameraManager::threadCameraPositioning, this) !=0)
-    {
-      std::cout << "**ERROR** Kamerathread konnte nicht gestartet werden" << std::endl;
-      return false;
-    }
-  std::cout << "**INFO** Kamerathread wurde gestartet" << std::endl;
+    threadQue->set_capacity(10);
+    this->camPositioning     = new thread(&CameraManager::C_CameraManager::threadHelper,this);
+//  if(int err = pthread_create(camPositioning,NULL, (THREADFUNCPTR) &CameraManager::C_CameraManager::threadCameraPositioning, this) !=0)
+//    {
+//      std::cout << "**ERROR** Kamerathread konnte nicht gestartet werden" << std::endl;
+//      return false;
+//    }
+//  std::cout << "**INFO** Kamerathread wurde gestartet" << std::endl;
   return true;
   }
 bool C_CameraManager::stopThreadCameraPositioning()
   {
-  if(pthread_join(*camPositioning, NULL) !=0)
-    {
-      std::cout << "**ERROR** Kamerathread konnte nicht gestoppt werden" << std::endl;
-      return false;
-    }
-  std::cout << "**INFO** Kamerathread wurde gestoppt" << std::endl;
+    this->pipelineDone = true;
+    this->camPositioning->join();
+//  if(pthread_join(*camPositioning, NULL) !=0)
+//    {
+//      std::cout << "**ERROR** Kamerathread konnte nicht gestoppt werden" << std::endl;
+//      return false;
+//    }
+//  std::cout << "**INFO** Kamerathread wurde gestoppt" << std::endl;
   return true;
    }
 bool C_CameraManager::startPipelineTracking()
   {
-  Que->set_capacity(10);
+  pipelineQue->set_capacity(10);
 
   this->camPipeline     = new thread(&CameraManager::C_CameraManager::pipelineHelper,this);
 
@@ -527,45 +536,42 @@ void C_CameraManager::calibrate_stereo_camera (int current_camera_id,
 //  std::cout << "P2" << P2 << endl;0
   }
 
-void *C_CameraManager::threadCameraPositioning(void *This)
+
+void C_CameraManager::threadCameraPositioning(std::vector<Camera::C_Camera2*> vecCameras, tbb::concurrent_bounded_queue<S_threadPayload*>* que)
   {
 
-   std::vector<cv::Mat*> vecImg;
-
-  if (pthread_mutex_init(static_cast<CameraManager::C_CameraManager*>(This)->lock, NULL) !=0)
-    printf("\n Mutex init failed for thread camera positioning");
-  while(!static_cast<CameraManager::C_CameraManager*>(This)->positioningDone)
+   std::vector<cv::Mat> vecImg;
+  while(!this->positioningDone)
     {
-      for(auto it = std::begin(static_cast<CameraManager::C_CameraManager*>(This)->vecCameras);
-               it < std::end(static_cast<CameraManager::C_CameraManager*>(This)->vecCameras);
+      this->tData = new std::vector<cv::Mat>;
+      for(auto it = std::begin(vecCameras);
+               it < std::end(vecCameras);
                it++)
         {
         (*it)->grabImg();
         }
-      for(auto it = std::begin(static_cast<CameraManager::C_CameraManager*>(This)->vecCameras);
-               it < std::end(static_cast<CameraManager::C_CameraManager*>(This)->vecCameras);
+      for(auto it = std::begin(vecCameras);
+               it < std::end(vecCameras);
                it++)
         {
-          auto img = new cv::Mat;
-          (*it)->retrieveImg(*img);
+          cv::Mat img;
+          (*it)->retrieveImg(img);
           vecImg.push_back(img);
 
         }
 
-      pthread_mutex_lock(static_cast<CameraManager::C_CameraManager*>(This)->lock);
-      static_cast<CameraManager::C_CameraManager*>(This)->vecImgShow->clear();
       for(auto it = std::begin(vecImg); it < std::end(vecImg); it++)
         {
-        static_cast<CameraManager::C_CameraManager*>(This)->vecImgShow->push_back(*it);
+        this->tData->push_back(*it);
         }
-      pthread_mutex_unlock(static_cast<CameraManager::C_CameraManager*>(This)->lock);
+      que->try_push(tData);
       vecImg.clear();
     }
-  return 0;
   }
-void C_CameraManager::threadCameraSimple()
+void *C_CameraManager::threadHelper(void* This)
   {
-
+  static_cast<CameraManager::C_CameraManager*>(This)->threadCameraPositioning(static_cast<CameraManager::C_CameraManager*>(This)->vecCameras,
+                                  static_cast<CameraManager::C_CameraManager*>(This)->threadQue);
   }
 void C_CameraManager::calculate_camera_pose(int camera1, int camera2, cv::Vec3d T, cv::Mat R)
   {
@@ -608,30 +614,26 @@ bool C_CameraManager::getObjectPosition2D                (trackingManager::S_tra
   }
 
 
-void C_CameraManager::smTracking (S_Payload* payload)
+void C_CameraManager::smTracking (S_pipelinePayload* payload)
   {
 
   }
 void *C_CameraManager::pipelineHelper(void* This)
   {
   static_cast<CameraManager::C_CameraManager*>(This)->pipelineTracking(static_cast<CameraManager::C_CameraManager*>(This)->vecCameras,
-                                                                      static_cast<CameraManager::C_CameraManager*>(This)->Que);
+                                                                      static_cast<CameraManager::C_CameraManager*>(This)->pipelineQue);
   return 0;
   }
 std::vector<cv::Mat*> C_CameraManager::getVecImgShow() const
   {
-  return *vecImgShow;
+  //return *vecImgShow;
   }
 
-void C_CameraManager::setVecImgShow             (const std::vector<cv::Mat*> &value)
+bool C_CameraManager::pollPipeline               (CameraManager::S_pipelinePayload* arg1)
   {
-  *vecImgShow = value;
-  }
-bool C_CameraManager::pollPipeline               (CameraManager::S_Payload* arg1)
-  {
-  std::cout << std::to_string(this->Que->size()) << std::endl;
-  if(this->Que->size() < 2) return false;
-  if(this->Que->try_pop(arg1))
+  std::cout << std::to_string(this->pipelineQue->size()) << std::endl;
+  if(this->pipelineQue->size() < 2) return false;
+  if(this->pipelineQue->try_pop(arg1))
       {
       return true;
       }
@@ -639,11 +641,11 @@ bool C_CameraManager::pollPipeline               (CameraManager::S_Payload* arg1
   }
 
 
-void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCameras, tbb::concurrent_bounded_queue<S_Payload*>* pipelineQue)
+void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCameras, tbb::concurrent_bounded_queue<S_pipelinePayload*>* pipelineQue)
   {
   int frameheight = this->vecCameras[0]->getFrameHeight();
   int framewidth = this->vecCameras[0]->getFrameWidth();
-  tbb::parallel_pipeline(7, tbb::make_filter<void, S_Payload*>(tbb::filter::serial_in_order, [&](tbb::flow_control& fc)->S_Payload*
+  tbb::parallel_pipeline(7, tbb::make_filter<void, S_pipelinePayload*>(tbb::filter::serial_in_order, [&](tbb::flow_control& fc)->S_pipelinePayload*
     {                           
     if(pipelineDone)
       {
@@ -652,7 +654,7 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
       return 0;
       }
     //SET IMAGES
-    auto pData          = new S_Payload;
+    auto pData          = new S_pipelinePayload;
     for(int i = 0; i < payloadSize; i++)
       {
       pData->cpuSrcImg[i].create (frameheight, framewidth, CV_32FC1);
@@ -665,7 +667,7 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
   )&
 
   //STEP 1: GRAB PICTURE FROM ARRAY-ACTIVE_CAMERAS
-  tbb::make_filter<S_Payload*, S_Payload*>(tbb::filter::serial_in_order, [&] (S_Payload *pData)->S_Payload*
+  tbb::make_filter<S_pipelinePayload*, S_pipelinePayload*>(tbb::filter::serial_in_order, [&] (S_pipelinePayload *pData)->S_pipelinePayload*
     {
     pData->start = Clock::now();
     //if(cntPipeline == 4) cntPipeline = 0;
@@ -681,7 +683,7 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
     return pData;
     }
   )&
-  tbb::make_filter<S_Payload*, S_Payload*>(tbb::filter::serial_in_order, [&] (S_Payload *pData)->S_Payload*
+  tbb::make_filter<S_pipelinePayload*, S_pipelinePayload*>(tbb::filter::serial_in_order, [&] (S_pipelinePayload *pData)->S_pipelinePayload*
     {
     pData->start = Clock::now();
     for(int i = 0; i <  payloadSize; i++)
@@ -694,7 +696,7 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
     }
   )&
   //STEP 2: UNDISTORT SRC TO CPUDISTORT
-  tbb::make_filter<S_Payload*, S_Payload*>(tbb::filter::serial_in_order, [&] (S_Payload *pData)->S_Payload*
+  tbb::make_filter<S_pipelinePayload*, S_pipelinePayload*>(tbb::filter::serial_in_order, [&] (S_pipelinePayload *pData)->S_pipelinePayload*
     {
     pData->start = Clock::now();
     if(!this->filterFlags->undistordActive) return pData;
@@ -711,7 +713,7 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
     }
   )&
   //STEP 3: FILTER UNDISTORT TO CPUHSV; USE CUDA
-  tbb::make_filter<S_Payload*, S_Payload*>(tbb::filter::serial_in_order, [&] (S_Payload *pData)->S_Payload*
+  tbb::make_filter<S_pipelinePayload*, S_pipelinePayload*>(tbb::filter::serial_in_order, [&] (S_pipelinePayload *pData)->S_pipelinePayload*
     {
     pData->start = Clock::now();
     if(!this->filterFlags->filterActive) return pData;
@@ -766,7 +768,7 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
     }
   )&
   //STEP 4: FIND CONTOURS ON CPUHSV, DRAW ON UNDISTORT
-  tbb::make_filter<S_Payload*, S_Payload*>(tbb::filter::serial_in_order, [&] (S_Payload *pData)->S_Payload*
+  tbb::make_filter<S_pipelinePayload*, S_pipelinePayload*>(tbb::filter::serial_in_order, [&] (S_pipelinePayload *pData)->S_pipelinePayload*
     {
     pData->start = Clock::now();
     if(!this->filterFlags->objectDetectionActive) return pData;
@@ -800,7 +802,7 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
     }
   )&
   //STEP 5: CALCULATE OBJECT POSITION
-  tbb::make_filter<S_Payload*, S_Payload*>(tbb::filter::serial_in_order, [&] (S_Payload *pData)->S_Payload*
+  tbb::make_filter<S_pipelinePayload*, S_pipelinePayload*>(tbb::filter::serial_in_order, [&] (S_pipelinePayload *pData)->S_pipelinePayload*
     {
     pData->start = Clock::now();
     if(!this->filterFlags->trackingActive) return pData;
@@ -824,7 +826,7 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
     }
   )&
   //STEP 6: ADJUST ROI ON CPU UNDISTORT ****NOT NEEDED******
-  tbb::make_filter<S_Payload*, S_Payload*>(tbb::filter::serial_in_order, [&] (S_Payload *pData)->S_Payload*
+  tbb::make_filter<S_pipelinePayload*, S_pipelinePayload*>(tbb::filter::serial_in_order, [&] (S_pipelinePayload *pData)->S_pipelinePayload*
     {
     pData->start = Clock::now();
     if(!this->filterFlags->roiAdjustmentActive) return pData;
@@ -850,7 +852,7 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
     }//make_filter
   )&
 
-  tbb::make_filter<S_Payload*,void>(tbb::filter::serial_in_order, [&] (S_Payload *pData)
+  tbb::make_filter<S_pipelinePayload*,void>(tbb::filter::serial_in_order, [&] (S_pipelinePayload *pData)
     {
     pData->start = Clock::now();
     // TBB NOTE: pipeline end point. dispatch to GUI
@@ -1003,4 +1005,4 @@ bool S_filterflags::getUndistordActive() const
 void S_filterflags::setUndistordActive(bool value)
   {
   undistordActive = value;
-  }
+}
