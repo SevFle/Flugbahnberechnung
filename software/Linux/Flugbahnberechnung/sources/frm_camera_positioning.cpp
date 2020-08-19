@@ -129,11 +129,11 @@ void C_frm_Camera_Positioning::Taktgeber_Tick()
               }
 
             }
-      for(auto it = std::begin(tData->srcImg); it < std::end(tData->srcImg); it ++)
-        {
-        (*it)->release();
-        delete (*it);
-        }
+        for(auto it = std::begin(tData->srcImg); it < std::end(tData->srcImg); it ++)
+            {
+            (*it)->release();
+            delete (*it);
+            }
       delete (tData);
        }
 }

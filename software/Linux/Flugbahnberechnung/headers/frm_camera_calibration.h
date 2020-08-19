@@ -22,6 +22,7 @@ private:
   C_Main*                           Main;
   pthread_mutex_t*  restrict        lock;
   pthread_t*                        camThread;
+  CameraManager::S_pipelinePayload*       pData;
   QTimer*                           Taktgeber;
   int                               Taktgeber_Intervall;
   int                               Zaehler;

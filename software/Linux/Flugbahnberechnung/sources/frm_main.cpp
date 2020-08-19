@@ -97,39 +97,28 @@ void C_frm_Main::Taktgeber_Tick()
 
 void ::C_frm_Main::on_bt_apply_clicked()
 {
-    if (this->Ui->num_cameras->value() % 2 != 0)
-      {
-      //MessageBox::Show ("Es muss eine gerade Anzahl an Kameras verwendet werden","Fehler",MessageBoxButtons::OK,MessageBoxIcon::Error);
-      this->MsgBox->setText("Es muss eine gerade Anzahl an Kameras verwendet werden");
-      this->MsgBox->setIcon(QMessageBox::Critical);
-      this->MsgBox->exec();
-      return;
-      }
-    else
-      {
-      GlobalObjects->absCameras = this->Ui->num_cameras->value();
-      this->Ui->num_cameras->setEnabled(false);
-      this->Ui->bt_apply->setEnabled     (false);
-
-      if(!this->Main->cameraManager->openCameras ())
+ if(!this->Main->cameraManager->openCameras() || GlobalObjects->absCameras % 2 !=0)
         {
         this->MsgBox->setText("Kameras konnten nicht geöffnet werden");
         this->MsgBox->setIcon(QMessageBox::Critical);
         this->MsgBox->exec();
+        this->Main->cameraManager->closeCameras();
         return;
         }
       else
         {
+          this->Ui->num_cameras->setEnabled(false);
+          this->Ui->bt_apply->setEnabled     (false);
         this->Ui->bt_tracking->setEnabled(true);
         this->Ui->bt_camera_calibration->setEnabled(true);
         this->Ui->bt_camera_positioning->setEnabled(true);
         }
-    }
+
 
 }
 void frm_Main::C_frm_Main::on_bt_tracking_clicked()
   {
-  if(!this->Main->cameraManager->startPipelineTracking())
+  if(!this->Main->cameraManager->startPipelineTracking(true, true, true, true, true, false, false))
     {
     this->MsgBox->setText("Pipeline konnte nicht gestartet werden");
     this->MsgBox->setIcon(QMessageBox::Critical);
@@ -142,7 +131,7 @@ void frm_Main::C_frm_Main::on_bt_tracking_clicked()
 
 void frm_Main::C_frm_Main::on_bt_camera_calibration_clicked()
   {
-  if(!this->Main->cameraManager->startThreadCameraPositioning())
+  if(!this->Main->cameraManager->startPipelineTracking(false, false, false, false, false, false, false))
     {
     this->MsgBox->setText("Thread zur Kamerakalibrierung konnte nicht gestartet werden");
     this->MsgBox->setIcon(QMessageBox::Critical);

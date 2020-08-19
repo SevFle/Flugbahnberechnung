@@ -109,9 +109,10 @@ void C_frm_Object_Calibration::Taktgeber_Tick()
   if(this->Main->cameraManager->pipelineQue->try_pop(pData))
     {
     this->                      Fill_Mat_2_Lbl(pData->cpuSrcImg[camera_id_in_use], this->Ui->lbl_src_img);
-    this->                      Fill_Mat_2_Lbl(pData->cpuHSVImg[camera_id_in_use], this->Ui->lbl_hsv_filtered);
+    //this->                      Fill_Mat_2_Lbl(pData->cpuGrayImg[camera_id_in_use], this->Ui->lbl_img_gray);
+      this->                      Fill_Mat_2_Lbl(pData->cpuUndistortedImg[camera_id_in_use], this->Ui->lbl_imgFinal);
     this->Ui->txb_fps->         setText(QString::number(pData->fps));
-    this->Ui->txb_frametime->   setText(QString::number(pData->frametime));
+    this->Ui->txb_frametime->   setText(QString::number(pData->frametime.count()));
 //    this->Ui->txb_delta_x->     setText(QString::number(payload->delta_x));
 //    this->Ui->txb_delta_y->     setText(QString::number(payload->delta_y));
 //    this->Ui->txb_s_x->         setText(QString::number(payload->s_x));

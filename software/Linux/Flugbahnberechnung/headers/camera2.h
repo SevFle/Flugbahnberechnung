@@ -18,12 +18,12 @@ namespace Camera
   public:
     struct S_filterProperties
       {
-      uchar   hue_min;
-      uchar   hue_max;
-      uchar   saturation_min;
-      uchar   saturation_max;
-      uchar   value_min;
-      uchar   value_max;
+      int   hue_min;
+      int   hue_max;
+      int   saturation_min;
+      int   saturation_max;
+      int   value_min;
+      int   value_max;
 
       int     erosion_iterations;
       int     dilation_iterations;

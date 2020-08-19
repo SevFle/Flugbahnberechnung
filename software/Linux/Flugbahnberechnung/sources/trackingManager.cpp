@@ -103,7 +103,7 @@ void C_trackingManager::setAlive(bool value)
     }
 
 
-void C_trackingManager::Get_Position_ObjectTracking (S_Positionsvektor& objektVektor, S_Positionsvektor* Richtungsvektoren   [payloadSize])
+void C_trackingManager::Get_Position_ObjectTracking (S_Positionsvektor& objektVektor, S_Positionsvektor Richtungsvektoren   [payloadSize])
   {
   //objektVektor = aktuelle Position des objektes
 
@@ -224,7 +224,7 @@ void C_trackingManager::Calc_Position_ObjectTracking (S_Positionsvektor& Positio
   Positionsvektor.Y = (Matrix_y[1][0] - Matrix_L_T[1][2] * Positionsvektor.Z) / Matrix_L_T[1][1];
   Positionsvektor.X = (Matrix_y[0][0] - Matrix_L_T[0][1] * Positionsvektor.Y - Matrix_L_T[0][2] * Positionsvektor.Z) / Matrix_L_T[0][0];
   }
-void C_trackingManager::Calc_RichtungsvektorenToWorld (S_Positionsvektor* vec_Richtungsvektoren[payloadSize], std::vector<S_Positionsvektor>& vec_Richtungsvektoren_World, std::vector<C_AbsolutePose> vecEinheitsMatrix)
+void C_trackingManager::Calc_RichtungsvektorenToWorld (S_Positionsvektor vec_Richtungsvektoren[payloadSize], std::vector<S_Positionsvektor>& vec_Richtungsvektoren_World, std::vector<C_AbsolutePose> vecEinheitsMatrix)
   {
   // Die Orientierung von Welt- und Roboter-KS sind identisch. Es gilt:
   // w_r_R = Einheitsmatrix
@@ -241,17 +241,17 @@ void C_trackingManager::Calc_RichtungsvektorenToWorld (S_Positionsvektor* vec_Ri
 
     vec_Richtungsvektoren_World.push_back (Richtungsvektor);
 
-    vec_Richtungsvektoren_World[i].X = vecEinheitsMatrix[i].nx() * vec_Richtungsvektoren[i]->X
-      + vecEinheitsMatrix[i].ox() * vec_Richtungsvektoren[i]->Y
-      + vecEinheitsMatrix[i].ax() * vec_Richtungsvektoren[i]->Z;
+    vec_Richtungsvektoren_World[i].X = vecEinheitsMatrix[i].nx() * vec_Richtungsvektoren[i].X
+      + vecEinheitsMatrix[i].ox() * vec_Richtungsvektoren[i].Y
+      + vecEinheitsMatrix[i].ax() * vec_Richtungsvektoren[i].Z;
 
-    vec_Richtungsvektoren_World[i].Y = vecEinheitsMatrix[i].ny() * vec_Richtungsvektoren[i]->X
-      + vecEinheitsMatrix[i].oy() * vec_Richtungsvektoren[i]->Y
-      + vecEinheitsMatrix[i].ay() * vec_Richtungsvektoren[i]->Z;
+    vec_Richtungsvektoren_World[i].Y = vecEinheitsMatrix[i].ny() * vec_Richtungsvektoren[i].X
+      + vecEinheitsMatrix[i].oy() * vec_Richtungsvektoren[i].Y
+      + vecEinheitsMatrix[i].ay() * vec_Richtungsvektoren[i].Z;
 
-    vec_Richtungsvektoren_World[i].Z = vecEinheitsMatrix[i].nz() * vec_Richtungsvektoren[i]->X
-      + vecEinheitsMatrix[i].oz() * vec_Richtungsvektoren[i]->Y
-      + vecEinheitsMatrix[i].az() * vec_Richtungsvektoren[i]->Z;
+    vec_Richtungsvektoren_World[i].Z = vecEinheitsMatrix[i].nz() * vec_Richtungsvektoren[i].X
+      + vecEinheitsMatrix[i].oz() * vec_Richtungsvektoren[i].Y
+      + vecEinheitsMatrix[i].az() * vec_Richtungsvektoren[i].Z;
     }
   }
 

@@ -51,7 +51,6 @@ this->Zaehler                     = 0;
 connect                           (this->Taktgeber, &QTimer::timeout, this, &C_frm_Camera_Calibration::Taktgeber_Tick);
 this->Taktgeber->start            (this->Taktgeber_Intervall);
 this->installEventFilter          (this);
-pthread_mutex_init                (lock, NULL);
 this->Zaehler                     = 0;
 this->cameraID                    = 0;
 this->Timerwait                   = 50;
@@ -105,21 +104,33 @@ bool               C_frm_Camera_Calibration::eventFilter                        
 void C_frm_Camera_Calibration::Taktgeber_Tick()
   {
   this->Ui->txb_zaehler->setText(QString::number(this->Zaehler++));
-  pthread_mutex_lock(lock);
-  if(!this->Main->cameraManager->getVecImgShow().empty())
+  if(this->Main->cameraManager->pipelineQue->try_pop(pData))
     {
+    this->Ui->txb_worker_1->setText(QString::number(pData->executionTime[0].count()));
+    this->Ui->txb_worker_2->setText(QString::number(pData->executionTime[1].count()));
+    this->Ui->txb_worker_3->setText(QString::number(pData->executionTime[2].count()));
+    this->Ui->txb_worker_4->setText(QString::number(pData->executionTime[3].count()));
+    this->Ui->txb_worker_5->setText(QString::number(pData->executionTime[4].count()));
+    this->Ui->txb_worker_6->setText(QString::number(pData->executionTime[5].count()));
+    this->Ui->txb_worker_7->setText(QString::number(pData->executionTime[6].count()));
+    this->Ui->txb_worker_8->setText(QString::number(pData->executionTime[7].count()));
+    this->Ui->txb_fps->setText(QString::number(pData->fps));
+    this->Ui->txb_frametime->   setText(QString::number(pData->frametime.count()));
+
+
     switch (method)
       {
       case 0:
-        this->FillMat2Lbl(*this->Main->cameraManager->getVecImgShow()[cameraID], this->Ui->lbl_img_single_calibration);
+        this->FillMat2Lbl(this->pData->cpuSrcImg[0], this->Ui->lbl_img_single_calibration);
         break;
       case 1:
-        this->FillMat2Lbl(*this->Main->cameraManager->getVecImgShow()[cameraID], this->Ui->lbl_img_stereo_left);
-        this->FillMat2Lbl(*this->Main->cameraManager->getVecImgShow()[cameraID+1], this->Ui->lbl_img_stereo_right);        
+        this->FillMat2Lbl(this->pData->cpuSrcImg[0], this->Ui->lbl_img_stereo_left);
+        this->FillMat2Lbl(this->pData->cpuSrcImg[1], this->Ui->lbl_img_stereo_right);
         break;
        }
+    delete(pData);
     }
-  pthread_mutex_unlock(lock);
+
    if (this->Main->cameraManager->getCalibrationDone())
      {
      this->ShowTable();
@@ -162,8 +173,12 @@ void frm_Camera_Calibration::C_frm_Camera_Calibration::on_bt_exit_clicked()
 
 void C_frm_Camera_Calibration::on_num_camera_id_valueChanged(int arg1)
 {
-    Timerwait = Zaehler + 8;
-    this->cameraID = arg1;
+    if(method == 0)
+        this->Main->cameraManager->setArrActiveCameras(arg1,0);
+    else
+        this->Main->cameraManager->setArrActiveCameras(arg1,0);
+        this->Main->cameraManager->setArrActiveCameras(arg1+1,1);
+
 }
 
 void C_frm_Camera_Calibration::on_rb_single_calibration_clicked()
@@ -171,7 +186,9 @@ void C_frm_Camera_Calibration::on_rb_single_calibration_clicked()
     this->method                                  = 0;
     this->Ui->num_camera_id->setValue             (0);
     this->Ui->num_camera_id->setSingleStep        (1);
+    this->Ui->num_camera_id->setMaximum       (GlobalObjects->absCameras-1);
     this->cameraID                                = 0;
+    this->Main->cameraManager->setArrActiveCameras(0,0);
 
     this->Ui->rb_stereo_calibration->setChecked   (false);
     this->Ui->rb_single_calibration->setChecked   (true);
@@ -188,7 +205,11 @@ void C_frm_Camera_Calibration::on_rb_stereo_calibration_clicked()
     this->method                              = 1;
     this->Ui->num_camera_id->setValue         (0);
     this->Ui->num_camera_id->setSingleStep    (2);
+    this->Ui->num_camera_id->setMaximum       (GlobalObjects->absCameras-2);
+
     this->cameraID                            = 0;
+    this->Main->cameraManager->setArrActiveCameras(0,0);
+    this->Main->cameraManager->setArrActiveCameras(1,1);
 
     this->Ui->rb_stereo_calibration->setChecked(true);
     this->Ui->rb_single_calibration->setChecked(false);
@@ -305,8 +326,8 @@ void C_frm_Camera_Calibration::sm_Stereo_camera_calibration ()
 
       //Take pictures
     case 1:
-      this->Main->cameraManager->vecCameras[cameraID]->save_picture    (photo_id,naming,*this->Main->cameraManager->getVecImgShow()[cameraID]);
-      this->Main->cameraManager->vecCameras[cameraID]->save_picture    (photo_id,naming,*this->Main->cameraManager->getVecImgShow()[cameraID+1]);
+      this->Main->cameraManager->vecCameras[cameraID]->save_picture    (photo_id,naming,pData->cpuSrcImg[cameraID]);
+      this->Main->cameraManager->vecCameras[cameraID]->save_picture    (photo_id,naming,pData->cpuSrcImg[cameraID+1]);
 
       this->Ui->txb_img_count->                                     setText(QString::number(this->photo_id + 1));
       this->photo_id++;

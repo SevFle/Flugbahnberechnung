@@ -73,10 +73,10 @@ void C_Camera2::initialize                  ()
   this->cap->set(cv::CAP_PROP_BUFFERSIZE, 20);
   this->frameWidth = cap->get(cv::CAP_PROP_FRAME_WIDTH);
   this->frameHeight = cap->get(cv::CAP_PROP_FRAME_HEIGHT);
-  this->roi->x = 0;
-  this->roi->y = 0;
-  this->roi->height = frameHeight;
-  this->roi->width = frameWidth;
+  this->roi->x = 1;
+  this->roi->y = 1;
+  this->roi->height = frameHeight-1;
+  this->roi->width = frameWidth-1;
   }
 void C_Camera2::initRectifyMap              ()
   {
@@ -90,11 +90,14 @@ void C_Camera2::initRectifyMap              ()
   }
 void C_Camera2::retrieveImg                      (cv::Mat &dstImg)
   {
-  auto cpuSrc = new cv::Mat;
-  this->cap->retrieve(*this->cpuSrc);
-  dstImg= cpuSrc->operator()(*roi);
-  delete (cpuSrc);
-  }
+  //auto cpuSrc = new cv::Mat;
+  //this->cap->retrieve(*cpuSrc);
+  //dstImg= cpuSrc->operator()(*roi);
+  //cpuSrc->copyTo(dstImg);
+  //delete (cpuSrc);
+  this->cap->retrieve(dstImg, 0);
+//dstImg= cpuSrc->operator()(*roi);
+}
 
 bool C_Camera2::grabImg                      ()
   {

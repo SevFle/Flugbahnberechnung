@@ -7,6 +7,7 @@
 #include "object.h"
 #include "plotter.h"
 #include <chrono>
+#include <ctime>
 
 #include <vector>
 
@@ -47,6 +48,7 @@ namespace trackingManager
     S_trackingPayload*                  trackingPayload;
     S_Positionsvektor*                  Positionsvektor_alt;
 
+
     bool                                alive;
     object::C_object*                   trackedObject;
     std::vector<C_AbsolutePose>         vecWorldtoCamPose;
@@ -82,9 +84,9 @@ namespace trackingManager
     void init_posen                     ();
     void load_posen                     (C_AbsolutePose& cameraPose);
 
-    void Get_Position_ObjectTracking    (S_Positionsvektor&             objektVektor, S_Positionsvektor* Richtungsvektoren   [payloadSize]);
+    void Get_Position_ObjectTracking    (S_Positionsvektor&             objektVektor, S_Positionsvektor Richtungsvektoren[payloadSize]);
     void Calc_Position_ObjectTracking   (S_Positionsvektor&             objektVektor, vector<S_Positionsvektor>  vec_Richtungsvektoren_World);
-    void Calc_RichtungsvektorenToWorld  (S_Positionsvektor* vec_Richtungsvektoren[payloadSize], std::vector<S_Positionsvektor>& vec_Richtungsvektoren_World, std::vector<C_AbsolutePose> vecEinheitsMatrix);
+    void Calc_RichtungsvektorenToWorld  (S_Positionsvektor              Richtungsvektoren[payloadSize], std::vector<S_Positionsvektor>& vec_Richtungsvektoren_World, std::vector<C_AbsolutePose> vecEinheitsMatrix);
     void calcPixelVeloctiy              (int dTimestamp, int ist_X, int ist_Y, int camID, int& pred_X, int& pred_Y);
     void calcObjectVeloctiy             (int dTimestamp, S_Positionsvektor&             objektVektor);
 

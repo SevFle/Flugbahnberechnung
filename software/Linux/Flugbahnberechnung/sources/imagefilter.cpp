@@ -81,30 +81,29 @@ bool C_ImageFilter::findContours                     (cv::Mat* cpuSrc, cv::Mat& 
 
   double max_Moment_m00       = 0.0;
   double Ist_x                = 0.0;
-  double Ist_y;
-  double Soll_x;
-  double Soll_y;
-  double Delta_x;
-  double Delta_y;
-  double Moment_0_Ordnung;
-  double Moment_1_Ordnung_x;
-  double Moment_1_Ordnung_y;
-  double Schwerpunkt_x;
-  double Schwerpunkt_y;
-  double Mittelpunkt_x;
-  double Mittelpunkt_y;
-  double x_Kamera_KS;
-  double y_Kamera_KS;
-  double cx;
-  double cy;
-  double fx;
-  double fy;
-  double f;__Posen_H
-  double Vec_Object_Abs;
-  std::string pipeline;
+  double Ist_y                = 0.0;
+  double Soll_x                = 0.0;
+  double Soll_y                = 0.0;
+  double Delta_x                = 0.0;
+  double Delta_y                = 0.0;
+  double Moment_0_Ordnung                = 0.0;
+  double Moment_1_Ordnung_x                = 0.0;
+  double Moment_1_Ordnung_y                = 0.0;
+  double Schwerpunkt_x                = 0.0;
+  double Schwerpunkt_y                = 0.0;
+  double Mittelpunkt_x                = 0.0;
+  double Mittelpunkt_y                = 0.0;
+  double x_Kamera_KS                = 0.0;
+  double y_Kamera_KS                = 0.0;
+  double cx                = 0.0;
+  double cy                = 0.0;
+  double fx                = 0.0;
+  double fy                = 0.0;
+  double f                = 0.0;
+  double Vec_Object_Abs                = 0.0;
 
-  float Radius;
-  bool contourFound;
+  float Radius                = 0.0;
+  bool contourFound                = false;
 
   int ObjectSizeMin = Camera.filterValues->getObject_Size_min();
   int ObjectSizeMax = Camera.filterValues->getObject_Size_max();
@@ -113,15 +112,9 @@ bool C_ImageFilter::findContours                     (cv::Mat* cpuSrc, cv::Mat& 
 
   //cv::Moments Image_Moments;
   //cv::Point2f Center;
-  std::string S_x;
-  std::string S_y;
-  std::string Delta_x_str;
-  std::string Delta_y_str;
   cv::Rect    rect_roi;
   std::vector<std::vector<cv::Point>> contours;
   std::vector<cv::Vec4i>              hirarchy;
-  //dst_contoured_image->copyTo(*dst_contoured_image);
-  //*dst_contoured_image = cv::Mat::zeros(dst_contoured_image->rows, dst_contoured_image->cols, dst_contoured_image->type());
 
 
   //OpenCV Hirarchy: https://docs.opencv.org/3.4/d9/d8b/tutorial_py_contours_hierarchy.html

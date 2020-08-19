@@ -10,21 +10,15 @@
 #include <thread>
 #include <memory>
 
-#include "opencv2/opencv.hpp"
-#include "opencv2/highgui.hpp"
-
-//#include "headers/camera.h"
-#include "camera2.h"
-#include "loadmanager.h"
-#include "savemanager.h"
-#include "imagefilter.h"
-
+#include "headers/camera2.h"
+#include "headers/loadmanager.h"
+#include "headers/savemanager.h"
+#include "headers/imagefilter.h"
 #include "headers/trackingManager.h"
 #include "headers/object.h"
 #include "headers/GlobalObjects.h"
 #include "gst/gst.h"
 
-#include <condition_variable>
 
 #if !defined(Q_MOC_RUN)
 #include <tbb/tbb.h>
@@ -50,24 +44,32 @@ namespace CameraManager
     {
      std::vector<cv::Mat*> srcImg;
      int                   queBuffer;
+
     };
     struct S_pipelinePayload
       {
       milliseconds executionTime[8];
+      std::chrono::nanoseconds                                frametime;
+
       Clock::time_point start;
       Clock::time_point timestamp;
       Clock::time_point end;
+      Clock::time_point fpsStart;
+      Clock::time_point fpsEnd;
+
 
      cv::Mat                                cpuSrcImg           [payloadSize];
      cv::Mat                                cpuUndistortedImg   [payloadSize];
-     cv::Mat                                cpuHSVImg           [payloadSize];
+     cv::Mat                                cpuFinalImg         [payloadSize];
+     cv::Mat                                cpuGrayImg          [payloadSize];
+
      cv::Mat                                cpuConturedImg      [payloadSize];
 
      cv::cuda::GpuMat                       gpuUndistortedImg   [payloadSize];
      Camera::C_Camera2::S_filterProperties  Filter              [payloadSize];
 
      S_Positionsvektor                      objektVektor;
-     S_Positionsvektor*                     Richtungsvektoren   [payloadSize];
+     S_Positionsvektor                      Richtungsvektoren   [payloadSize];
      int                                    cameraID            [payloadSize];
      int                                    ist_X               [payloadSize];
      int                                    ist_Y               [payloadSize];
@@ -75,8 +77,7 @@ namespace CameraManager
      int                                    pred_Y              [payloadSize];
      int                                    radius              [payloadSize];
      bool                                   found = false;
-     double                                 fps = 0;
-     double                                 frametime           = 0;
+     int                                    fps = 0;
      double                                 timestampT0 = 0;
      double                                 dTimestamp = 0;
      int                                    offset              [payloadSize];
@@ -159,8 +160,7 @@ namespace CameraManager
     tbb::concurrent_bounded_queue<CameraManager::S_threadPayload*>*                    threadQue;
 
     private:
-    S_pipelinePayload*                              pData;
-    S_pipelinePayload*                              testpayload;
+    S_pipelinePayload*                              payData;
     S_threadPayload*                                tData;
     S_filterflags*                            filterFlags;
 
@@ -196,7 +196,7 @@ namespace CameraManager
 
     bool startThreadCameraPositioning();
     bool stopThreadCameraPositioning();
-    bool startPipelineTracking();
+    bool startPipelineTracking  (bool undistordActive, bool openActive, bool closeActive,  bool filterActive, bool objectDetectionActive,  bool roiAdjustmentActive, bool trackingActive);
     bool stopPipelineTracking();
     bool pollPipeline               (CameraManager::S_pipelinePayload* arg1);
 
