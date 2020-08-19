@@ -684,7 +684,7 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
       pData->cpuSrcImg[i].create (frameheight, framewidth, CV_32SC1);//CV_32FC1);
       pData->cameraID[i]     = arrActiveCameras[i];
       if (pData->cameraID[i] > globalObjects->absCameras) return 0;
-      pData->Filter[i]       = *vecCameras[arrActiveCameras[i]]->getFilterproperties();
+      pData->Filter[i]       = *vecCameras[pData->cameraID[i]]->getFilterproperties();
       }
 
     return pData;
@@ -713,7 +713,7 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
     pData->start = Clock::now();
     for(int i = 0; i <  payloadSize; i++)
       {
-      vecCameras[arrActiveCameras[i]]->retrieveImg(pData->cpuSrcImg[i]);
+      vecCameras[pData->cameraID[i]]->retrieveImg(pData->cpuSrcImg[i]);
       }
 
     pData->end = Clock::now();
