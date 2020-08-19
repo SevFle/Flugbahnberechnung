@@ -11,7 +11,7 @@ C_frm_Camera_Positioning::C_frm_Camera_Positioning(C_GlobalObjects* GlobalObject
     this->lock                = new pthread_mutex_t;
     this->Main                = Main;
     this->TimerWait           = 0;
-    this->Taktgeber_Intervall = 25;
+    this->Taktgeber_Intervall = 50;
 
 }
 
@@ -34,9 +34,10 @@ void C_frm_Camera_Positioning::showEvent(QShowEvent* ShowEvent)
   connect                     (this->Taktgeber, &QTimer::timeout, this, &C_frm_Camera_Positioning::Taktgeber_Tick);
   this->Taktgeber->start      (this->Taktgeber_Intervall);
   this->installEventFilter    (this);
+  this->Ui->numTimerIntervall->setValue(Taktgeber_Intervall);
   this->Zaehler               = 0;
-  this->TimerWait             = 50;
   pthread_mutex_init          (lock, NULL);
+  this->Main->cameraManager->setPositioningDone(false);
   this->Main->cameraManager->startThreadCameraPositioning();
   this->set_num_value(*GlobalObjects->camera_order);
   Q_UNUSED                    (ShowEvent)
@@ -93,46 +94,55 @@ void C_frm_Camera_Positioning::on_bt_exit_clicked()
 void C_frm_Camera_Positioning::Taktgeber_Tick()
 {
     this->Ui->txb_zaehler->setText(QString::number(this->Zaehler++));
-      if(!this->Main->cameraManager->threadQue->try_pop(this->tData))
+
+      if(this->Main->cameraManager->threadQue->try_pop(tData))
         {
-          switch (this->GlobalObjects->absCameras)
+          this->Ui->txb_queBuffer->setText(QString::number(tData->queBuffer));
+          if(!tData->srcImg.empty())
             {
-            case 1:   //Nur zu Testzwecken fuer die Laptopverwendung
-              FillMat2Lbl(tData->srcImg[this->Ui->num_cam_0->value()], this->Ui->lbl_cam_0);
+            switch (this->GlobalObjects->absCameras)
+              {
+              case 1:   //Nur zu Testzwecken fuer die Laptopverwendung
+                FillMat2Lbl(*tData->srcImg[this->Ui->num_cam_0->value()], this->Ui->lbl_cam_0);
               break;
 
-            case 2:
-              FillMat2Lbl(tData->srcImg[this->Ui->num_cam_0->value()], this->Ui->lbl_cam_0);
-              FillMat2Lbl(tData->srcImg[this->Ui->num_cam_1->value()], this->Ui->lbl_cam_1);
+              case 2:
+                FillMat2Lbl(*tData->srcImg[this->Ui->num_cam_0->value()], this->Ui->lbl_cam_0);
+                FillMat2Lbl(*tData->srcImg[this->Ui->num_cam_1->value()], this->Ui->lbl_cam_1);
               break;
 
-            case 4:
-              FillMat2Lbl(tData->srcImg[this->Ui->num_cam_0->value()], this->Ui->lbl_cam_0);
-              FillMat2Lbl(tData->srcImg[this->Ui->num_cam_1->value()], this->Ui->lbl_cam_1);
-              FillMat2Lbl(tData->srcImg[this->Ui->num_cam_2->value()], this->Ui->lbl_cam_2);
-              FillMat2Lbl(tData->srcImg[this->Ui->num_cam_3->value()], this->Ui->lbl_cam_3);
+              case 4:
+                FillMat2Lbl(*tData->srcImg[this->Ui->num_cam_0->value()], this->Ui->lbl_cam_0);
+                FillMat2Lbl(*tData->srcImg[this->Ui->num_cam_1->value()], this->Ui->lbl_cam_1);
+                FillMat2Lbl(*tData->srcImg[this->Ui->num_cam_2->value()], this->Ui->lbl_cam_2);
+                FillMat2Lbl(*tData->srcImg[this->Ui->num_cam_3->value()], this->Ui->lbl_cam_3);
               break;
 
-            case 6:
-              FillMat2Lbl(tData->srcImg[this->Ui->num_cam_0->value()], this->Ui->lbl_cam_0);
-              FillMat2Lbl(tData->srcImg[this->Ui->num_cam_1->value()], this->Ui->lbl_cam_1);
-              FillMat2Lbl(tData->srcImg[this->Ui->num_cam_2->value()], this->Ui->lbl_cam_2);
-              FillMat2Lbl(tData->srcImg[this->Ui->num_cam_3->value()], this->Ui->lbl_cam_3);
-              FillMat2Lbl(tData->srcImg[this->Ui->num_cam_4->value()], this->Ui->lbl_cam_4);
-              FillMat2Lbl(tData->srcImg[this->Ui->num_cam_5->value()], this->Ui->lbl_cam_5);
+              case 6:
+                FillMat2Lbl(*tData->srcImg[this->Ui->num_cam_0->value()], this->Ui->lbl_cam_0);
+                FillMat2Lbl(*tData->srcImg[this->Ui->num_cam_1->value()], this->Ui->lbl_cam_1);
+                FillMat2Lbl(*tData->srcImg[this->Ui->num_cam_2->value()], this->Ui->lbl_cam_2);
+                FillMat2Lbl(*tData->srcImg[this->Ui->num_cam_3->value()], this->Ui->lbl_cam_3);
+                FillMat2Lbl(*tData->srcImg[this->Ui->num_cam_4->value()], this->Ui->lbl_cam_4);
+                FillMat2Lbl(*tData->srcImg[this->Ui->num_cam_5->value()], this->Ui->lbl_cam_5);
               break;
+              }
+
             }
-
+      for(auto it = std::begin(tData->srcImg); it < std::end(tData->srcImg); it ++)
+        {
+        (*it)->release();
+        delete (*it);
         }
-      pthread_mutex_unlock(this->Main->cameraManager->getLock());
+      delete (tData);
+       }
 }
+
 
 void C_frm_Camera_Positioning::on_bt_apply_clicked()
 {
-  //TODO NEED WORK
     std::vector<Camera::C_Camera2*> camera_vector_temp;
     camera_vector_temp.resize (this->GlobalObjects->absCameras);
-    //TODO Need way to stop Taktgeber
     this->Ui->bt_apply->setEnabled(false);
 
     std::vector<int> camera_list;
@@ -287,3 +297,8 @@ void C_frm_Camera_Positioning::FillMat2Lbl(cv::Mat& img, QLabel* label)
 
 
 
+
+void frm_Camera_Positioning::C_frm_Camera_Positioning::on_numTimerIntervall_valueChanged(int arg1)
+{
+    this->Taktgeber->setInterval(arg1);
+}

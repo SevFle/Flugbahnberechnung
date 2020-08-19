@@ -43,7 +43,8 @@ private slots:
   void set_num_value                ();
   void FillMat2Lbl                  (cv::Mat& img, QLabel* label);
 
-};
+  void on_numTimerIntervall_valueChanged(int arg1);
+  };
 }
 
 #endif // FRM_CAMERA_POSITIONING_H

@@ -143,6 +143,7 @@ namespace Camera
     bool close                        ();
     bool grabImg                      ();
     void retrieveImg                  (cv::Mat &dstImg);
+    void capImage                     (cv::Mat &dstImg);
     void savePicture                  (int camera_id, int photo_id, std::string definition);
     void initRectifyMap               ();
     void save_picture                 (int photo_id, std::string definition, cv::Mat& srcImg);

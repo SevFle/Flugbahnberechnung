@@ -90,8 +90,10 @@ void C_Camera2::initRectifyMap              ()
   }
 void C_Camera2::retrieveImg                      (cv::Mat &dstImg)
   {
-  this->cap->retrieve(*cpuSrc);
+  auto cpuSrc = new cv::Mat;
+  this->cap->retrieve(*this->cpuSrc);
   dstImg= cpuSrc->operator()(*roi);
+  delete (cpuSrc);
   }
 
 bool C_Camera2::grabImg                      ()
@@ -99,7 +101,10 @@ bool C_Camera2::grabImg                      ()
   if(this->cap->grab()) return true;
   return false;
   }
-
+void C_Camera2::capImage(cv::Mat &dstImg)
+{
+    this->cap->read(dstImg);
+}
 void C_Camera2::fit_to_roi(int Radius, int istX, int istY)
   {
     this->filterValues->offset[0] = istX-Radius*2;
@@ -179,7 +184,7 @@ void C_Camera2::setROI                      (int Radius, int istX, int istY)
   }
 int  C_Camera2::getROI() const
   {
-  return this->getROI();
+
   }
 void C_Camera2::setCameraID                 (int &cameraID)
   {

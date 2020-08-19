@@ -24,12 +24,13 @@
 #include "headers/GlobalObjects.h"
 #include "gst/gst.h"
 
+#include <condition_variable>
+
 #if !defined(Q_MOC_RUN)
 #include <tbb/tbb.h>
 #include "tbb/pipeline.h"
 #include "tbb/concurrent_queue.h"
 #endif
-
 
 
 
@@ -47,7 +48,8 @@ namespace CameraManager
   {
     struct S_threadPayload
     {
-     std::vector<cv::Mat> srcImg;
+     std::vector<cv::Mat*> srcImg;
+     int                   queBuffer;
     };
     struct S_pipelinePayload
       {
@@ -165,6 +167,8 @@ namespace CameraManager
     int                           camera_id;
     int                           frameWidth;
     int                           frameHeight;
+    int                           initZoneWidth;
+    int                           initZoneHeight;
     int                           arrActiveCameras[4];
     int                           cntPipeline;
     volatile bool                 calibrationDone;

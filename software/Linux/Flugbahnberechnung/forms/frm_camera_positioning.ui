@@ -219,14 +219,60 @@
    <widget class="QPushButton" name="bt_apply">
     <property name="geometry">
      <rect>
-      <x>930</x>
-      <y>730</y>
+      <x>940</x>
+      <y>740</y>
       <width>141</width>
       <height>71</height>
      </rect>
     </property>
     <property name="text">
      <string>Apply</string>
+    </property>
+   </widget>
+   <widget class="QTextEdit" name="txb_queBuffer">
+    <property name="geometry">
+     <rect>
+      <x>790</x>
+      <y>770</y>
+      <width>141</width>
+      <height>31</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QSpinBox" name="numTimerIntervall">
+    <property name="geometry">
+     <rect>
+      <x>720</x>
+      <y>770</y>
+      <width>42</width>
+      <height>26</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label">
+    <property name="geometry">
+     <rect>
+      <x>790</x>
+      <y>740</y>
+      <width>111</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Que Buffersize</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_2">
+    <property name="geometry">
+     <rect>
+      <x>606</x>
+      <y>770</y>
+      <width>101</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Timerintervall</string>
     </property>
    </widget>
   </widget>

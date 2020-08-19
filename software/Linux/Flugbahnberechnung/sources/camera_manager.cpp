@@ -34,12 +34,15 @@ C_CameraManager::C_CameraManager ( C_GlobalObjects* GlobalObjects)
   this->calibrationDone     = false;
   this->positioningDone     = false;
   this->pipelineDone        = 0;
-  this->test = "Print test string successfull";
+  this->initZoneWidth       = 200;
+  this->initZoneHeight      = 720;
 
   }
 /**************************************************************** Destruktor ****************************************************************/
 C_CameraManager::~C_CameraManager ()
   {
+  this->initZoneWidth   =0;
+  this->initZoneHeight  = 0;
   delete (tData);
   delete (testpayload);
   delete (filterFlags);
@@ -119,6 +122,7 @@ void C_CameraManager::setArrActiveCameras                (int value, int positio
 
 void C_CameraManager::start_camera_thread ()
   {
+
   }
 /******************************************************* Öffentliche Anwender-Methoden ******************************************************/
 
@@ -165,7 +169,7 @@ bool C_CameraManager::openCameras ()
       this->globalObjects->absCameras++;
       }
     std::cout << "**INFO** Cameraspeed is " << this->vecCameras[0]->getFPS() << " fps" << std::endl;
-    std::cout << "**INFO** Created " << std::to_string(this->globalObjects->absCameras + 1) << " Devices" << std::endl;
+    std::cout << "**INFO** Created " << std::to_string(this->globalObjects->absCameras) << " Devices" << std::endl;
 
     }
 
@@ -205,7 +209,7 @@ void C_CameraManager::loadCameras              ()
   }
 bool C_CameraManager::startThreadCameraPositioning()
   {
-    threadQue->set_capacity(10);
+    threadQue->set_capacity(5);
 
     this->camPositioning     = new thread(&CameraManager::C_CameraManager::threadHelper,this);
 //  if(int err = pthread_create(camPositioning,NULL, (THREADFUNCPTR) &CameraManager::C_CameraManager::threadCameraPositioning, this) !=0)
@@ -218,8 +222,9 @@ bool C_CameraManager::startThreadCameraPositioning()
   }
 bool C_CameraManager::stopThreadCameraPositioning()
   {
-    this->pipelineDone = true;
-    this->camPositioning->join();
+    this->positioningDone = true;
+    //this->camPositioning->join();
+    this->camPositioning->detach();
 //  if(pthread_join(*camPositioning, NULL) !=0)
 //    {
 //      std::cout << "**ERROR** Kamerathread konnte nicht gestoppt werden" << std::endl;
@@ -540,34 +545,35 @@ void C_CameraManager::calibrate_stereo_camera (int current_camera_id,
 
 void C_CameraManager::threadCameraPositioning(std::vector<Camera::C_Camera2*> vecCameras, tbb::concurrent_bounded_queue<S_threadPayload*>* que)
   {
-
-   std::vector<cv::Mat> vecImg;
+ std::cout << "**INFO** Kamerathread wurde gestartet. ID:" <<   std::this_thread::get_id() << std::endl;
   while(!this->positioningDone)
     {
-      this->tData = new S_threadPayload;
-      for(auto it = std::begin(vecCameras);
-               it < std::end(vecCameras);
-               it++)
+      auto thData = new S_threadPayload;
+      for(auto it = std::begin(vecCameras); it < std::end(vecCameras); it++)
         {
         (*it)->grabImg();
         }
-      for(auto it = std::begin(vecCameras);
-               it < std::end(vecCameras);
-               it++)
+      for(auto it = std::begin(vecCameras); it < std::end(vecCameras); it++)
         {
-          cv::Mat img;
-          (*it)->retrieveImg(img);
-          vecImg.push_back(img);
+        auto img = new cv::Mat;
+        (*it)->retrieveImg(*img);
+        if(img->empty()) img->setTo(cv::Scalar(255,0,0));
+        //(*it)->capImage(*img);
+        thData->srcImg.push_back(img);
+        }
+      thData->queBuffer = que->size();
+      if(!que->try_push(thData))
+        {
+          for(auto it = std::begin(thData->srcImg); it < std::end(thData->srcImg); it ++)
+            {
+            (*it)->release();
+            delete (*it);
+            }
+          delete (thData);
 
         }
-
-      for(auto it = std::begin(vecImg); it < std::end(vecImg); it++)
-        {
-        this->tData->srcImg.push_back(*it);
-        }
-      que->try_push(tData);
-      vecImg.clear();
     }
+  std::cout << "**INFO** Kamerathread wurde gestoppt" << std::endl;
   }
 void *C_CameraManager::threadHelper(void* This)
   {
