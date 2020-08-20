@@ -81,6 +81,8 @@ namespace CameraManager
      double                                 timestampT0 = 0;
      double                                 dTimestamp = 0;
      int                                    offset              [payloadSize];
+     int                                    queBuffer;
+
     };
     struct S_filterflags
       {

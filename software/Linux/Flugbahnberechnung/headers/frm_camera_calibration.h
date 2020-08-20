@@ -24,6 +24,7 @@ private:
   pthread_t*                        camThread;
   CameraManager::S_pipelinePayload*       pData;
   QTimer*                           Taktgeber;
+  cv::Mat*                          imgBuffer[2];
   int                               Taktgeber_Intervall;
   int                               Zaehler;
   int                               Timerwait;

@@ -376,8 +376,8 @@ void C_CameraManager::calibrateSingleCamera (int current_camera_id,
       //  }
 
       // Ablegen aller Roboter-TCP-Orientierungen und -Positionen in Vektoren
-      TCP_Orientation.push_back (Mat_Orientation);
-      TCP_Position.push_back (Mat_Position);
+      //TCP_Orientation.push_back (Mat_Orientation);
+      //TCP_Position.push_back (Mat_Position);
       }
 
     // Grauwertbild mit eingezeichneten Ecken abspeichern.
@@ -653,7 +653,7 @@ bool C_CameraManager::pollPipeline               (CameraManager::S_pipelinePaylo
   }
 
 
-void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCameras, tbb::concurrent_bounded_queue<S_pipelinePayload*>* pipelineQue)
+void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCameras, tbb::concurrent_bounded_queue<S_pipelinePayload*>* que)
   {
 //    +--------+----+----+----+----+------+------+------+------+
 //    |        | C1 | C2 | C3 | C4 | C(5) | C(6) | C(7) | C(8) |
@@ -899,9 +899,10 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
         pData->fps = 1000000000/pData->frametime.count();
         pData->end = Clock::now();
         pData->executionTime[7] = std::chrono::duration_cast<milliseconds>(pData->end - pData->start);
+        pData->queBuffer = que->size();
 
-
-        pipelineQue->try_push(pData);
+        if(!que->try_push(pData))
+            delete pData;
         //que.push(pData);
         //delete pData;
         }
