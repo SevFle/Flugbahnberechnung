@@ -7,7 +7,6 @@ C_Main::C_Main(C_GlobalObjects* GlobalObjects)
   this->cameraManager = new C_CameraManager(GlobalObjects);
 
   this->frm_Main = new C_frm_Main(GlobalObjects, this);
-  this->frm_Main->show();
 
   this->frm_Camera_Calibration          = new C_frm_Camera_Calibration(GlobalObjects, this);
   this->frm_Camera_Calibration_Crop     = new C_frm_Camera_Calibration_Crop(GlobalObjects, this);
@@ -19,6 +18,8 @@ C_Main::C_Main(C_GlobalObjects* GlobalObjects)
   this->frm_Object_Tracking             = new C_frm_Object_Tracking(GlobalObjects, this);
 
   this->GlobalObjects                   = GlobalObjects;
+
+  this->frm_Main->show();
 }
 
 

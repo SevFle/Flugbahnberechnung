@@ -62,7 +62,7 @@ namespace CameraManager
      cv::Mat                                cpuUndistortedImg   [payloadSize];
      cv::Mat                                cpuFinalImg         [payloadSize];
      cv::Mat                                cpuGrayImg          [payloadSize];
-
+     cv::Mat                                cpuGrayImg2          [payloadSize];
      cv::Mat                                cpuConturedImg      [payloadSize];
 
      cv::cuda::GpuMat                       gpuUndistortedImg   [payloadSize];
@@ -154,8 +154,8 @@ namespace CameraManager
     imagefilter::C_ImageFilter*             ImageFilter;
     thread*                                 camPipeline;
     thread*                                 camPositioning;
-    pthread_mutex_t*  restrict              lock;
-    Clock::time_point                   timestampTm1;
+    std::mutex*  restrict                   lock;
+    Clock::time_point                       timestampTm1;
 
     public:
     tbb::concurrent_bounded_queue<CameraManager::S_pipelinePayload*>*  pipelineQue;
@@ -171,11 +171,14 @@ namespace CameraManager
     int                           frameHeight;
     int                           initZoneWidth;
     int                           initZoneHeight;
+    int                           transferZoneWidth;
     int                           arrActiveCameras[4];
     int                           cntPipeline;
     volatile bool                 calibrationDone;
     volatile bool                 positioningDone;
     volatile bool                 pipelineDone;
+    bool                          flush;
+    bool                          flushComplete;
 
 
     /********************************************************* Öffentliche Klassenmethoden*******************************************************/
@@ -241,8 +244,10 @@ namespace CameraManager
 
     S_filterflags *getFilterFlags() const;
     void setFilterFlags(S_filterflags *value);
-    pthread_mutex_t *getLock() const;
-    void setLock(pthread_mutex_t *value);
+    std::mutex *getLock() const;
+    void setLock(std::mutex *value);
+    bool getFlush() const;
+    void setFlush(bool value);
     };// c_camera_unmanaged
-  }//nmsp_c_camera_unmanaged
+}//nmsp_c_camera_unmanaged
 #endif

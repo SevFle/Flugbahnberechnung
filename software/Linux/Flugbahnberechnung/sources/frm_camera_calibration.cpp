@@ -182,6 +182,7 @@ void frm_Camera_Calibration::C_frm_Camera_Calibration::on_bt_exit_clicked()
 
 void C_frm_Camera_Calibration::on_num_camera_id_valueChanged(int arg1)
 {
+    std::lock_guard<std::mutex> lck (*this->Main->cameraManager->getLock());
     if(method == 0)
         this->Main->cameraManager->setArrActiveCameras(arg1,0);
     else
@@ -197,6 +198,9 @@ void C_frm_Camera_Calibration::on_rb_single_calibration_clicked()
     this->Ui->num_camera_id->setSingleStep        (1);
     this->Ui->num_camera_id->setMaximum       (GlobalObjects->absCameras-1);
     this->cameraID                                = 0;
+
+    std::lock_guard<std::mutex> lck (*this->Main->cameraManager->getLock());
+
     this->Main->cameraManager->setArrActiveCameras(0,0);
 
     this->Ui->rb_stereo_calibration->setChecked   (false);
@@ -217,6 +221,7 @@ void C_frm_Camera_Calibration::on_rb_stereo_calibration_clicked()
     this->Ui->num_camera_id->setMaximum       (GlobalObjects->absCameras-2);
 
     this->cameraID                            = 0;
+    std::lock_guard<std::mutex> lck (*this->Main->cameraManager->getLock());
     this->Main->cameraManager->setArrActiveCameras(0,0);
     this->Main->cameraManager->setArrActiveCameras(1,1);
 

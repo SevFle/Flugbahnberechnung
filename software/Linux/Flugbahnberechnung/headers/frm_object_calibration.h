@@ -31,7 +31,7 @@ CameraManager::S_pipelinePayload*       pData;
 
   int Zaehler;
   int             Taktgeber_Intervall;
-int camera_id_in_use;
+int camID;
 int TimerWait;
 
 

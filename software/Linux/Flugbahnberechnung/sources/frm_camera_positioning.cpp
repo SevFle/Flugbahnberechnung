@@ -102,10 +102,6 @@ void C_frm_Camera_Positioning::Taktgeber_Tick()
             {
             switch (this->GlobalObjects->absCameras)
               {
-              case 1:   //Nur zu Testzwecken fuer die Laptopverwendung
-                FillMat2Lbl(*tData->srcImg[this->Ui->num_cam_0->value()], this->Ui->lbl_cam_0);
-              break;
-
               case 2:
                 FillMat2Lbl(*tData->srcImg[this->Ui->num_cam_0->value()], this->Ui->lbl_cam_0);
                 FillMat2Lbl(*tData->srcImg[this->Ui->num_cam_1->value()], this->Ui->lbl_cam_1);
@@ -149,14 +145,6 @@ void C_frm_Camera_Positioning::on_bt_apply_clicked()
 
     switch (this->GlobalObjects->absCameras)
       {
-      case 1:   //Nur zu Testzwecken f�r die Laptopverwendung
-
-        camera_list.push_back (this->Ui->num_cam_0->value());
-
-        this->Ui->num_cam_0->setValue(0);
-
-        break;
-
       case 2:
 
         camera_list.push_back (this->Ui->num_cam_0->value());
@@ -209,16 +197,14 @@ void C_frm_Camera_Positioning::on_bt_apply_clicked()
 
 
     TimerWait                = Zaehler + 5;
+    this->Ui->bt_apply->setEnabled(true);
+
 }
 
 void C_frm_Camera_Positioning::set_num_value()
   {
   switch (this->GlobalObjects->absCameras)
     {
-    case 1:   //Nur zu Testzwecken fuer die Laptopverwendung
-      this->Ui->num_cam_0->setValue(0);
-      break;
-
     case 2:
       this->Ui->num_cam_0->setValue(0);
       this->Ui->num_cam_1->setValue(1);
