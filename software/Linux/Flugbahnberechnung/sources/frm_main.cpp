@@ -112,6 +112,8 @@ void ::C_frm_Main::on_bt_apply_clicked()
         this->Ui->bt_tracking->setEnabled(true);
         this->Ui->bt_camera_calibration->setEnabled(true);
         this->Ui->bt_camera_positioning->setEnabled(true);
+         this->Ui->bt_camera_pose->setEnabled(true);
+
         }
 
 

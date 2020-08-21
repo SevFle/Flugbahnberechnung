@@ -57,7 +57,7 @@ this->Taktgeber->start            (this->Taktgeber_Intervall);
 this->installEventFilter          (this);
 this->Zaehler                     = 0;
 this->cameraID                    = 0;
-this->Timerwait                   = 50;
+this->Ui->num_TimerIntervall->setValue(this->intervall);
 this->on_rb_single_calibration_clicked();
 this->Ui->num_camera_id->setMaximum(GlobalObjects->absCameras-1);
 
@@ -130,7 +130,6 @@ void C_frm_Camera_Calibration::Taktgeber_Tick()
         break;
       case 1:
         this->FillMat2Lbl(this->pData->cpuSrcImg[0], this->Ui->lbl_img_stereo_left);
-
         this->FillMat2Lbl(this->pData->cpuSrcImg[1], this->Ui->lbl_img_stereo_right);
         this->pData->cpuSrcImg[0].copyTo(*this->imgBuffer[0]);
         this->pData->cpuSrcImg[1].copyTo(*this->imgBuffer[1]);
@@ -187,7 +186,8 @@ void C_frm_Camera_Calibration::on_num_camera_id_valueChanged(int arg1)
         this->Main->cameraManager->setArrActiveCameras(arg1,0);
     else
         this->Main->cameraManager->setArrActiveCameras(arg1,0);
-        this->Main->cameraManager->setArrActiveCameras(arg1+1,1);
+        int arg2 = arg1+1;
+        this->Main->cameraManager->setArrActiveCameras(arg2,1);
 
 }
 
@@ -292,7 +292,7 @@ void C_frm_Camera_Calibration::sm_Single_camera_calibration ()
 
       //Take pictures
     case 1:
-      //this->Main->cameraManager->vecCameras[cameraID]->save_picture    (photo_id,naming,*this->imgBuffer[0]);
+      this->Main->cameraManager->vecCameras[cameraID]->save_picture    (photo_id,naming,*this->imgBuffer[0]);
       this->Ui->txb_img_count->setText(QString::number                  (this->photo_id + 1));
       this->photo_id++;
 
@@ -343,8 +343,8 @@ void C_frm_Camera_Calibration::sm_Stereo_camera_calibration ()
 
       //Take pictures
     case 1:
-      this->Main->cameraManager->vecCameras[cameraID]->save_picture    (photo_id,naming,*this->imgBuffer[0]);
-      this->Main->cameraManager->vecCameras[cameraID]->save_picture    (photo_id,naming,*this->imgBuffer[1]);
+      //this->Main->cameraManager->vecCameras[cameraID]->save_picture    (photo_id,naming,*this->imgBuffer[0]);
+      //this->Main->cameraManager->vecCameras[cameraID+1]->save_picture    (photo_id,naming,*this->imgBuffer[1]);
 
       this->Ui->txb_img_count->                                     setText(QString::number(this->photo_id + 1));
       this->photo_id++;
@@ -379,18 +379,23 @@ void C_frm_Camera_Calibration::sm_Stereo_camera_calibration ()
 void C_frm_Camera_Calibration::ShowTable()
   {
   switch(method)
-  {
-   case 0:
+    {
+     case 0:
       this->Ui->tblv_single_parameters->verticalHeader()->hide();
 
       this->Ui->tblv_single_parameters->show();
       break;
-  case 1:
+    case 1:
       this->Ui->tblv_stereo_output->verticalHeader()->hide();
       //this->Ui->tblv_stereo_output->data
       break;
-  default:
+    default:
       return;
 
+    }
   }
+
+void frm_Camera_Calibration::C_frm_Camera_Calibration::on_num_TimerIntervall_valueChanged(int arg1)
+  {
+  this->Taktgeber->setInterval(arg1);
   }

@@ -193,10 +193,12 @@ void C_frm_Camera_Positioning::on_bt_apply_clicked()
       this->Main->cameraManager->loadManager->loadCameraCalibration   (this->Main->cameraManager->vecCameras[i]);
       this->Main->cameraManager->loadManager->loadCameraSettings      (this->Main->cameraManager->vecCameras[i]);
       }
-    this->Main->cameraManager->saveManager->saveCameraPositioning   (camera_list);
+    this->Main->cameraManager->saveManager->saveCameraPositioning   (this->Main->cameraManager->vecCameras);
+    for(int i = 0; i < GlobalObjects->absCameras; i ++)
+    {
+     this->Main->cameraManager->vecCameras[i]->setCameraID(i);
+    }
 
-
-    TimerWait                = Zaehler + 5;
     this->Ui->bt_apply->setEnabled(true);
 
 }

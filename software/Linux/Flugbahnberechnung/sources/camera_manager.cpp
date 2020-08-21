@@ -185,8 +185,8 @@ bool C_CameraManager::openCameras ()
     }
 
   //Reorder recently created Cameras
-  if(this->loadManager->loadCameraPositioning(globalObjects->camera_order))
-                  this->mvVecCamera2Temp(*globalObjects->camera_order);
+  this->loadManager->loadCameraPositioning(this->vecCameras);
+                  //this->mvVecCamera2Temp(*globalObjects->camera_order);
 
   //Load Settings and Calibration for each camera created earlier
   loadCameras();
@@ -256,19 +256,37 @@ bool C_CameraManager::stopPipelineTracking()
 
 void C_CameraManager::mvVecCamera2Temp (std::vector<int> vecCamOrder)
   {
-  std::vector<Camera::C_Camera2*> vecCamerastemp;
-  vecCamerastemp.resize(globalObjects->absCameras);
-  for(int i =0; i < globalObjects->absCameras; i++)
-    {
-    vecCamerastemp[i] = std::move(this->vecCameras[vecCamOrder[i]]);
-    }
-  mvTemp2VecCamera(vecCamerastemp);
+//  std::vector<Camera::C_Camera2*> vecCamerastemp;
+//  vecCamerastemp.resize(globalObjects->absCameras);
+//  for(int i =0; i < globalObjects->absCameras; i++)
+//    {
+//    vecCamerastemp[i] = std::move(this->vecCameras[vecCamOrder[i]]);
+//    }
+    std::vector<Camera::C_Camera2*>                         vecTempCameras;
+    std::vector<int>                                        istCamIDs;
+    std::vector<int>                                        sollCamIDs;
+
+
+    vecTempCameras.resize(this->vecCameras.size());
+        for(int i = 0; i < globalObjects->absCameras; i++)
+          {
+          //vecTempCameras[vecCamOrder[i]] = std::move(this->vecCameras[i]);
+          vecTempCameras[vecCamOrder[i]] = this->vecCameras[i];
+
+          }
+        this->vecCameras.clear();
+        this->vecCameras.resize(vecTempCameras.size());
+     for (int i = 0; i < globalObjects->absCameras; i++)
+          {
+          //this->vecCameras[i] = std::move (vecTempCameras[i]);
+         this->vecCameras[i] = vecTempCameras[i];
+          }
   }
 void C_CameraManager::mvTemp2VecCamera (std::vector<Camera::C_Camera2*> vecCamerastemp)
   {
   for (int i = 0; i < globalObjects->absCameras; i++)
     {
-    vecCameras[i] = std::move (vecCamerastemp[i]);
+    this->vecCameras[i] = std::move (vecCamerastemp[i]);
     }
   }
 
@@ -429,8 +447,8 @@ void C_CameraManager::calibrate_stereo_camera (int current_camera_id,
   while (photoID < absBoardImg)
     {
     //char left_img[100], right_img[100];
-    img1 = cv::imread ("../Parameter/Bilder/Camera_Stereo_Calibration_" + std::to_string (camera_id) + "_Snapshot_" + std::to_string (photoID) + ".png",1);
-    img2 = cv::imread ("../Parameter/Bilder/Camera_Stereo_Calibration_" + std::to_string (camera_id + 1) + "_Snapshot_" + std::to_string (photoID) + ".png",1);
+    img1 = cv::imread ("../Parameter/Bilder/Camera_Stereo_Calibration_" + std::to_string (current_camera_id) + "_Snapshot_" + std::to_string (photoID) + ".png",1);
+    img2 = cv::imread ("../Parameter/Bilder/Camera_Stereo_Calibration_" + std::to_string (current_camera_id+1) + "_Snapshot_" + std::to_string (photoID) + ".png",1);
 
     cv::cvtColor (img1,gray1,cv::COLOR_BGR2GRAY);
     cv::cvtColor (img2,gray2,cv::COLOR_BGR2GRAY);
@@ -523,6 +541,17 @@ void C_CameraManager::calibrate_stereo_camera (int current_camera_id,
   this->calculate_camera_pose(camera_id, camera_id+1, T, R);
 
   this->calibrationDone = true;
+
+  cv::Mat relativeR(3, 3, CV_64F);
+  cv::Mat relativeT(3, 1, CV_64F);
+  cv::Mat mask;
+
+
+  cv::recoverPose(E, left_img_points, right_img_points, K1, relativeR, relativeT, mask);
+
+  std::cout << "relativeR" << endl << relativeR << endl << endl;
+  std::cout << "relativeT" << endl << relativeT << endl << endl;
+
 
 //  std::cout << "Starting Rectification" << endl;
 

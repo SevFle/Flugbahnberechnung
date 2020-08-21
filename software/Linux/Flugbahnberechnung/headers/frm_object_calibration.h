@@ -149,6 +149,7 @@ private slots:
   void get_camera_settings (int camera_id);
   void set_gui();
   void Fill_Mat_2_Lbl(cv::Mat& img, QLabel* label);
+  void on_numTimerIntervall_valueChanged(int arg1);
 };
 
 }

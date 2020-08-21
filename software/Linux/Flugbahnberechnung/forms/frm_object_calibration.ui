@@ -17,10 +17,10 @@
    <widget class="QLabel" name="lbl_src_img">
     <property name="geometry">
      <rect>
-      <x>40</x>
-      <y>20</y>
-      <width>341</width>
-      <height>291</height>
+      <x>10</x>
+      <y>10</y>
+      <width>411</width>
+      <height>331</height>
      </rect>
     </property>
     <property name="text">
@@ -30,10 +30,10 @@
    <widget class="QLabel" name="lbl_img_gray">
     <property name="geometry">
      <rect>
-      <x>410</x>
-      <y>20</y>
-      <width>341</width>
-      <height>291</height>
+      <x>430</x>
+      <y>10</y>
+      <width>411</width>
+      <height>331</height>
      </rect>
     </property>
     <property name="text">
@@ -57,7 +57,7 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>320</y>
+      <y>380</y>
       <width>341</width>
       <height>441</height>
      </rect>
@@ -619,7 +619,7 @@
     <property name="geometry">
      <rect>
       <x>380</x>
-      <y>320</y>
+      <y>380</y>
       <width>461</width>
       <height>441</height>
      </rect>
@@ -1389,7 +1389,7 @@
       <x>850</x>
       <y>350</y>
       <width>241</width>
-      <height>431</height>
+      <height>471</height>
      </rect>
     </property>
     <property name="title">
@@ -1753,6 +1753,29 @@
      </property>
      <property name="readOnly">
       <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_2">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>430</y>
+       <width>101</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Timerintervall</string>
+     </property>
+    </widget>
+    <widget class="QSpinBox" name="numTimerIntervall">
+     <property name="geometry">
+      <rect>
+       <x>124</x>
+       <y>430</y>
+       <width>71</width>
+       <height>31</height>
+      </rect>
      </property>
     </widget>
    </widget>

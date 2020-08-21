@@ -62,6 +62,7 @@ private slots:
   void on_bt_photo_clicked              ();
   void ShowTable                        ();
 
+  void on_num_TimerIntervall_valueChanged(int arg1);
 };
 }
 

@@ -57,7 +57,7 @@ void c_SaveManager::saveCameraCos         (Camera::C_Camera2 &Camera)
     std::cout << "**ERROR** Pose fuer Kamera " << std::to_string(Camera.getCameraID()) << " wurde nicht gespeichert" << std::endl;
     }
   }
-void c_SaveManager::saveCameraPositioning (std::vector<int> camera_list) const
+void c_SaveManager::saveCameraPositioning (std::vector<Camera::C_Camera2*>& vecCameras) const
   {
   string Dateiname = "../Parameter/Camera_Positioning.csv";
   string Dateityp  = "Correct Camera position in vector corresponding to their ID";
@@ -69,8 +69,8 @@ void c_SaveManager::saveCameraPositioning (std::vector<int> camera_list) const
     GlobalObjects->csv_parameter_datei->Schreiben ("Anzahl Kameras",to_string (GlobalObjects->absCameras),"[1]");
     for (int i = 0; i < GlobalObjects->absCameras; i++)
       {
-      GlobalObjects->csv_parameter_datei->Schreiben ("Cameravector[" + to_string (i) + "]",to_string (camera_list[i]),"[1]");
-      std::cout << "Saving Camera " << i << " to position " << camera_list[i];
+      GlobalObjects->csv_parameter_datei->Schreiben ("Cameravector[" + to_string (i) + "]",to_string (vecCameras[i]->getCameraID()),"[1]");
+      std::cout << "Saving Camera " << to_string (vecCameras[i]->getCameraID()) << " to position " << i;
       }
     GlobalObjects->csv_parameter_datei->Schliessen();
     std::cout << "**INFO** Reihung wurde gespeichert" << std::endl;

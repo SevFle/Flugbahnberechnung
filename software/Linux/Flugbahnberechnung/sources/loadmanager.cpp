@@ -189,13 +189,18 @@ void C_LoadManager::loadCameraCalibration (Camera::C_Camera2* Camera)
   Camera->setCalibrationParameter(DistCoeffs,Intrinsic);
   }
 
-bool C_LoadManager::loadCameraPositioning   (std::vector<int>* order)
+bool C_LoadManager::loadCameraPositioning   (std::vector<Camera::C_Camera2*> &vecCameras)
   {
+  std::vector<Camera::C_Camera2*>                         vecTempCameras;
+  //std::vector<int>                                        istCamIDs;
+  std::vector<int>                                        sollCamIDs;
+
   string                                                  Dateiname = "../Parameter/Camera_Positioning.csv";
   string                                                  Dateityp;
   int                                                     id;
   int                                                     Camera_count;
 
+  vecTempCameras.resize(vecCameras.size());
   GlobalObjects->csv_parameter_datei->Oeffnen (Dateiname,Enum_CSV_Access::Read);
   if (GlobalObjects->csv_parameter_datei->IsOpen())
     {
@@ -203,19 +208,32 @@ bool C_LoadManager::loadCameraPositioning   (std::vector<int>* order)
     GlobalObjects->csv_parameter_datei->Lesen (Camera_count);
     if (GlobalObjects->absCameras == Camera_count)
       {
+      //Hole IST Reihenfolge der derzeitigen Kameras
+//      for (int i = 0; i < Camera_count; i++)
+//        {
+//        istCamIDs.push_back(vecCameras[i]->getCameraID());
+//        }
+      //Hole SOLL Reihenfolge der derzeitigen Kameras
       for (int i = 0; i < Camera_count; i++)
         {
         GlobalObjects->csv_parameter_datei->Lesen (id);
-        order->push_back(id);
+        sollCamIDs.push_back(id);
+        }
+      for(int i = 0; i < Camera_count; i++)
+        {
+        vecTempCameras[sollCamIDs[i]] = vecCameras[i];
+        }
+      vecCameras.clear();
+      vecCameras.resize(vecTempCameras.size());
+      for(int i = 0; i < Camera_count; i++)
+        {
+        vecCameras[i] = vecTempCameras[i];
+        vecCameras[i]->setCameraID(i);
         }
       std::cout << "**INFO** Positionierung wurde geladen" << std::endl;
       }
     else
       {
-      for (int i = 0; i < GlobalObjects->absCameras; i++)
-        {
-        order->push_back(i);
-        }
       std::cout << "**ERROR** Standardpositionierung wurde geladen" << std::endl;
       }
     GlobalObjects->csv_parameter_datei->Schliessen();

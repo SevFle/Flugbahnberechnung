@@ -19,7 +19,7 @@ namespace Savemanager
 
 
     void saveCameraCalibration    (Camera::C_Camera2 &Camera);
-    void saveCameraPositioning    (std::vector<int> camera_list) const;
+    void saveCameraPositioning    (std::vector<Camera::C_Camera2*>& vecCameras) const;
     void saveCameraCos            (Camera::C_Camera2 &Camera);
     void saveCameraSettings       (Camera::C_Camera2 &Camera);
 
