@@ -253,8 +253,11 @@ void C_frm_Object_Calibration::on_num_camera_valueChanged(int arg1)
     this->get_camera_settings (arg1);
     this->camID = arg1;
     std::lock_guard<std::mutex> lck (*this->Main->cameraManager->getLock());
+    this->Main->cameraManager->setFlush(true);
     this->Main->cameraManager->setArrActiveCameras(camID, 0);
     this->Main->cameraManager->setArrActiveCameras(camID, 1);
+    this->Main->cameraManager->setFlush(false);
+
   }
 
 
