@@ -488,7 +488,14 @@ void C_CameraManager::calibrate_stereo_camera (int current_camera_id,
     cv::imwrite ("../Parameter/Bilder/Camera_Stereo_Calibration_" + std::to_string (camera_id + 1) + "_Gray_DrawCorners_" + std::to_string (photoID) + ".png",gray2);
 
     vector<cv::Point3f> obj;
-    for (int i = 0; i < absCornersHeight; i++) for (int j = 0; j < absCornersWidth; j++) obj.emplace_back (static_cast<float> (j) * absCornerLength,static_cast<float> (i) * absCornerLength,0);
+    for (int i = 0; i < absCornersHeight; i++)
+      {
+      for (int j = 0; j < absCornersWidth; j++)
+        {
+        obj.emplace_back (static_cast<float> (j) * absCornerLength,static_cast<float> (i) * absCornerLength,0);
+        }
+      }
+
 
     if (found1 && found2)
       {
@@ -512,56 +519,139 @@ void C_CameraManager::calibrate_stereo_camera (int current_camera_id,
     left_img_points.push_back (v1);
     right_img_points.push_back (v2);
     }
+/********************************** STEREO CALIBRATE METHODE ***********************/
+    std::cout << "Starting Calibration" << endl;
+    cv::Mat   K1, K2, F, E;
+    cv::Mat R(3, 3, CV_64F);
+    cv::Mat T(3, 1, CV_64F);
 
-  std::cout << "Starting Calibration" << endl;
-  cv::Mat   K1, K2, F, E;
-  cv::Mat R(3, 3, CV_64F);
-  cv::Mat T(3, 1, CV_64F);
+    //cv::Vec3d T;
+    cv::Mat   D1, D2;
+    //cv::InputOutputArfilterFlagsray R, T;
+    this->vecCameras[current_camera_id]->getIntrinsic()->copyTo(K1);
+    this->vecCameras[current_camera_id + 1]->getIntrinsic()->copyTo(K2);
+    this->vecCameras[current_camera_id]->getDistCoeffs()->copyTo(D1);
+    this->vecCameras[current_camera_id + 1]->getDistCoeffs()->copyTo(D2);
 
-  //cv::Vec3d T;
-  cv::Mat   D1, D2;
-  //cv::InputOutputArfilterFlagsray R, T;
-  this->vecCameras[current_camera_id]->getIntrinsic()->copyTo(K1);
-  this->vecCameras[current_camera_id + 1]->getIntrinsic()->copyTo(K2);
-  this->vecCameras[current_camera_id]->getDistCoeffs()->copyTo(D1);
-  this->vecCameras[current_camera_id + 1]->getDistCoeffs()->copyTo(D2);
+    cv::stereoCalibrate (object_points,left_img_points,right_img_points,K1,D1,K2,D2,img1.size(),R,T,E,F,cv::CALIB_FIX_INTRINSIC);
 
-  cv::stereoCalibrate (object_points,left_img_points,right_img_points,K1,D1,K2,D2,img1.size(),R,T,E,F,cv::CALIB_FIX_INTRINSIC);
+/****************************************** MANUAL METHODE ******************************/
 
-  std::cout << "K1" << endl << K1 << endl << endl;
-  std::cout << "K2" << endl << K2 << endl << endl;
-  std::cout << "D1" << endl << D1 << endl << endl;
-  std::cout << "D2" << endl << D2 << endl << endl;
-  std::cout << "R" << endl << R << endl << endl;
-  std::cout << "T" << endl << T << endl << endl;
-  std::cout << "E" << endl << E << endl << endl;
-  std::cout << "F" << endl << F << endl << endl;
-  std::cout << "Done Calibration" << endl;
+  cv::Mat                          distCoeffs;
+  cv::Mat                          intrinsic;
+  cv::Mat rvecPNPL(cv::Mat_<double>(1,3));
+  cv::Mat rvecPNPR(cv::Mat_<double>(1,3));
+  cv::Mat rvecPNP;
 
-  this->calculate_camera_pose(camera_id, camera_id+1, T, R);
+  cv::Mat rodriguesPNPL, rodriguesPNPR;
+  cv::Mat tvecPNP, tvecPNPR, tvecPNPL;
+  vector<vector<cv::Point2f>>   imgPointsLReturn;
+  vector<vector<cv::Point2f>>   imgPointsRReturn;
 
-  this->calibrationDone = true;
+  //Berechne Objekt zu Kamera Matrix
+  vecCameras[current_camera_id]->getDistCoeffs()->copyTo(distCoeffs);
+  vecCameras[current_camera_id]->getIntrinsic()->copyTo(intrinsic);
+  cv::solvePnP(object_points, left_img_points, intrinsic,  distCoeffs, rvecPNPL, tvecPNPL, false, cv::SOLVEPNP_IPPE);
 
-  cv::Mat relativeR(3, 3, CV_64F);
-  cv::Mat relativeT(3, 1, CV_64F);
-  cv::Mat mask;
+  vecCameras[current_camera_id+1]->getDistCoeffs()->copyTo(distCoeffs);
+  vecCameras[current_camera_id+1]->getIntrinsic()->copyTo(intrinsic);
+  cv::solvePnP(object_points, right_img_points, intrinsic,  distCoeffs, rvecPNPR, tvecPNPR, false, cv::SOLVEPNP_IPPE);
+
+  cv::Rodrigues(rvecPNPL, rodriguesPNPL);
+  cv::Rodrigues(rvecPNPR, rodriguesPNPR);
+
+  //Kamera L zu Kamera R Matrix
+  rvecPNP = rodriguesPNPL.inv() * rodriguesPNPR;
+  tvecPNP  = rodriguesPNPL.inv() * (tvecPNPR- tvecPNPL);
+  std::cout << "rvecPNP: " << rvecPNP << std::endl;
+  std::cout << "tvecPNP: " << tvecPNP << std::endl;
+
+  //Überprüfe die jeweiligen rvec/tvec auf Differenz
+  vecCameras[current_camera_id]->getIntrinsic()->copyTo(intrinsic);
+  vecCameras[current_camera_id]->getDistCoeffs()->copyTo(distCoeffs);
+  cv::projectPoints(object_points, rvecPNPL, tvecPNPL, intrinsic, distCoeffs, imgPointsLReturn);
+
+  vecCameras[current_camera_id+1]->getIntrinsic()->copyTo(intrinsic);
+  vecCameras[current_camera_id+1]->getDistCoeffs()->copyTo(distCoeffs);
+  cv::projectPoints(object_points, rvecPNPR, tvecPNPR, intrinsic, distCoeffs, imgPointsRReturn);
+
+  cv::Mat difL, difR;
+
+  cv::absdiff(left_img_points, imgPointsLReturn, difL);
+  cv::absdiff(right_img_points, imgPointsRReturn, difR);
+  std::cout << "Diff L: " << difL << std::endl;
+  std::cout << "Diff R: " << difR << std::endl;
+
+  cv::Mat Eleft, Eright, manEssentialRVecR, manEssentialRVecL, manEssentialTVecR, manEssentialTVecL;
+  vecCameras[current_camera_id+1]->getIntrinsic()->copyTo(intrinsic);
+
+  Eleft = cv::findEssentialMat(left_img_points, right_img_points, intrinsic,cv::RANSAC, 0.999, 2.0);
+  cv::recoverPose(Eleft, left_img_points, right_img_points, intrinsic, manEssentialRVecL, manEssentialTVecL);
 
 
-  cv::recoverPose(E, left_img_points, right_img_points, K1, relativeR, relativeT, mask);
+  vecCameras[current_camera_id+1]->getIntrinsic()->copyTo(intrinsic);
 
-  std::cout << "relativeR" << endl << relativeR << endl << endl;
-  std::cout << "relativeT" << endl << relativeT << endl << endl;
+   Eright = cv::findEssentialMat(right_img_points, left_img_points, intrinsic,cv::RANSAC, 0.999, 2.0);
+   cv::recoverPose(Eright, right_img_points, left_img_points, intrinsic, manEssentialRVecR, manEssentialTVecR);
+   std::cout << "Essential L: " << Eleft << std::endl;
+   std::cout << "Essential R: " << Eright << std::endl;
+   std::cout << "Essential Left rvec: " << manEssentialRVecL << std::endl;
+   std::cout << "Essential Left tvec: " << manEssentialTVecL << std::endl;
+
+   std::cout << "Essential Right rvec: " << manEssentialRVecR << std::endl;
+   std::cout << "Essential Right tvec: " << manEssentialTVecR << std::endl;
+
+     std::cout << "Essential Calibration R" << endl << R << endl << endl;
+     std::cout << "Essential Calibration T" << endl << T << endl << endl;
+     std::cout << "Essential Calibration E" << endl << E << endl << endl;
 
 
-//  std::cout << "Starting Rectification" << endl;
+//  std::cout << "Starting Calibration" << endl;
+//  cv::Mat   K1, K2, F, E;
+//  cv::Mat R(3, 3, CV_64F);
+//  cv::Mat T(3, 1, CV_64F);
 
-//  cv::Mat R1, R2, P1, P2, Q;
-//  stereoRectify (K1,D1,K2,D2,img1.size(),R,T,R1,R2,P1,P2,Q);
+//  //cv::Vec3d T;
+//  cv::Mat   D1, D2;
+//  //cv::InputOutputArfilterFlagsray R, T;
+//  this->vecCameras[current_camera_id]->getIntrinsic()->copyTo(K1);
+//  this->vecCameras[current_camera_id + 1]->getIntrinsic()->copyTo(K2);
+//  this->vecCameras[current_camera_id]->getDistCoeffs()->copyTo(D1);
+//  this->vecCameras[current_camera_id + 1]->getDistCoeffs()->copyTo(D2);
 
-//  std::cout << "R1" << R1 << endl;
-//  std::cout << "R2" << R2 << endl;
-//  std::cout << "P1" << P1 << endl;
-//  std::cout << "P2" << P2 << endl;0
+//  cv::stereoCalibrate (object_points,left_img_points,right_img_points,K1,D1,K2,D2,img1.size(),R,T,E,F,cv::CALIB_FIX_INTRINSIC);
+
+//  std::cout << "K1" << endl << K1 << endl << endl;
+//  std::cout << "K2" << endl << K2 << endl << endl;
+//  std::cout << "D1" << endl << D1 << endl << endl;
+//  std::cout << "D2" << endl << D2 << endl << endl;
+//  std::cout << "F" << endl << F << endl << endl;
+//  std::cout << "Done Calibration" << endl;
+
+//  this->calculate_camera_pose(camera_id, camera_id+1, T, R);
+
+//  this->calibrationDone = true;
+
+//  cv::Mat relativeR(3, 3, CV_64F);
+//  cv::Mat relativeT(3, 1, CV_64F);
+//  cv::Mat mask;
+
+
+//  cv::recoverPose(E, left_img_points, right_img_points, K1, relativeR, relativeT, mask);
+
+//  std::cout << "relativeR" << endl << relativeR << endl << endl;
+//  std::cout << "relativeT" << endl << relativeT << endl << endl;
+
+
+////  std::cout << "Starting Rectification" << endl;
+
+////  cv::Mat R1, R2, P1, P2, Q;
+////  stereoRectify (K1,D1,K2,D2,img1.size(),R,T,R1,R2,P1,P2,Q);
+
+////  std::cout << "R1" << R1 << endl;
+////  std::cout << "R2" << R2 << endl;
+////  std::cout << "P1" << P1 << endl;
+////  std::cout << "P2" << P2 << endl;0
   }
 
 
