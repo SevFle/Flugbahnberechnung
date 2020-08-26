@@ -166,18 +166,22 @@ bool C_CameraManager::openCameras ()
         continue;
       GstStructure *    DeviceProps   = gst_device_get_properties (device);
       gchar *           fieldname     = "device.path" ;
-      std::string       devicePath    = gst_structure_get_string(DeviceProps, fieldname);
-      std::string       Pipeline      = "v4l2src device="+ devicePath +" ! ";
-                        Pipeline      += "image/jpeg, format=BGR, width=" + std::to_string(this->frameWidth) +",";
-                        Pipeline      += "height=" + std::to_string(this->frameHeight) +" ! jpegdec ! videoconvert ! appsink";
+          std::string       devicePath    = gst_structure_get_string(DeviceProps, fieldname);
+          if(devicePath.compare("/dev/video0") !=0)
+            {
 
-      auto              camera        = new Camera::C_Camera2;
-      camera->setPipeline             (Pipeline);
-      camera->setCameraID             (this->globalObjects->absCameras);
-      if(!camera->open())
-        std::cout << "**ERROR** Could not open device on path" << devicePath << std::endl;
-      vecCameras.push_back            (camera);
-      this->globalObjects->absCameras++;
+          std::string       Pipeline      = "v4l2src device="+ devicePath +" ! ";
+                            Pipeline      += "image/jpeg, format=BGR, width=" + std::to_string(this->frameWidth) +",";
+                            Pipeline      += "height=" + std::to_string(this->frameHeight) +" ! jpegdec ! videoconvert ! appsink";
+
+          auto              camera        = new Camera::C_Camera2;
+          camera->setPipeline             (Pipeline);
+          camera->setCameraID             (this->globalObjects->absCameras);
+          if(!camera->open())
+            std::cout << "**ERROR** Could not open device on path" << devicePath << std::endl;
+          vecCameras.push_back            (camera);
+          this->globalObjects->absCameras++;
+        }
       }
     std::cout << "**INFO** Cameraspeed is \033[1m\033[33m" << this->vecCameras[0]->getFPS() << "\033[0m fps" << std::endl;
     std::cout << "**INFO** Created \033[1m\033[31m" << std::to_string(this->globalObjects->absCameras) << " \033[0m Devices" << std::endl;
@@ -534,89 +538,166 @@ void C_CameraManager::calibrate_stereo_camera (int current_camera_id,
     this->vecCameras[current_camera_id + 1]->getDistCoeffs()->copyTo(D2);
 
     cv::stereoCalibrate (object_points,left_img_points,right_img_points,K1,D1,K2,D2,img1.size(),R,T,E,F,cv::CALIB_FIX_INTRINSIC);
+    std::cout << "/********************************** STEREO CALIBRATE METHODE ***********************/" << endl << endl;
+    std::cout << "Essential Calibration R" << endl << R << endl << endl;
+    std::cout << "Essential Calibration T" << endl << T << endl << endl;
+    std::cout << "Essential Calibration E" << endl << E << endl << endl << endl;
+
 
 /****************************************** MANUAL METHODE ******************************/
-
+    std::cout << "/********************************** MANUAL METHODE ***********************/" << endl << endl;
+    int objposition = 0;
   cv::Mat                          distCoeffs;
   cv::Mat                          intrinsic;
   cv::Mat rvecPNPL(cv::Mat_<double>(1,3));
   cv::Mat rvecPNPR(cv::Mat_<double>(1,3));
+  cv::Mat tvecPNP(cv::Mat_<double>(1,3));
+  cv::Mat tvecPNPR(cv::Mat_<double>(1,3));
+  cv::Mat tvecPNPL(cv::Mat_<double>(1,3));
+
   cv::Mat rvecPNP;
 
   cv::Mat rodriguesPNPL, rodriguesPNPR;
-  cv::Mat tvecPNP, tvecPNPR, tvecPNPL;
-  vector<vector<cv::Point2f>>   imgPointsLReturn;
-  vector<vector<cv::Point2f>>   imgPointsRReturn;
+  vector<cv::Point2f>   imgPointsLReturn;
+  vector<cv::Point2f>   imgPointsRReturn;
 
   //Berechne Objekt zu Kamera Matrix
   vecCameras[current_camera_id]->getDistCoeffs()->copyTo(distCoeffs);
   vecCameras[current_camera_id]->getIntrinsic()->copyTo(intrinsic);
-  cv::solvePnP(object_points, left_img_points, intrinsic,  distCoeffs, rvecPNPL, tvecPNPL, false, cv::SOLVEPNP_IPPE);
+  cv::solvePnP(object_points[objposition], left_img_points[objposition], intrinsic,  distCoeffs, rvecPNPL, tvecPNPL, false, cv::SOLVEPNP_IPPE);
+  std::cout << "rvecPNPL: " << endl << rvecPNPL << std::endl << std::endl;
+  std::cout << "tvecPNPL: " << endl << tvecPNPL << std::endl << std::endl << std::endl;
+
 
   vecCameras[current_camera_id+1]->getDistCoeffs()->copyTo(distCoeffs);
   vecCameras[current_camera_id+1]->getIntrinsic()->copyTo(intrinsic);
-  cv::solvePnP(object_points, right_img_points, intrinsic,  distCoeffs, rvecPNPR, tvecPNPR, false, cv::SOLVEPNP_IPPE);
+  cv::solvePnP(object_points[objposition], right_img_points[objposition], intrinsic,  distCoeffs, rvecPNPR, tvecPNPR, false, cv::SOLVEPNP_IPPE);
+
+  std::cout << "rvecPNPR: " << endl << rvecPNPR << std::endl << std::endl;
+  std::cout << "tvecPNPR: " << endl << tvecPNPR << std::endl << std::endl << std::endl;
 
   cv::Rodrigues(rvecPNPL, rodriguesPNPL);
   cv::Rodrigues(rvecPNPR, rodriguesPNPR);
 
+  std::cout << "rodriguesPNPL: " << endl << rodriguesPNPL << std::endl << std::endl;
+  std::cout << "rodriguesPNPR: " << endl << rodriguesPNPR << std::endl << std::endl << std::endl;
+
+
+
+
   //Kamera L zu Kamera R Matrix
   rvecPNP = rodriguesPNPL.inv() * rodriguesPNPR;
   tvecPNP  = rodriguesPNPL.inv() * (tvecPNPR- tvecPNPL);
-  std::cout << "rvecPNP: " << rvecPNP << std::endl;
-  std::cout << "tvecPNP: " << tvecPNP << std::endl;
+
+  std::cout << "rvecPNP: " << endl << rvecPNP << std::endl << std::endl;
+  std::cout << "tvecPNP: " << endl << tvecPNP << std::endl << std::endl << std::endl;
 
   //Überprüfe die jeweiligen rvec/tvec auf Differenz
   vecCameras[current_camera_id]->getIntrinsic()->copyTo(intrinsic);
   vecCameras[current_camera_id]->getDistCoeffs()->copyTo(distCoeffs);
-  cv::projectPoints(object_points, rvecPNPL, tvecPNPL, intrinsic, distCoeffs, imgPointsLReturn);
+  cv::projectPoints(object_points[objposition], rvecPNPL, tvecPNPL, intrinsic, distCoeffs, imgPointsLReturn);
 
   vecCameras[current_camera_id+1]->getIntrinsic()->copyTo(intrinsic);
   vecCameras[current_camera_id+1]->getDistCoeffs()->copyTo(distCoeffs);
-  cv::projectPoints(object_points, rvecPNPR, tvecPNPR, intrinsic, distCoeffs, imgPointsRReturn);
+  cv::projectPoints(object_points[objposition], rvecPNPR, tvecPNPR, intrinsic, distCoeffs, imgPointsRReturn);
 
   cv::Mat difL, difR;
 
-  cv::absdiff(left_img_points, imgPointsLReturn, difL);
-  cv::absdiff(right_img_points, imgPointsRReturn, difR);
-  std::cout << "Diff L: " << difL << std::endl;
-  std::cout << "Diff R: " << difR << std::endl;
+  cv::absdiff(left_img_points[objposition], imgPointsLReturn, difL);
+  cv::absdiff(right_img_points[objposition], imgPointsRReturn, difR);
+  std::cout << "difL: " <<  endl << difL << std::endl << std::endl;
+  std::cout << "difR: " << endl << difR << std::endl << std::endl << std::endl;
 
   cv::Mat Eleft, Eright, manEssentialRVecR, manEssentialRVecL, manEssentialTVecR, manEssentialTVecL;
   vecCameras[current_camera_id+1]->getIntrinsic()->copyTo(intrinsic);
 
-  Eleft = cv::findEssentialMat(left_img_points, right_img_points, intrinsic,cv::RANSAC, 0.999, 2.0);
-  cv::recoverPose(Eleft, left_img_points, right_img_points, intrinsic, manEssentialRVecL, manEssentialTVecL);
-
-
+  Eleft = cv::findEssentialMat(left_img_points[objposition], right_img_points[objposition], intrinsic,cv::RANSAC, 0.999, 2.0);
+  cv::recoverPose(Eleft, left_img_points[objposition], right_img_points[objposition], intrinsic, manEssentialRVecL, manEssentialTVecL);
+  std::cout << "essential Left: " << endl << Eleft << std::endl;
+  std::cout << "rvecL: " << endl << manEssentialRVecL << std::endl;
+  std::cout << "tvecL: " << endl << manEssentialTVecL << std::endl << std::endl;
   vecCameras[current_camera_id+1]->getIntrinsic()->copyTo(intrinsic);
 
-   Eright = cv::findEssentialMat(right_img_points, left_img_points, intrinsic,cv::RANSAC, 0.999, 2.0);
-   cv::recoverPose(Eright, right_img_points, left_img_points, intrinsic, manEssentialRVecR, manEssentialTVecR);
-   std::cout << "Essential L: " << Eleft << std::endl;
-   std::cout << "Essential R: " << Eright << std::endl;
-   std::cout << "Essential Left rvec: " << manEssentialRVecL << std::endl;
-   std::cout << "Essential Left tvec: " << manEssentialTVecL << std::endl;
+   Eright = cv::findEssentialMat(right_img_points[objposition], left_img_points[objposition], intrinsic,cv::RANSAC, 0.999, 2.0);
+   cv::recoverPose(Eright, right_img_points[objposition], left_img_points[objposition], intrinsic, manEssentialRVecR, manEssentialTVecR);
+   std::cout << "essential right: " << endl << Eright << std::endl;
+   std::cout << "rvecR: " << endl << manEssentialRVecR << std::endl;
+   std::cout << "tvecR: " << endl << manEssentialTVecR << std::endl << std::endl;
 
-   std::cout << "Essential Right rvec: " << manEssentialRVecR << std::endl;
-   std::cout << "Essential Right tvec: " << manEssentialTVecR << std::endl;
+   cv::Mat imgL = cv::imread ("../Parameter/Bilder/Camera_Stereo_Calibration_" + std::to_string (current_camera_id) + "_Snapshot_" + std::to_string (0) + ".png",1);
+   cv::Mat imgR = cv::imread ("../Parameter/Bilder/Camera_Stereo_Calibration_" + std::to_string (current_camera_id+1) + "_Snapshot_" + std::to_string (0) + ".png",1);
+   int x,y;
+   x = left_img_points[objposition][0].x;
+   y = left_img_points[objposition][0].y;
 
-     std::cout << "Essential Calibration R" << endl << R << endl << endl;
-     std::cout << "Essential Calibration T" << endl << T << endl << endl;
-     std::cout << "Essential Calibration E" << endl << E << endl << endl;
+   cv::circle(imgL, cv::Point(x,y), 1, cv::Scalar(255,0,255), 5, cv::LINE_8, 0);
+   x = right_img_points[objposition][0].x;
+   y = right_img_points[objposition][0].y;
+
+   cv::circle(imgR, cv::Point(x,y), 1, cv::Scalar(255,0,255), 5, cv::LINE_8, 0);
+   cv::imwrite ("../Parameter/Bilder/_Draw_" + std::to_string (camera_id) + "_DrawPoint_" + std::to_string (0) + ".png",imgL);
+   cv::imwrite ("../Parameter/Bilder/_Draw_" + std::to_string (camera_id + 1) + "_DrawPoint_" + std::to_string (0) + ".png",imgR);
+
+
+   cv::Mat M10(cv::Mat_<double>(4,4));
+   cv::Mat M20(cv::Mat_<double>(4,4));
+   cv::Mat hM00(cv::Mat_<double>(4,4));
+   cv::Mat M12(cv::Mat_<double>(4,4));
+   cv::hconcat(manEssentialRVecL, manEssentialTVecL, M10);
+   cv::hconcat(manEssentialRVecR, manEssentialTVecR, M20);
+
+
+   for(int i = 0; i <= 3; i ++)
+     {
+     for(int j = 0; j <= 3; j ++)
+       {
+       hM00.at<double>(i,j) =   0.0;
+       }
+     }
+   hM00.at<double>(0,0) =   -1.0;
+   hM00.at<double>(1,1) =   -1.0;
+   hM00.at<double>(2,2) =   1.0;
+   hM00.at<double>(3,3) =   1.0;
+
+   hM00.at<double>(0,3) =   absCornerLength*absCornersHeight;
+   hM00.at<double>(1,3) =   absCornerLength*absCornersWidth;
+   std::cout << "hM00: " << endl << hM00 << std::endl << std::endl;
+
+   cv::Mat row = cv::Mat::zeros(1, 4, CV_64F);  // 3 cols, 1 row
+   M10.push_back(row);
+   M20.push_back(row);
+
+
+
+   std::cout << "M10: " << endl << M10 << std::endl << std::endl;
+   std::cout << "M20: " << endl << M20 << std::endl << std::endl;
+
+
+   M20.inv();
+
+   for(int i = 0; i <= 3; i ++)
+     {
+     for(int j = 0; j <= 3; j ++)
+       {
+       M12.at<double>(i,j) =   M10.at<double>(i,j)*hM00.at<double>(i,j)*M20.at<double>(i,j);
+       }
+     }
+   std::cout << "M12: " << endl << M12 << std::endl << std::endl << std::endl;
+
 
 
   /***************************************************************************/
   //https://gist.github.com/cashiwamochi/8ac3f8bab9bf00e247a01f63075fedeb
-     cv::Mat image1 = cv::imread ("../Parameter/Bilder/Camera_Stereo_Calibration_" + std::to_string (current_camera_id) + "_Snapshot_" + std::to_string (1) + ".png",1);
-     cv::Mat image2 = cv::imread ("../Parameter/Bilder/Camera_Stereo_Calibration_" + std::to_string (current_camera_id+1) + "_Snapshot_" + std::to_string (1) + ".png",1);
+   std::cout << endl << "/********************************** GITHUB METHODE ***********************/" << endl << endl;
+
+     cv::Mat image1 = cv::imread ("../Parameter/Bilder/Camera_Stereo_Calibration_" + std::to_string (current_camera_id) + "_Snapshot_" + std::to_string (2) + ".png",1);
+     cv::Mat image2 = cv::imread ("../Parameter/Bilder/Camera_Stereo_Calibration_" + std::to_string (current_camera_id+1) + "_Snapshot_" + std::to_string (2) + ".png",1);
 
 
        // Camera intristic parameter matrix
        // I did not calibration
-       cv::Mat K = (cv::Mat_<float>(3,3) <<  500.f,   0.f, image1.cols / 2.f,
-                                               0.f, 500.f, image1.rows / 2.f,
-                                               0.f,   0.f,               1.f);
+       cv::Mat K;
+       vecCameras[current_camera_id]->getIntrinsic()->copyTo(K);
 
        vector<cv::KeyPoint> kpts_vec1, kpts_vec2;
        cv::Mat desc1, desc2;
@@ -660,7 +741,7 @@ void C_CameraManager::calibrate_stereo_camera (int current_camera_id,
          for(int i = 0; i < selected_points1.size(); i++) {
            cv::line( src, selected_points1[i],
                      cv::Point2f(selected_points2[i].x + image1.cols, selected_points2[i].y),
-                     1, 1, 0 );
+                     cv::Scalar(255, 255, 0), 1, 0 );
          }
          cv::imwrite("match-result.png", src);
        }
@@ -672,6 +753,8 @@ void C_CameraManager::calibrate_stereo_camera (int current_camera_id,
                                 // cv::Point2f(0.f, 0.f),
                                 cv::Point2d(image1.cols/2., image1.rows/2.),
                                 cv::RANSAC, 0.999, 1.0, mask);
+       std::cout << " essentialGithub E" << endl << essentialGithub << endl << endl;
+
        // E is CV_64F not 32F
 
        vector<cv::Point2f> inlier_match_points1, inlier_match_points2;
@@ -688,7 +771,7 @@ void C_CameraManager::calibrate_stereo_camera (int current_camera_id,
          for(int i = 0; i < inlier_match_points1.size(); i++) {
            cv::line( src, inlier_match_points1[i],
                      cv::Point2f(inlier_match_points2[i].x + image1.cols, inlier_match_points2[i].y),
-                     1, 1, 0 );
+                     cv::Scalar(255, 255, 0), 1, 0 );
          }
          cv::imwrite("inlier_match_points.png", src);
        }
@@ -703,7 +786,9 @@ void C_CameraManager::calibrate_stereo_camera (int current_camera_id,
                        cv::Point2d(image1.cols/2., image1.rows/2.),
                        mask);
        // R,t is CV_64F not 32F
-       std::cout << " essentialGithub E" << endl << essentialGithub << endl << endl;
+       std::cout << "rvec: " << endl << RGithub << std::endl;
+       std::cout << "tvec: " << endl << tGithub << std::endl << std::endl;
+
 
 
        vector<cv::Point2d> triangulation_points1, triangulation_points2;
@@ -723,7 +808,7 @@ void C_CameraManager::calibrate_stereo_camera (int current_camera_id,
            cv::line( src, triangulation_points1[i],
                      cv::Point2f((float)triangulation_points2[i].x + (float)image1.cols,
                                  (float)triangulation_points2[i].y),
-                     1, 1, 0 );
+                     cv::Scalar(255, 255, 0), 1, 0 );
          }
          cv::imwrite("triangulatedPoints.png", src);
        }
@@ -747,7 +832,8 @@ void C_CameraManager::calibrate_stereo_camera (int current_camera_id,
 
        RGithub.convertTo(RGithub, CV_32F);
        tGithub.convertTo(tGithub, CV_32F);
-
+       std::cout << " RGithub" << endl << RGithub << endl << endl;
+       std::cout << " TGithub" << endl << tGithub << endl << endl;
        //this shows how a camera moves
        cv::Mat RinvGithub = RGithub.t();
        cv::Mat TGithub = -RinvGithub * tGithub;
@@ -756,7 +842,96 @@ void C_CameraManager::calibrate_stereo_camera (int current_camera_id,
 
      }
 
+void C_CameraManager::calibrate_stereo_camera_aruco(int current_camera_id, int absBoardImg)
+  {
+  //  cv::Ptr<cv::aruco::Dictionary> dictionary = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_6X6_250);
 
+  //  cv::Ptr<cv::aruco::CharucoBoard> board = cv::aruco::CharucoBoard::create(5, 7, 0.04f, 0.02f, dictionary);
+  //  cv::Mat boardImage;
+  //  board->draw(cv::Size(600, 500), boardImage, 10, 1);
+  //  cv::imwrite("Charuco_BoardImage_5_7_0.04f_0.02f.jpg", boardImage);
+
+  cv::Ptr<cv::aruco::Dictionary>            dictionary = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_6X6_250);
+  cv::Ptr<cv::aruco::CharucoBoard>          board = cv::aruco::CharucoBoard::create(5, 7, 0.04f, 0.02f, dictionary);
+  cv::Ptr<cv::aruco::DetectorParameters>    params = cv::aruco::DetectorParameters::create();
+  std::vector<std::vector<cv::Point2f>>     veccharucoCorners;
+  std::vector<std::vector<int>>             veccharucoIds;
+  cv::Size imgSize;
+  std::vector<cv::Mat>                      vecRvec;
+  std::vector<cv::Mat>                      vectvec;
+
+for(int j = 0; j < 2; j ++)
+  {
+  cv::Mat cameraMatrix, distCoeffs;
+  this->vecCameras[current_camera_id+j]->getIntrinsic()->copyTo(cameraMatrix);
+  this->vecCameras[current_camera_id+j]->getDistCoeffs()->copyTo(distCoeffs);
+  for(int i = j; i < absBoardImg; i = i+2)
+    {
+    cv::Mat image;
+    cv::Mat imageCopy;
+    image = cv::imread ("../Parameter/Bilder/Camera_Stereo_Calibration_" + std::to_string (current_camera_id+i) + "_Snapshot_" + std::to_string (i) + ".png",1);
+    image.copyTo(imageCopy);
+    imgSize = image.size();
+    std::vector<int> markerIds;
+    std::vector<std::vector<cv::Point2f> > markerCorners;
+    std::vector<cv::Point2f>     charucoCorners;
+    std::vector<int>             charucoIds;
+
+    cv::aruco::detectMarkers(image, board->dictionary, markerCorners, markerIds, params);
+    // if at least one marker detected
+    if (markerIds.size() > 0)
+      {
+      cv::aruco::drawDetectedMarkers(imageCopy, markerCorners, markerIds);
+      cv::aruco::interpolateCornersCharuco(markerCorners, markerIds, image, board, charucoCorners, charucoIds, cameraMatrix, distCoeffs);
+      // if at least one charuco corner detected
+      if (charucoIds.size() > 0)
+        {
+        cv::Scalar color = cv::Scalar(255, 0, 0);
+        cv::aruco::drawDetectedCornersCharuco(imageCopy, charucoCorners, charucoIds, color);
+        cv::Vec3d rvecAxis, tvecAxis;
+        // cv::aruco::estimatePoseCharucoBoard(charucoCorners, charucoIds, board, cameraMatrix, distCoeffs, rvec, tvec);
+        bool valid = cv::aruco::estimatePoseCharucoBoard(charucoCorners, charucoIds, board, cameraMatrix, distCoeffs, rvecAxis, tvecAxis);
+        // if charuco pose is valid
+        if (valid)
+        cv::aruco::drawAxis(imageCopy, cameraMatrix, distCoeffs, rvecAxis, tvecAxis, 0.1f);
+        cv::imwrite ("../Parameter/Bilder/Charuco_Camera_" + std::to_string (camera_id) + "_Axis.png",imageCopy);
+        veccharucoCorners.push_back(charucoCorners);
+        veccharucoIds.push_back(charucoIds);
+        cv::Mat rvec(3, 3, CV_64F);
+        cv::Mat tvec(3, 1, CV_64F);
+        cv::Mat  	stdDeviationsIntrinsics, stdDeviationsExtrinsics,  	perViewErrors;
+        cv::aruco::calibrateCameraCharuco(veccharucoCorners, veccharucoIds, board, imgSize, cameraMatrix, distCoeffs, rvec, tvec,
+                                          stdDeviationsIntrinsics, stdDeviationsExtrinsics, perViewErrors, 0,
+                                          cv::TermCriteria(cv::TermCriteria::COUNT+cv::TermCriteria::EPS, 1000, DBL_EPSILON));
+        std::cout << "Aruco rvec cam_" << std::to_string(current_camera_id) << ":" << std::endl << rvec;
+        std::cout << "Aruco tvec cam_" << std::to_string(current_camera_id) << ":" << std::endl << tvec;
+
+        }
+
+    }
+
+    }
+    cv::Mat M10(cv::Mat_<double>(4,4));
+    cv::Mat M12(cv::Mat_<double>(4,4));
+    cv::Mat M20(cv::Mat_<double>(4,4));
+    cv::hconcat(vecRvec[0], vectvec[0], M10);
+    cv::hconcat(vecRvec[1], vectvec[1], M20);
+
+    for(int i = 0; i <= 3; i ++)
+      {
+      for(int j = 0; j <= 3; j ++)
+        {
+        M12.at<double>(i,j) =   M10.at<double>(i,j)*M20.at<double>(i,j);
+        }
+      }
+
+    std::cout << "M10: " << endl << M10 << std::endl << std::endl;
+    std::cout << "M20: " << endl << M20 << std::endl << std::endl;
+    std::cout << "M12: " << endl << M12 << std::endl << std::endl;
+
+
+  }
+}
 //  std::cout << "Starting Calibration" << endl;
 //  cv::Mat   K1, K2, F, E;
 //  cv::Mat R(3, 3, CV_64F);
@@ -803,7 +978,7 @@ void C_CameraManager::calibrate_stereo_camera (int current_camera_id,
 ////  std::cout << "R2" << R2 << endl;
 ////  std::cout << "P1" << P1 << endl;
 ////  std::cout << "P2" << P2 << endl;0
-  }
+
 
 
 void C_CameraManager::threadCameraPositioning(std::vector<Camera::C_Camera2*> vecCameras, tbb::concurrent_bounded_queue<S_threadPayload*>* que)

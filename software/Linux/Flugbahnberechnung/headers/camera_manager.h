@@ -19,6 +19,10 @@
 #include "headers/GlobalObjects.h"
 #include "gst/gst.h"
 
+#include "opencv2/aruco.hpp"
+#include <opencv2/aruco/charuco.hpp>
+
+
 
 #if !defined(Q_MOC_RUN)
 #include <tbb/tbb.h>
@@ -198,7 +202,7 @@ namespace CameraManager
                                    int absCornersHeight,
                                    int absBoardImg,
                                    float absCornerLength);
-
+    void calibrate_stereo_camera_aruco(int current_camera_id, int absBoardImg);
 
     bool startThreadCameraPositioning();
     bool stopThreadCameraPositioning();

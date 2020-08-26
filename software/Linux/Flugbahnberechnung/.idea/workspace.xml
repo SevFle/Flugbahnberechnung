@@ -31,14 +31,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0cc48fd1-564d-414a-88c6-d9cf6e32ec25" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/Flugbahnberechnung.pro" beforeDir="false" afterPath="$PROJECT_DIR$/Flugbahnberechnung.pro" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/camera2.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/camera2.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/camera2.h" beforeDir="false" afterPath="$PROJECT_DIR$/camera2.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/headers/camera_manager.h" beforeDir="false" afterPath="$PROJECT_DIR$/headers/camera_manager.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/imagefilter.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/imagefilter.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Flugbahnberechnung" beforeDir="false" afterPath="$PROJECT_DIR$/Flugbahnberechnung" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sources/Main.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/sources/Main.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/sources/camera_manager.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/sources/camera_manager.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/sources/frm_camera_calibration.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/sources/frm_camera_calibration.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sources/frm_object_calibration.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/sources/frm_object_calibration.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Parameter/output" beforeDir="false" afterPath="$PROJECT_DIR$/../Parameter/output" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
