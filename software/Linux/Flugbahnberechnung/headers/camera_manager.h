@@ -199,6 +199,7 @@ namespace CameraManager
                                    int absBoardImg,
                                    float absCornerLength);
 
+
     bool startThreadCameraPositioning();
     bool stopThreadCameraPositioning();
     bool startPipelineTracking  (bool undistordActive, bool openActive, bool closeActive,  bool filterActive, bool objectDetectionActive,  bool roiAdjustmentActive, bool trackingActive);

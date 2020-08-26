@@ -8,6 +8,7 @@ __device__ float ele_multi (float* A, float* B, int Awidth, int Bwidth, int tx, 
 
 //some constant matrices to be used in this part
 
+//Observation Matrix - Beobachtungsmatrix H
 __device__ float H[8] = {
   1.0, 0, 0, 0,
   0, 1.0, 0, 0
@@ -20,8 +21,8 @@ __device__ float HT[8] = {
   0, 0
   };
 __device__ float A[16] = {
-  1.0, 0, 0, 0,
-  0, 1.0, 0, 0,
+  1.0, 0, dTime, 0,
+  0, 1.0, 0, dTime,
   0, 0, 1.0, 0,
   0, 0, 0, 1.0
   };
