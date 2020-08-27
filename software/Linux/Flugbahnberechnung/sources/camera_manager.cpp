@@ -167,9 +167,6 @@ bool C_CameraManager::openCameras ()
       GstStructure *    DeviceProps   = gst_device_get_properties (device);
       gchar *           fieldname     = "device.path" ;
           std::string       devicePath    = gst_structure_get_string(DeviceProps, fieldname);
-          if(devicePath.compare("/dev/video0") !=0)
-            {
-
           std::string       Pipeline      = "v4l2src device="+ devicePath +" ! ";
                             Pipeline      += "image/jpeg, format=BGR, width=" + std::to_string(this->frameWidth) +",";
                             Pipeline      += "height=" + std::to_string(this->frameHeight) +" ! jpegdec ! videoconvert ! appsink";//sync=false
@@ -181,7 +178,6 @@ bool C_CameraManager::openCameras ()
             std::cout << "**ERROR** Could not open device on path" << devicePath << std::endl;
           vecCameras.push_back            (camera);
           this->globalObjects->absCameras++;
-        }
       }
     std::cout << "**INFO** Cameraspeed is \033[1m\033[33m" << this->vecCameras[0]->getFPS() << "\033[0m fps" << std::endl;
     std::cout << "**INFO** Created \033[1m\033[31m" << std::to_string(this->globalObjects->absCameras) << " \033[0m Devices" << std::endl;
@@ -222,7 +218,7 @@ void C_CameraManager::loadCameras              ()
   }
 bool C_CameraManager::startThreadCameraPositioning()
   {
-  threadQue->set_capacity(10);
+  threadQue->set_capacity(4);
   this->camPositioning     = new thread(&CameraManager::C_CameraManager::threadHelper,this);
   std::cout << "**INFO** Kamerathread wurde gestartet" << std::endl;
   return true;
@@ -236,7 +232,7 @@ bool C_CameraManager::stopThreadCameraPositioning()
    }
 bool C_CameraManager::startPipelineTracking  (bool undistordActive, bool openActive, bool closeActive,  bool filterActive, bool objectDetectionActive,  bool roiAdjustmentActive, bool trackingActive)
   {
-  pipelineQue->set_capacity(10);
+  pipelineQue->set_capacity(4);
   this->filterFlags->undistordActive        = undistordActive;
   this->filterFlags->openActive             = openActive;
   this->filterFlags->filterActive           = filterActive;
@@ -1170,7 +1166,7 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
 //    +--------+----+----+----+----+------+------+------+------+
   int frameheight = this->vecCameras[0]->getFrameHeight();
   int framewidth = this->vecCameras[0]->getFrameWidth();
-  tbb::parallel_pipeline(7, tbb::make_filter<void, S_pipelinePayload*>(tbb::filter::serial_in_order, [&](tbb::flow_control& fc)->S_pipelinePayload*
+  tbb::parallel_pipeline(3, tbb::make_filter<void, S_pipelinePayload*>(tbb::filter::serial_in_order, [&](tbb::flow_control& fc)->S_pipelinePayload*
     {
     if(flush)
       std::this_thread::sleep_for (std::chrono::milliseconds (200));
