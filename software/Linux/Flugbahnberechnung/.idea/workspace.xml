@@ -31,11 +31,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0cc48fd1-564d-414a-88c6-d9cf6e32ec25" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Flugbahnberechnung" beforeDir="false" afterPath="$PROJECT_DIR$/Flugbahnberechnung" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/sources/Main.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/sources/Main.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/sources/camera_manager.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/sources/camera_manager.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/sources/frm_camera_calibration.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/sources/frm_camera_calibration.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Parameter/output" beforeDir="false" afterPath="$PROJECT_DIR$/../Parameter/output" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Parameter/Camera_Positioning.csv" beforeDir="false" afterPath="$PROJECT_DIR$/../Parameter/Camera_Positioning.csv" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -108,6 +109,7 @@
       <workItem from="1593337446468" duration="724000" />
       <workItem from="1593338244642" duration="3669000" />
       <workItem from="1593341915954" duration="4202000" />
+      <workItem from="1598470093505" duration="12000" />
     </task>
     <servers />
   </component>

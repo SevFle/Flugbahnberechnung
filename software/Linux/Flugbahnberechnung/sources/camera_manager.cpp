@@ -172,7 +172,7 @@ bool C_CameraManager::openCameras ()
 
           std::string       Pipeline      = "v4l2src device="+ devicePath +" ! ";
                             Pipeline      += "image/jpeg, format=BGR, width=" + std::to_string(this->frameWidth) +",";
-                            Pipeline      += "height=" + std::to_string(this->frameHeight) +" ! jpegdec ! videoconvert ! appsink";
+                            Pipeline      += "height=" + std::to_string(this->frameHeight) +" ! jpegdec ! videoconvert ! appsink";//sync=false
 
           auto              camera        = new Camera::C_Camera2;
           camera->setPipeline             (Pipeline);
@@ -844,45 +844,71 @@ void C_CameraManager::calibrate_stereo_camera (int current_camera_id,
 
 void C_CameraManager::calibrate_stereo_camera_aruco(int current_camera_id, int absBoardImg)
   {
-  //  cv::Ptr<cv::aruco::Dictionary> dictionary = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_6X6_250);
+//  cv::Ptr<cv::aruco::Dictionary> dictionary = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_6X6_250);
 
-  //  cv::Ptr<cv::aruco::CharucoBoard> board = cv::aruco::CharucoBoard::create(5, 7, 0.04f, 0.02f, dictionary);
-  //  cv::Mat boardImage;
-  //  board->draw(cv::Size(600, 500), boardImage, 10, 1);
-  //  cv::imwrite("Charuco_BoardImage_5_7_0.04f_0.02f.jpg", boardImage);
+//  cv::Ptr<cv::aruco::CharucoBoard> board = cv::aruco::CharucoBoard::create(9, 6, 0.40f, 0.25f, dictionary);
+//  cv::Mat boardImage;
+//  //DINA4 3508 x 2480 px
+//  board->draw(cv::Size(3200, 2200), boardImage, 10, 1);
+//  cv::imwrite("../Parameter/Charuco_BoardImage_5_7_0.04f_0.02f_Size(3200, 2200).jpg", boardImage);
 
   cv::Ptr<cv::aruco::Dictionary>            dictionary = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_6X6_250);
-  cv::Ptr<cv::aruco::CharucoBoard>          board = cv::aruco::CharucoBoard::create(5, 7, 0.04f, 0.02f, dictionary);
+  cv::Ptr<cv::aruco::CharucoBoard>          board = cv::aruco::CharucoBoard::create(9, 6, 0.03177f, 0.02002f, dictionary);
   cv::Ptr<cv::aruco::DetectorParameters>    params = cv::aruco::DetectorParameters::create();
-  std::vector<std::vector<cv::Point2f>>     veccharucoCorners;
-  std::vector<std::vector<int>>             veccharucoIds;
   cv::Size imgSize;
-  std::vector<cv::Mat>                      vecRvec;
-  std::vector<cv::Mat>                      vectvec;
+  std::vector<cv::Mat>                      vecRvecR;
+  std::vector<cv::Mat>                      vectvecR;
+  std::vector<cv::Mat>                      vecRvecL;
+  std::vector<cv::Mat>                      vectvecL;
 
 for(int j = 0; j < 2; j ++)
   {
+  std::vector<cv::Mat>                      vecRvec;
+  std::vector<cv::Mat>                      vectvec;
+  std::vector<std::vector<cv::Point2f>>     veccharucoCorners;
+  std::vector<std::vector<int>>             veccharucoIds;
+  std::cout << std::endl << "Analysiere Bilder von Kamera " << std::to_string(j+1) << std::endl;
+  //Hole aktuelle Intrinsic und Verzerrungsdaten der abgefragten (j) Kamera
   cv::Mat cameraMatrix, distCoeffs;
   this->vecCameras[current_camera_id+j]->getIntrinsic()->copyTo(cameraMatrix);
   this->vecCameras[current_camera_id+j]->getDistCoeffs()->copyTo(distCoeffs);
-  for(int i = j; i < absBoardImg; i = i+2)
-    {
-    cv::Mat image;
-    cv::Mat imageCopy;
-    image = cv::imread ("../Parameter/Bilder/Camera_Stereo_Calibration_" + std::to_string (current_camera_id+i) + "_Snapshot_" + std::to_string (i) + ".png",1);
-    image.copyTo(imageCopy);
-    imgSize = image.size();
-    std::vector<int> markerIds;
-    std::vector<std::vector<cv::Point2f> > markerCorners;
-    std::vector<cv::Point2f>     charucoCorners;
-    std::vector<int>             charucoIds;
 
-    cv::aruco::detectMarkers(image, board->dictionary, markerCorners, markerIds, params);
+
+
+
+  for(int i = j; i < absBoardImg; i++)
+    {
+    std::cout << std::endl << "Analysiere Bild: " << std::to_string(i) << std::endl;
+    cv::Mat image;
+    cv::Mat gray;
+    cv::Mat imageCopy;
+    image = cv::imread ("../Parameter/Bilder/Camera_Stereo_Calibration_" + std::to_string (current_camera_id+j) + "_Snapshot_" + std::to_string (i) + ".png",1);
+    image.copyTo(imageCopy);
+    cv::cvtColor(image, gray, cv::COLOR_BGR2GRAY);
+
+    imgSize = image.size();
+    std::vector<int>                        markerIds;
+    std::vector<std::vector<cv::Point2f>>   markerCorners;
+    //rejectedPoints beschreibt alle Punkte, welche von der detectMarkers Funktion abgelehnt wurden.
+    std::vector<std::vector<cv::Point2f> >  rejectedPoints;
+    std::vector<cv::Point2f>               recoveredIdxs;
+    std::vector<cv::Point2f>                charucoCorners;
+    std::vector<int>                        charucoIds;
+
+    cv::aruco::detectMarkers(gray, board->dictionary, markerCorners, markerIds, params,rejectedPoints,cameraMatrix, distCoeffs);
+    std::cout << "Rejected Points size: " << std::to_string(rejectedPoints.size()) << std::endl;
+
     // if at least one marker detected
     if (markerIds.size() > 0)
       {
+      //Versuche die Positionen von verdeckten Markern zu berechnen.
+      //cv::aruco::refineDetectedMarkers(gray, board, markerCorners, markerIds, rejectedPoints, cameraMatrix, distCoeffs,10.f, 3.f, true, recoveredIdxs,  cv::aruco::DetectorParameters::create());
+      //Zeichne alle gefundenen Marker auf das Bild
       cv::aruco::drawDetectedMarkers(imageCopy, markerCorners, markerIds);
-      cv::aruco::interpolateCornersCharuco(markerCorners, markerIds, image, board, charucoCorners, charucoIds, cameraMatrix, distCoeffs);
+      //This function receives the detected markers and returns the 2D position of the chessboard corners from a ChArUco board using the detected Aruco markers.
+      //If camera parameters are provided, the process is based in an approximated pose estimation, else it is based on local homography.
+      //Only visible corners are returned. For each corner, its corresponding identifier is also returned in charucoIds. The function returns the number of interpolated corners.
+      cv::aruco::interpolateCornersCharuco(markerCorners, markerIds, image, board, charucoCorners, charucoIds, cameraMatrix, distCoeffs, 2);
       // if at least one charuco corner detected
       if (charucoIds.size() > 0)
         {
@@ -893,45 +919,88 @@ for(int j = 0; j < 2; j ++)
         bool valid = cv::aruco::estimatePoseCharucoBoard(charucoCorners, charucoIds, board, cameraMatrix, distCoeffs, rvecAxis, tvecAxis);
         // if charuco pose is valid
         if (valid)
-        cv::aruco::drawAxis(imageCopy, cameraMatrix, distCoeffs, rvecAxis, tvecAxis, 0.1f);
-        cv::imwrite ("../Parameter/Bilder/Charuco_Camera_" + std::to_string (camera_id) + "_Axis.png",imageCopy);
+        cv::aruco::drawAxis(imageCopy, cameraMatrix, distCoeffs, rvecAxis, tvecAxis, 0.4f);
+        cv::imwrite ("../Parameter/Bilder/Charuco_Camera_" + std::to_string (camera_id+j) + "_Axis_img_" + std::to_string(i) + ".png",imageCopy);
         veccharucoCorners.push_back(charucoCorners);
         veccharucoIds.push_back(charucoIds);
-        cv::Mat rvec(3, 3, CV_64F);
-        cv::Mat tvec(3, 1, CV_64F);
-        cv::Mat  	stdDeviationsIntrinsics, stdDeviationsExtrinsics,  	perViewErrors;
-        cv::aruco::calibrateCameraCharuco(veccharucoCorners, veccharucoIds, board, imgSize, cameraMatrix, distCoeffs, rvec, tvec,
-                                          stdDeviationsIntrinsics, stdDeviationsExtrinsics, perViewErrors, 0,
-                                          cv::TermCriteria(cv::TermCriteria::COUNT+cv::TermCriteria::EPS, 1000, DBL_EPSILON));
-        std::cout << "Aruco rvec cam_" << std::to_string(current_camera_id) << ":" << std::endl << rvec;
-        std::cout << "Aruco tvec cam_" << std::to_string(current_camera_id) << ":" << std::endl << tvec;
-
-        }
-
-    }
-
-    }
-    cv::Mat M10(cv::Mat_<double>(4,4));
-    cv::Mat M12(cv::Mat_<double>(4,4));
-    cv::Mat M20(cv::Mat_<double>(4,4));
-    cv::hconcat(vecRvec[0], vectvec[0], M10);
-    cv::hconcat(vecRvec[1], vectvec[1], M20);
-
-    for(int i = 0; i <= 3; i ++)
-      {
-      for(int j = 0; j <= 3; j ++)
-        {
-        M12.at<double>(i,j) =   M10.at<double>(i,j)*M20.at<double>(i,j);
         }
       }
+    }
 
-    std::cout << "M10: " << endl << M10 << std::endl << std::endl;
-    std::cout << "M20: " << endl << M20 << std::endl << std::endl;
-    std::cout << "M12: " << endl << M12 << std::endl << std::endl;
+  cv::Mat  	stdDeviationsIntrinsics, stdDeviationsExtrinsics,  	perViewErrors;
 
+  cv::aruco::calibrateCameraCharuco(veccharucoCorners, veccharucoIds, board, imgSize, cameraMatrix, distCoeffs, vecRvec, vectvec,
+                                    stdDeviationsIntrinsics, stdDeviationsExtrinsics, perViewErrors, 0,
+                                    cv::TermCriteria(cv::TermCriteria::COUNT+cv::TermCriteria::EPS, 1000, DBL_EPSILON));
+  std::cout << "stdDeviationsIntrinsics: " << endl << stdDeviationsIntrinsics << std::endl << std::endl;
+  std::cout << "stdDeviationsExtrinsics: " << endl << stdDeviationsExtrinsics << std::endl << std::endl;
+  std::cout << "perViewErrors: " << endl << perViewErrors << std::endl << std::endl;
+  if(j==0)
+    {
+      vecRvecL = vecRvec;
+      vectvecL = vectvec;
+    }
+  if(j==1)
+    {
+      vecRvecR = vecRvec;
+      vectvecR = vectvec;
+    }
 
   }
+std::vector<cv::Mat> vecM10, vecM20;
+for(int i = 0; i < vecRvecL.size(); i ++)
+  {
+  cv::Mat M10, tempRod;
+  cv::Rodrigues(vecRvecL[i], tempRod);
+  cv::hconcat(tempRod, vectvecL[i], M10);
+
+  cv::Mat row = cv::Mat::zeros(1, 4, CV_64F);  // 3 cols, 1 row
+  M10.push_back(row);
+  M10.at<double>(3,3) =   1.0;
+
+  std::cout << "Marker " + std::to_string(i) + ": M10 = " << endl << M10 << std::endl << std::endl;
+  vecM10.push_back(M10);
+  }
+for(int i = 0; i < vecRvecR.size(); i ++)
+  {
+    cv::Mat M20, tempRod;
+    cv::Rodrigues(vecRvecR[i], tempRod);
+    cv::hconcat(tempRod, vectvecR[i], M20);
+
+    cv::Mat row = cv::Mat::zeros(1, 4, CV_64F);  // 3 cols, 1 row
+    M20.push_back(row);
+    M20.at<double>(3,3) =   1.0;
+
+    std::cout << "Marker " + std::to_string(i) + ": M20 = " << endl << M20 << std::endl << std::endl;
+    vecM20.push_back(M20);
+  }
+for(int i = 0; i < vecRvecR.size(); i ++)
+  {
+    cv::Mat M12(cv::Mat_<double>(4,4));
+    M12 = vecM10[i].mul(vecM20[i].inv());
+    std::cout << "Marker " + std::to_string(i) + ": M12 = " << endl << M12 << std::endl << std::endl;
+  }
+
+
+//  cv::Mat M10(cv::Mat_<double>(4,4));
+//  cv::Mat M12(cv::Mat_<double>(4,4));
+//  cv::Mat M20(cv::Mat_<double>(4,4));
+//  cv::hconcat(vecRvec[0], vectvec[0], M10);
+//  cv::hconcat(vecRvec[1], vectvec[1], M20);
+//  for(int i = 0; i <= 3; i ++)
+//    {
+//    for(int j = 0; j <= 3; j ++)
+//      {
+//      M12.at<double>(i,j) =   M10.at<double>(i,j)*M20.at<double>(i,j);
+//      }
+//    }
+//    std::cout << "M10: " << endl << M10 << std::endl << std::endl;
+//    std::cout << "M20: " << endl << M20 << std::endl << std::endl;
+//    std::cout << "M12: " << endl << M12 << std::endl << std::endl;
+
+
 }
+
 //  std::cout << "Starting Calibration" << endl;
 //  cv::Mat   K1, K2, F, E;
 //  cv::Mat R(3, 3, CV_64F);
