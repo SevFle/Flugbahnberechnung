@@ -21,6 +21,8 @@
 
 #include "opencv2/aruco.hpp"
 #include <opencv2/aruco/charuco.hpp>
+#include <eigen3/Eigen/Core>
+#include "posen.h"
 
 
 
@@ -160,7 +162,8 @@ namespace CameraManager
     thread*                                 camPositioning;
     std::mutex*  restrict                   lock;
     Clock::time_point                       timestampTm1;
-
+    posen::C_RelativePose*                  relPose;
+    posen::C_AbsolutePose*                  absPose;
     public:
     tbb::concurrent_bounded_queue<CameraManager::S_pipelinePayload*>*  pipelineQue;
     tbb::concurrent_bounded_queue<CameraManager::S_threadPayload*>*                    threadQue;

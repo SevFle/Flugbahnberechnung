@@ -250,4 +250,6 @@ unix:!macx: PRE_TARGETDEPS += $$PWD/../libCuda/lib/libgpu.a
 unix:!macx: LIBS += -L$$PWD/../../../../../../../usr/local/cuda-10.1/lib64/ -lcudart -lcudadevrt -lcuda
 
 INCLUDEPATH += $$PWD/../../../../../../../usr/local/cuda-10.1/include
+INCLUDEPATH += $$PWD/../../../../../../../usr/local/include/eigen3
+
 DEPENDPATH += $$PWD/../../../../../../../usr/local/cuda-10.1/include

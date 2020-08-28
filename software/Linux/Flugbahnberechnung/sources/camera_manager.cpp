@@ -22,6 +22,8 @@ C_CameraManager::C_CameraManager ( C_GlobalObjects* GlobalObjects)
 
   this->trackingManager = new trackingManager::C_trackingManager(GlobalObjects);
   this->filterFlags     = new S_filterflags;
+  this->relPose            = new posen::C_RelativePose;
+  this->absPose         = new posen::C_AbsolutePose;
   this->camera_id       = 0;
   this->frameWidth      = 1280;
   this->frameHeight     = 720;
@@ -45,6 +47,8 @@ C_CameraManager::~C_CameraManager ()
   {
   this->initZoneWidth   =0;
   this->initZoneHeight  = 0;
+    delete (absPose);
+  delete (relPose);
   delete (tData);
   delete (filterFlags);
   delete (trackingManager);
@@ -847,8 +851,11 @@ void C_CameraManager::calibrate_stereo_camera_aruco(int current_camera_id, int a
 //  board->draw(cv::Size(3200, 2200), boardImage, 10, 1);
 //  cv::imwrite("../Parameter/Charuco_BoardImage_5_7_0.04f_0.02f_Size(3200, 2200).jpg", boardImage);
 
+  cv::Vec3d rvecAxisL, tvecAxisL, rvecAxisR, tvecAxisR;
+
+
   cv::Ptr<cv::aruco::Dictionary>            dictionary = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_6X6_250);
-  cv::Ptr<cv::aruco::CharucoBoard>          board = cv::aruco::CharucoBoard::create(9, 6, 0.03177f, 0.02002f, dictionary);
+  cv::Ptr<cv::aruco::CharucoBoard>          board = cv::aruco::CharucoBoard::create(9, 6, 0.03190f, 0.02002f, dictionary);
   cv::Ptr<cv::aruco::DetectorParameters>    params = cv::aruco::DetectorParameters::create();
 
   cv::Size imgSize;
@@ -930,6 +937,18 @@ void C_CameraManager::calibrate_stereo_camera_aruco(int current_camera_id, int a
         std::cout << "rvecAxis: " << endl << rvecAxis << std::endl << std::endl;
         std::cout << "tvecAxis: " << endl << tvecAxis << std::endl << std::endl;
 
+        if(j==0)
+          {
+          rvecAxisL = rvecAxis;
+          tvecAxisL = tvecAxis;
+          }
+        if(j==1)
+          {
+            rvecAxisR = rvecAxis;
+            tvecAxisR = tvecAxis;
+          }
+
+
         cv::imwrite ("../Parameter/Bilder/Charuco_Camera_" + std::to_string (camera_id+j) + "_Axis_img_" + std::to_string(i) + ".png",imageCopy);
         veccharucoCorners.push_back(charucoCorners);
         veccharucoIds.push_back(charucoIds);
@@ -952,9 +971,9 @@ void C_CameraManager::calibrate_stereo_camera_aruco(int current_camera_id, int a
                                     cv::TermCriteria(cv::TermCriteria::COUNT+cv::TermCriteria::EPS, 1000, DBL_EPSILON));
 
 
-    std::cout << "stdDeviationsIntrinsics: " << endl << stdDeviationsIntrinsics << std::endl << std::endl;
-    std::cout << "stdDeviationsExtrinsics: " << endl << stdDeviationsExtrinsics << std::endl << std::endl;
-    std::cout << "perViewErrors: " << endl << perViewErrors << std::endl << std::endl;
+//    std::cout << "stdDeviationsIntrinsics: " << endl << stdDeviationsIntrinsics << std::endl << std::endl;
+//    std::cout << "stdDeviationsExtrinsics: " << endl << stdDeviationsExtrinsics << std::endl << std::endl;
+//    std::cout << "perViewErrors: " << endl << perViewErrors << std::endl << std::endl;
 
     if(j==0)
       {
@@ -967,7 +986,86 @@ void C_CameraManager::calibrate_stereo_camera_aruco(int current_camera_id, int a
       vectvecR = vectvec;
       }
     }
+
+  //Posenberechnungen
+  cv::Mat rvecM12, rvecAxisRodL, rvecAxisRodR;
+  cv::Mat M10(cv::Mat_<double>(4,4));
+  cv::Mat M20(cv::Mat_<double>(4,4));
+  cv::Mat M12(cv::Mat_<double>(4,4));
+  cv::Mat row = cv::Mat::zeros(1, 4, CV_64F);  // 3 cols, 1 row
+
+  cv::Rodrigues(rvecAxisL, rvecAxisRodL);
+  cv::Rodrigues(rvecAxisR, rvecAxisRodR);
+
+  cv::hconcat(rvecAxisRodL, tvecAxisL, M10);
+  cv::hconcat(rvecAxisRodR, tvecAxisR, M20);
+
+  M10.push_back(row);
+  M20.push_back(row);
+  M10.at<double>(3,3) =   1.0;
+  M20.at<double>(3,3) =   1.0;
+
+  std::cout << "M10 AXIS: " << endl << M10 << std::endl << std::endl;
+  std::cout << "M20 AXIS: " << endl << M20 << std::endl << std::endl;
+
+  double doubleM20[4][4];
+
+  double doubleM20Inverse[4][4];
+
+  for(int i = 0; i <= 3; i ++)
+    {
+    for(int j = 0; j <= 3; j ++)
+      {
+      doubleM20[i][j] =   M20.at<double>(i,j);
+      }
+    }
+
+  relPose->InversHomogenousPose(doubleM20, doubleM20Inverse);
+
+
+  cv::Mat helpmatrel(cv::Mat_<double>(4,4));
+
+  for(int i = 0; i <= 3; i ++)
+    {
+    for(int j = 0; j <= 3; j ++)
+      {
+      helpmatrel.at<double>(i,j) = doubleM20Inverse[i][j];
+
+      }
+    }
+  std::cout << "doubleM20Inverse: " << endl << helpmatrel << std::endl << std::endl;
+
+//  cv::Mat M20inv, M12CV;
+//  M20inv = M20.inv();
+//  std::cout << "M20 AXIS.inv(): " << endl << M20inv << std::endl << std::endl;
+//  cv::multiply(M10, M20inv, M12CV, 1);
+//  std::cout << "M12 AXIS cv::Multiply: " << endl << M12 << std::endl << std::endl;
+
+//  for(int i = 0; i <= 3; i ++)
+//    {
+//    for(int j = 0; j <= 3; j ++)
+//      {
+//      M12.at<double>(i,j) =   M10.at<double>(i,j)*doubleM20Inverse[i][j];
+//      }
+//    }
+
+  for(int i=0;i<4;i++)
+    {
+    for(int j=0;j<4;j++)
+        {
+        M12.at<double>(i,j)=0;
+        for(int k=0;k<4;k++)
+            {
+            M12.at<double>(i,j)+=M10.at<double>(i,k)*doubleM20Inverse[k][j];
+            }
+        }
+    }
+
+
+  std::cout << "M12 AXIS manual  : " << endl << M12 << std::endl << std::endl;
+
   std::vector<cv::Mat> vecM10, vecM20;
+
   for(int i = 0; i < vecRvecL.size(); i ++)
     {
     cv::Mat M10, tempRod;
