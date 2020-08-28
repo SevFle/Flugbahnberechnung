@@ -215,7 +215,7 @@ namespace CameraManager
 
 
 
-    void calculate_camera_pose    (int camera1, int camera2, cv::Vec3d T, cv::Mat R);
+    void calculate_camera_pose    (int camera1, int camera2, cv::Mat M12);
 
     void getDeviceList            ();
 

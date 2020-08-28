@@ -220,7 +220,7 @@ void C_frm_Camera_Calibration::on_rb_stereo_calibration_clicked()
 {
     this->method                              = 1;
     this->Ui->num_camera_id->setValue         (0);
-    this->Ui->num_camera_id->setSingleStep    (2);
+    this->Ui->num_camera_id->setSingleStep    (1);
     this->Ui->num_camera_id->setMaximum       (GlobalObjects->absCameras-2);
 
     this->cameraID                            = 0;
@@ -336,7 +336,7 @@ void C_frm_Camera_Calibration::sm_Single_camera_calibration ()
 
 void C_frm_Camera_Calibration::sm_Stereo_camera_calibration ()
   {
-  std::string naming = "../Parameter/Bilder/Camera_Stereo_Calibration_";
+  std::string naming = "../Parameter/Bilder/Charuco_Camera_Stereo_Calibration_";
   switch (this->sm_calibration_state)
     {
     case 0:

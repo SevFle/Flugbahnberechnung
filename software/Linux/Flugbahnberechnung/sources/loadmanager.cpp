@@ -85,11 +85,6 @@ void C_LoadManager::loadCameraSettings (Camera::C_Camera2 *Camera)
     GlobalObjects->csv_parameter_datei->Lesen (bilateral_sigma_color);
     GlobalObjects->csv_parameter_datei->Lesen (bilateral_sigma_spatial);
 
-    GlobalObjects->csv_parameter_datei->Lesen (erode_active);
-    GlobalObjects->csv_parameter_datei->Lesen (dilation_active);
-    GlobalObjects->csv_parameter_datei->Lesen (morph_active);
-    GlobalObjects->csv_parameter_datei->Lesen (bilateral_active);
-
     GlobalObjects->csv_parameter_datei->Lesen (object_size_min);
     GlobalObjects->csv_parameter_datei->Lesen (object_size_max);
 

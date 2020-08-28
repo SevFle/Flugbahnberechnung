@@ -14,7 +14,7 @@ c_SaveManager::~c_SaveManager()
 void c_SaveManager::saveCameraCos         (Camera::C_Camera2 &Camera)
   {
   string Dateiname = "../Parameter/Pose_world_to_camera" + to_string (Camera.getCameraID()) + ".csv";
-  string Dateityp;
+  string Dateityp = "Value of the individual setting";;
   double nx, ny, nz, ox, oy, oz, ax, ay, az, px, py, pz;
 
   nx = Camera.getCameraPose()->nx();
@@ -32,10 +32,9 @@ void c_SaveManager::saveCameraCos         (Camera::C_Camera2 &Camera)
   px = Camera.getCameraPose()->px();
   py = Camera.getCameraPose()->py();
   pz = Camera.getCameraPose()->pz();
-
-  GlobalObjects->csv_parameter_datei->Oeffnen (Dateiname,Enum_CSV_Access::Read);
-  if (GlobalObjects->csv_parameter_datei->IsOpen())
-    {
+ GlobalObjects->csv_parameter_datei->Oeffnen (Dateiname,Enum_CSV_Access::Write);
+ if(GlobalObjects->csv_parameter_datei->IsOpen())
+ {
     GlobalObjects->csv_parameter_datei->Schreiben ("Dateityp",Dateityp,"[1]");
     GlobalObjects->csv_parameter_datei->Schreiben ("nx",nx,"[1]");
     GlobalObjects->csv_parameter_datei->Schreiben ("ny",ny,"[1]");
@@ -51,11 +50,9 @@ void c_SaveManager::saveCameraCos         (Camera::C_Camera2 &Camera)
     GlobalObjects->csv_parameter_datei->Schreiben ("pz",pz,"[mm]");
     GlobalObjects->csv_parameter_datei->Schliessen();
     std::cout << "**INFO** Pose fuer Kamera " << std::to_string(Camera.getCameraID()) << " wurde gespeichert" << std::endl;
-    }
-  else
-    {
-    std::cout << "**ERROR** Pose fuer Kamera " << std::to_string(Camera.getCameraID()) << " wurde nicht gespeichert" << std::endl;
-    }
+ }
+ else
+ {}
   }
 void c_SaveManager::saveCameraPositioning (std::vector<Camera::C_Camera2*>& vecCameras) const
   {

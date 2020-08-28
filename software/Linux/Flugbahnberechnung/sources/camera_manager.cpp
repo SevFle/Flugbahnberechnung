@@ -880,7 +880,7 @@ void C_CameraManager::calibrate_stereo_camera_aruco(int current_camera_id, int a
       cv::Mat image;
       cv::Mat gray;
       cv::Mat imageCopy;
-      image = cv::imread ("../Parameter/Bilder/Camera_Stereo_Calibration_" + std::to_string (current_camera_id+j) + "_Snapshot_" + std::to_string (i) + ".png",1);
+      image = cv::imread ("../Parameter/Bilder/Charuco_Camera_Stereo_Calibration_" + std::to_string (current_camera_id+j) + "_Snapshot_" + std::to_string (i) + ".png",1);
       image.copyTo(imageCopy);
       cv::cvtColor(image, gray, cv::COLOR_BGR2GRAY);
 
@@ -909,7 +909,7 @@ void C_CameraManager::calibrate_stereo_camera_aruco(int current_camera_id, int a
       //errorCorrectionRate parameters. If camera parameters and distortion coefficients are provided, missing markers are reprojected using
       //projectPoint function. If not, missing marker projections are interpolated using global homography, and
       //all the marker corners in the board must have the same Z coordinate.
-      cv::aruco::refineDetectedMarkers(gray, board, markerCorners, markerIds, rejectedPoints, cameraMatrix, distCoeffs,10.f, 3.f, true, recoveredIdxs,  cv::aruco::DetectorParameters::create());
+      //cv::aruco::refineDetectedMarkers(gray, board, markerCorners, markerIds, rejectedPoints, cameraMatrix, distCoeffs,10.f, 3.f, true, recoveredIdxs,  cv::aruco::DetectorParameters::create());
 
       //Given an array of detected marker corners and its corresponding ids,
       //this functions draws the markers in the image. The marker borders are painted and the markers identifiers
@@ -1035,19 +1035,6 @@ void C_CameraManager::calibrate_stereo_camera_aruco(int current_camera_id, int a
     }
   std::cout << "doubleM20Inverse: " << endl << helpmatrel << std::endl << std::endl;
 
-//  cv::Mat M20inv, M12CV;
-//  M20inv = M20.inv();
-//  std::cout << "M20 AXIS.inv(): " << endl << M20inv << std::endl << std::endl;
-//  cv::multiply(M10, M20inv, M12CV, 1);
-//  std::cout << "M12 AXIS cv::Multiply: " << endl << M12 << std::endl << std::endl;
-
-//  for(int i = 0; i <= 3; i ++)
-//    {
-//    for(int j = 0; j <= 3; j ++)
-//      {
-//      M12.at<double>(i,j) =   M10.at<double>(i,j)*doubleM20Inverse[i][j];
-//      }
-//    }
 
   for(int i=0;i<4;i++)
     {
@@ -1062,109 +1049,9 @@ void C_CameraManager::calibrate_stereo_camera_aruco(int current_camera_id, int a
     }
 
 
-  std::cout << "M12 AXIS manual  : " << endl << M12 << std::endl << std::endl;
-
-  std::vector<cv::Mat> vecM10, vecM20;
-
-  for(int i = 0; i < vecRvecL.size(); i ++)
-    {
-    cv::Mat M10, tempRod;
-    cv::Rodrigues(vecRvecL[i], tempRod);
-    cv::hconcat(tempRod, vectvecL[i], M10);
-
-    cv::Mat row = cv::Mat::zeros(1, 4, CV_64F);  // 3 cols, 1 row
-    M10.push_back(row);
-    M10.at<double>(3,3) =   1.0;
-
-    std::cout << "Bild " + std::to_string(i) + ": M10 = " << endl << M10 << std::endl << std::endl;
-    vecM10.push_back(M10);
-    }
-  for(int i = 0; i < vecRvecR.size(); i ++)
-    {
-    cv::Mat M20, tempRod;
-    cv::Rodrigues(vecRvecR[i], tempRod);
-    cv::hconcat(tempRod, vectvecR[i], M20);
-
-    cv::Mat row = cv::Mat::zeros(1, 4, CV_64F);  // 3 cols, 1 row
-    M20.push_back(row);
-    M20.at<double>(3,3) =   1.0;
-
-    std::cout << "Bild " + std::to_string(i) + ": M20 = " << endl << M20 << std::endl << std::endl;
-    vecM20.push_back(M20);
-    }
-  for(int i = 0; i < vecM10.size(); i ++)
-    {
-    cv::Mat M12(cv::Mat_<double>(4,4));
-    M12 = vecM10[i].mul(vecM20[i].inv());
-    std::cout << "Marker " + std::to_string(i) + ": M12 = " << endl << M12 << std::endl << std::endl;
-    }
-  }
-
-//  cv::Mat M10(cv::Mat_<double>(4,4));
-//  cv::Mat M12(cv::Mat_<double>(4,4));
-//  cv::Mat M20(cv::Mat_<double>(4,4));
-//  cv::hconcat(vecRvec[0], vectvec[0], M10);
-//  cv::hconcat(vecRvec[1], vectvec[1], M20);
-//  for(int i = 0; i <= 3; i ++)
-//    {
-//    for(int j = 0; j <= 3; j ++)
-//      {
-//      M12.at<double>(i,j) =   M10.at<double>(i,j)*M20.at<double>(i,j);
-//      }
-//    }
-//    std::cout << "M10: " << endl << M10 << std::endl << std::endl;
-//    std::cout << "M20: " << endl << M20 << std::endl << std::endl;
-//    std::cout << "M12: " << endl << M12 << std::endl << std::endl;
-
-
-
-//  std::cout << "Starting Calibration" << endl;
-//  cv::Mat   K1, K2, F, E;
-//  cv::Mat R(3, 3, CV_64F);
-//  cv::Mat T(3, 1, CV_64F);
-
-//  //cv::Vec3d T;
-//  cv::Mat   D1, D2;
-//  //cv::InputOutputArfilterFlagsray R, T;
-//  this->vecCameras[current_camera_id]->getIntrinsic()->copyTo(K1);
-//  this->vecCameras[current_camera_id + 1]->getIntrinsic()->copyTo(K2);
-//  this->vecCameras[current_camera_id]->getDistCoeffs()->copyTo(D1);
-//  this->vecCameras[current_camera_id + 1]->getDistCoeffs()->copyTo(D2);
-
-//  cv::stereoCalibrate (object_points,left_img_points,right_img_points,K1,D1,K2,D2,img1.size(),R,T,E,F,cv::CALIB_FIX_INTRINSIC);
-
-//  std::cout << "K1" << endl << K1 << endl << endl;
-//  std::cout << "K2" << endl << K2 << endl << endl;
-//  std::cout << "D1" << endl << D1 << endl << endl;
-//  std::cout << "D2" << endl << D2 << endl << endl;
-//  std::cout << "F" << endl << F << endl << endl;
-//  std::cout << "Done Calibration" << endl;
-
-//  this->calculate_camera_pose(camera_id, camera_id+1, T, R);
-
-//  this->calibrationDone = true;
-
-//  cv::Mat relativeR(3, 3, CV_64F);
-//  cv::Mat relativeT(3, 1, CV_64F);
-//  cv::Mat mask;
-
-
-//  cv::recoverPose(E, left_img_points, right_img_points, K1, relativeR, relativeT, mask);
-
-//  std::cout << "relativeR" << endl << relativeR << endl << endl;
-//  std::cout << "relativeT" << endl << relativeT << endl << endl;
-
-
-////  std::cout << "Starting Rectification" << endl;
-
-////  cv::Mat R1, R2, P1, P2, Q;
-////  stereoRectify (K1,D1,K2,D2,img1.size(),R,T,R1,R2,P1,P2,Q);
-
-////  std::cout << "R1" << R1 << endl;
-////  std::cout << "R2" << R2 << endl;
-////  std::cout << "P1" << P1 << endl;
-////  std::cout << "P2" << P2 << endl;0
-
+  std::cout << "M12 : " << endl << M12 << std::endl << std::endl;
+  this->calculate_camera_pose(current_camera_id, current_camera_id+1, M12);
+}
 
 
 void C_CameraManager::threadCameraPositioning(std::vector<Camera::C_Camera2*> vecCameras, tbb::concurrent_bounded_queue<S_threadPayload*>* que)
@@ -1204,25 +1091,18 @@ void *C_CameraManager::threadHelper(void* This)
   static_cast<CameraManager::C_CameraManager*>(This)->threadCameraPositioning(static_cast<CameraManager::C_CameraManager*>(This)->vecCameras,
                                   static_cast<CameraManager::C_CameraManager*>(This)->threadQue);
   }
-void C_CameraManager::calculate_camera_pose(int camera1, int camera2, cv::Vec3d T, cv::Mat R)
+void C_CameraManager::calculate_camera_pose    (int camera1, int camera2, cv::Mat M12)
   {
    //P02 = P01*P12
 
+   //Buffer für die M12 Mat zur erleichterten Verarbeitung
   double HomogenePosenMatrixTempPuffer[4][4];
   for (int i=0; i < 3; i++)
     {
     for (int j=0; j < 3; j++)
       {
-      HomogenePosenMatrixTempPuffer[j][i] = R.at<double>(j,i);
+      HomogenePosenMatrixTempPuffer[j][i] = M12.at<double>(j,i);
       }
-    }
-  HomogenePosenMatrixTempPuffer[3][0] = 0.0;
-  HomogenePosenMatrixTempPuffer[3][1] = 0.0;
-  HomogenePosenMatrixTempPuffer[3][2] = 0.0;
-  HomogenePosenMatrixTempPuffer[3][3] = 1.0;
-  for (int i = 0; i< 3; i++)
-    {
-    HomogenePosenMatrixTempPuffer[i][3] = T[i];
     }
 
 
