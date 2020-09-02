@@ -268,6 +268,31 @@ void Identity(float *data, int n)
 
 void Initialize(float *X,float *P,float *F,float *Z,float *H,float *E,float *I,float *Ht,float *Ft,float *s, int ns, int no)
 {
+  memAlloc(&X,ns,1);
+  memAlloc(&h_X,ns,1);
+  memAlloc(&P,ns,ns);
+  memAlloc(&F,ns,ns);
+  memAlloc(&Z,no,1);
+  memAlloc(&S,no,no);
+  memAlloc(&s,no,no);
+  memAlloc(&si,no,no);
+  memAlloc(&K,ns,no);
+  memAlloc(&H,no,ns);
+  memAlloc(&E,no,no);
+  memAlloc(&Ft,ns,ns);
+  memAlloc(&Ht,ns,no);
+  memAlloc(&Si,no,no);
+  memAlloc(&Y,no,1);
+  memAlloc(&I,ns,ns);
+  memAlloc(&Hint,no,ns);
+  memAlloc(&Sint,no,no);
+  memAlloc(&Kint,ns,no);
+  memAlloc(&Xint,ns,1);
+  memAlloc(&Pint,ns,ns);
+  memAlloc(&Pint2,ns,ns);
+  Ztemp = Z;
+  printf("\nHost allocation is completed...\n");
+
 	RandomInit(X, ns, 1);
 	RandomInit(Z, no, 1);
 	RandomInit(H, no, ns);

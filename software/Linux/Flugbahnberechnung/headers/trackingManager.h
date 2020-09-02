@@ -93,7 +93,7 @@ namespace trackingManager
     void calcPixelAcceleration          (int dTimestamp);
     void calcObjectAcceleration         (int dTimestamp);
 
-    void predictPixelMovement           (int dTimestamp,int& predX, int& predY, int pixelVelocityX, int pixelVelocityY, int ist_X, int ist_Y);
+    void predictPixelMovement                         (int dTimestamp,int& predX, int& predY, int pixelVelocityX, int pixelVelocityY, int ist_X, int ist_Y);
 
     bool getAlive                                     () const;
     void setAlive                                     (bool value);
@@ -102,12 +102,12 @@ namespace trackingManager
     void setPositionsvektor_alt                       (S_Positionsvektor *value);
 
     void smTracking                                   ();
-    S_trackingPayload getTrackingPayload() const;
-    void setTrackingPayload(const S_trackingPayload &value);
-    int getSmState() const;
-    void setSmState(int value);
-    bool getInitZoneAlive() const;
-    void setInitZoneAlive(bool value);
+    S_trackingPayload getTrackingPayload              () const;
+    void setTrackingPayload                           (const S_trackingPayload &value);
+    int getSmState                                    () const;
+    void setSmState                                   (int value);
+    bool getInitZoneAlive                             () const;
+    void setInitZoneAlive                             (bool value);
     };
   }
 #endif

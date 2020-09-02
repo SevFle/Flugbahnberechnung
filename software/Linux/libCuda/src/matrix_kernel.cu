@@ -4,7 +4,13 @@
  * Matrix Multiplication: C = A * B.
  * Matrix Copy: B = A.
  */
- 
+
+
+
+//__global__ - Runs on the GPU, called from the CPU or the GPU*. Executed with <<<dim3>>> arguments.
+//__device__ - Runs on the GPU, called from the GPU. Can be used with variabiles too.
+//__host__ - Runs on the CPU, called from the CPU.
+
  
 #ifndef _MATRIX_KERNEL_H_
 #define _MATRIX_KERNEL_H_

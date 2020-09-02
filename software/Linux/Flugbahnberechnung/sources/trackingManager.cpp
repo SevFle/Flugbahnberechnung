@@ -39,9 +39,10 @@ void C_trackingManager::init_posen                     ()
       C_AbsolutePose            absEinheitsVektor;
       vecEinheitsVektor.push_back(absEinheitsVektor);
     }
-    this->vecIstX.resize(globalObjects->absCameras);
-    this->vecIstY.resize(globalObjects->absCameras);
-    this->vecPixelVelocityX->resize(globalObjects->absCameras);
+  this->vecIstX.resize(globalObjects->absCameras);
+  this->vecIstY.resize(globalObjects->absCameras);
+
+  this->vecPixelVelocityX->resize(globalObjects->absCameras);
   this->vecPixelVelocityY->resize(globalObjects->absCameras);
   this->vecPixelVelocityZ->resize(globalObjects->absCameras);
 
@@ -105,17 +106,19 @@ void C_trackingManager::setAlive(bool value)
 
 void C_trackingManager::Get_Position_ObjectTracking (S_Positionsvektor& objektVektor, S_Positionsvektor Richtungsvektoren   [payloadSize])
   {
-  //objektVektor = aktuelle Position des objektes
-
-
+  //objektVektor = aktuelle Position des objektes - Beinhaltet bei Übergabe keine Position [0],
+  //Richtungsvektoren[payloadsize] = Objektrichttungsvektoren aufgenommen durch die Bilder der Kameras
 
   // Richtungsvektoren der Objekt-Lichtstrahlen auf das Welt-KS transformieren
   vector<S_Positionsvektor> vec_Richtungsvektoren_World;
-    this->Calc_RichtungsvektorenToWorld(Richtungsvektoren, vec_Richtungsvektoren_World, vecEinheitsVektor);
+  //
+  this->Calc_RichtungsvektorenToWorld(Richtungsvektoren, vec_Richtungsvektoren_World, vecEinheitsVektor);
 
-    this->Calc_Position_ObjectTracking(objektVektor, vec_Richtungsvektoren_World);
-    *this->Positionsvektor_alt = objektVektor;
+  this->Calc_Position_ObjectTracking(objektVektor, vec_Richtungsvektoren_World);
 
+  *this->Positionsvektor_alt = objektVektor;
+
+  //Mappe die aktuellen Objektpositionen auf einen QVector um diesen plotten zu können
   QVector3D vec3d;
   vec3d.setX(objektVektor.X);
   vec3d.setY(objektVektor.Y);
@@ -123,12 +126,10 @@ void C_trackingManager::Get_Position_ObjectTracking (S_Positionsvektor& objektVe
 
   this->dataPlotter->addSingleData(vec3d);
   this->dataPlotter->pushData();
-
-
   }
 void C_trackingManager::Calc_Position_ObjectTracking (S_Positionsvektor& Positionsvektor, std::vector<S_Positionsvektor> vec_Richtungsvektoren_World)
   {
-  // Berechnung der aktuellen Objecktposition bezogen auf das Welt-koordinatensystem in Abhngigkeit aller TCP- / Kameraposen. Hierbei wird ber
+  // Berechnung der aktuellen Objecktposition bezogen auf das Welt-koordinatensystem in Abhngigkeit aller Kameraposen. Hierbei wird ber
   // Matrizen die Position bestimmt, bei der die Summe aller Abstandsquadrate der optischen Achsen zum Objekt am geringsten ist (Minimierungsproblem).
   // Siehe Ausarbeitung.
 

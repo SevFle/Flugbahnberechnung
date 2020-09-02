@@ -54,8 +54,8 @@ namespace CameraManager
     };
     struct S_pipelinePayload
       {
-      milliseconds executionTime[8];
-      std::chrono::nanoseconds                                frametime;
+      milliseconds                                            executionTime[8];
+      std::chrono::milliseconds                                frametime;
 
       Clock::time_point start;
       Clock::time_point timestamp;
@@ -66,9 +66,7 @@ namespace CameraManager
 
      cv::Mat                                cpuSrcImg           [payloadSize];
      cv::Mat                                cpuUndistortedImg   [payloadSize];
-     cv::Mat                                cpuFinalImg         [payloadSize];
      cv::Mat                                cpuGrayImg          [payloadSize];
-     cv::Mat                                cpuGrayImg2          [payloadSize];
      cv::Mat                                cpuConturedImg      [payloadSize];
 
      cv::cuda::GpuMat                       gpuUndistortedImg   [payloadSize];
@@ -76,18 +74,20 @@ namespace CameraManager
 
      S_Positionsvektor                      objektVektor;
      S_Positionsvektor                      Richtungsvektoren   [payloadSize];
+
      int                                    cameraID            [payloadSize];
      int                                    ist_X               [payloadSize];
      int                                    ist_Y               [payloadSize];
      int                                    pred_X              [payloadSize];
      int                                    pred_Y              [payloadSize];
      int                                    radius              [payloadSize];
-     bool                                   found = false;
-     int                                    fps = 0;
-     double                                 timestampT0 = 0;
-     double                                 dTimestamp = 0;
      int                                    offset              [payloadSize];
      int                                    queBuffer;
+
+     int                                    fps = 0;
+     bool                                   found = false;
+     double                                 timestampT0 = 0;
+     double                                 dTimestamp = 0;
 
     };
     struct S_filterflags

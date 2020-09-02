@@ -6,7 +6,8 @@ CONFIG -= qt
 SOURCES +=
 
 HEADERS += \
-  include/libCuda.h
+  include/libCuda.h \
+  kalman.h
   src/config.h
 
 DISTFILES += \

@@ -230,7 +230,8 @@ bool C_CameraManager::startThreadCameraPositioning()
 bool C_CameraManager::stopThreadCameraPositioning()
   {
     this->positioningDone = true;
-    this->camPositioning->detach();
+    std::this_thread::sleep_for (std::chrono::milliseconds (200));
+    this->camPositioning->join();
     printf("\n**INFO** Kamerathread wurde gestoppt");
   return true;
    }
@@ -253,7 +254,8 @@ bool C_CameraManager::startPipelineTracking  (bool undistordActive, bool openAct
 bool C_CameraManager::stopPipelineTracking()
   {
   this->pipelineDone = true;
-  this->camPipeline->detach();
+  std::this_thread::sleep_for (std::chrono::milliseconds (200));
+  this->camPipeline->join();
   printf("\n**INFO** Kamerapipeline wurde gestoppt");
   return true;
   }
@@ -1173,7 +1175,6 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
       std::this_thread::sleep_for (std::chrono::milliseconds (200));
     if(pipelineDone)
       {
-      this->pipelineDone = true;
       fc.stop();
       return 0;
       }
@@ -1413,33 +1414,6 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
         delete pData;
     if(que->size() == 0)
         flush = false;
-//    if (! pipelineDone)
-//      {
-//      try
-//        {
-//        for(int i = 0; i < payloadSize; i ++)
-//          {
-//          pData->cpuSrcImg[i].copyTo(arrImgShow[i]);
-//          }
-//        pData->fpsEnd = Clock::now();
-//        pData->frametime = std::chrono::duration_cast<std::chrono::nanoseconds>(pData->fpsEnd - pData->fpsStart);
-//        pData->fps = 1000000000/pData->frametime.count();
-//        pData->end = Clock::now();
-//        pData->executionTime[7] = std::chrono::duration_cast<milliseconds>(pData->end - pData->start);
-//        pData->queBuffer = que->size();
-
-//        if(!que->try_push(pData))
-//            delete pData;
-//        //que.push(pData);
-//        //delete pData;
-//        }
-//      catch (...)
-//        {
-//        std::cout << "Pipeline caught an exception on the queue" << std::endl;
-//        pipelineDone = true;
-//        }//catch
-//        return;
-
 //      }//if (!done)
      }//STEP 5
     )//tbb::makefilter

@@ -42,21 +42,6 @@
      <string>Exit</string>
     </property>
    </widget>
-   <widget class="QSpinBox" name="num_cameras">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>410</y>
-      <width>141</width>
-      <height>41</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>14</pointsize>
-     </font>
-    </property>
-   </widget>
    <widget class="QPushButton" name="bt_apply">
     <property name="geometry">
      <rect>
@@ -67,7 +52,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Apply</string>
+     <string>Start</string>
     </property>
    </widget>
    <widget class="QPushButton" name="bt_tracking">

@@ -341,8 +341,6 @@ void C_frm_Camera_Calibration::sm_Stereo_camera_calibration ()
     {
     case 0:
       this->cameraID                        = this->Ui->num_camera_id->value();
-      this->photo_id                        = 0;
-      this->usrInputAbsPhoto                = this->Ui->txb_usrInput_images->toPlainText().toInt();
       this->Ui->bt_photo->setEnabled        (true);
       this->Ui->bt_start->setText           ("Beenden");
       this->sm_calibration_state            = 1;
@@ -353,18 +351,8 @@ void C_frm_Camera_Calibration::sm_Stereo_camera_calibration ()
       this->Main->cameraManager->vecCameras[cameraID]->save_picture    (photo_id,naming,*this->imgBuffer[0]);
       this->Main->cameraManager->vecCameras[cameraID+1]->save_picture    (photo_id,naming,*this->imgBuffer[1]);
       this->Ui->txb_img_count->                                     setText(QString::number(this->photo_id + 1));
-      this->photo_id++;
-
-      if (photo_id >= usrInputAbsPhoto)
-        {
-        this->sm_calibration_state = 2;
-        }
-
-      break;
-
-    case 2:
+      this->sm_calibration_state = 2;
       this->Ui->bt_photo->setVisible      (false);
-      this->calibration_running           = false;
       this->Ui->bt_start->setText         ("Start");
       this->Ui->lbl_calibration_running->setVisible(true);
 
