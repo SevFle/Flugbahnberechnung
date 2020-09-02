@@ -2,6 +2,9 @@
 <ui version="4.0">
  <class>C_frm_object_calibration</class>
  <widget class="QMainWindow" name="C_frm_object_calibration">
+  <property name="windowModality">
+   <enum>Qt::ApplicationModal</enum>
+  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -1284,6 +1287,65 @@
       <bool>true</bool>
      </property>
     </widget>
+    <widget class="QLabel" name="label_43">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>240</y>
+       <width>81</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>11</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>Que Buffer</string>
+     </property>
+    </widget>
+    <widget class="QTextEdit" name="txb_quebuffer">
+     <property name="geometry">
+      <rect>
+       <x>90</x>
+       <y>230</y>
+       <width>104</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>11</pointsize>
+      </font>
+     </property>
+     <property name="readOnly">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_2">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>270</y>
+       <width>101</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Timerintervall</string>
+     </property>
+    </widget>
+    <widget class="QSpinBox" name="numTimerIntervall">
+     <property name="geometry">
+      <rect>
+       <x>124</x>
+       <y>270</y>
+       <width>71</width>
+       <height>31</height>
+      </rect>
+     </property>
+    </widget>
    </widget>
    <widget class="QSpinBox" name="num_camera">
     <property name="geometry">
@@ -1753,29 +1815,6 @@
      </property>
      <property name="readOnly">
       <bool>true</bool>
-     </property>
-    </widget>
-    <widget class="QLabel" name="label_2">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>430</y>
-       <width>101</width>
-       <height>20</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Timerintervall</string>
-     </property>
-    </widget>
-    <widget class="QSpinBox" name="numTimerIntervall">
-     <property name="geometry">
-      <rect>
-       <x>124</x>
-       <y>430</y>
-       <width>71</width>
-       <height>31</height>
-      </rect>
      </property>
     </widget>
    </widget>

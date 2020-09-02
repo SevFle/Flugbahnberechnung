@@ -107,7 +107,6 @@ void ::C_frm_Main::on_bt_apply_clicked()
         }
       else
         {
-        this->Ui->num_cameras->setEnabled(false);
         this->Ui->bt_apply->setEnabled     (false);
         this->Ui->bt_tracking->setEnabled(true);
         this->Ui->bt_camera_calibration->setEnabled(true);

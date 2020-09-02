@@ -16,7 +16,7 @@ C_frm_Camera_Calibration::C_frm_Camera_Calibration(C_GlobalObjects* GlobalObject
     this->intervall             = 0;
     this->usrInputAbsPhoto      = 3;
     this->Taktgeber             = new QTimer(this);
-    this->Taktgeber_Intervall   = 25;
+    this->Taktgeber_Intervall   = 0;
     this->lock                  = new pthread_mutex_t;
     this->camThread             = new pthread_t;
     this->imgPopOut             =  false;
@@ -52,14 +52,14 @@ C_frm_Camera_Calibration::~C_frm_Camera_Calibration()
 void C_frm_Camera_Calibration::showEvent(QShowEvent* ShowEvent)
 {
 this->Zaehler                     = 0;
-this->intervall                   = 50;
+this->Taktgeber_Intervall         = 25;
 
 connect                           (this->Taktgeber, &QTimer::timeout, this, &C_frm_Camera_Calibration::Taktgeber_Tick);
 this->Taktgeber->start            (this->Taktgeber_Intervall);
 this->installEventFilter          (this);
 this->Zaehler                     = 0;
 this->cameraID                    = 0;
-this->Ui->num_TimerIntervall->setValue(this->intervall);
+this->Ui->num_TimerIntervall->setValue(this->Taktgeber_Intervall);
 this->on_rb_single_calibration_clicked();
 this->Ui->num_camera_id->setMaximum(GlobalObjects->absCameras-1);
 

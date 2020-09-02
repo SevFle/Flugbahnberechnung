@@ -12,10 +12,12 @@ C_frm_Object_Calibration::C_frm_Object_Calibration(C_GlobalObjects* GlobalObject
   this->Taktgeber_Intervall   = 50;
   this->camID      = 0;
   this->TimerWait             = 0;
+  this->trackingActive        = false;
   }
 
 C_frm_Object_Calibration::~C_frm_Object_Calibration()
   {
+  this->trackingActive        = false;
   this->TimerWait             = 0;
   this->camID      = 0;
   this->Taktgeber_Intervall   = 0;
@@ -115,7 +117,8 @@ void C_frm_Object_Calibration::Taktgeber_Tick()
       this->Ui->txb_worker_6->         setText(QString::number(pData->executionTime[5].count()));
       this->Ui->txb_worker_7->         setText(QString::number(pData->executionTime[6].count()));
       this->Ui->txb_worker_8->         setText(QString::number(pData->executionTime[7].count()));
-    this->Main->frm_Object_Tracking->Taktgeber_Tick(pData);
+      if(trackingActive)
+        this->Main->frm_Object_Tracking->Taktgeber_Tick(pData);
     delete(pData);
     }
   }
@@ -279,6 +282,7 @@ void C_frm_Object_Calibration::on_num_morph_iterations_valueChanged(int arg1)
 
 void C_frm_Object_Calibration::on_bt_apply_all_clicked()
 {
+    int i = 0;
     for (auto it = std::begin(this->Main->cameraManager->vecCameras); it != std::end(this->Main->cameraManager->vecCameras); it++)
       {
       (*it)->filterValues->setHue_min (this->Ui->sld_value_min->value());
@@ -320,24 +324,25 @@ void C_frm_Object_Calibration::on_bt_apply_all_clicked()
       (*it)->filterValues->setObject_Size_max (this->Ui->sld_objectsize_min->value());
 
       //TODO
-      //this->Main->Camera_manager->save_camera_settings (*it);
+      this->Main->cameraManager->saveManager->saveCameraSettings(*(*it));
+      i++;
       }
 }
 
 void C_frm_Object_Calibration::set_gui()
 {
     this->Ui->sld_hue_min->setValue(0);
-    this->Ui->sld_hue_max->setValue(50);
+    this->Ui->sld_hue_max->setValue(255);
     this->Ui->sld_saturation_min->setValue(0);
     this->Ui->sld_saturation_max->setValue(255);
     this->Ui->sld_value_min->setValue(0);
     this->Ui->sld_value_max->setValue(255);
 
     this->Ui->sld_hue_min->setMinimum(0);
-    this->Ui->sld_hue_min->setMaximum(179);
+    this->Ui->sld_hue_min->setMaximum(255);
 
     this->Ui->sld_hue_max->setMinimum(0);
-    this->Ui->sld_hue_max->setMaximum(179);
+    this->Ui->sld_hue_max->setMaximum(255);
 
     this->Ui->sld_saturation_min->setMinimum(0);
     this->Ui->sld_saturation_min->setMaximum(255);
@@ -501,7 +506,17 @@ void frm_Object_Calibration::C_frm_Object_Calibration::on_bt_tracking_clicked()
 {
     //TODO Open Form
     //this->hide();
-    this->Main->frm_Object_Tracking->setWindowModality(Qt::NonModal);
+    this->trackingActive = true;
+    this->Main->cameraManager->setFlush(true);
+    this->Main->cameraManager->setArrActiveCameras(0,0);
+    this->Main->cameraManager->setArrActiveCameras(1,1);
+    this->Main->cameraManager->setFlush(false);
+    this->Main->cameraManager->getFilterFlags()->setObjectDetection(true);
+    this->Main->cameraManager->getFilterFlags()->setRoiAdjustment(true);
+    this->Main->cameraManager->getFilterFlags()->setTracking(true);
+
+
+    //this->Main->frm_Object_Tracking->setWindowModality(Qt::NonModal);
     this->Main->frm_Object_Tracking->show();
     //this->Main->frm_Object_Tracking->setParent(this);
 

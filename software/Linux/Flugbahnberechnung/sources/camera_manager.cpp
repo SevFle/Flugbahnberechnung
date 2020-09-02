@@ -191,6 +191,11 @@ bool C_CameraManager::openCameras ()
   //Reorder recently created Cameras
   this->loadManager->loadCameraPositioning(this->vecCameras);
                   //this->mvVecCamera2Temp(*globalObjects->camera_order);
+  int i = 0;
+  for(auto it = std::begin(this->vecCameras); it < std::end(this->vecCameras); it++)
+    {
+    (*it)->setCameraID(i);
+    }
 
   //Load Settings and Calibration for each camera created earlier
   loadCameras();
@@ -230,7 +235,7 @@ bool C_CameraManager::startThreadCameraPositioning()
 bool C_CameraManager::stopThreadCameraPositioning()
   {
     this->positioningDone = true;
-    std::this_thread::sleep_for (std::chrono::milliseconds (200));
+    std::this_thread::sleep_for (std::chrono::milliseconds (500));
     this->camPositioning->join();
     printf("\n**INFO** Kamerathread wurde gestoppt");
   return true;
@@ -254,7 +259,7 @@ bool C_CameraManager::startPipelineTracking  (bool undistordActive, bool openAct
 bool C_CameraManager::stopPipelineTracking()
   {
   this->pipelineDone = true;
-  std::this_thread::sleep_for (std::chrono::milliseconds (200));
+  std::this_thread::sleep_for (std::chrono::milliseconds (500));
   this->camPipeline->join();
   printf("\n**INFO** Kamerapipeline wurde gestoppt");
   return true;
@@ -1172,7 +1177,7 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
   tbb::parallel_pipeline(3, tbb::make_filter<void, S_pipelinePayload*>(tbb::filter::serial_in_order, [&](tbb::flow_control& fc)->S_pipelinePayload*
     {
     if(flush)
-      std::this_thread::sleep_for (std::chrono::milliseconds (200));
+      std::this_thread::sleep_for (std::chrono::milliseconds (100));
     if(pipelineDone)
       {
       fc.stop();
@@ -1404,7 +1409,7 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
     pData->start = Clock::now();
     // TBB NOTE: pipeline end point. dispatch to GUI
     pData->fpsEnd = Clock::now();
-    pData->frametime = std::chrono::duration_cast<std::chrono::nanoseconds>(pData->fpsEnd - pData->fpsStart);
+    pData->frametime = std::chrono::duration_cast<std::chrono::milliseconds>(pData->fpsEnd - pData->fpsStart);
     pData->fps = 1000000000/pData->frametime.count();
     pData->end = Clock::now();
     pData->executionTime[7] = std::chrono::duration_cast<milliseconds>(pData->end - pData->start);
@@ -1414,6 +1419,7 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
         delete pData;
     if(que->size() == 0)
         flush = false;
+
 //      }//if (!done)
      }//STEP 5
     )//tbb::makefilter

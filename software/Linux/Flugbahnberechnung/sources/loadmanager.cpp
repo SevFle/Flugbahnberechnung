@@ -46,11 +46,6 @@ void C_LoadManager::loadCameraSettings (Camera::C_Camera2 *Camera)
   float bilateral_sigma_color   = 0.0;
   float bilateral_sigma_spatial = 0.0;
 
-  bool erode_active     = false;
-  bool dilation_active  = false;
-  bool morph_active     = false;
-  bool bilateral_active = false;
-
   int object_size_min = 0;
   int object_size_max = 0;
 

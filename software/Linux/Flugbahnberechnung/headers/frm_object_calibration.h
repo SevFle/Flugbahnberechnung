@@ -81,6 +81,8 @@ bool close_active;
 bool bilateral_active;
 bool morph_active;
 
+bool trackingActive;
+
 private slots:
 void on_num_opening_iterations_valueChanged(int arg1);
 
