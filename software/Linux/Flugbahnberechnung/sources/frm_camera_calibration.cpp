@@ -176,8 +176,8 @@ void C_frm_Camera_Calibration::on_bt_start_clicked()
 
 void frm_Camera_Calibration::C_frm_Camera_Calibration::on_bt_exit_clicked()
 {
-  this->Main->cameraManager->setPositioningDone(true);
-  if(!this->Main->cameraManager->stopThreadCameraPositioning()) return;
+  this->Main->cameraManager->setPipelineDone(true);
+  if(!this->Main->cameraManager->stopPipelineTracking()) return;
   this->close();
 }
 

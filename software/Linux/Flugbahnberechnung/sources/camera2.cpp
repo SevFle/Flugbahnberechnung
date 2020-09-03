@@ -104,7 +104,7 @@ bool C_Camera2::grabImg                      ()
   if(this->cap->grab()) return true;
   return false;
   }
-void C_Camera2::capImage(cv::Mat &dstImg)
+void C_Camera2::readImage(cv::Mat &dstImg)
 {
     this->cap->read(dstImg);
 }

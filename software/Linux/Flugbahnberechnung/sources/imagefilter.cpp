@@ -105,8 +105,8 @@ bool C_ImageFilter::findContours                     (cv::Mat* cpuSrc, cv::Mat& 
   float Radius                = 0.0;
   bool contourFound                = false;
 
-  int ObjectSizeMin = Camera.filterValues->getObject_Size_min();
-  int ObjectSizeMax = Camera.filterValues->getObject_Size_max();
+  int ObjectSizeMin = Camera.getFilterproperties()->getObject_Size_min();
+  int ObjectSizeMax = Camera.getFilterproperties()->getObject_Size_max();
 
 
 

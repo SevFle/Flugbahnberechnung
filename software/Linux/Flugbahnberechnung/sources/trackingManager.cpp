@@ -50,7 +50,6 @@ void C_trackingManager::init_posen                     ()
 void C_trackingManager::load_posen                     (C_AbsolutePose& cameraPose)
   {
   this->vecWorldtoCamPose.push_back(cameraPose);
-  init_posen();
   }
 
 bool C_trackingManager::getInitZoneAlive() const
@@ -268,8 +267,8 @@ void C_trackingManager::calcPixelVeloctiy             (int dTimestamp, int ist_X
   int velY = dPixelY/dTimestamp;
   auto itPos = vecPixelVelocityX->begin() + camID;
 
-  this->vecPixelVelocityX->insert(itPos, velX);
-  this->vecPixelVelocityY->insert(itPos, velY);
+  this->vecPixelVelocityX->at(camID) = velX;
+  this->vecPixelVelocityY->at(camID) = velY;
   this->predictPixelMovement(dTimestamp, pred_X, pred_Y, this->vecPixelVelocityX->at(camID), this->vecPixelVelocityY->at(camID), ist_X, ist_Y);
   }
 

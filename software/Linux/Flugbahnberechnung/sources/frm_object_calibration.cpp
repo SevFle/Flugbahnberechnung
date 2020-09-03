@@ -9,7 +9,7 @@ C_frm_Object_Calibration::C_frm_Object_Calibration(C_GlobalObjects* GlobalObject
   this->GlobalObjects         = GlobalObjects;
   this->Main                  = Main;
   this->Taktgeber             = new QTimer(this);
-  this->Taktgeber_Intervall   = 50;
+  this->Taktgeber_Intervall   = 18;
   this->camID      = 0;
   this->TimerWait             = 0;
   this->trackingActive        = false;
@@ -39,6 +39,7 @@ this->installEventFilter(this);
 
 this->Zaehler                   = 0;
 this->Ui->num_camera->setMaximum(GlobalObjects->absCameras);
+this->Ui->numTimerIntervall->setValue(Taktgeber_Intervall);
 this->set_gui();
 this->get_camera_settings (0);
 //this->Main->cameraManager->trackingManager->dataPlotter->show();
@@ -285,43 +286,43 @@ void C_frm_Object_Calibration::on_bt_apply_all_clicked()
     int i = 0;
     for (auto it = std::begin(this->Main->cameraManager->vecCameras); it != std::end(this->Main->cameraManager->vecCameras); it++)
       {
-      (*it)->filterValues->setHue_min (this->Ui->sld_value_min->value());
-      (*it)->filterValues->setHue_max (this->Ui->sld_value_max->value());
+      (*it)->filterValues->setHue_min                   (this->Ui->sld_hue_min->value());
+      (*it)->filterValues->setHue_max                   (this->Ui->sld_hue_max->value());
 
-      (*it)->filterValues->setSaturation_min (this->Ui->sld_saturation_min->value());
-      (*it)->filterValues->setSaturation_min (this->Ui->sld_saturation_max->value());
+      (*it)->filterValues->setSaturation_min            (this->Ui->sld_saturation_min->value());
+      (*it)->filterValues->setSaturation_min            (this->Ui->sld_saturation_max->value());
 
-      (*it)->filterValues->setHue_min (this->Ui->sld_hue_min->value());
-      (*it)->filterValues->setHue_max (this->Ui->sld_hue_max->value());
+      (*it)->filterValues->setValue_min                 (this->Ui->sld_value_min->value());
+      (*it)->filterValues->setValue_max                 (this->Ui->sld_value_max->value());
 
-      (*it)->filterValues->setOpening_iterations (this->Ui->num_opening_iterations->value());
-      (*it)->filterValues->setOpening_kernel_size (this->Ui->num_opening_kernelsize->value());
+      (*it)->filterValues->setOpening_iterations        (this->Ui->num_opening_iterations->value());
+      (*it)->filterValues->setOpening_kernel_size       (this->Ui->num_opening_kernelsize->value());
 
-      (*it)->filterValues->setClosing_iterations (this->Ui->num_closing_iterations->value());
-      (*it)->filterValues->setClosing_kernel_size (this->Ui->num_closing_kernelsize->value());
+      (*it)->filterValues->setClosing_iterations        (this->Ui->num_closing_iterations->value());
+      (*it)->filterValues->setClosing_kernel_size       (this->Ui->num_closing_kernelsize->value());
 
-      (*it)->filterValues->setErode_active (this->Ui->chkb_erode->isChecked());
-      (*it)->filterValues->setErosion_iterations (this->Ui->num_erode_iterations->value());
-      (*it)->filterValues->setErosion_kernel_size (this->Ui->num_erode_kernelsize->value());
+      (*it)->filterValues->setErode_active              (this->Ui->chkb_erode->isChecked());
+      (*it)->filterValues->setErosion_iterations        (this->Ui->num_erode_iterations->value());
+      (*it)->filterValues->setErosion_kernel_size       (this->Ui->num_erode_kernelsize->value());
 
-      (*it)->filterValues->setDilate_active (this->Ui->chkb_dilate->isChecked());
-      (*it)->filterValues->setDilation_iterations (this->Ui->num_dilate_iterations->value());
-      (*it)->filterValues->setDilation_kernel_size (this->Ui->num_dilate_kernelsize->value());
+      (*it)->filterValues->setDilate_active             (this->Ui->chkb_dilate->isChecked());
+      (*it)->filterValues->setDilation_iterations       (this->Ui->num_dilate_iterations->value());
+      (*it)->filterValues->setDilation_kernel_size      (this->Ui->num_dilate_kernelsize->value());
 
-      (*it)->filterValues->setMorph_active (this->Ui->chkb_morph->isChecked());
-      (*it)->filterValues->setMorph_iterations (this->Ui->num_morph_iterations->value());
-      (*it)->filterValues->setMorph_kernel_size (this->Ui->num_morph_kernelsize->value());
+      (*it)->filterValues->setMorph_active              (this->Ui->chkb_morph->isChecked());
+      (*it)->filterValues->setMorph_iterations          (this->Ui->num_morph_iterations->value());
+      (*it)->filterValues->setMorph_kernel_size         (this->Ui->num_morph_kernelsize->value());
 
-      (*it)->filterValues->setGaussian_sigma (this->Ui->num_gaussian_sigma->value());
-      (*it)->filterValues->setGaussian_kernel_size (this->Ui->num_gaussian_kernelsize->value());
+      (*it)->filterValues->setGaussian_sigma            (this->Ui->num_gaussian_sigma->value());
+      (*it)->filterValues->setGaussian_kernel_size      (this->Ui->num_gaussian_kernelsize->value());
 
-      (*it)->filterValues->setBilateral_active (this->Ui->chkb_bilateral->isChecked());
-      (*it)->filterValues->setBilateral_sigma_color (Ui->num_bilateral_color->value());
-      (*it)->filterValues->setBilateral_sigma_spatial (Ui->num_bilateral_spatial->value());
-      (*it)->filterValues->setBilateral_kernel_size (this->Ui->num_dilate_kernelsize->value());
+      (*it)->filterValues->setBilateral_active          (this->Ui->chkb_bilateral->isChecked());
+      (*it)->filterValues->setBilateral_sigma_color     (this->Ui->num_bilateral_color->value());
+      (*it)->filterValues->setBilateral_sigma_spatial   (this->Ui->num_bilateral_spatial->value());
+      (*it)->filterValues->setBilateral_kernel_size     (this->Ui->num_dilate_kernelsize->value());
 
-      (*it)->filterValues->setObject_Size_min (this->Ui->sld_objectsize_min->value());
-      (*it)->filterValues->setObject_Size_max (this->Ui->sld_objectsize_min->value());
+      (*it)->filterValues->setObject_Size_min           (this->Ui->sld_objectsize_min->value());
+      (*it)->filterValues->setObject_Size_max           (this->Ui->sld_objectsize_max->value());
 
       //TODO
       this->Main->cameraManager->saveManager->saveCameraSettings(*(*it));
@@ -394,6 +395,14 @@ void C_frm_Object_Calibration::set_gui()
 
     this->Ui->num_morph_kernelsize->setMinimum (1);
     this->Ui->num_morph_kernelsize->setMaximum(10);
+
+    this->Ui->num_gaussian_kernelsize->setSingleStep(2);
+    this->Ui->num_gaussian_kernelsize->setMaximum(10);
+    this->Ui->num_gaussian_kernelsize->setMinimum(1);
+
+    this->Ui->num_gaussian_sigma->setMaximum(10);
+    this->Ui->num_gaussian_sigma->setMinimum(1);
+
     }
 
 void C_frm_Object_Calibration::on_bt_apply_clicked()
@@ -460,43 +469,43 @@ void C_frm_Object_Calibration::on_chkb_erode_stateChanged(int arg1)
 }
 void C_frm_Object_Calibration::get_camera_settings (int camera_id)
   {
-  this->Ui->sld_hue_min->setValue(this->Main->cameraManager->vecCameras[camID]->filterValues->getHue_min());
-  this->Ui->sld_hue_max->setValue(this->Main->cameraManager->vecCameras[camID]->filterValues->getHue_max());
+  this->Ui->sld_hue_min->setValue               (this->Main->cameraManager->vecCameras[camera_id]->getFilterproperties()->getHue_min());
+  this->Ui->sld_hue_max->setValue               (this->Main->cameraManager->vecCameras[camera_id]->getFilterproperties()->getHue_max());
 
-  this->Ui->sld_saturation_min->setValue(this->Main->cameraManager->vecCameras[camID]->filterValues->getSaturation_min());
-  this->Ui->sld_saturation_max->setValue(this->Main->cameraManager->vecCameras[camID]->filterValues->getSaturation_max());
+  this->Ui->sld_saturation_min->setValue        (this->Main->cameraManager->vecCameras[camera_id]->getFilterproperties()->getSaturation_min());
+  this->Ui->sld_saturation_max->setValue        (this->Main->cameraManager->vecCameras[camera_id]->getFilterproperties()->getSaturation_max());
 
-  this->Ui->sld_value_min->setValue(this->Main->cameraManager->vecCameras[camID]->filterValues->getValue_min());
-  this->Ui->sld_value_max->setValue(this->Main->cameraManager->vecCameras[camID]->filterValues->getValue_max());
+  this->Ui->sld_value_min->setValue             (this->Main->cameraManager->vecCameras[camera_id]->getFilterproperties()->getValue_min());
+  this->Ui->sld_value_max->setValue             (this->Main->cameraManager->vecCameras[camera_id]->getFilterproperties()->getValue_max());
 
-  this->Ui->num_opening_iterations->setValue(this->Main->cameraManager->vecCameras[camID]->filterValues->getOpenIterations());
-  this->Ui->num_opening_kernelsize->setValue(this->Main->cameraManager->vecCameras[camID]->filterValues->getOpenKernelSize());
+  this->Ui->num_opening_iterations->setValue    (this->Main->cameraManager->vecCameras[camera_id]->getFilterproperties()->getOpenIterations());
+  this->Ui->num_opening_kernelsize->setValue    (this->Main->cameraManager->vecCameras[camera_id]->getFilterproperties()->getOpenKernelSize());
 
-  this->Ui->num_closing_iterations->setValue(this->Main->cameraManager->vecCameras[camID]->filterValues->getCloseIterations());
-  this->Ui->num_closing_kernelsize->setValue(this->Main->cameraManager->vecCameras[camID]->filterValues->getCloseKernelSize());
+  this->Ui->num_closing_iterations->setValue    (this->Main->cameraManager->vecCameras[camera_id]->getFilterproperties()->getCloseIterations());
+  this->Ui->num_closing_kernelsize->setValue    (this->Main->cameraManager->vecCameras[camera_id]->getFilterproperties()->getCloseKernelSize());
 
-  this->Ui->chkb_erode->setCheckState(Qt::CheckState(this->Main->cameraManager->vecCameras[camID]->filterValues->getErode_active()));
-  this->Ui->num_erode_iterations->setValue(this->Main->cameraManager->vecCameras[camID]->filterValues->getErodeIterations());
-  this->Ui->num_erode_kernelsize->setValue(this->Main->cameraManager->vecCameras[camID]->filterValues->getErodeKernelSize());
+  this->Ui->chkb_erode->setCheckState           (Qt::CheckState(this->Main->cameraManager->vecCameras[camera_id]->getFilterproperties()->getErode_active()));
+  this->Ui->num_erode_iterations->setValue      (this->Main->cameraManager->vecCameras[camera_id]->getFilterproperties()->getErodeIterations());
+  this->Ui->num_erode_kernelsize->setValue      (this->Main->cameraManager->vecCameras[camera_id]->getFilterproperties()->getErodeKernelSize());
 
-  this->Ui->chkb_dilate->setCheckState(Qt::CheckState(this->Main->cameraManager->vecCameras[camID]->filterValues->getDilate_active()));
-  this->Ui->num_dilate_iterations->setValue(this->Main->cameraManager->vecCameras[camID]->filterValues->getDilateIterations());
-  this->Ui->num_dilate_kernelsize->setValue(this->Main->cameraManager->vecCameras[camID]->filterValues->getDilateKernelSize());
+  this->Ui->chkb_dilate->setCheckState          (Qt::CheckState(this->Main->cameraManager->vecCameras[camera_id]->getFilterproperties()->getDilate_active()));
+  this->Ui->num_dilate_iterations->setValue     (this->Main->cameraManager->vecCameras[camera_id]->getFilterproperties()->getDilateIterations());
+  this->Ui->num_dilate_kernelsize->setValue     (this->Main->cameraManager->vecCameras[camera_id]->getFilterproperties()->getDilateKernelSize());
 
-  this->Ui->chkb_morph->setCheckState(Qt::CheckState(this->Main->cameraManager->vecCameras[camID]->filterValues->getMorph_active()));
-  this->Ui->num_morph_iterations->setValue(this->Main->cameraManager->vecCameras[camID]->filterValues->getMorphIterations());
-  this->Ui->num_morph_kernelsize->setValue(this->Main->cameraManager->vecCameras[camID]->filterValues->getMorphKernelSize());
+  this->Ui->chkb_morph->setCheckState           (Qt::CheckState(this->Main->cameraManager->vecCameras[camera_id]->getFilterproperties()->getMorph_active()));
+  this->Ui->num_morph_iterations->setValue      (this->Main->cameraManager->vecCameras[camera_id]->getFilterproperties()->getMorphIterations());
+  this->Ui->num_morph_kernelsize->setValue      (this->Main->cameraManager->vecCameras[camera_id]->getFilterproperties()->getMorphKernelSize());
 
-  this->Ui->num_gaussian_sigma->setValue (Main->cameraManager->vecCameras[camID]->filterValues->getGaussianSigma());
-  this->Ui->num_gaussian_kernelsize->setValue(this->Main->cameraManager->vecCameras[camID]->filterValues->getGaussianKernelSize());
+  this->Ui->num_gaussian_sigma->setValue        (Main->cameraManager->vecCameras[camera_id]->getFilterproperties()->getGaussianSigma());
+  this->Ui->num_gaussian_kernelsize->setValue   (this->Main->cameraManager->vecCameras[camera_id]->getFilterproperties()->getGaussianKernelSize());
 
-  this->Ui->chkb_bilateral->setCheckState(Qt::CheckState(this->Main->cameraManager->vecCameras[camID]->filterValues->getBilateral_active()));
-  this->Ui->num_bilateral_kernelsize->setValue(this->Main->cameraManager->vecCameras[camID]->filterValues->getBilateralKernelSize());
-  this->Ui->num_bilateral_spatial->setValue (this->Main->cameraManager->vecCameras[camID]->filterValues->getBilateralSigmaSpatial());
-  this->Ui->num_bilateral_color->setValue (this->Main->cameraManager->vecCameras[camID]->filterValues->getBilateralSigmaColor());
+  this->Ui->chkb_bilateral->setCheckState       (Qt::CheckState(this->Main->cameraManager->vecCameras[camera_id]->getFilterproperties()->getBilateral_active()));
+  this->Ui->num_bilateral_kernelsize->setValue  (this->Main->cameraManager->vecCameras[camera_id]->getFilterproperties()->getBilateralKernelSize());
+  this->Ui->num_bilateral_spatial->setValue     (this->Main->cameraManager->vecCameras[camera_id]->getFilterproperties()->getBilateralSigmaSpatial());
+  this->Ui->num_bilateral_color->setValue       (this->Main->cameraManager->vecCameras[camera_id]->getFilterproperties()->getBilateralSigmaColor());
 
-  this->Ui->sld_objectsize_min->setValue(this->Main->cameraManager->vecCameras[camID]->filterValues->getObject_Size_min());
-  this->Ui->sld_objectsize_max->setValue(this->Main->cameraManager->vecCameras[camID]->filterValues->getObject_Size_max());
+  this->Ui->sld_objectsize_min->setValue        (this->Main->cameraManager->vecCameras[camera_id]->getFilterproperties()->getObject_Size_min());
+  this->Ui->sld_objectsize_max->setValue        (this->Main->cameraManager->vecCameras[camera_id]->getFilterproperties()->getObject_Size_max());
   }
 
 
@@ -507,6 +516,7 @@ void frm_Object_Calibration::C_frm_Object_Calibration::on_bt_tracking_clicked()
     //TODO Open Form
     //this->hide();
     this->trackingActive = true;
+    this->Ui->num_camera->setEnabled(false);
     this->Main->cameraManager->setFlush(true);
     this->Main->cameraManager->setArrActiveCameras(0,0);
     this->Main->cameraManager->setArrActiveCameras(1,1);

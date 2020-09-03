@@ -116,6 +116,7 @@ void C_frm_Object_Tracking::Taktgeber_Tick(CameraManager::S_pipelinePayload*   p
   this->Ui->txb_position_x->setText (QString::number(payload->objektVektor.X));
   this->Ui->txb_position_y->setText (QString::number(payload->objektVektor.Y));
   this->Ui->txb_position_z->setText (QString::number(payload->objektVektor.Z));
+  this->Ui->txb_activeCamera->setText (QString::number(payload->cameraID[0]));
   }
     //Get Current Object Position
 

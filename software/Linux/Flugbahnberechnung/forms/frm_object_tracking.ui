@@ -109,7 +109,7 @@
      <rect>
       <x>170</x>
       <y>1050</y>
-      <width>891</width>
+      <width>1351</width>
       <height>151</height>
      </rect>
     </property>
@@ -368,6 +368,34 @@
       <string>Acceleration [X]</string>
      </property>
     </widget>
+    <widget class="QLabel" name="label_11">
+     <property name="geometry">
+      <rect>
+       <x>880</x>
+       <y>30</y>
+       <width>141</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>14</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>Active Camera</string>
+     </property>
+    </widget>
+    <widget class="QTextEdit" name="txb_activeCamera">
+     <property name="geometry">
+      <rect>
+       <x>1030</x>
+       <y>20</y>
+       <width>141</width>
+       <height>31</height>
+      </rect>
+     </property>
+    </widget>
    </widget>
    <widget class="QLabel" name="label_7">
     <property name="geometry">
@@ -405,28 +433,8 @@
      <string>Tracking active</string>
     </property>
    </widget>
-   <widget class="QQuickWidget" name="quickWidget">
-    <property name="geometry">
-     <rect>
-      <x>1129</x>
-      <y>800</y>
-      <width>661</width>
-      <height>391</height>
-     </rect>
-    </property>
-    <property name="resizeMode">
-     <enum>QQuickWidget::SizeRootObjectToView</enum>
-    </property>
-   </widget>
   </widget>
  </widget>
- <customwidgets>
-  <customwidget>
-   <class>QQuickWidget</class>
-   <extends>QWidget</extends>
-   <header location="global">QtQuickWidgets/QQuickWidget</header>
-  </customwidget>
- </customwidgets>
  <resources/>
  <connections/>
 </ui>

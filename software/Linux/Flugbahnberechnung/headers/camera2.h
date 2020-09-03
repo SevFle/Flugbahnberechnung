@@ -122,7 +122,6 @@ namespace Camera
 
   private:
     C_GlobalObjects*                  globalObjects;
-    C_AbsolutePose*                   cameraPose;
     cv::VideoCapture*                 cap;
     cv::Mat*                          cpuSrc;
     cv::Rect*                         roi;
@@ -136,14 +135,16 @@ namespace Camera
     int                               frameWidth;
     int                               frameHeight;
 
+
   public:
+    C_AbsolutePose*                   cameraPose;
     S_filterProperties*               filterValues;
   public:
     bool open                         ();
     bool close                        ();
     bool grabImg                      ();
     void retrieveImg                  (cv::Mat &dstImg);
-    void capImage                     (cv::Mat &dstImg);
+    void readImage                     (cv::Mat &dstImg);
     void savePicture                  (int camera_id, int photo_id, std::string definition);
     void initRectifyMap               ();
     void save_picture                 (int photo_id, std::string definition, cv::Mat& srcImg);

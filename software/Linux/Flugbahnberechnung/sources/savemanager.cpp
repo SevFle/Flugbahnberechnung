@@ -130,34 +130,34 @@ void c_SaveManager::saveCameraSettings    (Camera::C_Camera2 &Camera)
   if (GlobalObjects->csv_parameter_datei->IsOpen())
     {
     GlobalObjects->csv_parameter_datei->Schreiben ("Dateityp",Dateityp,"[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben ("hue_min",to_string (Camera.filterValues->getHue_min()),"[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben ("hue_max",to_string (Camera.filterValues->getHue_max()),"[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben ("saturation_min",to_string (Camera.filterValues->getSaturation_min()),"[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben ("saturation_max",to_string (Camera.filterValues->getSaturation_max()),"[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben ("value_min",to_string (Camera.filterValues->getValue_min()),"[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben ("value_max",to_string (Camera.filterValues->getValue_max()),"[1]");
+    GlobalObjects->csv_parameter_datei->Schreiben ("hue_min",to_string (Camera.getFilterproperties()->getHue_min()),"[1]");
+    GlobalObjects->csv_parameter_datei->Schreiben ("hue_max",to_string (Camera.getFilterproperties()->getHue_max()),"[1]");
+    GlobalObjects->csv_parameter_datei->Schreiben ("saturation_min",to_string (Camera.getFilterproperties()->getSaturation_min()),"[1]");
+    GlobalObjects->csv_parameter_datei->Schreiben ("saturation_max",to_string (Camera.getFilterproperties()->getSaturation_max()),"[1]");
+    GlobalObjects->csv_parameter_datei->Schreiben ("value_min",to_string (Camera.getFilterproperties()->getValue_min()),"[1]");
+    GlobalObjects->csv_parameter_datei->Schreiben ("value_max",to_string (Camera.getFilterproperties()->getValue_max()),"[1]");
 
-    GlobalObjects->csv_parameter_datei->Schreiben ("erosion_iterations",to_string (Camera.filterValues->getErodeIterations()),"[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben ("dilation_iterations",to_string (Camera.filterValues->getDilateIterations()),"[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben ("opening_iteration",to_string (Camera.filterValues->getOpenIterations()),"[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben ("closing_iteration",to_string (Camera.filterValues->getCloseIterations()),"[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben ("morph_iteration",to_string (Camera.filterValues->getMorphIterations()),"[1]");
+    GlobalObjects->csv_parameter_datei->Schreiben ("erosion_iterations",to_string (Camera.getFilterproperties()->getErodeIterations()),"[1]");
+    GlobalObjects->csv_parameter_datei->Schreiben ("dilation_iterations",to_string (Camera.getFilterproperties()->getDilateIterations()),"[1]");
+    GlobalObjects->csv_parameter_datei->Schreiben ("opening_iteration",to_string (Camera.getFilterproperties()->getOpenIterations()),"[1]");
+    GlobalObjects->csv_parameter_datei->Schreiben ("closing_iteration",to_string (Camera.getFilterproperties()->getCloseIterations()),"[1]");
+    GlobalObjects->csv_parameter_datei->Schreiben ("morph_iteration",to_string (Camera.getFilterproperties()->getMorphIterations()),"[1]");
 
-    GlobalObjects->csv_parameter_datei->Schreiben ("erosion_kernel_size",to_string (Camera.filterValues->getErodeKernelSize()),"[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben ("dilation_kernel_size",to_string (Camera.filterValues->getDilateKernelSize()),"[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben ("opening_kernel_size",to_string (Camera.filterValues->getOpenIterations()),"[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben ("closing_kernel_size",to_string (Camera.filterValues->getCloseIterations()),"[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben ("morph_kernel_size",to_string (Camera.filterValues->getMorphKernelSize()),"[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben ("gaussian_kernel_size",to_string (Camera.filterValues->getGaussianKernelSize()),"[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben ("bilateral_kernel_size",to_string (Camera.filterValues->getBilateralKernelSize()),"[1]");
+    GlobalObjects->csv_parameter_datei->Schreiben ("erosion_kernel_size",to_string (Camera.getFilterproperties()->getErodeKernelSize()),"[1]");
+    GlobalObjects->csv_parameter_datei->Schreiben ("dilation_kernel_size",to_string (Camera.getFilterproperties()->getDilateKernelSize()),"[1]");
+    GlobalObjects->csv_parameter_datei->Schreiben ("opening_kernel_size",to_string (Camera.getFilterproperties()->getOpenIterations()),"[1]");
+    GlobalObjects->csv_parameter_datei->Schreiben ("closing_kernel_size",to_string (Camera.getFilterproperties()->getCloseIterations()),"[1]");
+    GlobalObjects->csv_parameter_datei->Schreiben ("morph_kernel_size",to_string (Camera.getFilterproperties()->getMorphKernelSize()),"[1]");
+    GlobalObjects->csv_parameter_datei->Schreiben ("gaussian_kernel_size",to_string (Camera.getFilterproperties()->getGaussianKernelSize()),"[1]");
+    GlobalObjects->csv_parameter_datei->Schreiben ("bilateral_kernel_size",to_string (Camera.getFilterproperties()->getBilateralKernelSize()),"[1]");
 
-    GlobalObjects->csv_parameter_datei->Schreiben ("gaussian_sigma",to_string (Camera.filterValues->getGaussianSigma()),"[1]");
+    GlobalObjects->csv_parameter_datei->Schreiben ("gaussian_sigma",to_string (Camera.getFilterproperties()->getGaussianSigma()),"[1]");
 
-    GlobalObjects->csv_parameter_datei->Schreiben ("bilateral_sigma_color",to_string (Camera.filterValues->getBilateralSigmaColor()),"[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben ("bilateral_sigma_spatial",to_string (Camera.filterValues->getBilateralSigmaSpatial()),"[1]");
+    GlobalObjects->csv_parameter_datei->Schreiben ("bilateral_sigma_color",to_string (Camera.getFilterproperties()->getBilateralSigmaColor()),"[1]");
+    GlobalObjects->csv_parameter_datei->Schreiben ("bilateral_sigma_spatial",to_string (Camera.getFilterproperties()->getBilateralSigmaSpatial()),"[1]");
 
-    GlobalObjects->csv_parameter_datei->Schreiben ("Object_size_min",to_string (Camera.filterValues->getObject_Size_min()),"[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben ("Object_size_max",to_string (Camera.filterValues->getObject_Size_max()),"[1]");
+    GlobalObjects->csv_parameter_datei->Schreiben ("Object_size_min",to_string (Camera.getFilterproperties()->getObject_Size_min()),"[1]");
+    GlobalObjects->csv_parameter_datei->Schreiben ("Object_size_max",to_string (Camera.getFilterproperties()->getObject_Size_max()),"[1]");
     this->GlobalObjects->csv_parameter_datei->Schliessen();
     std::cout << "**INFO** Filtereinstellungen fuer Kamera " << std::to_string(Camera.getCameraID()) << " wurden gespeichert" << std::endl;
     }

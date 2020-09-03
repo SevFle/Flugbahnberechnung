@@ -82,36 +82,36 @@ void C_LoadManager::loadCameraSettings (Camera::C_Camera2 *Camera)
 
     GlobalObjects->csv_parameter_datei->Lesen (object_size_min);
     GlobalObjects->csv_parameter_datei->Lesen (object_size_max);
+    this->GlobalObjects->csv_parameter_datei->Schliessen();
 
+    Camera->getFilterproperties()->setHue_min                (hue_min);
+    Camera->getFilterproperties()->setHue_max                (hue_max);
+    Camera->getFilterproperties()->setSaturation_min         (saturation_min);
+    Camera->getFilterproperties()->setSaturation_max         (saturation_max);
+    Camera->getFilterproperties()->setValue_min              (value_min);
+    Camera->getFilterproperties()->setValue_max              (value_max);
 
-    Camera->filterValues->setHue_min(hue_min);
-    Camera->filterValues->setHue_max(hue_max);
-    Camera->filterValues->setSaturation_min(saturation_min);
-    Camera->filterValues->setSaturation_max(saturation_max);
-    Camera->filterValues->setValue_min(value_min);
-    Camera->filterValues->setValue_max(value_max);
+    Camera->getFilterproperties()->setErosion_iterations     (erosion_iterations);
+    Camera->getFilterproperties()->setDilation_iterations    (dilation_iterations);
+    Camera->getFilterproperties()->setOpening_iterations     (opening_iterations);
+    Camera->getFilterproperties()->setClosing_iterations     (closing_iterations);
+    Camera->getFilterproperties()->setMorph_iterations       (morph_iterations);
 
-    Camera->filterValues->setErosion_iterations(erosion_iterations);
-    Camera->filterValues->setDilation_iterations(dilation_iterations);
-    Camera->filterValues->setOpening_iterations(opening_iterations);
-    Camera->filterValues->setClosing_iterations(closing_iterations);
-    Camera->filterValues->setMorph_iterations(morph_iterations);
+    Camera->getFilterproperties()->setErosion_kernel_size    (erosion_kernel_size);
+    Camera->getFilterproperties()->setDilation_kernel_size   (dilation_kernel_size);
+    Camera->getFilterproperties()->setOpening_kernel_size    (opening_kernel_size);
+    Camera->getFilterproperties()->setClosing_kernel_size    (closing_kernel_size);
+    Camera->getFilterproperties()->setMorph_kernel_size      (morph_kernel_size);
+    Camera->getFilterproperties()->setGaussian_kernel_size   (gaussian_kernel_size);
+    Camera->getFilterproperties()->setBilateral_kernel_size  (bilateral_kernel_size);
 
-    Camera->filterValues->setErosion_kernel_size (erosion_kernel_size);
-    Camera->filterValues->setDilation_kernel_size (dilation_kernel_size);
-    Camera->filterValues->setOpening_kernel_size (opening_kernel_size);
-    Camera->filterValues->setClosing_kernel_size(closing_kernel_size);
-    Camera->filterValues->setMorph_kernel_size(morph_kernel_size);
-    Camera->filterValues->setGaussian_kernel_size(gaussian_kernel_size);
-    Camera->filterValues->setBilateral_kernel_size(bilateral_kernel_size);
+    Camera->getFilterproperties()->setGaussian_sigma         (gaussian_sigma);
 
-    Camera->filterValues->setGaussian_sigma(gaussian_sigma);
+    Camera->getFilterproperties()->setBilateral_sigma_color  (bilateral_sigma_color);
+    Camera->getFilterproperties()->setBilateral_sigma_spatial(bilateral_sigma_spatial);
 
-    Camera->filterValues->setBilateral_sigma_color(bilateral_sigma_color);
-    Camera->filterValues->setBilateral_sigma_spatial(bilateral_sigma_spatial);
-
-    Camera->filterValues->setObject_Size_min(object_size_min);
-    Camera->filterValues->setObject_Size_max(object_size_max);
+    Camera->getFilterproperties()->setObject_Size_min        (object_size_min);
+    Camera->getFilterproperties()->setObject_Size_max        (object_size_max);
     std::cout << "**INFO** Filterwerte fuer Kamera " << std::to_string(cameraID) << " wurde geladen" << std::endl;
 
     }
