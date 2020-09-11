@@ -61,12 +61,22 @@ C_CameraManager::~C_CameraManager ()
   delete (saveManager);
   delete (loadManager);
   this->globalObjects = nullptr;
-}
+  }
+
+thread *C_CameraManager::getCamPositioning() const
+  {
+  return camPositioning;
+  }
+
+thread *C_CameraManager::getCamPipeline() const
+  {
+  return camPipeline;
+  }
 
 bool C_CameraManager::getFlush() const
-{
-    return flush;
-}
+  {
+  return flush;
+  }
 
 void C_CameraManager::setFlush(bool value)
 {
@@ -91,26 +101,6 @@ S_filterflags *C_CameraManager::getFilterFlags() const
 void C_CameraManager::setFilterFlags(S_filterflags *value)
   {
   filterFlags = value;
-  }
-
-bool C_CameraManager::getPositioningDone() const
-  {
-  return positioningDone;
-  }
-
-void C_CameraManager::setPositioningDone(volatile bool value)
-  {
-  positioningDone = value;
-  }
-
-bool C_CameraManager::getPipelineDone() const
-  {
-  return pipelineDone;
-  }
-
-void C_CameraManager::setPipelineDone(volatile bool value)
-  {
-  pipelineDone = value;
   }
 
 bool C_CameraManager::getCalibrationDone() const
@@ -239,17 +229,9 @@ bool C_CameraManager::stopThreadCameraPositioning()
     printf("\n**INFO** Kamerathread wurde gestoppt");
   return true;
    }
-bool C_CameraManager::startPipelineTracking  (bool undistordActive, bool openActive, bool closeActive,  bool filterActive, bool objectDetectionActive,  bool roiAdjustmentActive, bool trackingActive)
+bool C_CameraManager::startPipelineTracking  ()
   {
   pipelineQue->set_capacity(4);
-  this->filterFlags->undistordActive        = undistordActive;
-  this->filterFlags->openActive             = openActive;
-  this->filterFlags->filterActive           = filterActive;
-  this->filterFlags->objectDetectionActive  = objectDetectionActive;
-  this->filterFlags->closeActive            = closeActive;
-  this->filterFlags->roiAdjustmentActive    = roiAdjustmentActive;
-  this->filterFlags->trackingActive         = trackingActive;
-
   this->camPipeline     = new thread(&CameraManager::C_CameraManager::pipelineHelper,this);
 
   printf("\n**INFO** Kamerapipeline wurde gestartet");

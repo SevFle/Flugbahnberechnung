@@ -176,7 +176,9 @@ void C_frm_Camera_Calibration::on_bt_start_clicked()
 
 void frm_Camera_Calibration::C_frm_Camera_Calibration::on_bt_exit_clicked()
 {
-  this->Main->cameraManager->setPipelineDone(true);
+  this->GlobalObjects->watchdog->stop();
+  delete(this->GlobalObjects->watchdog);
+  this->Main->cameraManager->pipelineDone.store(true);
   if(!this->Main->cameraManager->stopPipelineTracking()) return;
   this->close();
 }

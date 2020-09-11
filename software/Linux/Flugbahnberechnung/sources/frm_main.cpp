@@ -119,8 +119,22 @@ void ::C_frm_Main::on_bt_apply_clicked()
 }
 void frm_Main::C_frm_Main::on_bt_tracking_clicked()
   {
-  if(!this->Main->cameraManager->startPipelineTracking(true, true, true, true, true, false, false))
+  if(!this->Main->cameraManager->startPipelineTracking())
     {
+      this->Main->cameraManager->getFilterFlags()->undistordActive        = true;
+      this->Main->cameraManager->getFilterFlags()->openActive             = true;
+      this->Main->cameraManager->getFilterFlags()->filterActive           = true;
+      this->Main->cameraManager->getFilterFlags()->objectDetectionActive  = true;
+      this->Main->cameraManager->getFilterFlags()->closeActive            = true;
+      this->Main->cameraManager->getFilterFlags()->roiAdjustmentActive    = false;
+      this->Main->cameraManager->getFilterFlags()->trackingActive         = false;
+
+    this->GlobalObjects->watchdog = new watchdog::C_watchdog();
+    this->GlobalObjects->watchdog->start(100, this->Main->cameraManager->pipelineDone,
+                                         this->Main->cameraManager->getCamPipeline(),
+                                         [&]{this->Main->cameraManager->startPipelineTracking();});
+
+
     this->MsgBox->setText("Pipeline konnte nicht gestartet werden");
     this->MsgBox->setIcon(QMessageBox::Critical);
     this->MsgBox->exec();
@@ -134,8 +148,21 @@ void frm_Main::C_frm_Main::on_bt_tracking_clicked()
 
 void frm_Main::C_frm_Main::on_bt_camera_calibration_clicked()
   {
-  if(!this->Main->cameraManager->startPipelineTracking(false, false, false, false, false, false, false))
+  if(!this->Main->cameraManager->startPipelineTracking())
     {
+    this->Main->cameraManager->getFilterFlags()->undistordActive        = false;
+    this->Main->cameraManager->getFilterFlags()->openActive             = false;
+    this->Main->cameraManager->getFilterFlags()->filterActive           = false;
+    this->Main->cameraManager->getFilterFlags()->objectDetectionActive  = false;
+    this->Main->cameraManager->getFilterFlags()->closeActive            = false;
+    this->Main->cameraManager->getFilterFlags()->roiAdjustmentActive    = false;
+    this->Main->cameraManager->getFilterFlags()->trackingActive         = false;
+
+    this->GlobalObjects->watchdog = new watchdog::C_watchdog();
+    this->GlobalObjects->watchdog->start(100, this->Main->cameraManager->pipelineDone,
+                                         this->Main->cameraManager->getCamPipeline(),
+                                         [&]{this->Main->cameraManager->startPipelineTracking();});
+
     this->MsgBox->setText("Thread zur Kamerakalibrierung konnte nicht gestartet werden");
     this->MsgBox->setIcon(QMessageBox::Critical);
     this->MsgBox->exec();
@@ -156,6 +183,11 @@ void frm_Main::C_frm_Main::on_bt_camera_positioning_clicked()
   {
   if(!this->Main->cameraManager->startThreadCameraPositioning())
     {
+      this->GlobalObjects->watchdog->start(100, this->Main->cameraManager->positioningDone,
+                                           this->Main->cameraManager->getCamPositioning(),
+                                           [&]{this->Main->cameraManager->startThreadCameraPositioning();});
+
+
     this->MsgBox->setText("Thread zur Kamerapositionierung konnte nicht gestartet werden");
     this->MsgBox->setIcon(QMessageBox::Critical);
     this->MsgBox->exec();

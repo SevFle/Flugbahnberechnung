@@ -37,7 +37,7 @@ void C_frm_Camera_Positioning::showEvent(QShowEvent* ShowEvent)
   this->Ui->numTimerIntervall->setValue(Taktgeber_Intervall);
   this->Zaehler               = 0;
   pthread_mutex_init          (lock, NULL);
-  this->Main->cameraManager->setPositioningDone(false);
+  this->Main->cameraManager->positioningDone.store(false);
   this->Main->cameraManager->startThreadCameraPositioning();
   this->set_num_value(*GlobalObjects->camera_order);
   Q_UNUSED                    (ShowEvent)
@@ -85,7 +85,9 @@ bool               C_frm_Camera_Positioning::eventFilter                        
 /************************************** Nicht öffentliche QT-Slots******************************/
 void C_frm_Camera_Positioning::on_bt_exit_clicked()
   {
-  this->Main->cameraManager->setPositioningDone(true);
+  this->GlobalObjects->watchdog->stop();
+  delete(this->GlobalObjects->watchdog);
+  this->Main->cameraManager->positioningDone.store(true);
   if(!this->Main->cameraManager->stopThreadCameraPositioning()) return;
   this->close();
   }

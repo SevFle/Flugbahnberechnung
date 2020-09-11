@@ -15,7 +15,7 @@ using namespace posen;
 using namespace GlobalObjects;
 /********************************************** DEFINE PAYLOAD SIZE ******************************************************/
 const int payloadSize =  2;
-typedef std::chrono::system_clock Clock;
+typedef std::chrono::steady_clock Clock;
 typedef std::chrono::milliseconds milliseconds;
 
 

@@ -45,7 +45,7 @@ private:
   void closeEvent (QCloseEvent* CloseEvent) override;
   bool eventFilter (QObject* Object, QEvent* Event) override;
 public:
-  void Taktgeber_Tick(CameraManager::S_pipelinePayload*       payload);
+  void Taktgeber_Tick();
 
 private slots:
   void Fill_Mat_2_Lbl(cv::Mat& img, QLabel* label);

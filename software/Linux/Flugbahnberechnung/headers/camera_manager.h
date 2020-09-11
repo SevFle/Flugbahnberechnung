@@ -181,9 +181,11 @@ namespace CameraManager
     int                           transferZoneWidth;
     int                           arrActiveCameras[4];
     int                           cntPipeline;
-    volatile bool                 calibrationDone;
-    volatile bool                 positioningDone;
-    volatile bool                 pipelineDone;
+    public:
+    std::atomic<bool>             calibrationDone;
+    std::atomic<bool>             positioningDone;
+    std::atomic<bool>             pipelineDone;
+    private:
     bool                          flush;
     bool                          flushComplete;
 
@@ -209,7 +211,7 @@ namespace CameraManager
 
     bool startThreadCameraPositioning();
     bool stopThreadCameraPositioning();
-    bool startPipelineTracking  (bool undistordActive, bool openActive, bool closeActive,  bool filterActive, bool objectDetectionActive,  bool roiAdjustmentActive, bool trackingActive);
+    bool startPipelineTracking  ();
     bool stopPipelineTracking();
     bool pollPipeline               (CameraManager::S_pipelinePayload* arg1);
 
@@ -244,11 +246,8 @@ namespace CameraManager
     int getArrActiveCameras                 (int position) const;
     void setArrActiveCameras                (int value, int position);
 
-    bool getPipelineDone                    () const;
-    void setPipelineDone                    (volatile bool value);
-
-    bool getPositioningDone                 () const;
-    void setPositioningDone                 (volatile bool value);
+    std::atomic<bool>* getPipelineDone                    ();
+    std::atomic<bool>* getPositioningDone                 ();
 
     S_filterflags *getFilterFlags() const;
     void setFilterFlags(S_filterflags *value);
@@ -256,6 +255,8 @@ namespace CameraManager
     void setLock(std::mutex *value);
     bool getFlush() const;
     void setFlush(bool value);
-    };// c_camera_unmanaged
-}//nmsp_c_camera_unmanaged
+    thread *getCamPipeline() const;
+    thread *getCamPositioning() const;
+      };// c_camera_unmanaged
+  }//nmsp_c_camera_unmanaged
 #endif

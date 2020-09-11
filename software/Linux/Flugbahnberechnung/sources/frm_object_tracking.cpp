@@ -31,35 +31,21 @@ C_frm_Object_Tracking::~C_frm_Object_Tracking()
 void C_frm_Object_Tracking::showEvent(QShowEvent* ShowEvent)
 {
 Q_UNUSED(ShowEvent)
-//this->Zaehler = 0;
-//connect(this->Taktgeber, &QTimer::timeout, this, &C_frm_Object_Tracking::Taktgeber_Tick);
-//this->Taktgeber->start(this->Taktgeber_Intervall);
-//this->Ui->quickWidget->createWindowContainer(this->Main->cameraManager->trackingManager->dataPlotter->scatter);
-//this->Ui->quickWidget->show();
+this->Zaehler = 0;
+connect(this->Taktgeber, &QTimer::timeout, this, &C_frm_Object_Tracking::Taktgeber_Tick);
+this->Taktgeber->start(this->Taktgeber_Intervall);
 this->TimerWait          = 60;
 this->Ui->num_camera_id->setMaximum(GlobalObjects->absCameras);
 this->Main->cameraManager->trackingManager->dataPlotter->show();
-//    this->Ui->lbl_thread_running->              setEnabled  (true);
-//    this->Ui->bt_start->                        setText     ("Stop");
-    this->Main->cameraManager->trackingManager->setAlive    (true);
-
-
 }
 
 void C_frm_Object_Tracking::closeEvent(QCloseEvent* CloseEvent)
 {
  Q_UNUSED(CloseEvent);
  this->removeEventFilter(this);
-// this->Taktgeber->stop();
-// disconnect(this->Taktgeber, &QTimer::timeout, this, &C_frm_Object_Tracking::Taktgeber_Tick);
+ this->Taktgeber->stop();
+ disconnect(this->Taktgeber, &QTimer::timeout, this, &C_frm_Object_Tracking::Taktgeber_Tick);
  this->Zaehler = 0;
-//    this->Ui->lbl_thread_running->              setEnabled  (false);
-    this->Main->cameraManager->trackingManager->setAlive    (false);
-//    this->Ui->bt_start->                        setText     ("Start Tracking");
-    this->Main->cameraManager->getFilterFlags()->setObjectDetection(false);
-    this->Main->cameraManager->getFilterFlags()->setRoiAdjustment(false);
-    this->Main->cameraManager->getFilterFlags()->setTracking(false);
-
 
 
  }
@@ -107,7 +93,7 @@ void ::C_frm_Object_Tracking::on_bt_exit_clicked()
   }
 
 
-void C_frm_Object_Tracking::Taktgeber_Tick(CameraManager::S_pipelinePayload*   payload)
+void C_frm_Object_Tracking::Taktgeber_Tick()
   {
   this->Ui->txb_zaehler->setText(QString::number(this->Zaehler++));
   this->Fill_Mat_2_Lbl(payload->cpuUndistortedImg[0], this->Ui->lbl_img_left);

@@ -17,8 +17,8 @@ DEFINES += QT_DEPRECATED_WARNINGS
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
-DESTDIR     = $$system(pwd)
-OBJECTS_DIR = $$DESTDIR/Obj
+#DESTDIR     = $$system(pwd)
+#OBJECTS_DIR = $$DESTDIR/Obj
 # C++ flags
 QMAKE_CXXFLAGS_RELEASE =-03
 
@@ -45,6 +45,7 @@ SOURCES += \
     sources/frm_object_tracking.cpp \
     sources/frm_main.cpp \
     sources/trackingManager.cpp \
+  watchdog.cpp
 
 
 HEADERS += \
@@ -69,7 +70,8 @@ HEADERS += \
     headers/imagefilter.h \
     headers/loadmanager.h \
     headers/savemanager.h \
-    plotter.h
+    plotter.h \
+    watchdog.h
 
 FORMS += \
     forms/frm_camera_calibration.ui \
