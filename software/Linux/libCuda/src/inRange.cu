@@ -18,7 +18,7 @@ __global__ void inRange_kernel (const cv::cuda::PtrStepSz<uchar3> src, cv::cuda:
   }
 
 
-  void cudaKernel::inRange_gpu (cv::cuda::GpuMat& src, cv::Scalar& lowerb, cv::Scalar& upperb,
+  void onCuda::imageProcessing::inRange (cv::cuda::GpuMat& src, cv::Scalar& lowerb, cv::Scalar& upperb,
                     cv::cuda::GpuMat& dst)
     {
     const int m       = 32;

@@ -24,84 +24,6 @@ inline void __cudaSafeCall( int err, const char *file, const int line )
 
 #define SAFECALL(err)           __cudaSafeCall      (err, __FILE__, __LINE__)
 
-/* implementatin of Cholesky decomposition on the CPU */
-void choleskyDecompositionCPU(int n, float * A, int lda) {
-  //#define A(x,y) a[y*lda+x]
-  float * L = new float[n*n];
-  memset(L,0,sizeof(float)*n*n);
-
-  for (int j = 0; j < n; j++) {
-    float d = 0.0;
-    for (int k = 0; k < j; k++) {
-      float s = 0.0;
-      for (int i = 0; i < k; i++) {
-	s += L[k*n+i] * L[j*n+i];
-      }
-      L[j*n+k] = s = (A[j+k*lda] - s) / L[k*n+k];
-      L[k*n+j] = L[j*n+k];
-      d = d + s * s;
-    }
-    d = A[j*(lda+1)] - d;
-    L[j*n+j] = (d > 0 ? sqrt(d) : 0);
-  }
-  for(int j = 0;j < n; j++) {
-    for (int k = 0; k < n; k++) {
-      A[j+k*lda] = L[j*n+k];
-    }
-  }
-  delete [] L;
-  return;
-  //#undef A
-} // choleskyDecompositionCPU
-
-void choleskyDecompositionCPU2(int n, float * a, int lda) {
-#define A(x,y) a[y*lda+x]
-		float * L = new float[n*n];
-		memset(L,0,sizeof(float)*n*n);
-
-		for (int j = 0; j < n; j++) {
-			float d = 0.0;
-			for (int k = 0; k < j; k++) {
-				float s = 0.0;
-				for (int i = 0; i < k; i++) {
-					s += L[k*n+i] * L[j*n+i];
-				}
-				L[j*n+k] = s = (A(j,k) - s) / L[k*n+k];
-				L[k*n+j] = L[j*n+k];
-				d = d + s * s;
-			}
-			d = A(j,j) - d;
-			L[j*n+j] = (d > 0 ? sqrt(d) : 0);
-		}
-		for(int j = 0;j < n; j++) {
-			for (int k = 0; k < n; k++) {
-				A(j,k) = L[j*n+k];
-			}
-		}
-		delete [] L;
-		return;
-#undef A
-} // choleskyDecompositionCPU
-
-void solveCPU ( const int m, const int n,
-        const float *A, const int lda, float *B,
-             const int ldb) {
-  int i, j, k;
-  //int n1, n2;
-    for (i = 0; i < n; i++) {
-        float Aii = A[lda * i + i];
-        for (j = 0; j < m; j++) {
-          B[ldb * i + j] /= Aii;
-	 }
-
-      for (k = i + 1; k < n; k++) {
-        const float Aik = A[i * lda + k];
-        for (j = 0; j < m; j++) {
-          B[ldb * k + j] -= Aik * B[ldb * i + j];
-        }
-      }
-    }
-} // solveCPU
              	
 /* implementation of Cholesky decomposition on the GPU 
  * following Vasily Volkov and James Demmel.  */
@@ -158,7 +80,7 @@ void invert(float * A, int lda, int n) {
 
     volatile clock_t gputime, gputime0;
     gputime=clock();
-    gputime0 = gputime;
+    gputime0 = gputime;h_X
 
     float * A_d;
     int m = (n+31)&~31;
@@ -197,28 +119,4 @@ void invert(float * A, int lda, int n) {
 	// now A = inverse(spd_matrix)
 	gputime=clock()-gputime;fprintf(stderr, " %7.1f ms ",gputime/1.e3f);
 
-   // fprintf(stderr, " %7.2f Glops", 1e-3*(2.0+3.0+3.0)*n*n*n/3.0/gputime);
-    /*#ifdef VERIFY	
-	// let's verify that
-	float error=0.0;
-	float *I = new float[n*n];
-
-	// multiply inverse*xcopy, should be Identity matrix
-	for (int k = 0; k < n; k++) {
-	  for (int j = 0; j < n; j++) {
-	    float sum = 0;
-	    for (int i = 0; i < n; i++) {
-	      sum += A[j*lda+i]*xcopy[i*n+k];
-	    }
-	    I[k*n+j] = sum;
-	    if (j!=k) {
-	      error += sum * sum;
-	    } else {
-	      error += (1.0-sum) * (1.0-sum);
-	    }
-	  }
-	}
-        fprintf(stderr, " %6.2f SSE", error);
-#endif	
-	fprintf(stderr," done!\n"); */
 } // invert 

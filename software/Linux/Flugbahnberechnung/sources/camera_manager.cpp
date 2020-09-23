@@ -776,7 +776,7 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
 
       cv::cuda::cvtColor                (*it,temp1,cv::COLOR_BGR2HSV);
       this->ImageFilter->gpufGaussian   (temp1,temp2, pData->Filter[i]);
-      cudaKernel::inRange_gpu           (temp2,min, max,gputhresholded);
+      onCuda::inRange           (temp2,min, max,gputhresholded);
       this->ImageFilter->gpufOpen       (gputhresholded,temp2, pData->Filter[i]);
       this->ImageFilter->gpufClose      (temp2,temp1, pData->Filter[i]);
       //cv::cuda::cvtColor                (temp1, temp2 ,cv::COLOR_GRAY2BGR);
