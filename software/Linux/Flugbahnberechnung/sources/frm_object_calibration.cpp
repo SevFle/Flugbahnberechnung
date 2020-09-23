@@ -88,7 +88,6 @@ bool               C_frm_Object_Calibration::eventFilter                        
 /************************************** Nicht öffentliche QT-Slots******************************/
 void C_frm_Object_Calibration::on_bt_exit_clicked()
   {
-  this->GlobalObjects->watchdog->stop();
   delete(this->GlobalObjects->watchdog);
   this->Main->cameraManager->pipelineDone.store(true);
   if(!this->Main->cameraManager->stopPipelineTracking())
@@ -99,7 +98,7 @@ void C_frm_Object_Calibration::on_bt_exit_clicked()
 void C_frm_Object_Calibration::Taktgeber_Tick()
   {
   this->Ui->txb_zaehler->setText(QString::number(this->Zaehler++));
-  if(this->Main->cameraManager->pipelineQue->try_pop(pData))
+    if(this->Main->cameraManager->pipelineQue->try_pop(pData))
     {
     this->                      Fill_Mat_2_Lbl(pData->cpuSrcImg[0], this->Ui->lbl_src_img);
     this->                      Fill_Mat_2_Lbl(pData->cpuGrayImg[0], this->Ui->lbl_img_gray);
@@ -539,6 +538,7 @@ void frm_Object_Calibration::C_frm_Object_Calibration::on_chkb_bilateral_stateCh
 }
 void C_frm_Object_Calibration::Fill_Mat_2_Lbl(cv::Mat& img, QLabel* label)
   {
+  if(img.empty()) return;
   if(img.type()!= 0)
     {
     //Darstellung von RGB Bildern in UI Labeln

@@ -14,7 +14,9 @@ namespace watchdog
   class C_watchdog
     {
   public:
-    C_watchdog();
+    C_watchdog(int interval, std::atomic<bool> &stopCondition, std::thread *thread, std::function<void ()> startFunc);
+    C_watchdog(int interval, std::atomic<bool> &stopCondition,std::thread *thread, std::function<void ()> startFunc,std::function<void ()> restartFunc);
+
     ~C_watchdog();
 
   private:
@@ -33,6 +35,8 @@ namespace watchdog
   public:
 
     void pet();
+
+  private:
     void start(unsigned int interval, std::atomic<bool> &stopCondition, std::thread *thread, std::function<void ()> startFunc);
     void start(unsigned int interval, std::atomic<bool> &stopCondition,std::thread *thread, std::function<void ()> startFunc,std::function<void ()> restartFunc);
     void stop();

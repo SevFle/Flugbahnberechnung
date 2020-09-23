@@ -85,7 +85,6 @@ bool               C_frm_Camera_Positioning::eventFilter                        
 /************************************** Nicht öffentliche QT-Slots******************************/
 void C_frm_Camera_Positioning::on_bt_exit_clicked()
   {
-  this->GlobalObjects->watchdog->stop();
   delete(this->GlobalObjects->watchdog);
   this->Main->cameraManager->positioningDone.store(true);
   if(!this->Main->cameraManager->stopThreadCameraPositioning()) return;

@@ -90,13 +90,14 @@ void C_Camera2::initRectifyMap              ()
   }
 void C_Camera2::retrieveImg                      (cv::Mat &dstImg)
   {
-  //auto cpuSrc = new cv::Mat;
+  auto cpuSrc = new cv::Mat;
   //this->cap->retrieve(*cpuSrc);
   //dstImg= cpuSrc->operator()(*roi);
   //cpuSrc->copyTo(dstImg);
   //delete (cpuSrc);
-  this->cap->retrieve(dstImg, 0);
-//dstImg= cpuSrc->operator()(*roi);
+  this->cap->retrieve(*cpuSrc, 0);
+  dstImg= cpuSrc->operator()(*roi);
+  delete cpuSrc;
 }
 
 bool C_Camera2::grabImg                      ()
@@ -186,10 +187,6 @@ void C_Camera2::setTrackingRoi                      (int Radius, int istX, int i
   this->fit_to_roi( Radius,  istX,  istY);
   }
 void setROI                       (int width, int height)
-  {
-
-  }
-int  C_Camera2::getROI() const
   {
 
   }

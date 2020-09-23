@@ -11,12 +11,10 @@ C_frm_Object_Tracking::C_frm_Object_Tracking(C_GlobalObjects* GlobalObjects, C_M
     this->Zaehler       = 0;
     this->Taktgeber = new QTimer(this);
     this->Taktgeber_Intervall = 100;
-    this->payload       = new CameraManager::S_pipelinePayload;
     }
 
 C_frm_Object_Tracking::~C_frm_Object_Tracking()
   {
-  delete (payload);
   this->Taktgeber_Intervall = 0;
   delete (this->Taktgeber);
 
@@ -33,7 +31,6 @@ Q_UNUSED(ShowEvent)
 this->Zaehler = 0;
 connect(this->Taktgeber, &QTimer::timeout, this, &C_frm_Object_Tracking::Taktgeber_Tick);
 this->Taktgeber->start(this->Taktgeber_Intervall);
-this->Ui->num_camera_id->setMaximum(GlobalObjects->absCameras);
 this->Main->cameraManager->trackingManager->dataPlotter->show();
 }
 
@@ -86,7 +83,7 @@ void ::C_frm_Object_Tracking::on_bt_exit_clicked()
     this->Ui->bt_start->                        setText     ("Start Tracking");
     this->Main->cameraManager->getFilterFlags()->setObjectDetection(false);
     this->Main->cameraManager->getFilterFlags()->setRoiAdjustment(false);
-    this->Main->cameraManager->getFilterFlags()->setTracking(false);
+    this->Main->cameraManager->getFilterFlags()->setTrackingActive(false);
   this->close();
   }
 
@@ -103,11 +100,13 @@ void C_frm_Object_Tracking::Taktgeber_Tick()
     this->Ui->txb_position_y->setText (QString::number(pData->objektVektor.Y));
     this->Ui->txb_position_z->setText (QString::number(pData->objektVektor.Z));
     this->Ui->txb_activeCamera->setText (QString::number(pData->cameraID[0]));
+    delete(pData);
     }
     //Get Current Object Position
   }
 void C_frm_Object_Tracking::Fill_Mat_2_Lbl(cv::Mat& img, QLabel* label)
   {
+  if(img.empty()) return;
   if(img.type()!= 0)
     {
     QImage imgIn= QImage((uchar*) img.data, img.cols, img.rows, img.step, QImage::Format_BGR888);
@@ -135,7 +134,7 @@ void frm_Object_Tracking::C_frm_Object_Tracking::on_bt_start_clicked()
     this->Ui->bt_start->                        setText     ("Start Tracking");
     this->Main->cameraManager->getFilterFlags()->setObjectDetection(false);
     this->Main->cameraManager->getFilterFlags()->setRoiAdjustment(false);
-    this->Main->cameraManager->getFilterFlags()->setTracking(false);
+    this->Main->cameraManager->getFilterFlags()->setTrackingActive(false);
 
     }
 }

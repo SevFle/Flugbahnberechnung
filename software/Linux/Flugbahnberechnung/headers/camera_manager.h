@@ -92,18 +92,19 @@ namespace CameraManager
     };
     struct S_filterflags
       {
-      bool undistordActive  = false;
-      bool openActive       = false;
-      bool closeActive      = false;
-      bool filterActive     = false;
-      bool objectDetectionActive   = false;
-      bool roiAdjustmentActive = false;
-      bool trackingActive         = false;
-      bool erosionActive     = false;
-      bool dilationActive     = false;
-      bool gaussianActive   = false;
-      bool morphActive      = false;
-      bool bilateralActive  = false;
+      public:
+      bool undistordActive          = false;
+      bool openActive               = false;
+      bool closeActive              = false;
+      bool filterActive             = false;
+      bool objectDetectionActive    = false;
+      bool roiAdjustmentActive      = false;
+      bool trackingActive           = false;
+      bool erosionActive            = false;
+      bool dilationActive           = false;
+      bool gaussianActive           = false;
+      bool morphActive              = false;
+      bool bilateralActive          = false;
 
 
     public:
@@ -119,8 +120,8 @@ namespace CameraManager
       void setObjectDetection(bool value);
       bool getRoiAdjustment() const;
       void setRoiAdjustment(bool value);
-      bool getTracking() const;
-      void setTracking(bool value);
+      bool getTrackingActive() const;
+      void setTrackingActive(bool value);
       bool getErosionActive() const;
       void setErosionActive(bool value);
       bool getDilationActive() const;

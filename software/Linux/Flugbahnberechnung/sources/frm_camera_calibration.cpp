@@ -73,6 +73,7 @@ void C_frm_Camera_Calibration::closeEvent(QCloseEvent* CloseEvent)
  this->Taktgeber->stop();
  disconnect(this->Taktgeber, &QTimer::timeout, this, &C_frm_Camera_Calibration::Taktgeber_Tick);
  this->Zaehler = 0;
+
  }
 
 bool               C_frm_Camera_Calibration::eventFilter                                       (QObject* Object, QEvent* Event)
@@ -177,7 +178,6 @@ void C_frm_Camera_Calibration::on_bt_start_clicked()
 
 void frm_Camera_Calibration::C_frm_Camera_Calibration::on_bt_exit_clicked()
 {
-  this->GlobalObjects->watchdog->stop();
   delete(this->GlobalObjects->watchdog);
   this->Main->cameraManager->pipelineDone.store(true);
   if(!this->Main->cameraManager->stopPipelineTracking()) return;

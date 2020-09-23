@@ -1,4 +1,4 @@
--/****************************************************************** Includes ****************************************************************/
+/****************************************************************** Includes ****************************************************************/
 #include "headers/camera_manager.h"
 
 
@@ -36,7 +36,7 @@ C_CameraManager::C_CameraManager ( C_GlobalObjects* GlobalObjects)
   this->positioningDone     = false;
   this->pipelineDone        = 0;
   this->initZoneWidth       = 200;
-  this->initZoneHeight      = this->frameHeight;
+  this->initZoneHeight      = this->frameHeight-1;
   this->transferZoneWidth   = frameWidth - 200;
   this->flush = false;
   this->flushComplete = false;
@@ -554,6 +554,7 @@ void C_CameraManager::threadCameraPositioning(std::vector<Camera::C_Camera2*> ve
           delete (thData);
 
         }
+      this->globalObjects->watchdog->pet();
     }
   std::cout << "**INFO** Kamerathread wurde gestoppt" << std::endl;
   }
@@ -645,7 +646,7 @@ void C_CameraManager::startTracking()
 
   this->filterFlags->setObjectDetection(true);
   this->filterFlags->setRoiAdjustment(true);
-  this->filterFlags->setTracking(true);
+  this->filterFlags->setTrackingActive(true);
 
   this->roistatus = initZone;
   }
@@ -776,7 +777,7 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
 
       cv::cuda::cvtColor                (*it,temp1,cv::COLOR_BGR2HSV);
       this->ImageFilter->gpufGaussian   (temp1,temp2, pData->Filter[i]);
-      onCuda::inRange           (temp2,min, max,gputhresholded);
+      onCuda::imageProcessing::inRange     (temp2,min, max,gputhresholded);
       this->ImageFilter->gpufOpen       (gputhresholded,temp2, pData->Filter[i]);
       this->ImageFilter->gpufClose      (temp2,temp1, pData->Filter[i]);
       //cv::cuda::cvtColor                (temp1, temp2 ,cv::COLOR_GRAY2BGR);
@@ -939,6 +940,7 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
     pData->fpsEnd           = Clock::now();
     pData->frametime        = std::chrono::duration_cast<std::chrono::milliseconds>(pData->fpsEnd - pData->fpsStart);
     pData->fps              = 1000000000/pData->frametime.count();
+    this->globalObjects->watchdog->pet();
     pData->end              = Clock::now();
     pData->executionTime[7] = std::chrono::duration_cast<milliseconds>(pData->end - pData->start);
     pData->queBuffer        = que->size();
@@ -1008,12 +1010,12 @@ void S_filterflags::setRoiAdjustment(bool value)
   roiAdjustmentActive = value;
   }
 
-bool S_filterflags::getTracking() const
+bool S_filterflags::getTrackingActive() const
   {
   return trackingActive;
   }
 
-void S_filterflags::setTracking(bool value)
+void S_filterflags::setTrackingActive(bool value)
   {
   trackingActive = value;
   }
