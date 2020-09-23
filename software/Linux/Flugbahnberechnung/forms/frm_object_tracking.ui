@@ -89,21 +89,6 @@
      <string>Start</string>
     </property>
    </widget>
-   <widget class="QSpinBox" name="num_camera_id">
-    <property name="geometry">
-     <rect>
-      <x>170</x>
-      <y>1000</y>
-      <width>71</width>
-      <height>41</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>14</pointsize>
-     </font>
-    </property>
-   </widget>
    <widget class="QGroupBox" name="groupBox_2">
     <property name="geometry">
      <rect>
@@ -396,24 +381,6 @@
       </rect>
      </property>
     </widget>
-   </widget>
-   <widget class="QLabel" name="label_7">
-    <property name="geometry">
-     <rect>
-      <x>170</x>
-      <y>970</y>
-      <width>101</width>
-      <height>21</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>14</pointsize>
-     </font>
-    </property>
-    <property name="text">
-     <string>Kamera</string>
-    </property>
    </widget>
    <widget class="QLabel" name="lbl_thread_running">
     <property name="geometry">

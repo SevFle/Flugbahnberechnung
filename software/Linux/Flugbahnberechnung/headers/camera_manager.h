@@ -133,6 +133,13 @@ namespace CameraManager
       void setBilateralActive(bool value);
       };
 
+    enum roiStatus
+      {
+      initZone,
+      objectFound,
+      objectLost,
+      };
+
     class C_CameraManager
       {
     public:
@@ -164,6 +171,7 @@ namespace CameraManager
     Clock::time_point                       timestampTm1;
     posen::C_RelativePose*                  relPose;
     posen::C_AbsolutePose*                  absPose;
+    roiStatus                               roistatus;
     public:
     tbb::concurrent_bounded_queue<CameraManager::S_pipelinePayload*>*  pipelineQue;
     tbb::concurrent_bounded_queue<CameraManager::S_threadPayload*>*                    threadQue;
@@ -188,7 +196,7 @@ namespace CameraManager
     private:
     bool                          flush;
     bool                          flushComplete;
-
+    std::atomic<bool>             initZoneActive;
 
     /********************************************************* Öffentliche Klassenmethoden*******************************************************/
     public:
@@ -217,9 +225,13 @@ namespace CameraManager
 
 
 
-    void calculate_camera_pose    (int camera1, int camera2, cv::Mat M12);
+    void calculate_camera_pose    (int camera1, int camera2, cv::Mat M10, cv::Mat M20);
 
     void getDeviceList            ();
+
+    void startTracking();
+    void stopTracking();
+
 
 
     /******************************************************* Private Klassenmethoden***************************************************************/
@@ -232,9 +244,8 @@ namespace CameraManager
     static void *pipelineHelper(void* This);
 
     void mvTemp2VecCamera                   (std::vector<Camera::C_Camera2*> temp_CameraVector);
-    void smTracking                         (S_pipelinePayload* payload);
-    bool getObjectPosition2D                (trackingManager::S_trackingPayload& trackingPayload);
     void helper() const;
+
     /******************************************************* Getter-Setter Klassenmethoden***************************************************************/
   public:
     std::vector<cv::Mat*> getVecImgShow    () const;

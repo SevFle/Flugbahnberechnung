@@ -122,12 +122,13 @@ void C_frm_Camera_Calibration::Taktgeber_Tick()
     this->Ui->txb_worker_8->setText(QString::number(pData->executionTime[7].count()));
     this->Ui->txb_fps->setText(QString::number(pData->fps));
     this->Ui->txb_frametime->   setText(QString::number(pData->frametime.count()));
-      this->Ui->txb_quebuffer->   setText(QString::number(pData->queBuffer));
+    this->Ui->txb_quebuffer->   setText(QString::number(pData->queBuffer));
 
     switch (method)
       {
       case 0:
         this->FillMat2Lbl(this->pData->cpuSrcImg[0], this->Ui->lbl_img_single_calibration);
+        //imgBuffer dient zur speicherung von Bildern im Kalibrrierungsprozess
         this->pData->cpuSrcImg[0].copyTo(*this->imgBuffer[0]);
         break;
       case 1:
@@ -198,45 +199,53 @@ void C_frm_Camera_Calibration::on_num_camera_id_valueChanged(int arg1)
 
 void C_frm_Camera_Calibration::on_rb_single_calibration_clicked()
 {
-    this->method                                  = 0;
-    this->Ui->num_camera_id->setValue             (0);
-    this->Ui->num_camera_id->setSingleStep        (1);
-    this->Ui->num_camera_id->setMaximum       (GlobalObjects->absCameras-1);
-    this->cameraID                                = 0;
+    this->method                                      = 0;
+    this->Ui->num_camera_id->setValue                 (0);
+    this->Ui->num_camera_id->setSingleStep            (1);
+    this->Ui->num_camera_id->setMaximum               (GlobalObjects->absCameras-1);
+    this->cameraID                                    = 0;
 
-    std::lock_guard<std::mutex> lck (*this->Main->cameraManager->getLock());
-    this->Main->cameraManager->setFlush(true);
-    this->Main->cameraManager->setArrActiveCameras(0,0);
-    this->Main->cameraManager->setFlush(false);
-    this->Ui->rb_stereo_calibration->setChecked   (false);
-    this->Ui->rb_single_calibration->setChecked   (true);
+    std::lock_guard<std::mutex> lck                   (*this->Main->cameraManager->getLock());
+    this->Main->cameraManager->setFlush               (true);
+    this->Main->cameraManager->setArrActiveCameras    (0,0);
+    this->Main->cameraManager->setFlush               (false);
+    this->Ui->rb_stereo_calibration->setChecked       (false);
+    this->Ui->rb_single_calibration->setChecked       (true);
 
-    this->Ui->lbl_img_stereo_right->setVisible     (false);
-    this->Ui->lbl_img_stereo_left->setVisible     (false);
+    this->Ui->lbl_img_stereo_right->setVisible        (false);
+    this->Ui->lbl_img_stereo_left->setVisible         (false);
 
-   this->Ui->lbl_img_single_calibration->setVisible(true);
-
+   this->Ui->lbl_img_single_calibration->setVisible   (true);
 }
 
 void C_frm_Camera_Calibration::on_rb_stereo_calibration_clicked()
 {
-    this->method                              = 1;
-    this->Ui->num_camera_id->setValue         (0);
-    this->Ui->num_camera_id->setSingleStep    (1);
-    this->Ui->num_camera_id->setMaximum       (GlobalObjects->absCameras-2);
+    this->method                                      = 1;
+    this->Ui->num_camera_id->setValue                 (0);
+    this->Ui->num_camera_id->setSingleStep            (1);
+    this->Ui->num_camera_id->setMaximum               (GlobalObjects->absCameras-2);
+
+    this->Ui->label_5->setVisible                     (false);
+    this->Ui->label_6->setVisible                     (false);
+    this->Ui->label_7->setVisible                     (false);
+
+    this->Ui->txb_edge_width->setVisible              (false);
+    this->Ui->txb_edge_height->setVisible             (false);
+    this->Ui->txb_edge_length->setVisible             (false);
+    this->Ui->txb_usrInput_images->setVisible         (false);
 
     this->cameraID                            = 0;
     std::lock_guard<std::mutex> lck (*this->Main->cameraManager->getLock());
-    this->Main->cameraManager->setFlush(true);
-    this->Main->cameraManager->setArrActiveCameras(0,0);
-    this->Main->cameraManager->setArrActiveCameras(1,1);
-    this->Main->cameraManager->setFlush(false);
-    this->Ui->rb_stereo_calibration->setChecked(true);
-    this->Ui->rb_single_calibration->setChecked(false);
+    this->Main->cameraManager->setFlush               (true);
+    this->Main->cameraManager->setArrActiveCameras    (0,0);
+    this->Main->cameraManager->setArrActiveCameras    (1,1);
+    this->Main->cameraManager->setFlush               (false);
+    this->Ui->rb_stereo_calibration->setChecked       (true);
+    this->Ui->rb_single_calibration->setChecked       (false);
 
-    this->Ui->lbl_img_single_calibration->setVisible(false);
-    this->Ui->lbl_img_stereo_left->setVisible(true);
-    this->Ui->lbl_img_stereo_right->setVisible(true);
+    this->Ui->lbl_img_single_calibration->setVisible  (false);
+    this->Ui->lbl_img_stereo_left->setVisible         (true);
+    this->Ui->lbl_img_stereo_right->setVisible        (true);
 
 
 }

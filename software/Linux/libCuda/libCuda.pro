@@ -12,7 +12,6 @@ HEADERS += \
 
 DISTFILES += \
   src/inRange.cu \
-  src/kalmanfilter.cu \
   src/kalman.cu \
   src/invert.cpp \
   src/matrix.cu \

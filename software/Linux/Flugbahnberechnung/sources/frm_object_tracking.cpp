@@ -9,7 +9,6 @@ C_frm_Object_Tracking::C_frm_Object_Tracking(C_GlobalObjects* GlobalObjects, C_M
     this->GlobalObjects = GlobalObjects;
     this->Main          = Main;
     this->Zaehler       = 0;
-    this->TimerWait     = 0;
     this->Taktgeber = new QTimer(this);
     this->Taktgeber_Intervall = 100;
     this->payload       = new CameraManager::S_pipelinePayload;
@@ -34,7 +33,6 @@ Q_UNUSED(ShowEvent)
 this->Zaehler = 0;
 connect(this->Taktgeber, &QTimer::timeout, this, &C_frm_Object_Tracking::Taktgeber_Tick);
 this->Taktgeber->start(this->Taktgeber_Intervall);
-this->TimerWait          = 60;
 this->Ui->num_camera_id->setMaximum(GlobalObjects->absCameras);
 this->Main->cameraManager->trackingManager->dataPlotter->show();
 }
@@ -96,29 +94,29 @@ void ::C_frm_Object_Tracking::on_bt_exit_clicked()
 void C_frm_Object_Tracking::Taktgeber_Tick()
   {
   this->Ui->txb_zaehler->setText(QString::number(this->Zaehler++));
-  this->Fill_Mat_2_Lbl(payload->cpuUndistortedImg[0], this->Ui->lbl_img_left);
-  this->Fill_Mat_2_Lbl(payload->cpuUndistortedImg[1], this->Ui->lbl_img_right);
-  //TODO Add method to display current coordinates
-  this->Ui->txb_position_x->setText (QString::number(payload->objektVektor.X));
-  this->Ui->txb_position_y->setText (QString::number(payload->objektVektor.Y));
-  this->Ui->txb_position_z->setText (QString::number(payload->objektVektor.Z));
-  this->Ui->txb_activeCamera->setText (QString::number(payload->cameraID[0]));
-  }
+  if(this->Main->cameraManager->pipelineQue->try_pop(pData))
+    {
+    this->Fill_Mat_2_Lbl(pData->cpuUndistortedImg[0], this->Ui->lbl_img_left);
+    this->Fill_Mat_2_Lbl(pData->cpuUndistortedImg[1], this->Ui->lbl_img_right);
+    //TODO Add method to display current coordinates
+    this->Ui->txb_position_x->setText (QString::number(pData->objektVektor.X));
+    this->Ui->txb_position_y->setText (QString::number(pData->objektVektor.Y));
+    this->Ui->txb_position_z->setText (QString::number(pData->objektVektor.Z));
+    this->Ui->txb_activeCamera->setText (QString::number(pData->cameraID[0]));
+    }
     //Get Current Object Position
-
-void C_frm_Object_Tracking::Fill_Mat_2_Lbl(cv::Mat& img, QLabel* label)
-{
-  if(img.type()!= 0)
-  {
-     QImage imgIn= QImage((uchar*) img.data, img.cols, img.rows, img.step, QImage::Format_BGR888);
-     label->setPixmap(QPixmap::fromImage(imgIn).scaled(label->size(),Qt::KeepAspectRatio));
-     return;
   }
+void C_frm_Object_Tracking::Fill_Mat_2_Lbl(cv::Mat& img, QLabel* label)
+  {
+  if(img.type()!= 0)
+    {
+    QImage imgIn= QImage((uchar*) img.data, img.cols, img.rows, img.step, QImage::Format_BGR888);
+    label->setPixmap(QPixmap::fromImage(imgIn).scaled(label->size(),Qt::KeepAspectRatio));
+    return;
+    }
   QImage imgIn= QImage((uchar*) img.data, img.cols, img.rows, img.step, QImage::Format_Grayscale8);
   label->setPixmap(QPixmap::fromImage(imgIn).scaled(label->size(),Qt::KeepAspectRatio));
-
-
-}
+  }
 
 void frm_Object_Tracking::C_frm_Object_Tracking::on_bt_start_clicked()
   {
@@ -127,10 +125,8 @@ void frm_Object_Tracking::C_frm_Object_Tracking::on_bt_start_clicked()
     this->Ui->lbl_thread_running->              setEnabled  (true);
     this->Ui->bt_start->                        setText     ("Stop");
     this->Main->cameraManager->trackingManager->setAlive    (true);
-    this->Main->cameraManager->getFilterFlags()->setObjectDetection(true);
-    this->Main->cameraManager->getFilterFlags()->setRoiAdjustment(true);
-    this->Main->cameraManager->getFilterFlags()->setTracking(true);
 
+    this->Main->cameraManager->startTracking();
     }
   else
     {
@@ -148,4 +144,9 @@ void frm_Object_Tracking::C_frm_Object_Tracking::on_bt_start_clicked()
 void frm_Object_Tracking::C_frm_Object_Tracking::on_num_camera_id_valueChanged(int arg1)
 {
 this->cameraID = arg1;
-}
+  }
+
+void C_frm_Object_Tracking::setTaktgeber_Intervall(int value)
+  {
+  Taktgeber_Intervall = value;
+  }

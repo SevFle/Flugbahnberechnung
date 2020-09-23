@@ -157,8 +157,8 @@ public:
     void setCalibrationParameter      (double (&DistCoeffs)[1][5], double (&Intrinsic)[3][3]);
     void getCalibrationParameter      (double (&DistCoeffs)[1][5], double (&Intrinsic)[3][3]) const;
     void setPipeline                  (std::string Pipeline);
-    void setROI                       (int Radius, int istX, int istY);
-    int  getROI                       () const;
+    void setTrackingRoi               (int Radius, int istX, int istY);
+
     void setCameraID                  (int &cameraID);
     int  getCameraID                  () const;
     cv::Mat *getDistCoeffs            () const;

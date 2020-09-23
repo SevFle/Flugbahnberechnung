@@ -32,7 +32,7 @@ private:
   std::thread*    Tracking;
 
   QTimer*         Taktgeber;
-  CameraManager::S_pipelinePayload*       payload;
+  CameraManager::S_pipelinePayload*       pData;
 
 
   int             Taktgeber_Intervall;
@@ -46,6 +46,8 @@ private:
   bool eventFilter (QObject* Object, QEvent* Event) override;
 public:
   void Taktgeber_Tick();
+
+  void setTaktgeber_Intervall(int value);
 
 private slots:
   void Fill_Mat_2_Lbl(cv::Mat& img, QLabel* label);

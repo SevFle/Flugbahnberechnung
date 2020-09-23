@@ -181,9 +181,13 @@ void C_Camera2::setPipeline                 (std::string Pipeline)
   {
   this->pipeline = Pipeline;
   }
-void C_Camera2::setROI                      (int Radius, int istX, int istY)
+void C_Camera2::setTrackingRoi                      (int Radius, int istX, int istY)
   {
   this->fit_to_roi( Radius,  istX,  istY);
+  }
+void setROI                       (int width, int height)
+  {
+
   }
 int  C_Camera2::getROI() const
   {

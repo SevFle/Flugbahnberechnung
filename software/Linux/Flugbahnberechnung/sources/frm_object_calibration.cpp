@@ -32,7 +32,6 @@ C_frm_Object_Calibration::~C_frm_Object_Calibration()
 void C_frm_Object_Calibration::showEvent(QShowEvent* ShowEvent)
 {
 Q_UNUSED(ShowEvent)
-this->Zaehler = 0;
 connect(this->Taktgeber, &QTimer::timeout, this, &C_frm_Object_Calibration::Taktgeber_Tick);
 this->Taktgeber->start(this->Taktgeber_Intervall);
 this->installEventFilter(this);
@@ -99,7 +98,6 @@ void C_frm_Object_Calibration::on_bt_exit_clicked()
 }
 void C_frm_Object_Calibration::Taktgeber_Tick()
   {
-  cv::Mat img;
   this->Ui->txb_zaehler->setText(QString::number(this->Zaehler++));
   if(this->Main->cameraManager->pipelineQue->try_pop(pData))
     {
@@ -517,19 +515,9 @@ void frm_Object_Calibration::C_frm_Object_Calibration::on_bt_tracking_clicked()
     //this->hide();
     this->trackingActive = true;
     this->Ui->num_camera->setEnabled(false);
-    this->Main->cameraManager->setFlush(true);
-    this->Main->cameraManager->setArrActiveCameras(0,0);
-    this->Main->cameraManager->setArrActiveCameras(1,1);
-    this->Main->cameraManager->setFlush(false);
-    this->Main->cameraManager->getFilterFlags()->setObjectDetection(true);
-    this->Main->cameraManager->getFilterFlags()->setRoiAdjustment(true);
-    this->Main->cameraManager->getFilterFlags()->setTracking(true);
-
-
-    //this->Main->frm_Object_Tracking->setWindowModality(Qt::NonModal);
+    this->Main->frm_Object_Tracking->setTaktgeber_Intervall(this->Ui->numTimerIntervall->value());
+    this->Main->frm_Object_Tracking->setWindowModality(Qt::ApplicationModal);
     this->Main->frm_Object_Tracking->show();
-    //this->Main->frm_Object_Tracking->setParent(this);
-
 }
 
 void frm_Object_Calibration::C_frm_Object_Calibration::on_chkb_bilateral_stateChanged(int arg1)
@@ -550,17 +538,17 @@ void frm_Object_Calibration::C_frm_Object_Calibration::on_chkb_bilateral_stateCh
       }
 }
 void C_frm_Object_Calibration::Fill_Mat_2_Lbl(cv::Mat& img, QLabel* label)
-{
-  if(img.type()!= 0)
   {
-     QImage imgIn= QImage((uchar*) img.data, img.cols, img.rows, img.step, QImage::Format_BGR888);
-     label->setPixmap(QPixmap::fromImage(imgIn).scaled(label->size(),Qt::KeepAspectRatio));
-     return;
-  }
+  if(img.type()!= 0)
+    {
+    //Darstellung von RGB Bildern in UI Labeln
+    QImage imgIn= QImage((uchar*) img.data, img.cols, img.rows, img.step, QImage::Format_BGR888);
+    label->setPixmap(QPixmap::fromImage(imgIn).scaled(label->size(),Qt::KeepAspectRatio));
+    return;
+    }
+  //Darstellung von Grayscale Bildern in UI Labeln
   QImage imgIn= QImage((uchar*) img.data, img.cols, img.rows, img.step, QImage::Format_Grayscale8);
   label->setPixmap(QPixmap::fromImage(imgIn).scaled(label->size(),Qt::KeepAspectRatio));
-
-
 }
 
 
