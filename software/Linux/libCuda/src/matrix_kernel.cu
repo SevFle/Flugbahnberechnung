@@ -81,4 +81,6 @@ __global__ void MatCopy(float* B, const float* A, int h, int w)
         B[i] = A[i];
 }
 
+
+
 #endif // _MATRIX_KERNEL_H_

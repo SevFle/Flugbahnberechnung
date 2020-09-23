@@ -2,21 +2,31 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#include <cutil_inline.h>
+//#include <cutil_inline.h>
 #include <sys/time.h>
 #include <cuda_runtime.h>
 #include "matrix_kernel.cu"
 #include "matrix.cu"
-#include "libCuda.h"
+#include "../include/libCuda.h"
 #include <cublas.h>
-
-
-
+#include "../src/invert.cpp"
 
 using namespace onCuda::KalmanFilter;
 
-void allocateMemory()
+C_kalman::C_kalman()
+{
+
+}
+
+C_kalman::~C_kalman()
+{
+
+}
+void C_kalman::allocateMemory()
   {
+    //no == zeilen
+    //ns == spalten
+
     //Allocate vectors  in device memory
     cudaMalloc(&d_X, ns*1);
     cudaMalloc(&d_P, ns*ns);
@@ -60,7 +70,7 @@ void allocateMemory()
 
   }//allocateMemory()
 
-void onCuda::KalmanFilter::initialize (float *F, float *H,float *E,float *s, int ns, int no)
+void C_kalman::initialize (float *F, float *H,float *E,float *s, int ns, int no)
     //X = Estimate
     //P = Uncertainty Covariance Matrix
     //F = State transition Matrix - Prediciton Matrix
@@ -70,8 +80,8 @@ void onCuda::KalmanFilter::initialize (float *F, float *H,float *E,float *s, int
     //I = Identity Matrix
 
   {
-  onCuda::KalmanFilter::ns = ns;
-  onCuda::KalmanFilter::no = no;
+  this->ns = ns;
+  this->no = no;
   allocateMemory();
 
   //Init I
@@ -135,43 +145,38 @@ void onCuda::KalmanFilter::initialize (float *F, float *H,float *E,float *s, int
 
   }
 
-void update()
-{
-
+void C_kalman::correct       (float *measurement)
+  {
+  cudaMemcpy(d_F, F, ns*ns, cudaMemcpyHostToDevice);
   //step 1  to calculate Y = Z - HX
-MatMult<<<blocksPerGridNos, threadsPerBlock>>>(d_Y, d_H, d_X, no, ns);
-MatSub<<<blocksPerGridNo, threadsPerBlock>>>(d_Y, d_Z, d_Y, no, 1);
+  MatMult<<<blocksPerGridNos, threadsPerBlock>>>(d_Y, d_H, d_X, no, ns);
+  MatSub<<<blocksPerGridNo, threadsPerBlock>>>(d_Y, d_Z, d_Y, no, 1);
 
-//step 2 to calculate  S = HPHt + E
+  //step 2 to calculate  S = HPHt + E
+  MatMult<<<blocksPerGridNos, threadsPerBlock>>>(d_Hint, d_H, d_P, no, ns);
+  MatMult<<<blocksPerGridNos, threadsPerBlock>>>(d_Sint, d_Hint, d_Ht, no, ns);
+  MatAdd<<<blocksPerGridNo2, threadsPerBlock>>>(d_S, d_Sint, d_E, no, no);
 
-MatMult<<<blocksPerGridNos, threadsPerBlock>>>(d_Hint, d_H, d_P, no, ns);
-MatMult<<<blocksPerGridNos, threadsPerBlock>>>(d_Sint, d_Hint, d_Ht, no, ns);
-MatAdd<<<blocksPerGridNo2, threadsPerBlock>>>(d_S, d_Sint, d_E, no, no);
+  //step 3 to calcualte K = PHtSi
+  MatMult<<<blocksPerGridNos, threadsPerBlock>>>(d_Kint, d_P, d_Ht, no, ns);
+  MatMult<<<blocksPerGridNos, threadsPerBlock>>>(d_K, d_Kint, d_Si, ns, no);
 
-//step 3 to calcualte K = PHtSi
+  //step4 to calculate  X = X+ KY
+  MatMult<<<blocksPerGridNos, threadsPerBlock>>>(d_Xint, d_K, d_Y, ns, no);
+  MatAdd<<<blocksPerGridNs, threadsPerBlock>>>(d_X, d_X, d_Xint, ns, 1);
 
-MatMult<<<blocksPerGridNos, threadsPerBlock>>>(d_Kint, d_P, d_Ht, no, ns);
+  //step5 to calculate [I - KH]P
+  MatMult<<<blocksPerGridNos, threadsPerBlock>>>(d_Pint, d_K, d_H, ns, no);
+  MatSub<<<blocksPerGridNs2, threadsPerBlock>>>(d_Pint, d_I, d_Pint, ns, ns);
+  MatMult<<<blocksPerGridNs2, threadsPerBlock>>>(d_Pint2, d_Pint, d_P, ns, ns);
+  MatCopy<<<blocksPerGridNs2, threadsPerBlock>>>(d_P, d_Pint2, ns, ns);
 
-MatMult<<<blocksPerGridNos, threadsPerBlock>>>(d_K, d_Kint, d_Si, ns, no);
+  // Host wait for the kernel to finish
+  __syncthreads;
+  cudaDeviceSynchronize();
+  }
 
-//step4 to calculate  X = X+ KY
-
-MatMult<<<blocksPerGridNos, threadsPerBlock>>>(d_Xint, d_K, d_Y, ns, no);
-MatAdd<<<blocksPerGridNs, threadsPerBlock>>>(d_X, d_X, d_Xint, ns, 1);
-
-//step5 to calculate [I - KH]P
-
-MatMult<<<blocksPerGridNos, threadsPerBlock>>>(d_Pint, d_K, d_H, ns, no);
-MatSub<<<blocksPerGridNs2, threadsPerBlock>>>(d_Pint, d_I, d_Pint, ns, ns);
-MatMult<<<blocksPerGridNs2, threadsPerBlock>>>(d_Pint2, d_Pint, d_P, ns, ns);
-MatCopy<<<blocksPerGridNs2, threadsPerBlock>>>(d_P, d_Pint2, ns, ns);
-// Host wait for the kernel to finish
-cudaDeviceSynchronize();
-
-
-}
-
-float predict(float *estimate)
+float C_kalman::predict()
 {
   //Prediction Phase
   // X = FX
@@ -182,20 +187,21 @@ float predict(float *estimate)
   MatCopy<<<blocksPerGridNs, threadsPerBlock>>>(d_X, d_Xint, ns, 1);
 
   //step2 to calculate P = FPFt
-
   MatMult<<<blocksPerGridNs2, threadsPerBlock>>>(d_Pint, d_F, d_P, ns, ns);
   MatMult<<<blocksPerGridNs2, threadsPerBlock>>>(d_P, d_Pint, d_Ft, ns, ns);
   // Host wait for the kernel to finish
   cudaDeviceSynchronize();
+
   // Copy result from device memory to host memory
   // h_X contains the result in host memory
   cudaMemcpy(h_X, d_X, ns*1, cudaMemcpyDeviceToHost);
-
-  estimate = h_X;
+  float estimate;
+  estimate = *h_X;
+  return estimate;
 }
 
 
-void cleanup()
+void C_kalman::cleanup()
   {
   // stop and destroy timer
   cudaFreeHost( A );
@@ -246,54 +252,54 @@ void cleanup()
 
   // Free device memory
 
-      if(d_X)
-          free(d_X);
-      if(d_P)
-          free(d_P);
+  if(d_X)
+      cudaFree(d_X);
+  if(d_P)
+      cudaFree(d_P);
 
-      if(d_F)
-          free(d_F);
-      if(d_Ztemp)
-          free(d_Ztemp);
-      if(d_S)
-          free(d_S);
-      if(d_s)
-          free(d_s);
-      if(d_K)
-          free(d_K);
-      if(d_H)
-          free(d_H);
-      if(d_E)
-          free(d_E);
-      if(d_Ft)
-          free(d_Ft);
-      if(d_Ht)
-          free(d_Ht);
-      if(d_Si)
-          free(d_Si);
-      if(d_Y)
-          free(d_Y);
-      if(d_I)
-          free(d_I);
-      if(d_Hint)
-          free(d_Hint);
-      if(d_Sint)
-          free(d_Sint);
-      if(d_Kint)
-          free(d_Kint);
-      if(d_Xint)
-          free(d_Xint);
-      if(d_Pint)
-          free(d_Pint);
-      if(d_Pint2)
-          free(d_Pint2);
+  if(d_F)
+      cudaFree(d_F);
+  if(d_Ztemp)
+      cudaFree(d_Ztemp);
+  if(d_S)
+      cudaFree(d_S);
+  if(d_s)
+      cudaFree(d_s);
+  if(d_K)
+      cudaFree(d_K);
+  if(d_H)
+      cudaFree(d_H);
+  if(d_E)
+      cudaFree(d_E);
+  if(d_Ft)
+      cudaFree(d_Ft);
+  if(d_Ht)
+      cudaFree(d_Ht);
+  if(d_Si)
+      cudaFree(d_Si);
+  if(d_Y)
+      cudaFree(d_Y);
+  if(d_I)
+      cudaFree(d_I);
+  if(d_Hint)
+      cudaFree(d_Hint);
+  if(d_Sint)
+      cudaFree(d_Sint);
+  if(d_Kint)
+      cudaFree(d_Kint);
+  if(d_Xint)
+      cudaFree(d_Xint);
+  if(d_Pint)
+      cudaFree(d_Pint);
+  if(d_Pint2)
+      cudaFree(d_Pint2);
 
-      printf("\nDevice Cleanup Successful\n");
+  printf("\nDevice Cleanup Successful\n");
 
 
-      cutilSafeCall( cudaDeviceReset() );
+  __cudaSafeCall(cudaDeviceReset()) ;
 
-      exit(0);
+  exit(0);
 
 }
 

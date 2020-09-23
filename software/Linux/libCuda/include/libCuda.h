@@ -31,9 +31,14 @@ namespace onCuda
     }
   namespace KalmanFilter
     {
-    extern void invert(float * A, int lda, int n);
+    class C_kalman
+    {
+    C_kalman();
+    ~C_kalman();
 
     /*************************************** Variable declarations ************************************************/
+
+    private:
     int ns = 10, no = 5;
     int dev = 0;
 
@@ -77,6 +82,8 @@ namespace onCuda
     float *d_Si;//Inverse of S
     float *d_Y; //error
     float *d_I;//Identity Matrix
+
+
     float *d_Hint;//for intermediate calculations
     float *d_Sint;//for intermediate calculations
     float *d_Kint;//for intermediate calculations
@@ -88,12 +95,33 @@ namespace onCuda
     float *A;
     int lda;
 
-
+    int threadsPerBlock;
+    int Nos;
+    int Ns;
+    int No;
+    int Ns2;
+    int No2;
+    int blocksPerGridNos;
+    int blocksPerGridNs;
+    int blocksPerGridNo;
+    int blocksPerGridNs2;
+    int blocksPerGridNo2;
 
     /*************************************** Function declarations ************************************************/
-    extern "C" void allocateMemory ();
-    extern "C" void initialize (float *X,float *P,float *F,float *Z,float *H,float *E,float *I,float *Ht,float *Ft,float *s, int ns, int no);
-    extern "C" void update ();
-    extern "C" void predict ();
-    }
-}
+    public:
+    void allocateMemory ();
+
+    private:
+    void initialize     (float *F, float *H,float *E,float *s, int ns, int no);
+    void correct        (float *measurement);
+    float predict       ();
+    void setTimePoint   (int time);
+    void cleanup        ();
+
+    };//class Kalman
+    }//namespace Kalmanfilter
+}//namespace onCuda
+
+
+
+
