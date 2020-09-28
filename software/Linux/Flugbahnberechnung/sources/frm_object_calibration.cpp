@@ -512,7 +512,6 @@ void frm_Object_Calibration::C_frm_Object_Calibration::on_bt_tracking_clicked()
 {
     //TODO Open Form
     //this->hide();
-    this->trackingActive = true;
     this->Ui->num_camera->setEnabled(false);
     this->Main->frm_Object_Tracking->setTaktgeber_Intervall(this->Ui->numTimerIntervall->value());
     this->Main->frm_Object_Tracking->setWindowModality(Qt::ApplicationModal);

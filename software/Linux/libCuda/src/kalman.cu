@@ -2,21 +2,23 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-//#include <cutil_inline.h>
 #include <sys/time.h>
 #include <cuda_runtime.h>
+
 #include "matrix_kernel.cu"
 #include "matrix.cu"
 #include "../include/libCuda.h"
-#include <cublas.h>
 #include "../src/invert.cpp"
+
 
 using namespace onCuda::KalmanFilter;
 
 C_kalman::C_kalman()
-{
-
-}
+  {
+  this->stat    = new cublasStatus_t;
+  this->handle  = new cublasHandle_t;
+  cublasCreate  (this->handle);
+  }
 
 C_kalman::~C_kalman()
 {
@@ -49,6 +51,7 @@ void C_kalman::allocateMemory()
     cudaMalloc(&d_Pint, ns*ns);
     cudaMalloc(&d_Pint2, ns*ns);
     lda = ((no+15)&~15|16);
+
 
     cudaError_t ret = cudaMallocHost( (void**)&A, no*lda*sizeof(float) );
     if( ret != cudaSuccess )
@@ -85,15 +88,15 @@ void C_kalman::initialize (float *F, float *H,float *E,float *s, int ns, int no)
   allocateMemory();
 
   //Init I
-  memAlloc(&I,ns,ns);
+  //malloc(&I,ns,ns);
+  float* h_I = &I;
+  cudaMemcpy(d_I, h_I, ns*ns, cudaMemcpyHostToDevice);
   Identity(d_I, ns);
-  free(&I);
 
   // Copy Input vectors from host memory to device memory
   cudaMemcpy(d_F, F, ns*ns, cudaMemcpyHostToDevice);
   cudaMemcpy(d_H, H, no*ns, cudaMemcpyHostToDevice);
   cudaMemcpy(d_E, E, no*no, cudaMemcpyHostToDevice);
-  cudaMemcpy(d_I, I, ns*ns, cudaMemcpyHostToDevice);
 
   // Set the kernel arguments
   int threadsPerBlock = 256;
@@ -123,14 +126,14 @@ void C_kalman::initialize (float *F, float *H,float *E,float *s, int ns, int no)
     return;
     }
 
-  if( cublasInit( ) != CUBLAS_STATUS_SUCCESS )
+  if(   cublasCreate  (this->handle) != CUBLAS_STATUS_SUCCESS )
     {
     printf( "failed to initialize the cublas library\n" );
     return;
     }
   printf("Cublas initialized...\n");
 
-  invert(A, lda, no);
+  invert(A, lda, no, handle);
 
   for(int i = 0; i<no ; i++)
     {
@@ -147,6 +150,19 @@ void C_kalman::initialize (float *F, float *H,float *E,float *s, int ns, int no)
 
 void C_kalman::correct       (float *measurement)
   {
+
+//  Update Phase
+//  kalmanGain =Pk-*HT [ H*Pk-HT+Ek]-1
+//  newEstimate = xk-+kalmanGain[zk –H*xk-]
+//  Pk = (I –kalmanGain*H)Pk-
+
+  //Update
+  //S = HPHt + E
+  //K = PHtSi
+  //Y = Z-HX
+  //X = X + KY
+  //P = [I - KH]P
+
   cudaMemcpy(d_F, F, ns*ns, cudaMemcpyHostToDevice);
   //step 1  to calculate Y = Z - HX
   MatMult<<<blocksPerGridNos, threadsPerBlock>>>(d_Y, d_H, d_X, no, ns);
@@ -172,17 +188,21 @@ void C_kalman::correct       (float *measurement)
   MatCopy<<<blocksPerGridNs2, threadsPerBlock>>>(d_P, d_Pint2, ns, ns);
 
   // Host wait for the kernel to finish
-  __syncthreads;
   cudaDeviceSynchronize();
   }
 
 float C_kalman::predict()
 {
+
+  // Predict Phase
+  //  xk-= Fk*xk-1 + Bk*uk
+  //  Pk-= FkPk-1FkT+ QK
+
   //Prediction Phase
   // X = FX
   // P = FPFt
 
-  //step 1 to calculate X = FX
+  //step 1 to calculate X = F*X
   MatMult<<<blocksPerGridNs2, threadsPerBlock>>>(d_Xint, d_F, d_X, ns, ns);
   MatCopy<<<blocksPerGridNs, threadsPerBlock>>>(d_X, d_Xint, ns, 1);
 
@@ -205,7 +225,7 @@ void C_kalman::cleanup()
   {
   // stop and destroy timer
   cudaFreeHost( A );
-  cublasShutdown();
+  cublasDestroy(*handle);
 
   // Free host memory
   if(X)
@@ -234,8 +254,6 @@ void C_kalman::cleanup()
       free(Si);
   if(Y)
       free(Y);
-  if(I)
-      free(I);
   if(Hint)
       free(Hint);
   if(Sint)
@@ -297,7 +315,7 @@ void C_kalman::cleanup()
   printf("\nDevice Cleanup Successful\n");
 
 
-  __cudaSafeCall(cudaDeviceReset()) ;
+  cudaDeviceReset() ;
 
   exit(0);
 

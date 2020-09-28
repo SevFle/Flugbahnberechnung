@@ -383,6 +383,9 @@
     </widget>
    </widget>
    <widget class="QLabel" name="lbl_thread_running">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
     <property name="geometry">
      <rect>
       <x>10</x>

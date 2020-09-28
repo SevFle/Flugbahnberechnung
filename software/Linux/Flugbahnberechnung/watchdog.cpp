@@ -26,7 +26,6 @@ void C_watchdog::restartThread()
   //std::cout << "***BARK***" << ;
   this->stopCondition->store(true);
   delete(this->watchThread);
-
   if(this->restartFunc != nullptr)
     this->restartFunc();
   this->startFunc();

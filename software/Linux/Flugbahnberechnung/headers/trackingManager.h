@@ -10,6 +10,7 @@
 #include <ctime>
 
 #include <vector>
+#include "libCuda.h"
 
 using namespace posen;
 using namespace GlobalObjects;
@@ -47,6 +48,7 @@ namespace trackingManager
     C_GlobalObjects*                    globalObjects;
     S_trackingPayload*                  trackingPayload;
     S_Positionsvektor*                  Positionsvektor_alt;
+    onCuda::KalmanFilter2::C_kalman*    kalmanfilter;
 
 
     bool                                alive;
@@ -57,9 +59,9 @@ namespace trackingManager
 
     std::vector<int>                    vecIstX;
     std::vector<int>                    vecIstY;
-    std::vector<int>*                   vecPixelVelocityX;
-    std::vector<int>*                   vecPixelVelocityY;
-    std::vector<int>*                   vecPixelVelocityZ;
+    std::vector<float>*                   vecPixelVelocityX;
+    std::vector<float>*                   vecPixelVelocityY;
+    std::vector<float>*                   vecPixelVelocityZ;
 
     /****************** Positionsbuffer T-1 *******************/
   private:

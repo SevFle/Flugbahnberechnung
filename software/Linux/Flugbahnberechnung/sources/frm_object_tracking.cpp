@@ -32,6 +32,7 @@ this->Zaehler = 0;
 connect(this->Taktgeber, &QTimer::timeout, this, &C_frm_Object_Tracking::Taktgeber_Tick);
 this->Taktgeber->start(this->Taktgeber_Intervall);
 this->Main->cameraManager->trackingManager->dataPlotter->show();
+
 }
 
 void C_frm_Object_Tracking::closeEvent(QCloseEvent* CloseEvent)
@@ -99,6 +100,7 @@ void C_frm_Object_Tracking::Taktgeber_Tick()
     this->Ui->txb_position_x->setText (QString::number(pData->objektVektor.X));
     this->Ui->txb_position_y->setText (QString::number(pData->objektVektor.Y));
     this->Ui->txb_position_z->setText (QString::number(pData->objektVektor.Z));
+
     this->Ui->txb_activeCamera->setText (QString::number(pData->cameraID[0]));
     delete(pData);
     }

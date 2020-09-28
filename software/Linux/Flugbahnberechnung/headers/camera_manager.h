@@ -93,6 +93,7 @@ namespace CameraManager
     struct S_filterflags
       {
       public:
+      //Pipeline modules
       bool undistordActive          = false;
       bool openActive               = false;
       bool closeActive              = false;
@@ -100,6 +101,7 @@ namespace CameraManager
       bool objectDetectionActive    = false;
       bool roiAdjustmentActive      = false;
       bool trackingActive           = false;
+      //Image Filter
       bool erosionActive            = false;
       bool dilationActive           = false;
       bool gaussianActive           = false;

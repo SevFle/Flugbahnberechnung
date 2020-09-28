@@ -15,9 +15,9 @@ C_trackingManager::C_trackingManager (C_GlobalObjects* GlobalObjects)
     }
   this->objektVektorTm1     = new S_Positionsvektor;
   this->dataPlotter         = new plotter::C_plotter;
-  this->vecPixelVelocityX   = new std::vector<int>;
-  this->vecPixelVelocityY   = new std::vector<int>;
-  this->vecPixelVelocityZ   = new std::vector<int>;
+  this->vecPixelVelocityX   = new std::vector<float>;
+  this->vecPixelVelocityY   = new std::vector<float>;
+  this->vecPixelVelocityZ   = new std::vector<float>;
 
   }
 C_trackingManager::~C_trackingManager ()

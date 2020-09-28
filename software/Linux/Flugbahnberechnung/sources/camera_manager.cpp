@@ -644,11 +644,12 @@ void C_CameraManager::startTracking()
   this->setArrActiveCameras(1,1);
   this->setFlush(false);
 
+  this->roistatus = initZone;
+
   this->filterFlags->setObjectDetection(true);
   this->filterFlags->setRoiAdjustment(true);
   this->filterFlags->setTrackingActive(true);
 
-  this->roistatus = initZone;
   }
 
 void C_CameraManager::stopTracking()

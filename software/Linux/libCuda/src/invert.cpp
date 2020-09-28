@@ -4,7 +4,6 @@
 #include <stdlib.h>
 #include <time.h>
 #include <cuda_runtime.h>
-#include <cublas.h>
 
 #define VERIFY 1
 
@@ -24,10 +23,59 @@ inline void __cudaSafeCall( int err, const char *file, const int line )
 
 #define SAFECALL(err)           __cudaSafeCall      (err, __FILE__, __LINE__)
 
-             	
+
+void choleskyDecompositionCPU(int n, float * A, int lda) {
+  //#define A(x,y) a[y*lda+x]
+  float * L = new float[n*n];
+  memset(L,0,sizeof(float)*n*n);
+
+  for (int j = 0; j < n; j++) {
+    float d = 0.0;
+    for (int k = 0; k < j; k++) {
+      float s = 0.0;
+      for (int i = 0; i < k; i++) {
+  s += L[k*n+i] * L[j*n+i];
+      }
+      L[j*n+k] = s = (A[j+k*lda] - s) / L[k*n+k];
+      L[k*n+j] = L[j*n+k];
+      d = d + s * s;
+    }
+    d = A[j*(lda+1)] - d;
+    L[j*n+j] = (d > 0 ? sqrt(d) : 0);
+  }
+  for(int j = 0;j < n; j++) {
+    for (int k = 0; k < n; k++) {
+      A[j+k*lda] = L[j*n+k];
+    }
+  }
+  delete [] L;
+  return;
+  //#undef A
+} // choleskyDecompositionCPU
+void solveCPU ( const int m, const int n,
+        const float *A, const int lda, float *B,
+             const int ldb) {
+  int i, j, k;
+  //int n1, n2;
+    for (i = 0; i < n; i++) {
+        float Aii = A[lda * i + i];
+        for (j = 0; j < m; j++) {
+          B[ldb * i + j] /= Aii;
+   }
+
+      for (k = i + 1; k < n; k++) {
+        const float Aik = A[i * lda + k];
+        for (j = 0; j < m; j++) {
+          B[ldb * k + j] -= Aik * B[ldb * i + j];
+        }
+      }
+    }
+} // solveCPU
+
+
 /* implementation of Cholesky decomposition on the GPU 
  * following Vasily Volkov and James Demmel.  */
-void choleskyDecompositionGPU( int n, float *cpu_A, float * A, int lda)
+void choleskyDecompositionGPU( int n, float *cpu_A, float * A, int lda, cublasHandle_t* handle)
 {	
     //const int BLOCK_SIZE = 128;
     SAFECALL(cudaMemcpy(A, cpu_A, n*lda*sizeof(float),cudaMemcpyHostToDevice ) );
@@ -39,19 +87,19 @@ void choleskyDecompositionGPU( int n, float *cpu_A, float * A, int lda)
         int w = h < PANEL_SIZE ? h : PANEL_SIZE;
         if( i > 0 )
 			{
-			cublasSsyrk( 'L', 'N', w, PANEL_SIZE, -1, &A[i+(i-PANEL_SIZE)*lda], lda, 1, &A[i*(lda+1)], lda );
-			SAFECALL( cublasGetError( ) );
+      float const alpha(-1.0);
+      float const beta(1.0);
 
-			cublasSgemm( 'N', 'T', h-w, w, PANEL_SIZE, -1, &A[i+PANEL_SIZE+(i-PANEL_SIZE)*lda], lda, &A[i+(i-PANEL_SIZE)*lda], lda, 1, &A[i+PANEL_SIZE+i*lda], lda );
-			SAFECALL( cublasGetError( ) );
+      cublasSsyrk(*handle, CUBLAS_FILL_MODE_LOWER, CUBLAS_OP_N, w, PANEL_SIZE, &alpha, &A[i+(i-PANEL_SIZE)*lda], lda, &beta, &A[i*(lda+1)], lda );
+
+      cublasSgemm(*handle, CUBLAS_OP_N, CUBLAS_OP_T, h-w, w, PANEL_SIZE, &alpha, &A[i+PANEL_SIZE+(i-PANEL_SIZE)*lda], lda, &A[i+(i-PANEL_SIZE)*lda], lda, &beta, &A[i+PANEL_SIZE+i*lda], lda );
 
 			SAFECALL( cudaMemcpy2D( &cpu_A[i*(lda+1)], lda*sizeof(float), &A[i*(lda+1)], lda*sizeof(float), h*sizeof(float), w, cudaMemcpyDeviceToHost ) );
             
 			if( h > PANEL_SIZE ) 	
 				{
-				cublasSsyrk( 'L', 'N', h-PANEL_SIZE, PANEL_SIZE, -1, &A[i+PANEL_SIZE+(i-PANEL_SIZE)*lda], lda, 1, &A[(i+PANEL_SIZE)*(lda+1)], lda );
-				SAFECALL( cublasGetError( ) );
-				}
+        cublasSsyrk(*handle, CUBLAS_FILL_MODE_LOWER, CUBLAS_OP_N, h-PANEL_SIZE, PANEL_SIZE, &alpha, &A[i+PANEL_SIZE+(i-PANEL_SIZE)*lda], lda, &beta, &A[(i+PANEL_SIZE)*(lda+1)], lda );
+        }
 			}
         
 		choleskyDecompositionCPU(w, &cpu_A[i*(lda+1)], lda);
@@ -64,7 +112,9 @@ void choleskyDecompositionGPU( int n, float *cpu_A, float * A, int lda)
 } // choleskyDecompositionGPU	
 
 
-void invert(float * A, int lda, int n) {
+
+
+void invert(float * A, int lda, int n, cublasHandle_t* handle) {
   fprintf(stderr,"inversion started");
 /*#ifdef VERIFY	
 	float * xcopy =new float[n*n];
@@ -78,16 +128,13 @@ void invert(float * A, int lda, int n) {
 	// mathdisp(xcopy,n,n);
 #endif */
 
-    volatile clock_t gputime, gputime0;
-    gputime=clock();
-    gputime0 = gputime;h_X
 
     float * A_d;
     int m = (n+31)&~31;
 	
     SAFECALL(cudaMalloc((void**) &A_d, lda*m*2*sizeof(float)));
 
-    choleskyDecompositionGPU(n, A,  A_d, lda);
+    choleskyDecompositionGPU(n, A,  A_d, lda, handle);
 	
 	SAFECALL(cudaMemcpy(A_d, A, lda*n*sizeof(float),cudaMemcpyHostToDevice));
         
@@ -101,15 +148,17 @@ void invert(float * A, int lda, int n) {
 
 	// solve
 	float *B = &A_d[lda*m];
+  float const beta(1.0);
+
 	//	SAFECALL(cudaMalloc((void**) &B, lda*n*sizeof(float)));
 	SAFECALL(cudaMemcpy(B, B_h, lda*n*sizeof(float), cudaMemcpyHostToDevice));
-	cublasStrsm ('L', 'L', 'N', 'N', n, n, 1.0f, A_d, lda, B, lda);
-	cudaThreadSynchronize();
+  cublasStrsm (*handle, CUBLAS_SIDE_LEFT, CUBLAS_FILL_MODE_LOWER, CUBLAS_OP_N, CUBLAS_DIAG_NON_UNIT, n, n, &beta, A_d, lda, B, lda);
+  cudaDeviceSynchronize();
 
 	// solve
-	cublasStrsm ('L', 'L', 'T', 'N', n, n, 1.0f, A_d, lda, B, lda);
-	cudaThreadSynchronize();
-	SAFECALL(cudaMemcpy(A, B, lda*n*sizeof(float), cudaMemcpyDeviceToHost));
+  cublasStrsm (*handle, CUBLAS_SIDE_LEFT, CUBLAS_FILL_MODE_LOWER, CUBLAS_OP_T, CUBLAS_DIAG_NON_UNIT, n, n, &beta, A_d, lda, B, lda);
+  cudaDeviceSynchronize();
+  SAFECALL(cudaMemcpy(A, B, lda*n*sizeof(float), cudaMemcpyDeviceToHost));
 	//mathdisp(A,n,n);        
 
 	//	delete [] A;
@@ -117,6 +166,5 @@ void invert(float * A, int lda, int n) {
 	delete [] B_h;
 
 	// now A = inverse(spd_matrix)
-	gputime=clock()-gputime;fprintf(stderr, " %7.1f ms ",gputime/1.e3f);
 
 } // invert 
