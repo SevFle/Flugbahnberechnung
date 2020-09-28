@@ -175,7 +175,6 @@ public:
     void setXMap(cv::cuda::GpuMat *value);
     cv::cuda::GpuMat *getYMap() const;
     void setYMap(cv::cuda::GpuMat *value);
-    cv::Rect *getRoi() const;
     void setRoi(cv::Rect *value);
     int getFrameWidth() const;
     void setFrameWidth(int value);
@@ -183,9 +182,10 @@ public:
     void setFrameHeight(int value);
     std::string getFPS() const;
 
-    };
+    cv::Rect *getRoi() const;
+  };
 
-  }
+}
 
 
 #endif // CAMERA2_H

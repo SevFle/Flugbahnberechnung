@@ -638,12 +638,6 @@ bool C_CameraManager::pollPipeline               (CameraManager::S_pipelinePaylo
 
 void C_CameraManager::startTracking()
   {
-  this->setFlush(true);
-  std::lock_guard<std::mutex> lck (*this->lock);
-  this->setArrActiveCameras(0,0);
-  this->setArrActiveCameras(1,1);
-  this->setFlush(false);
-
   this->roistatus = initZone;
 
   this->filterFlags->setObjectDetection(true);
@@ -751,7 +745,39 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
     for(auto it = std::begin(pData->cpuSrcImg); it< std::end(pData->cpuSrcImg); it++)
       {
       if(it->empty()) return pData;
-      this->ImageFilter->gpufUnidstord(it, pData->gpuUndistortedImg[i], *vecCameras[pData->cameraID[i]]->getXMap(), *vecCameras[pData->cameraID[i]]->getYMap());
+      cv::cuda::GpuMat temp;
+      this->ImageFilter->gpufUnidstord(it, temp, *vecCameras[pData->cameraID[i]]->getXMap(), *vecCameras[pData->cameraID[i]]->getYMap());
+      switch (roistatus)
+        {
+        case initZone:
+          for(int i = 0; i < payloadSize; i++)
+            {
+            cv::Rect initRoi;
+            initRoi.x = 1;
+            initRoi.y = 1;
+            initRoi.width = initZoneWidth;
+            initRoi.height = initZoneHeight-1;
+            this->vecCameras[pData->cameraID[i]]->setRoi(&initRoi);
+            }
+         break;
+      case objectLost:
+        for(int i = 0; i < payloadSize; i++)
+          {
+          this->vecCameras[pData->cameraID[i]]->filterValues->setOffset(0, 0);
+          this->vecCameras[pData->cameraID[i]]->filterValues->setOffset(1, 0);
+          cv::Rect roi;
+          roi.x = 1;
+          roi.y = 1;
+          roi.width = this->frameWidth-1;
+          roi.height = this->frameHeight-1;
+          this->vecCameras[pData->cameraID[i]]->setRoi(&roi);
+          }
+        break;
+      case objectFound:
+            //DO NOTHING
+          break;
+      }//switch
+      this->ImageFilter->gpuROI(temp, pData->gpuUndistortedImg[i], *vecCameras[pData->cameraID[i]]->getRoi());
       i++;
       }
     pData->end = Clock::now();
@@ -828,9 +854,22 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
       this->vecCameras[pData->cameraID[i]]->getFilterproperties()->getOffset(offsetL);
       this->vecCameras[pData->cameraID[i+1]]->getFilterproperties()->getOffset(offsetR);
 
-      if(this->ImageFilter->findContours(it,   pData->cpuUndistortedImg[i], offsetL, *vecCameras[pData->cameraID[i]], pData->Richtungsvektoren[i], pData->ist_X[i], pData->ist_Y[i], pData->radius[i]) &&
-         this->ImageFilter->findContours(it++, pData->cpuUndistortedImg[i], offsetR, *vecCameras[pData->cameraID[i+1]],pData->Richtungsvektoren[i+1], pData->ist_X[i+1], pData->ist_Y[i+1], pData->radius[i+1] ))
+      if(this->ImageFilter->findContours(it,   &pData->cpuUndistortedImg[i], offsetL, *vecCameras[pData->cameraID[i]], pData->Richtungsvektoren[i], pData->ist_X[i], pData->ist_Y[i], pData->radius[i]) &&
+         this->ImageFilter->findContours(it+1, &pData->cpuUndistortedImg[i+1], offsetR, *vecCameras[pData->cameraID[i+1]],pData->Richtungsvektoren[i+1], pData->ist_X[i+1], pData->ist_Y[i+1], pData->radius[i+1] ))
         {
+        if(*pData->ist_X < 0 || *pData->ist_X > this->frameWidth || *pData->ist_Y < 0 || *pData->ist_Y > this->frameHeight)
+          {
+          pData->found = false;
+          pData->Richtungsvektoren[i].X = 0.0;
+          pData->Richtungsvektoren[i].Y = 0.0;
+          pData->Richtungsvektoren[i].Z = 0.0;
+          pData->Richtungsvektoren[i+1].X = 0.0;
+          pData->Richtungsvektoren[i+1].Y = 0.0;
+          pData->Richtungsvektoren[i+1].Z = 0.0;
+          if(this->roistatus == objectFound)
+             roistatus = objectLost;
+          break;
+          }
         pData->found = true;
         this->initZoneActive.store(false);
         this->roistatus = objectFound;
@@ -844,6 +883,8 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
         pData->Richtungsvektoren[i+1].X = 0.0;
         pData->Richtungsvektoren[i+1].Y = 0.0;
         pData->Richtungsvektoren[i+1].Z = 0.0;
+        if(this->roistatus == objectFound)
+            roistatus = objectLost;
         }
       i++;
       }
@@ -879,12 +920,17 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
         int newCam[2];
         newCam[0] = pData->cameraID[0] + 1;
         newCam[1] = pData->cameraID[1] + 1;
-        vecCameras[newCam[0]]->setTrackingRoi(pData->radius[0], pData->radius[0],pData->pred_Y[0]);
-        vecCameras[newCam[1]]->setTrackingRoi(pData->radius[1], pData->radius[1],pData->pred_Y[1]);
+//        vecCameras[newCam[0]]->setTrackingRoi(pData->radius[0], pData->radius[0],pData->pred_Y[0]);
+//        vecCameras[newCam[1]]->setTrackingRoi(pData->radius[1], pData->radius[1],pData->pred_Y[1]);
         std::lock_guard<std::mutex> lck (*this->lock);
         this->arrActiveCameras[0] = newCam[0];
         this->arrActiveCameras[1] = newCam[1];
         }
+      for(int i = 0; i < payloadSize; i++)
+        {
+        this->vecCameras[pData->cameraID[i]]->setTrackingRoi(pData->radius[i], pData->pred_X[i],pData->pred_Y[i]);
+        }
+
       }
     pData->end = Clock::now();
     pData->executionTime[6] = std::chrono::duration_cast<milliseconds>(pData->end - pData->start);
@@ -898,35 +944,44 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
     {
     pData->start = Clock::now();
     if(!this->filterFlags->roiAdjustmentActive) return pData;
-    cv::Rect initRoi(0,0,initZoneWidth, initZoneHeight);
 
 
-    switch (this->roistatus)
-      {
-      case initZone:
-        for(int i = 0; i < payloadSize; i++)
-          {
-          this->vecCameras[pData->cameraID[i]]->setRoi(&initRoi);
-          }
-        return pData;
-      case objectLost:
-        for(int i = 0; i < payloadSize; i++)
-          {
-          this->vecCameras[pData->cameraID[i]]->filterValues->setOffset(0, 0);
-          this->vecCameras[pData->cameraID[i]]->filterValues->setOffset(0, 0);
-          this->vecCameras[pData->cameraID[i]]->getRoi()->x = 0;
-          this->vecCameras[pData->cameraID[i]]->getRoi()->y = 0;
-          this->vecCameras[pData->cameraID[i]]->getRoi()->width = this->frameWidth;
-          this->vecCameras[pData->cameraID[i]]->getRoi()->height = this->frameHeight;
-          }
-        break;
-      case objectFound:
-        for(int i = 0; i < payloadSize; i++)
-          {
-          this->vecCameras[pData->cameraID[i]]->setTrackingRoi(pData->radius[i], pData->pred_X[i],pData->pred_Y[i]);
-          }
-        break;
-      }
+//    switch (this->roistatus)
+//      {
+//      case initZone:
+//        for(int i = 0; i < payloadSize; i++)
+//          {
+//          cv::Rect initRoi;
+//          initRoi.x = 1;
+//          initRoi.y = 1;
+//          initRoi.width = initZoneWidth;
+//          initRoi.height = initZoneHeight-1;
+
+//          this->vecCameras[pData->cameraID[i]]->setRoi(&initRoi);
+//          }
+//        return pData;
+//      case objectLost:
+//        for(int i = 0; i < payloadSize; i++)
+//          {
+//          this->vecCameras[pData->cameraID[i]]->filterValues->setOffset(0, 0);
+//          this->vecCameras[pData->cameraID[i]]->filterValues->setOffset(1, 0);
+//          cv::Rect roi;
+//          roi.x = 1;
+//          roi.y = 1;
+//          roi.width = this->frameWidth-1;
+//          roi.height = this->frameHeight-1;
+//          this->vecCameras[pData->cameraID[i]]->setRoi(&roi);
+//          }
+
+
+//        break;
+//      case objectFound:
+//        for(int i = 0; i < payloadSize; i++)
+//          {
+//          this->vecCameras[pData->cameraID[i]]->setTrackingRoi(pData->radius[i], pData->pred_X[i],pData->pred_Y[i]);
+//          }
+//        break;
+//      }
       pData->end = Clock::now();
       pData->executionTime[5] = std::chrono::duration_cast<milliseconds>(pData->end - pData->start);
       return pData;
@@ -1139,5 +1194,10 @@ void C_CameraManager::setArrActiveCameras                (int value, int positio
   if (value > this->globalObjects->absCameras) return;
   this->arrActiveCameras[position] = value;
   }
+
+void C_CameraManager::setRoiStatus(roiStatus status)
+    {
+    this->roistatus = status;
+    }
 
 

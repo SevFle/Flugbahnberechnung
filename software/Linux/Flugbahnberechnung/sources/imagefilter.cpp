@@ -69,16 +69,12 @@ void C_ImageFilter::gpufHSV (cv::cuda::GpuMat &gpu_src, cv::Mat &cpu_dst, Camera
   {
   }
 
-bool C_ImageFilter::findContours                     (cv::Mat* cpuSrc, cv::Mat& dstCpuContouredImg, int offset[2], Camera::C_Camera2 &Camera,
-                                       S_Positionsvektor& vecPosition, int& istX, int& istY, int& radius)
+bool C_ImageFilter::findContours                     (cv::Mat* cpuSrc, cv::Mat* dstCpuContouredImg, int offset[2], Camera::C_Camera2 &Camera,
+                                                        S_Positionsvektor& vecPosition, int& istX, int& istY, int& radius)
   {
   int KonturIndex             = 0;
   int objektAnzahl            = 0;
-
-  cv::Rect RoI;
-
   double  Vec_Object[3];
-
   double max_Moment_m00       = 0.0;
   double Ist_x                = 0.0;
   double Ist_y                = 0.0;
@@ -112,22 +108,21 @@ bool C_ImageFilter::findContours                     (cv::Mat* cpuSrc, cv::Mat& 
 
   //cv::Moments Image_Moments;
   //cv::Point2f Center;
-  cv::Rect    rect_roi;
-  std::vector<std::vector<cv::Point>> contours;
+    std::vector<std::vector<cv::Point>> contours;
   std::vector<cv::Vec4i>              hirarchy;
 
 
   //OpenCV Hirarchy: https://docs.opencv.org/3.4/d9/d8b/tutorial_py_contours_hierarchy.html
 
 // Zeichne Bildmittelpunkt ein
-  Mittelpunkt_x = dstCpuContouredImg.cols / 2;
-  Mittelpunkt_y = dstCpuContouredImg.rows / 2;
-  circle (dstCpuContouredImg,cv::Point (static_cast<int> (Mittelpunkt_x),static_cast<int> (Mittelpunkt_y)),2,cv::Scalar (0,255,0));
+  Mittelpunkt_x = dstCpuContouredImg->cols / 2;
+  Mittelpunkt_y = dstCpuContouredImg->rows / 2;
+  circle (*dstCpuContouredImg,cv::Point (static_cast<int> (Mittelpunkt_x),static_cast<int> (Mittelpunkt_y)),2,cv::Scalar (0,255,0));
 
   // Zeichne kalibrierten Bildmittelpunkt ein
   cx = Camera.getIntrinsic()->at<double> (0,2);
   cy = Camera.getIntrinsic()->at<double> (1,2);
-  circle (dstCpuContouredImg,cv::Point (static_cast<int> (cx),static_cast<int> (cy)),15,cv::Scalar (255,255,0));
+  circle (*dstCpuContouredImg,cv::Point (static_cast<int> (cx),static_cast<int> (cy)),15,cv::Scalar (255,255,0));
 
 
   cv::findContours (*cpuSrc,contours,hirarchy,cv::RETR_TREE,cv::CHAIN_APPROX_SIMPLE,cv::Point (offset[0],offset[1]));
@@ -201,10 +196,10 @@ bool C_ImageFilter::findContours                     (cv::Mat* cpuSrc, cv::Mat& 
     minEnclosingCircle (static_cast<cv::Mat> (contours[KonturIndex]),Center,Radius);
 
     // Mittelpunkt / schwerpunkt der kontur einzeichnen
-    circle (dstCpuContouredImg,cv::Point (static_cast<int> (Schwerpunkt_x),static_cast<int> (Schwerpunkt_y)),2,cv::Scalar (0,255,255));
+    circle (*dstCpuContouredImg,cv::Point (static_cast<int> (Schwerpunkt_x),static_cast<int> (Schwerpunkt_y)),2,cv::Scalar (0,255,255));
 
     // Konturumfang zeichnen
-    circle (dstCpuContouredImg,Center,static_cast<int> (Radius),cv::Scalar (0,255,255));
+    circle (*dstCpuContouredImg,Center,static_cast<int> (Radius),cv::Scalar (0,255,255));
 
     // Schwerpunktkoordinaten als Text im Bild darstellen
     //S_x = std::to_string (Schwerpunkt_x);
@@ -238,16 +233,8 @@ bool C_ImageFilter::findContours                     (cv::Mat* cpuSrc, cv::Mat& 
     Vec_Object[1] /= Vec_Object_Abs;
     Vec_Object[2] /= Vec_Object_Abs;
 
-
-
-    // Schreibe die Delta-Werte auf das Bild
-    //Delta_x_str = std::to_string (Delta_x);
-    //Delta_y_str = std::to_string (Delta_y);
-    //putText (*dst_contoured_image,"Delta_x: " + Delta_x_str,cv::Point (0,80),1,1,cv::Scalar (255,255,255),2);
-    //putText (*dst_contoured_image,"Delta_y: " + Delta_y_str,cv::Point (0,110),1,1,cv::Scalar (255,255,255),2);
-
     // Zeichne eine Linie zwischen kalibriertem Bildmittelpunkt und dem Objektschwerpunkt
-    line (dstCpuContouredImg,cv::Point (static_cast<int> (Ist_x),static_cast<int> (Ist_y)),cv::Point (static_cast<int> (Soll_x),static_cast<int> (Soll_y)),cv::Scalar (0,0,255),4,8,0);
+    line (*dstCpuContouredImg,cv::Point (static_cast<int> (Ist_x),static_cast<int> (Ist_y)),cv::Point (static_cast<int> (Soll_x),static_cast<int> (Soll_y)),cv::Scalar (0,0,255),4,8,0);
     return true;
     }
   else
@@ -264,8 +251,20 @@ bool C_ImageFilter::findContours                     (cv::Mat* cpuSrc, cv::Mat& 
 
 void C_ImageFilter::gpufUnidstord (cv::Mat* cpuSrc,           cv::cuda::GpuMat& gpuDst, cv::cuda::GpuMat& gpuMap1, cv::cuda::GpuMat& gpuMap2)
   {
+  if(cpuSrc->empty())
+    {
+    std::cout << "Src in gpuRemap empty" << std::endl;
+    return;
+    }
   cv::cuda::GpuMat gpuSrcImg;
   gpuSrcImg.upload (*cpuSrc);
   cv::cuda::remap (gpuSrcImg,gpuDst,gpuMap1,gpuMap2,cv::INTER_NEAREST,cv::BORDER_CONSTANT,0);
   }
 
+void C_ImageFilter::gpuROI(cv::cuda::GpuMat &gpuSrc, cv::cuda::GpuMat &gpuDst, cv::Rect &roi)
+    {
+    if(roi.width > gpuSrc.size().width || roi.height > gpuSrc.size().height)
+        return;
+
+    gpuDst= gpuSrc.operator()(roi);
+    }

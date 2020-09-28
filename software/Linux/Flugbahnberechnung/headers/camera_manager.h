@@ -257,6 +257,8 @@ namespace CameraManager
     bool getCalibrationDone                 () const;
     void setCalibrationDone                 (volatile bool value);
 
+    void setRoiStatus (roiStatus status);
+
     int getArrActiveCameras                 (int position) const;
     void setArrActiveCameras                (int value, int position);
 

@@ -13,7 +13,7 @@
 #include "cuda.h"
 #include "device_launch_parameters.h"
 
-#include "/usr/local/cuda-10.1/targets/x86_64-linux/include/cublas_v2.h"
+#include <cublas_v2.h>
 
 #include <opencv2/opencv.hpp>
 #include <opencv2/highgui.hpp>

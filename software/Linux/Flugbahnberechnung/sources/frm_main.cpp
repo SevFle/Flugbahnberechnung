@@ -130,7 +130,7 @@ void frm_Main::C_frm_Main::on_bt_tracking_clicked()
   this->Main->cameraManager->getFilterFlags()->closeActive            = true;
   this->Main->cameraManager->getFilterFlags()->roiAdjustmentActive    = false;
   this->Main->cameraManager->getFilterFlags()->trackingActive         = false;
-
+  this->Main->cameraManager->setRoiStatus(objectFound);
   if(!this->Main->cameraManager->startPipelineTracking())
     {
     this->MsgBox->setText("Pipeline konnte nicht gestartet werden");

@@ -96,12 +96,19 @@ void C_frm_Object_Tracking::Taktgeber_Tick()
     {
     this->Fill_Mat_2_Lbl(pData->cpuUndistortedImg[0], this->Ui->lbl_img_left);
     this->Fill_Mat_2_Lbl(pData->cpuUndistortedImg[1], this->Ui->lbl_img_right);
+
+
     //TODO Add method to display current coordinates
     this->Ui->txb_position_x->setText (QString::number(pData->objektVektor.X));
     this->Ui->txb_position_y->setText (QString::number(pData->objektVektor.Y));
     this->Ui->txb_position_z->setText (QString::number(pData->objektVektor.Z));
 
     this->Ui->txb_activeCamera->setText (QString::number(pData->cameraID[0]));
+    this->Ui->txb_istX_0->setText (QString::number(pData->ist_X[0]));
+      this->Ui->txb_istY_0->setText (QString::number(pData->ist_Y[0]));
+      this->Ui->txb_istX_1->setText (QString::number(pData->ist_X[1]));
+      this->Ui->txb_istY_1->setText (QString::number(pData->ist_Y[1]));
+
     delete(pData);
     }
     //Get Current Object Position

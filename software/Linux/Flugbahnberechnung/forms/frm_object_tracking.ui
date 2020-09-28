@@ -54,7 +54,7 @@
       <rect>
        <x>10</x>
        <y>30</y>
-       <width>781</width>
+       <width>900</width>
        <height>661</height>
       </rect>
      </property>
@@ -65,9 +65,9 @@
     <widget class="QLabel" name="lbl_img_right">
      <property name="geometry">
       <rect>
-       <x>799</x>
+       <x>970</x>
        <y>30</y>
-       <width>1071</width>
+       <width>900</width>
        <height>661</height>
       </rect>
      </property>
@@ -376,6 +376,46 @@
       <rect>
        <x>1030</x>
        <y>20</y>
+       <width>141</width>
+       <height>31</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QTextEdit" name="txb_istX_0">
+     <property name="geometry">
+      <rect>
+       <x>1000</x>
+       <y>70</y>
+       <width>141</width>
+       <height>31</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QTextEdit" name="txb_istY_0">
+     <property name="geometry">
+      <rect>
+       <x>1000</x>
+       <y>110</y>
+       <width>141</width>
+       <height>31</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QTextEdit" name="txb_istX_1">
+     <property name="geometry">
+      <rect>
+       <x>1190</x>
+       <y>70</y>
+       <width>141</width>
+       <height>31</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QTextEdit" name="txb_istY_1">
+     <property name="geometry">
+      <rect>
+       <x>1190</x>
+       <y>110</y>
        <width>141</width>
        <height>31</height>
       </rect>

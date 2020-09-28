@@ -513,9 +513,18 @@ void frm_Object_Calibration::C_frm_Object_Calibration::on_bt_tracking_clicked()
     //TODO Open Form
     //this->hide();
     this->Ui->num_camera->setEnabled(false);
+    this->Main->cameraManager->setFlush(true);
+    std::lock_guard<std::mutex> lck (*this->Main->cameraManager->getLock());
+    this->Main->cameraManager->setArrActiveCameras(0,0);
+    this->Main->cameraManager->setArrActiveCameras(1,1);
+    this->Main->cameraManager->setFlush(false);
+
     this->Main->frm_Object_Tracking->setTaktgeber_Intervall(this->Ui->numTimerIntervall->value());
     this->Main->frm_Object_Tracking->setWindowModality(Qt::ApplicationModal);
     this->Main->frm_Object_Tracking->show();
+
+    this->Ui->num_camera->setEnabled(true);
+
 }
 
 void frm_Object_Calibration::C_frm_Object_Calibration::on_chkb_bilateral_stateChanged(int arg1)

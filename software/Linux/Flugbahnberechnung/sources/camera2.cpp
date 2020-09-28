@@ -26,10 +26,15 @@ C_Camera2::~C_Camera2                       ()
   delete (distCoeffs);
   delete (cpuSrc);
   delete (cap);
-    }
+}
+
+cv::Rect *C_Camera2::getRoi() const
+{
+    return roi;
+}
 std::string C_Camera2::getFPS() const
 {
-   std::string fps;
+    std::string fps;
    fps = std::to_string(this->cap->get(cv::CAP_PROP_FPS));
    return fps;
 }
@@ -90,14 +95,18 @@ void C_Camera2::initRectifyMap              ()
   }
 void C_Camera2::retrieveImg                      (cv::Mat &dstImg)
   {
-  auto cpuSrc = new cv::Mat;
-  //this->cap->retrieve(*cpuSrc);
-  //dstImg= cpuSrc->operator()(*roi);
-  //cpuSrc->copyTo(dstImg);
-  //delete (cpuSrc);
-  this->cap->retrieve(*cpuSrc, 0);
-  dstImg= cpuSrc->operator()(*roi);
-  delete cpuSrc;
+//  auto cpuSrc = new cv::Mat;
+//  //this->cap->retrieve(*cpuSrc);
+//  //dstImg= cpuSrc->operator()(*roi);
+//  //cpuSrc->copyTo(dstImg);
+//  //delete (cpuSrc);
+//  std::cout << "ROI X, Y, Width, Height:" << roi->x << "; "<< roi->y << "; "<< roi->width << "; "<< roi->height << std::endl;
+//  if(roi->width > frameWidth || roi->height > frameHeight)
+//      return;
+
+  this->cap->retrieve(dstImg, 0);
+//  dstImg= cpuSrc->operator()(*roi);
+//  delete cpuSrc;
 }
 
 bool C_Camera2::grabImg                      ()
@@ -186,10 +195,6 @@ void C_Camera2::setTrackingRoi                      (int Radius, int istX, int i
   {
   this->fit_to_roi( Radius,  istX,  istY);
   }
-void setROI                       (int width, int height)
-  {
-
-  }
 void C_Camera2::setCameraID                 (int &cameraID)
   {
   this->cameraID = cameraID;
@@ -206,14 +211,16 @@ void C_Camera2::save_picture (int photo_id, std::string definition, cv::Mat& src
 
 /********************************************** GETTER & SETTER METHODEN ******************************************************/
 
-cv::Rect *C_Camera2::getRoi() const
-  {
-  return roi;
-  }
-
 void C_Camera2::setRoi(cv::Rect *value)
   {
-  roi = value;
+    if(value->width > frameWidth || value->height > frameHeight)
+        return;
+
+  roi->x = value->x;
+  roi->y = value->y;
+  roi->width = value->width;
+  roi->height = value->height;
+
   }
 
 cv::cuda::GpuMat *C_Camera2::getYMap() const
