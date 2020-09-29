@@ -123,8 +123,7 @@ void C_trackingManager::Get_Position_ObjectTracking (S_Positionsvektor& objektVe
   vec3d.setY(objektVektor.Y);
   vec3d.setZ(objektVektor.Z);
 
-  this->dataPlotter->addSingleData(vec3d);
-  this->dataPlotter->pushData();
+  this->dataPlotter->addSingleData(vec3d, plotter::series::realValue);
   }
 void C_trackingManager::Calc_Position_ObjectTracking (S_Positionsvektor& Positionsvektor, std::vector<S_Positionsvektor> vec_Richtungsvektoren_World)
   {

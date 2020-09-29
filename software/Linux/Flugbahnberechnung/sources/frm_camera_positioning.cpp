@@ -12,7 +12,6 @@ C_frm_Camera_Positioning::C_frm_Camera_Positioning(C_GlobalObjects* GlobalObject
     this->Main                = Main;
     this->TimerWait           = 0;
     this->Taktgeber_Intervall = 18;
-
 }
 
 C_frm_Camera_Positioning::~C_frm_Camera_Positioning()
@@ -270,6 +269,7 @@ void C_frm_Camera_Positioning::on_bt_apply_clicked()
       }
 
     this->Main->cameraManager->mvVecCamera2Temp(camera_list);
+
     for (int i = 0; i < GlobalObjects->absCameras; i++)
       {
       this->Main->cameraManager->loadManager->loadCameraCalibration   (this->Main->cameraManager->vecCameras[i]);

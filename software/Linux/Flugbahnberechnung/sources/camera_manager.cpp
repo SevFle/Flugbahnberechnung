@@ -63,6 +63,11 @@ C_CameraManager::~C_CameraManager ()
   this->globalObjects = nullptr;
   }
 
+void C_CameraManager::setDelta_t(int value)
+  {
+  delta_t = value;
+  }
+
 /*************************************************** Nicht öffentliche private Methoden *****************************************************/
 
 void C_CameraManager::start_camera_thread ()
@@ -121,9 +126,15 @@ bool C_CameraManager::openCameras ()
   //Reorder recently created Cameras
   this->loadManager->loadCameraPositioning(this->vecCameras);
                   //this->mvVecCamera2Temp(*globalObjects->camera_order);
-
   //Load Settings and Calibration for each camera created earlier
   loadCameras();
+
+  int i = 0;
+  for(auto it = std::begin(this->vecCameras); it < std::end(this->vecCameras); it++)
+    {
+    (*it)->setCameraID(i);
+    i++;
+    }
 
 
 
@@ -200,21 +211,20 @@ void C_CameraManager::mvVecCamera2Temp (std::vector<int> vecCamOrder)
     std::vector<int>                                        istCamIDs;
     std::vector<int>                                        sollCamIDs;
 
-
     vecTempCameras.resize(this->vecCameras.size());
-        for(int i = 0; i < globalObjects->absCameras; i++)
-          {
-          //vecTempCameras[vecCamOrder[i]] = std::move(this->vecCameras[i]);
-          vecTempCameras[vecCamOrder[i]] = this->vecCameras[i];
 
-          }
-        this->vecCameras.clear();
-        this->vecCameras.resize(vecTempCameras.size());
-     for (int i = 0; i < globalObjects->absCameras; i++)
-          {
-          //this->vecCameras[i] = std::move (vecTempCameras[i]);
-         this->vecCameras[i] = vecTempCameras[i];
-          }
+    for(int i = 0; i < globalObjects->absCameras; i++)
+      {
+      //vecTempCameras[vecCamOrder[i]] = std::move(this->vecCameras[i]);
+      vecTempCameras[vecCamOrder[i]] = this->vecCameras[i];
+      }
+      this->vecCameras.clear();
+      this->vecCameras.resize(vecTempCameras.size());
+    for (int i = 0; i < globalObjects->absCameras; i++)
+      {
+      //this->vecCameras[i] = std::move (vecTempCameras[i]);
+      this->vecCameras[i] = vecTempCameras[i];
+      }
   }
 void C_CameraManager::mvTemp2VecCamera (std::vector<Camera::C_Camera2*> vecCamerastemp)
   {
@@ -516,8 +526,8 @@ void C_CameraManager::calibrate_stereo_camera_aruco(int current_camera_id, int a
   M10.at<double>(3,3) =   1.0;
   M20.at<double>(3,3) =   1.0;
 
-  std::cout << "M10 AXIS: " << endl << M10 << std::endl << std::endl;
-  std::cout << "M20 AXIS: " << endl << M20 << std::endl << std::endl;
+  std::cout << "M10: " << endl << M10 << std::endl << std::endl;
+  std::cout << "M20: " << endl << M20 << std::endl << std::endl;
 
 
   this->calculate_camera_pose(current_camera_id, current_camera_id+1, M10, M20);
@@ -702,8 +712,6 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
     return pData;
     }
   )&
-
-
   //STEP 1: GRAB PICTURE FROM ARRAY-ACTIVE_CAMERAS
   tbb::make_filter<S_pipelinePayload*, S_pipelinePayload*>(tbb::filter::serial_in_order, [&] (S_pipelinePayload *pData)->S_pipelinePayload*
     {
@@ -734,7 +742,6 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
     return pData;
     }
   )&
-
 
   //STEP 2: UNDISTORT SRC TO CPUDISTORT
   tbb::make_filter<S_pipelinePayload*, S_pipelinePayload*>(tbb::filter::serial_in_order, [&] (S_pipelinePayload *pData)->S_pipelinePayload*
@@ -774,7 +781,7 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
           }
         break;
       case objectFound:
-            //DO NOTHING
+            //DO NOTHING - Wird von Step CALCULATE OBJECT POSITION angepasst
           break;
       }//switch
       this->ImageFilter->gpuROI(temp, pData->gpuUndistortedImg[i], *vecCameras[pData->cameraID[i]]->getRoi());
@@ -859,13 +866,8 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
         {
         if(*pData->ist_X < 0 || *pData->ist_X > this->frameWidth || *pData->ist_Y < 0 || *pData->ist_Y > this->frameHeight)
           {
+          std::cout << "***ERROR*** Position out of bounds detected. X = " << pData->ist_X << "; Y = " << pData->ist_Y << std::endl;
           pData->found = false;
-          pData->Richtungsvektoren[i].X = 0.0;
-          pData->Richtungsvektoren[i].Y = 0.0;
-          pData->Richtungsvektoren[i].Z = 0.0;
-          pData->Richtungsvektoren[i+1].X = 0.0;
-          pData->Richtungsvektoren[i+1].Y = 0.0;
-          pData->Richtungsvektoren[i+1].Z = 0.0;
           if(this->roistatus == objectFound)
              roistatus = objectLost;
           break;
@@ -904,14 +906,18 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
     if(pData->found)
       {
       milliseconds dTimestamp_ms;
-      dTimestamp_ms = std::chrono::duration_cast<milliseconds>(pData->timestamp - this->timestampTm1);
+      auto now = Clock::now();
+      dTimestamp_ms = std::chrono::duration_cast<milliseconds>(now);
+      dTimestamp_ms = std::chrono::time_point_cast<milliseconds>(now);
       int dTimestamp = dTimestamp_ms.count();
+      this->delta_t = dTimestamp - deltaT_old;
+      deltaT_old    = dTimestamp;
       this->trackingManager->Get_Position_ObjectTracking    (pData->objektVektor, pData->Richtungsvektoren);
-      this->trackingManager->calcObjectVeloctiy             (dTimestamp,          pData->objektVektor);
+      this->trackingManager->calcObjectVeloctiy             (delta_t,          pData->objektVektor);
 
       for(int i =0; i < payloadSize; i++)
         {
-        this->trackingManager->calcPixelVeloctiy              (dTimestamp, pData->ist_X[i], pData->ist_Y[i], pData->cameraID[i], pData->pred_X[i], pData->pred_Y[i]);
+        this->trackingManager->calcPixelVeloctiy              (delta_t, pData->ist_X[i], pData->ist_Y[i], pData->cameraID[i], pData->pred_X[i], pData->pred_Y[i]);
         }
       this->timestampTm1 = pData->timestamp;
       //Überprüfe ob das verfolgte Objekt sich dem Rand des derzeitigen Kamerapaares nähert. Falls true wird das nächste Kamerapaar in arrActiveCameras geladen und das predicted ROI + Toleranz gesetzt.

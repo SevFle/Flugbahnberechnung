@@ -192,6 +192,8 @@ namespace CameraManager
     int                           transferZoneWidth;
     int                           arrActiveCameras[4];
     int                           cntPipeline;
+    int                           delta_t;
+    int                           deltaT_old;
     public:
     std::atomic<bool>             calibrationDone;
     std::atomic<bool>             positioningDone;
@@ -273,6 +275,7 @@ namespace CameraManager
     void setFlush(bool value);
     thread *getCamPipeline() const;
     thread *getCamPositioning() const;
+    void setDelta_t(int value);
       };// c_camera_unmanaged
   }//nmsp_c_camera_unmanaged
 #endif

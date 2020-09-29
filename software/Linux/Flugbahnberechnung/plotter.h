@@ -5,25 +5,35 @@
 
 namespace plotter
   {
+  enum series
+    {
+    prediction,
+    realValue
+    };
+
   class C_plotter
       {
     public:
       C_plotter();
       ~C_plotter();
 
-      QtDataVisualization::Q3DScatter *scatter;
+      QtDataVisualization::Q3DScatter *graph;
+  private:
 
-      QtDataVisualization::QScatter3DSeries *series;
+      QtDataVisualization::QScatter3DSeries *seriesReal;
+      QtDataVisualization::QScatter3DSeries *seriesPredicted;
 
-      QtDataVisualization::QScatterDataArray* data;
+      QtDataVisualization::QScatterDataArray* dataReal;
+      QtDataVisualization::QScatterDataArray* dataPredicted;
+      plotter::series* seriesType;
 
-
-      void init();
-      void addSingleData(QVector3D point3D);
+  public:
+      void addSingleData(QVector3D point3D, enum series Type);
       void addTrackingeData(QVector3D actualPoint, QVector3D predPoint);
-      void pushData();
-      void show();
-      void close();
+  private:
+      void init();
+
+      void pushData(QtDataVisualization::QScatterDataArray* data);
 
       };
   }

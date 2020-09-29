@@ -11,10 +11,13 @@ C_frm_Object_Tracking::C_frm_Object_Tracking(C_GlobalObjects* GlobalObjects, C_M
     this->Zaehler       = 0;
     this->Taktgeber = new QTimer(this);
     this->Taktgeber_Intervall = 100;
+    this->container = QWidget::createWindowContainer(this->Main->cameraManager->trackingManager->dataPlotter->graph);
+    this->Ui->horizontalLayout->addWidget(container);
     }
 
 C_frm_Object_Tracking::~C_frm_Object_Tracking()
   {
+  delete (container);
   this->Taktgeber_Intervall = 0;
   delete (this->Taktgeber);
 
@@ -26,25 +29,22 @@ C_frm_Object_Tracking::~C_frm_Object_Tracking()
 
 /************************************** QT-Events******************************/
 void C_frm_Object_Tracking::showEvent(QShowEvent* ShowEvent)
-{
-Q_UNUSED(ShowEvent)
-this->Zaehler = 0;
-connect(this->Taktgeber, &QTimer::timeout, this, &C_frm_Object_Tracking::Taktgeber_Tick);
-this->Taktgeber->start(this->Taktgeber_Intervall);
-this->Main->cameraManager->trackingManager->dataPlotter->show();
-
+  {
+  Q_UNUSED(ShowEvent)
+  this->Zaehler = 0;
+  connect(this->Taktgeber, &QTimer::timeout, this, &C_frm_Object_Tracking::Taktgeber_Tick);
+  this->Taktgeber->start(this->Taktgeber_Intervall);
+  this->showNormal();
 }
 
 void C_frm_Object_Tracking::closeEvent(QCloseEvent* CloseEvent)
-{
- Q_UNUSED(CloseEvent);
- this->removeEventFilter(this);
- this->Taktgeber->stop();
- disconnect(this->Taktgeber, &QTimer::timeout, this, &C_frm_Object_Tracking::Taktgeber_Tick);
- this->Zaehler = 0;
-
-
- }
+  {
+  Q_UNUSED(CloseEvent);
+  this->removeEventFilter(this);
+  this->Taktgeber->stop();
+  disconnect(this->Taktgeber, &QTimer::timeout, this, &C_frm_Object_Tracking::Taktgeber_Tick);
+  this->Zaehler = 0;
+  }
 
 bool               C_frm_Object_Tracking::eventFilter                                       (QObject* Object, QEvent* Event)
   {
@@ -79,12 +79,12 @@ bool               C_frm_Object_Tracking::eventFilter                           
 /************************************** Nicht öffentliche QT-Slots*(*it) = *****************************/
 void ::C_frm_Object_Tracking::on_bt_exit_clicked()
   {
-    this->Ui->lbl_thread_running->              setEnabled  (false);
-    this->Main->cameraManager->trackingManager->setAlive    (false);
-    this->Ui->bt_start->                        setText     ("Start Tracking");
-    this->Main->cameraManager->getFilterFlags()->setObjectDetection(false);
-    this->Main->cameraManager->getFilterFlags()->setRoiAdjustment(false);
-    this->Main->cameraManager->getFilterFlags()->setTrackingActive(false);
+  this->Ui->lbl_thread_running->              setEnabled  (false);
+  this->Main->cameraManager->trackingManager->setAlive    (false);
+  this->Ui->bt_start->                        setText     ("Start Tracking");
+  this->Main->cameraManager->getFilterFlags()->setObjectDetection(false);
+  this->Main->cameraManager->getFilterFlags()->setRoiAdjustment(false);
+  this->Main->cameraManager->getFilterFlags()->setTrackingActive(false);
   this->close();
   }
 
@@ -104,11 +104,6 @@ void C_frm_Object_Tracking::Taktgeber_Tick()
     this->Ui->txb_position_z->setText (QString::number(pData->objektVektor.Z));
 
     this->Ui->txb_activeCamera->setText (QString::number(pData->cameraID[0]));
-    this->Ui->txb_istX_0->setText (QString::number(pData->ist_X[0]));
-      this->Ui->txb_istY_0->setText (QString::number(pData->ist_Y[0]));
-      this->Ui->txb_istX_1->setText (QString::number(pData->ist_X[1]));
-      this->Ui->txb_istY_1->setText (QString::number(pData->ist_Y[1]));
-
     delete(pData);
     }
     //Get Current Object Position

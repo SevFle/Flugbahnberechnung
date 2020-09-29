@@ -26,6 +26,7 @@ private slots:
 
 private:
   Ui::C_frm_object_tracking* Ui;
+  QWidget *container;
 
   C_GlobalObjects* GlobalObjects;
   C_Main*         Main;

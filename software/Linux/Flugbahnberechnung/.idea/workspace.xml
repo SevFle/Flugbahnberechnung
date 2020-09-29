@@ -31,37 +31,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0cc48fd1-564d-414a-88c6-d9cf6e32ec25" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/Charuco_Camera_0_Axis_img_0.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Charuco_Camera_0_Axis_img_1.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Charuco_Camera_0_Axis_img_10.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Charuco_Camera_0_Axis_img_11.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Charuco_Camera_0_Axis_img_12.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Charuco_Camera_0_Axis_img_13.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Charuco_Camera_0_Axis_img_14.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Charuco_Camera_0_Axis_img_15.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Charuco_Camera_0_Axis_img_16.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Charuco_Camera_0_Axis_img_17.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Charuco_Camera_0_Axis_img_18.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Charuco_Camera_0_Axis_img_19.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Charuco_Camera_0_Axis_img_2.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Charuco_Camera_0_Axis_img_20.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Charuco_Camera_0_Axis_img_21.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Charuco_Camera_0_Axis_img_22.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Charuco_Camera_0_Axis_img_23.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Charuco_Camera_0_Axis_img_24.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Charuco_Camera_0_Axis_img_3.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Charuco_Camera_0_Axis_img_4.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Charuco_Camera_0_Axis_img_5.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Charuco_Camera_0_Axis_img_6.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Charuco_Camera_0_Axis_img_7.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Charuco_Camera_0_Axis_img_8.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Charuco_Camera_0_Axis_img_9.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/forms/frm_object_tracking.ui" beforeDir="false" afterPath="$PROJECT_DIR$/forms/frm_object_tracking.ui" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/headers/camera_manager.h" beforeDir="false" afterPath="$PROJECT_DIR$/headers/camera_manager.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/sources/camera_manager.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/sources/camera_manager.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sources/frm_object_calibration.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/sources/frm_object_calibration.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sources/frm_object_tracking.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/sources/frm_object_tracking.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/watchdog.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/watchdog.cpp" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -136,6 +106,7 @@
       <workItem from="1593341915954" duration="4202000" />
       <workItem from="1598470093505" duration="12000" />
       <workItem from="1601032196906" duration="3000" />
+      <workItem from="1601325286819" duration="4000" />
     </task>
     <servers />
   </component>

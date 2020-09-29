@@ -562,5 +562,6 @@ void C_frm_Object_Calibration::Fill_Mat_2_Lbl(cv::Mat& img, QLabel* label)
 
 void frm_Object_Calibration::C_frm_Object_Calibration::on_numTimerIntervall_valueChanged(int arg1)
   {
+  this->Main->cameraManager->setDelta_t(arg1);
   this->Taktgeber->setInterval(arg1);
   }
