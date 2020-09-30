@@ -47,6 +47,12 @@ namespace frm_Main
     void on_bt_camera_calibration_clicked   ();
     void on_bt_camera_pose_clicked          ();
     void on_bt_camera_positioning_clicked   ();
+
+  public:
+    void FillMat2Lbl                      (cv::Mat& img, QLabel* label);
+    inline  QImage cvMatToQImage( const cv::Mat &inMat );
+
+
   };//class C_frm_Main
 
   }//namespace frm_Main

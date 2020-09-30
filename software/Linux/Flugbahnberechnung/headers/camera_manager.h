@@ -55,7 +55,7 @@ namespace CameraManager
     struct S_pipelinePayload
       {
       milliseconds                                            executionTime[8];
-      std::chrono::milliseconds                                frametime;
+      std::chrono::nanoseconds                                frametime;
 
       Clock::time_point start;
       Clock::time_point timestamp;
@@ -194,6 +194,7 @@ namespace CameraManager
     int                           cntPipeline;
     int                           delta_t;
     int                           deltaT_old;
+
     public:
     std::atomic<bool>             calibrationDone;
     std::atomic<bool>             positioningDone;
@@ -220,7 +221,7 @@ namespace CameraManager
                                    int absCornersHeight,
                                    int absBoardImg,
                                    float absCornerLength);
-    void calibrate_stereo_camera_aruco(int current_camera_id, int absBoardImg);
+    void calibrate_stereo_camera_aruco(int current_camera_id);
 
     bool startThreadCameraPositioning();
     bool stopThreadCameraPositioning();
@@ -253,6 +254,8 @@ namespace CameraManager
 
     /******************************************************* Getter-Setter Klassenmethoden***************************************************************/
   public:
+    bool scanChAruco(cv::Mat& image, Camera::C_Camera2& camera, cv::Mat& Pose);
+
     std::vector<cv::Mat*> getVecImgShow    () const;
     void setVecImgShow                      (const std::vector<cv::Mat*> &value);
 

@@ -105,18 +105,18 @@ bool C_CameraManager::openCameras ()
         continue;
       GstStructure *    DeviceProps   = gst_device_get_properties (device);
       gchar *           fieldname     = "device.path" ;
-          std::string       devicePath    = gst_structure_get_string(DeviceProps, fieldname);
-          std::string       Pipeline      = "v4l2src device="+ devicePath +" ! ";
-                            Pipeline      += "image/jpeg, format=BGR, width=" + std::to_string(this->frameWidth) +",";
-                            Pipeline      += "height=" + std::to_string(this->frameHeight) +" ! jpegdec ! videoconvert ! appsink";//sync=false
+      std::string       devicePath    = gst_structure_get_string(DeviceProps, fieldname);
+      std::string       Pipeline      = "v4l2src device="+ devicePath +" ! ";
+                        Pipeline      += "image/jpeg, format=BGR, width=" + std::to_string(this->frameWidth) +",";
+                        Pipeline      += "height=" + std::to_string(this->frameHeight) +" ! jpegdec ! videoconvert ! appsink";//sync=false
 
-          auto              camera        = new Camera::C_Camera2;
-          camera->setPipeline             (Pipeline);
-          camera->setCameraID             (this->globalObjects->absCameras);
-          if(!camera->open())
-            std::cout << "**ERROR** Could not open device on path" << devicePath << std::endl;
-          vecCameras.push_back            (camera);
-          this->globalObjects->absCameras++;
+      auto              camera        = new Camera::C_Camera2;
+      camera->setPipeline             (Pipeline);
+      camera->setCameraID             (this->globalObjects->absCameras);
+      if(!camera->open())
+         std::cout << "**ERROR** Could not open device on path" << devicePath << std::endl;
+      vecCameras.push_back            (camera);
+      this->globalObjects->absCameras++;
       }
     std::cout << "**INFO** Cameraspeed is \033[1m\033[33m" << this->vecCameras[0]->getFPS() << "\033[0m fps" << std::endl;
     std::cout << "**INFO** Created \033[1m\033[31m" << std::to_string(this->globalObjects->absCameras) << " \033[0m Devices" << std::endl;
@@ -129,16 +129,7 @@ bool C_CameraManager::openCameras ()
   //Load Settings and Calibration for each camera created earlier
   loadCameras();
 
-  int i = 0;
-  for(auto it = std::begin(this->vecCameras); it < std::end(this->vecCameras); it++)
-    {
-    (*it)->setCameraID(i);
-    i++;
-    }
-
-
-
-  return true;
+ return true;
   }
 bool C_CameraManager::closeCameras ()
   {
@@ -231,7 +222,75 @@ void C_CameraManager::mvTemp2VecCamera (std::vector<Camera::C_Camera2*> vecCamer
   for (int i = 0; i < globalObjects->absCameras; i++)
     {
     this->vecCameras[i] = std::move (vecCamerastemp[i]);
-    }
+  }
+}
+
+bool C_CameraManager::scanChAruco(cv::Mat &image, Camera::C_Camera2 &camera, cv::Mat &Pose)
+{
+    if(image.type() != 16)
+        return false;
+//    cv::Ptr<cv::aruco::Dictionary>            dictionary = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_4X4_250);
+//    cv::Ptr<cv::aruco::CharucoBoard>          board = cv::aruco::CharucoBoard::create(9, 6, 0.03190f, 0.02002f, dictionary);
+    cv::Ptr<cv::aruco::DetectorParameters>    params = cv::aruco::DetectorParameters::create();
+
+    cv::Ptr<cv::aruco::Dictionary>            dictionary = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_4X4_50);// (cv::aruco::DICT_6X6_250)
+    cv::Ptr<cv::aruco::CharucoBoard>          board = cv::aruco::CharucoBoard::create(7, 5, 0.04f, 0.02915f, dictionary);
+
+    cv::Size                                  imgSize;
+        std::vector<int>                        markerIds;
+        std::vector<std::vector<cv::Point2f>>   markerCorners;
+        //rejectedPoints beschreibt alle Punkte, welche von der detectMarkers Funktion abgelehnt wurden.
+        std::vector<std::vector<cv::Point2f> >  rejectedPoints;
+        std::vector<cv::Point2f>                charucoCorners;
+        std::vector<int>                        charucoIds;
+
+
+        cv::Mat imagecopy, gray;
+        image.copyTo(imagecopy);
+        cv::cvtColor(image, gray, cv::COLOR_BGR2GRAY);
+        imgSize = image.size();
+
+        cv::aruco::detectMarkers(gray, board->dictionary, markerCorners, markerIds, params,rejectedPoints,*camera.getIntrinsic(), *camera.getDistCoeffs());
+        if (markerIds.size() > 0)
+        {
+        cv::aruco::drawDetectedMarkers(image, markerCorners, markerIds);
+        cv::aruco::interpolateCornersCharuco(markerCorners, markerIds, image, board, charucoCorners, charucoIds, *camera.getIntrinsic(), *camera.getDistCoeffs(), 2);
+        // if at least one charuco corner detected
+        if (charucoIds.size() > 0)
+          {
+          cv::Scalar color = cv::Scalar(255, 0, 0);
+          //This function draws a set of detected Charuco corners. If identifiers vector is provided, it also draws the id of each corner.
+          cv::aruco::drawDetectedCornersCharuco(image, charucoCorners, charucoIds, color);
+
+
+          cv::Vec3d rvecBoardAxis, tvecBoardAxis;
+          //Pose estimation for a ChArUco board given some of their corners.
+          bool valid = cv::aruco::estimatePoseCharucoBoard(charucoCorners, charucoIds, board, *camera.getIntrinsic(), *camera.getDistCoeffs(), rvecBoardAxis, tvecBoardAxis);
+            if(valid)
+            {
+             cv::aruco::drawAxis(image, *camera.getIntrinsic(), *camera.getDistCoeffs(), rvecBoardAxis, tvecBoardAxis, 0.4f);
+             cv::Mat rvecM12, rvecAxisRodL, rvecAxisRodR;
+             cv::Mat M10(cv::Mat_<double>(4,4));
+             cv::Mat M20(cv::Mat_<double>(4,4));
+             cv::Mat M12(cv::Mat_<double>(4,4));
+             cv::Mat row = cv::Mat::zeros(1, 4, CV_64F);  // 3 cols, 1 row
+
+             cv::Rodrigues(rvecBoardAxis, rvecAxisRodL);
+
+             //Hconcat kombiniert zwei Matrizen
+             cv::hconcat(rvecAxisRodL, tvecBoardAxis, M10);
+
+             M10.push_back(row);
+             M10.at<double>(3,3) =   1.0;
+
+             //std::cout << "M10: " << endl << M10 << std::endl << std::endl;
+                M10.copyTo(Pose);
+
+             return true;
+            }
+          }
+        }
+    return false;
   }
 
 void C_CameraManager::calibrateSingleCamera (int current_camera_id,
@@ -360,7 +419,7 @@ void C_CameraManager::calibrateSingleCamera (int current_camera_id,
   this->vecCameras[current_camera_id]->initRectifyMap();
   }
 
-void C_CameraManager::calibrate_stereo_camera_aruco(int current_camera_id, int absBoardImg)
+void C_CameraManager::calibrate_stereo_camera_aruco(int current_camera_id)
   {
   //Verwendete ChAruco Parameter
   //  cv::Ptr<cv::aruco::Dictionary> dictionary = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_6X6_250);
@@ -373,8 +432,11 @@ void C_CameraManager::calibrate_stereo_camera_aruco(int current_camera_id, int a
   //3x1 Matrizen der jeweiligen Kameras (L+R)
   cv::Vec3d rvecBoardAxisL, tvecBoardAxisL, rvecBoardAxisR, tvecBoardAxisR;
   //Initialisierung der ChAruco Kalibrierung
-  cv::Ptr<cv::aruco::Dictionary>            dictionary = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_6X6_250);
-  cv::Ptr<cv::aruco::CharucoBoard>          board = cv::aruco::CharucoBoard::create(9, 6, 0.03190f, 0.02002f, dictionary);
+//  cv::Ptr<cv::aruco::Dictionary>            dictionary = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_4X4_50);// (cv::aruco::DICT_6X6_250)
+//  cv::Ptr<cv::aruco::CharucoBoard>          board = cv::aruco::CharucoBoard::create(9, 6, 0.03190f, 0.02002f, dictionary);
+  cv::Ptr<cv::aruco::Dictionary>            dictionary = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_4X4_50);// (cv::aruco::DICT_6X6_250)
+  cv::Ptr<cv::aruco::CharucoBoard>          board = cv::aruco::CharucoBoard::create(7, 5, 0.04f, 0.02915f, dictionary);
+
   cv::Ptr<cv::aruco::DetectorParameters>    params = cv::aruco::DetectorParameters::create();
   cv::Size                                  imgSize;
   std::vector<std::vector<cv::Point2f>>     veccharucoCorners;
@@ -391,9 +453,6 @@ void C_CameraManager::calibrate_stereo_camera_aruco(int current_camera_id, int a
     cv::Mat cameraMatrix, distCoeffs;
     this->vecCameras[current_camera_id+j]->getIntrinsic()->copyTo(cameraMatrix);
     this->vecCameras[current_camera_id+j]->getDistCoeffs()->copyTo(distCoeffs);
-
-    for(int i = 0; i < absBoardImg; i++)
-      {
       std::vector<int>                        markerIds;
       std::vector<std::vector<cv::Point2f>>   markerCorners;
       std::vector<cv::Point2f>                recoveredIdxs;
@@ -402,11 +461,11 @@ void C_CameraManager::calibrate_stereo_camera_aruco(int current_camera_id, int a
       //rejectedPoints beschreibt alle Punkte, welche von der detectMarkers Funktion abgelehnt wurden.
       std::vector<std::vector<cv::Point2f> >  rejectedPoints;
 
-      std::cout << std::endl << "Analysiere Bild: " << std::to_string(i) << std::endl;
+      std::cout << std::endl << "Analysiere Bild: " << std::endl;
       cv::Mat image;
       cv::Mat gray;
       cv::Mat imageCopy;
-      image = cv::imread ("../Parameter/Bilder/Charuco_Camera_Stereo_Calibration_" + std::to_string (current_camera_id+j) + "_Snapshot_" + std::to_string (i) + ".png",1);
+      image = cv::imread ("../Parameter/Bilder/Charuco_Camera_Stereo_Calibration_" + std::to_string (current_camera_id+j) + "_Snapshot_" + std::to_string (0) + ".png",1);
       image.copyTo(imageCopy);
       cv::cvtColor(image, gray, cv::COLOR_BGR2GRAY);
       imgSize = image.size();
@@ -419,6 +478,7 @@ void C_CameraManager::calibrate_stereo_camera_aruco(int current_camera_id, int a
       std::cout << "Rejected Points size: " << std::to_string(rejectedPoints.size()) << std::endl;
 
       // if at least one marker detected
+      std::cout << "MarkerIds: " << markerIds.size() << std::endl;
       if (markerIds.size() > 0)
       {
       //This function tries to find markers that were not detected in the basic detecMarkers function.
@@ -434,12 +494,15 @@ void C_CameraManager::calibrate_stereo_camera_aruco(int current_camera_id, int a
       //this functions draws the markers in the image. The marker borders are painted and the markers identifiers
       //if provided. Useful for debugging purposes.
       cv::aruco::drawDetectedMarkers(imageCopy, markerCorners, markerIds);
+      cv::imwrite ("../Parameter/Bilder/Charuco_Camera_" + std::to_string (camera_id+j) + "_Markers_img_" + std::to_string(0) + ".png",imageCopy);
+
 
       //This function receives the detected markers and returns the 2D position of the chessboard corners from a ChArUco board using the detected Aruco markers.
       //If camera parameters are provided, the process is based in an approximated pose estimation, else it is based on local homography.
       //Only visible corners are returned. For each corner, its corresponding identifier is also returned in charucoIds. The function returns the number of interpolated corners.
       cv::aruco::interpolateCornersCharuco(markerCorners, markerIds, image, board, charucoCorners, charucoIds, cameraMatrix, distCoeffs, 2);
       // if at least one charuco corner detected
+      std::cout << "CharucoIds: " << charucoIds.size() << std::endl;
       if (charucoIds.size() > 0)
         {
         cv::Scalar color = cv::Scalar(255, 0, 0);
@@ -467,7 +530,7 @@ void C_CameraManager::calibrate_stereo_camera_aruco(int current_camera_id, int a
           rvecBoardAxisR = rvecBoardAxis;
           tvecBoardAxisR = tvecBoardAxis;
           }
-        cv::imwrite ("../Parameter/Bilder/Charuco_Camera_" + std::to_string (camera_id+j) + "_Axis_img_" + std::to_string(i) + ".png",imageCopy);
+        cv::imwrite ("../Parameter/Bilder/Charuco_Camera_" + std::to_string (camera_id+j) + "_Axis_img_" + std::to_string(0) + ".png",imageCopy);
         veccharucoCorners.push_back(charucoCorners);
         veccharucoIds.push_back(charucoIds);
         }
@@ -482,8 +545,11 @@ void C_CameraManager::calibrate_stereo_camera_aruco(int current_camera_id, int a
 //      (-markerLength/2, markerLength/2, 0), (markerLength/2, markerLength/2, 0), (markerLength/2, -markerLength/2, 0), (-markerLength/2, -markerLength/2, 0)
       cv::aruco::estimatePoseSingleMarkers(markerCorners, board->getMarkerLength(), cameraMatrix, distCoeffs, rvecMarker, tvecMarker,  objpoints);
       /**************************************** GIBT MOMENTAN NUR EINEN RVEC AUS ************************************************/
-      }//for(absBoardImages)
+    std::cout << "veccharucoCorners: " << veccharucoCorners.size() << std::endl;
+    std::cout << "veccharucoIds: " << veccharucoCorners.size() << std::endl;
 
+    if(veccharucoCorners.size() > 0 && veccharucoIds.size() > 0)
+    {
     cv::Mat                                   stdDeviationsIntrinsics, stdDeviationsExtrinsics,  	perViewErrors;
     std::vector<cv::Mat>                      vecRvec, vectvec;
     double                                    reprojectionError;
@@ -505,6 +571,14 @@ void C_CameraManager::calibrate_stereo_camera_aruco(int current_camera_id, int a
       vecRvec_right = vecRvec;
       vectec_right = vectvec;
       }
+    }
+    else
+    {
+        std::cout << "No ChAruco Board found" << std::endl;
+        cv::Mat zeroes(cv::Mat_<double>(4,4));
+        return;
+    }
+
     }//for(Kameras)
 
   //Posenberechnungen
@@ -531,7 +605,8 @@ void C_CameraManager::calibrate_stereo_camera_aruco(int current_camera_id, int a
 
 
   this->calculate_camera_pose(current_camera_id, current_camera_id+1, M10, M20);
-}
+  }
+
 
 
 void C_CameraManager::threadCameraPositioning(std::vector<Camera::C_Camera2*> vecCameras, tbb::concurrent_bounded_queue<S_threadPayload*>* que)
@@ -546,10 +621,24 @@ void C_CameraManager::threadCameraPositioning(std::vector<Camera::C_Camera2*> ve
 //        }
       for(auto it = std::begin(vecCameras); it < std::end(vecCameras); it++)
         {
+        bool err = (*it)->grabImg();
+        if(!err)
+          {
+          std::cout << "***ERROR*** Failed to grab image! Camera: " << (*it)->getCameraID() << std::endl;
+          return;
+          }
+
         auto img = new cv::Mat;
-//        (*it)->retrieveImg(*img);
-        (*it)->readImage(*img);
-        if(img->empty()) img->setTo(cv::Scalar(255,0,0));
+        err = (*it)->retrieveImg(*img);
+        if(!err)
+          {
+          std::cout << "***ERROR*** Failed to grab image! Camera: " << (*it)->getCameraID() << std::endl;
+          return;
+          }
+
+        //(*it)->readImage(*img);
+        if(img->empty())
+            img->setTo(cv::Scalar(255,0,0));
         //(*it)->capImage(*img);
         thData->srcImg.push_back(img);
         }
@@ -712,6 +801,7 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
     return pData;
     }
   )&
+
   //STEP 1: GRAB PICTURE FROM ARRAY-ACTIVE_CAMERAS
   tbb::make_filter<S_pipelinePayload*, S_pipelinePayload*>(tbb::filter::serial_in_order, [&] (S_pipelinePayload *pData)->S_pipelinePayload*
     {
@@ -729,6 +819,7 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
     return pData;
     }
   )&
+
   tbb::make_filter<S_pipelinePayload*, S_pipelinePayload*>(tbb::filter::serial_in_order, [&] (S_pipelinePayload *pData)->S_pipelinePayload*
     {
     pData->start = Clock::now();
@@ -747,7 +838,13 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
   tbb::make_filter<S_pipelinePayload*, S_pipelinePayload*>(tbb::filter::serial_in_order, [&] (S_pipelinePayload *pData)->S_pipelinePayload*
     {
     pData->start = Clock::now();
-    if(!this->filterFlags->undistordActive) return pData;
+    if(!this->filterFlags->undistordActive)
+    {
+    pData->end = Clock::now();
+    pData->executionTime[2] = std::chrono::duration_cast<milliseconds>(pData->end - pData->start);
+    return pData;
+    }
+
     int i = 0;
     for(auto it = std::begin(pData->cpuSrcImg); it< std::end(pData->cpuSrcImg); it++)
       {
@@ -798,7 +895,13 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
   tbb::make_filter<S_pipelinePayload*, S_pipelinePayload*>(tbb::filter::serial_in_order, [&] (S_pipelinePayload *pData)->S_pipelinePayload*
     {
     pData->start = Clock::now();
-    if(!this->filterFlags->filterActive) return pData;
+    if(!this->filterFlags->filterActive)
+    {
+    pData->end = Clock::now();
+    pData->executionTime[3] = std::chrono::duration_cast<milliseconds>(pData->end - pData->start);
+    return pData;
+    }
+
     int i = 0;
     cv::cuda::GpuMat temp1; //(720, 1280, CV_8UC1)
     cv::cuda::GpuMat temp2; //(720, 1280, CV_8UC1)
@@ -850,7 +953,13 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
   tbb::make_filter<S_pipelinePayload*, S_pipelinePayload*>(tbb::filter::serial_in_order, [&] (S_pipelinePayload *pData)->S_pipelinePayload*
     {
     pData->start = Clock::now();
-    if(!this->filterFlags->objectDetectionActive) return pData;
+    if(!this->filterFlags->objectDetectionActive)
+    {
+    pData->end = Clock::now();
+    pData->executionTime[4] = std::chrono::duration_cast<milliseconds>(pData->end - pData->start);
+    return pData;
+    }
+
     int i = 0;
 
     for(auto it = std::begin(pData->cpuGrayImg); it< std::end(pData->cpuGrayImg); it +=2)
@@ -901,14 +1010,18 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
   tbb::make_filter<S_pipelinePayload*, S_pipelinePayload*>(tbb::filter::serial_in_order, [&] (S_pipelinePayload *pData)->S_pipelinePayload*
     {
     pData->start = Clock::now();
-    if(!this->filterFlags->trackingActive) return pData;
-
+    if(!this->filterFlags->trackingActive)
+    {
+    pData->end = Clock::now();
+    pData->executionTime[6] = std::chrono::duration_cast<milliseconds>(pData->end - pData->start);
+    return pData;
+    }
     if(pData->found)
       {
       milliseconds dTimestamp_ms;
       auto now = Clock::now();
-      dTimestamp_ms = std::chrono::duration_cast<milliseconds>(now);
-      dTimestamp_ms = std::chrono::time_point_cast<milliseconds>(now);
+      //dTimestamp_ms = std::chrono::duration_cast<milliseconds>(now);
+      //dTimestamp_ms = std::chrono::time_point_cast<milliseconds>(now);
       int dTimestamp = dTimestamp_ms.count();
       this->delta_t = dTimestamp - deltaT_old;
       deltaT_old    = dTimestamp;
@@ -949,8 +1062,12 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
   tbb::make_filter<S_pipelinePayload*, S_pipelinePayload*>(tbb::filter::serial_in_order, [&] (S_pipelinePayload *pData)->S_pipelinePayload*
     {
     pData->start = Clock::now();
-    if(!this->filterFlags->roiAdjustmentActive) return pData;
-
+    if(!this->filterFlags->roiAdjustmentActive)
+    {
+    pData->end = Clock::now();
+    pData->executionTime[5] = std::chrono::duration_cast<milliseconds>(pData->end - pData->start);
+    return pData;
+    }
 
 //    switch (this->roistatus)
 //      {
@@ -1001,7 +1118,7 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
     // TBB NOTE: pipeline end point. dispatch to GUI
     pData->fpsEnd           = Clock::now();
     pData->frametime        = std::chrono::duration_cast<std::chrono::milliseconds>(pData->fpsEnd - pData->fpsStart);
-    pData->fps              = 1000000000/pData->frametime.count();
+    pData->fps              = 1000/pData->frametime.count();
     this->globalObjects->watchdog->pet();
     pData->end              = Clock::now();
     pData->executionTime[7] = std::chrono::duration_cast<milliseconds>(pData->end - pData->start);

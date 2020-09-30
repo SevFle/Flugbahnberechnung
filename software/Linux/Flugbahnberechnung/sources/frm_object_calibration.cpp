@@ -100,9 +100,13 @@ void C_frm_Object_Calibration::Taktgeber_Tick()
   this->Ui->txb_zaehler->setText(QString::number(this->Zaehler++));
     if(this->Main->cameraManager->pipelineQue->try_pop(pData))
     {
-    this->                      Fill_Mat_2_Lbl(pData->cpuSrcImg[0], this->Ui->lbl_src_img);
-    this->                      Fill_Mat_2_Lbl(pData->cpuGrayImg[0], this->Ui->lbl_img_gray);
-    this->                      Fill_Mat_2_Lbl(pData->cpuUndistortedImg[0], this->Ui->lbl_imgFinal);
+    this->Main->frm_Main->FillMat2Lbl(pData->cpuSrcImg[0], this->Ui->lbl_src_img);
+    this->Main->frm_Main->FillMat2Lbl(pData->cpuGrayImg[0], this->Ui->lbl_img_gray);
+    this->Main->frm_Main->FillMat2Lbl(pData->cpuUndistortedImg[0], this->Ui->lbl_imgFinal);
+        std::cout << "SRC IMAGE TYPE: " << pData->cpuSrcImg->type() << std::endl;
+        std::cout << "SRC IMAGE TYPE: " << pData->cpuGrayImg->type() << std::endl;
+        std::cout << "SRC IMAGE TYPE: " << pData->cpuUndistortedImg->type() << std::endl;
+
     this->Ui->txb_fps->         setText(QString::number(pData->fps));
     this->Ui->txb_frametime->   setText(QString::number(pData->frametime.count()));
 //    this->Ui->txb_delta_x->     setText(QString::number(payload->delta_x));

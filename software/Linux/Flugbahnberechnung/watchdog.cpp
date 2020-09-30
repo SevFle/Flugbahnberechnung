@@ -51,6 +51,7 @@ void C_watchdog::start(unsigned int interval, std::atomic<bool> &stopCondition,s
 void C_watchdog::stop()
   {
   this->_running = false;
+  std::this_thread::sleep_for (std::chrono::milliseconds (500));
   this->_thread->join();
   }
 
@@ -65,7 +66,7 @@ void C_watchdog::watch()
     time = std::chrono::duration_cast<std::chrono::milliseconds>(now - lastPet);
     if(time.count() > _interval)
       {
-      this->restartThread();
+      //this->restartThread();
       return;
       }
     }

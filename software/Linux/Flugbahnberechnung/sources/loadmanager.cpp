@@ -181,16 +181,11 @@ void C_LoadManager::loadCameraCalibration (Camera::C_Camera2* Camera)
 
 bool C_LoadManager::loadCameraPositioning   (std::vector<Camera::C_Camera2*> &vecCameras)
   {
-  std::vector<Camera::C_Camera2*>                         vecTempCameras;
-  //std::vector<int>                                        istCamIDs;
-  std::vector<int>                                        sollCamIDs;
-
   string                                                  Dateiname = "../Parameter/Camera_Positioning.csv";
   string                                                  Dateityp;
   int                                                     id;
   int                                                     Camera_count;
 
-  vecTempCameras.resize(vecCameras.size());
   GlobalObjects->csv_parameter_datei->Oeffnen (Dateiname,Enum_CSV_Access::Read);
   if (GlobalObjects->csv_parameter_datei->IsOpen())
     {
@@ -198,6 +193,11 @@ bool C_LoadManager::loadCameraPositioning   (std::vector<Camera::C_Camera2*> &ve
     GlobalObjects->csv_parameter_datei->Lesen (Camera_count);
     if (GlobalObjects->absCameras == Camera_count)
       {
+        std::vector<Camera::C_Camera2*>                         vecTempCameras;
+        //std::vector<int>                                        istCamIDs;
+        std::vector<int>                                        sollCamIDs;
+        vecTempCameras.resize(vecCameras.size());
+
       //Hole IST Reihenfolge der derzeitigen Kameras
 //      for (int i = 0; i < Camera_count; i++)
 //        {
@@ -211,7 +211,9 @@ bool C_LoadManager::loadCameraPositioning   (std::vector<Camera::C_Camera2*> &ve
         }
       for(int i = 0; i < Camera_count; i++)
         {
-        vecTempCameras[sollCamIDs[i]] = vecCameras[i];
+        Camera::C_Camera2 *ptrAdress = nullptr;
+        ptrAdress = vecCameras[sollCamIDs[i]];
+        vecTempCameras[i] = ptrAdress;
         }
       vecCameras.clear();
       vecCameras.resize(vecTempCameras.size());
@@ -229,6 +231,7 @@ bool C_LoadManager::loadCameraPositioning   (std::vector<Camera::C_Camera2*> &ve
     GlobalObjects->csv_parameter_datei->Schliessen();
     return  true;
     }
+  std::cout << "**ERROR** Standardpositionierung wurde geladen" << std::endl;
   return false;
   }
 

@@ -93,26 +93,18 @@ void C_Camera2::initRectifyMap              ()
   this->yMap->upload (cpuYMap);
 
   }
-void C_Camera2::retrieveImg                      (cv::Mat &dstImg)
+bool C_Camera2::retrieveImg                      (cv::Mat &dstImg)
   {
-//  auto cpuSrc = new cv::Mat;
-//  //this->cap->retrieve(*cpuSrc);
-//  //dstImg= cpuSrc->operator()(*roi);
-//  //cpuSrc->copyTo(dstImg);
-//  //delete (cpuSrc);
-//  std::cout << "ROI X, Y, Width, Height:" << roi->x << "; "<< roi->y << "; "<< roi->width << "; "<< roi->height << std::endl;
-//  if(roi->width > frameWidth || roi->height > frameHeight)
-//      return;
-
-  this->cap->retrieve(dstImg, 0);
-//  dstImg= cpuSrc->operator()(*roi);
-//  delete cpuSrc;
+  bool err = this->cap->retrieve(dstImg, 0);
+    if(!err) return false;
+  return true;
 }
 
 bool C_Camera2::grabImg                      ()
   {
-  if(this->cap->grab()) return true;
-  return false;
+  bool err =this->cap->grab();
+  if (!err)return false;
+  return true;
   }
 void C_Camera2::readImage(cv::Mat &dstImg)
 {

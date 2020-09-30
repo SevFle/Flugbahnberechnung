@@ -25,9 +25,12 @@ private:
   CameraManager::S_pipelinePayload*       pData;
   QTimer*                           Taktgeber;
   cv::Mat*                          imgBuffer[2];
+  cv::Mat*                          mPose;
+
   int                               Taktgeber_Intervall;
   int                               Zaehler;
   int                               Timerwait;
+  int debug = 0;
    typedef void * (*THREADFUNCPTR)(void *);
 
   bool                              calibration_running;
@@ -41,14 +44,14 @@ private:
   int                               sm_calibration_state;
   int                               usrInputAbsPhoto;
 
+
 private:
   void showEvent                    (QShowEvent* ShowEvent) override;
   void closeEvent                   (QCloseEvent* CloseEvent) override;
   bool eventFilter                  (QObject* Object, QEvent* Event) override;
+
 private slots:
   void Taktgeber_Tick               ();
-  void FillMat2Lbl                  (cv::Mat& img, QLabel* label);
-
   static void camera_calibration_thread (void *This);
   void sm_Single_camera_calibration     ();
   void sm_Stereo_camera_calibration     ();
