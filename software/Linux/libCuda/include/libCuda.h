@@ -9,7 +9,7 @@
 #include <math.h>
 #include <iostream>
 
-#include "cuda_runtime.h"
+#include <cuda_runtime.h>
 #include "cuda.h"
 #include "device_launch_parameters.h"
 
@@ -130,6 +130,7 @@ namespace onCuda
     {
     class C_kalman
       {
+    public:
       C_kalman(float* h_A,int rowsA, int colsA, float* B, int measurementsB, float*H, int rowsH, int colsH);
       ~C_kalman();
 
