@@ -14,6 +14,9 @@ C_frm_Main::C_frm_Main(C_GlobalObjects* GlobalObjects, C_Main* Main, QWidget *pa
     this->Taktgeber = new QTimer(this);
     this->Taktgeber_Intervall = 100;
     this->MsgBox = new QMessageBox();
+    this->Qimg = new QImage;
+    this->QPixImg = new QPixmap;
+
 }
 
 C_frm_Main::~C_frm_Main()
@@ -206,8 +209,9 @@ void  frm_Main::C_frm_Main::FillMat2Lbl(cv::Mat& img, QLabel* label)
     return;
   else
     {
-    QImage image(this->cvMatToQImage(img));
-    label->setPixmap(QPixmap::fromImage(image).scaled(label->size(), Qt::KeepAspectRatio));
+    *this->Qimg = this->cvMatToQImage(img);
+    this->QPixImg->convertFromImage(*this->Qimg);
+    label->setPixmap(QPixImg->scaled(label->size(), Qt::KeepAspectRatio));
     }
   }
 inline QImage   frm_Main::C_frm_Main::cvMatToQImage( const cv::Mat &inMat )

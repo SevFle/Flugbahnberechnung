@@ -29,6 +29,9 @@ namespace frm_Main
     C_GlobalObjects*      GlobalObjects;
     C_Main*               Main;
     QTimer*               Taktgeber;
+    QImage* Qimg;
+    QPixmap* QPixImg;
+
     int                   Taktgeber_Intervall;
     int                   Zaehler;
     int                   state;
