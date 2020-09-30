@@ -1,7 +1,7 @@
 #ifndef C_PLOTTER_H
 #define C_PLOTTER_H
 #include <QtDataVisualization/Q3DScatter>
-
+#include <QValue3DAxis>
 
 namespace plotter
   {

@@ -29,7 +29,24 @@ void C_plotter::init()
   //this->scatter->setFlags(scatter->flags() ^ Qt::FramelessWindowHint);
   graph->setShadowQuality(QtDataVisualization::QAbstract3DGraph::ShadowQualityNone);
   seriesPredicted->setBaseColor(QColor(255, 0, 0, 127));
+  graph->axisX()->setTitle("X-Achse");
+  graph->axisY()->setTitle("Y-Achse");
+  graph->axisZ()->setTitle("Z-Achse");
+  QFont font = graph->activeTheme()->font();
+  font.setPointSize(2);
+  auto *axisX = new QtDataVisualization::QValue3DAxis;
+  auto *axisY = new QtDataVisualization::QValue3DAxis;
+  auto *axisZ = new QtDataVisualization::QValue3DAxis;
 
+  graph->setAspectRatio(10.0);
+  graph->setHorizontalAspectRatio(10.0);
+
+  axisX->setRange(0, 10);
+  //axisY->setSegmentCount(10);
+  //axisX->setLabelFormat("%.2f");
+ graph->setAxisX(axisX);
+  graph->setAxisY(axisY);
+ graph->setAxisZ(axisZ);
   }
 void C_plotter::addSingleData(QVector3D point3D, enum series Type)
   {
