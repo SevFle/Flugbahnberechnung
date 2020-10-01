@@ -5,10 +5,11 @@
 #include <QMainWindow>
 #include <QTimer>
 #include <QMessageBox>
-
 #include "headers/Main.h"
 #include "ui_frm_main.h"
 
+#include <opencv2/core/types_c.h>
+#include <QPixmapCache>
 
 using namespace Main;
 
@@ -31,6 +32,8 @@ namespace frm_Main
     QTimer*               Taktgeber;
     QImage* Qimg;
     QPixmap* QPixImg;
+    QPixmapCache* PixmapCache;
+    QPixmapCache::Key* PixmapKey;
 
     int                   Taktgeber_Intervall;
     int                   Zaehler;
@@ -52,7 +55,7 @@ namespace frm_Main
     void on_bt_camera_positioning_clicked   ();
 
   public:
-    void FillMat2Lbl                      (cv::Mat& img, QLabel* label);
+    void FillMat2Lbl                      (cv::Mat& img, QLabel& label);
     inline  QImage cvMatToQImage( const cv::Mat &inMat );
 
 

@@ -94,8 +94,8 @@ void C_frm_Object_Tracking::Taktgeber_Tick()
   this->Ui->txb_zaehler->setText(QString::number(this->Zaehler++));
   if(this->Main->cameraManager->pipelineQue->try_pop(pData))
     {
-    this->Main->frm_Main->FillMat2Lbl(pData->cpuUndistortedImg[0], this->Ui->lbl_img_left);
-    this->Main->frm_Main->FillMat2Lbl(pData->cpuUndistortedImg[1], this->Ui->lbl_img_right);
+    this->Main->frm_Main->FillMat2Lbl(pData->cpuUndistortedImg[0], *this->Ui->lbl_img_left);
+    this->Main->frm_Main->FillMat2Lbl(pData->cpuUndistortedImg[1], *this->Ui->lbl_img_right);
 
 
     //TODO Add method to display current coordinates

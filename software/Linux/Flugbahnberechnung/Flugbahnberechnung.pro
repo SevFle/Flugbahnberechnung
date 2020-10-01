@@ -21,6 +21,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #OBJECTS_DIR = $$DESTDIR/Obj
 # C++ flags
 QMAKE_CXXFLAGS_RELEASE =-03
+CONFIG += -O0
 
 SOURCES += \
   plotter.cpp \
@@ -38,7 +39,6 @@ SOURCES += \
     sources/posen.cpp \
     sources/Main.cpp \
     sources/frm_camera_calibration.cpp \
-    sources/frm_camera_calibration_crop.cpp \
     sources/frm_camera_positioning.cpp \
     sources/frm_camera_positioning_pose.cpp \
     sources/frm_object_calibration.cpp \
@@ -60,7 +60,6 @@ HEADERS += \
     headers/posen.h \
     headers/Main.h \
     headers/frm_camera_calibration.h \
-    headers/frm_camera_calibration_crop.h \
     headers/frm_camera_positioning.h \
     headers/frm_camera_positioning_pose.h \
     headers/frm_main.h \

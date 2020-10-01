@@ -13,6 +13,15 @@ C_frm_Object_Calibration::C_frm_Object_Calibration(C_GlobalObjects* GlobalObject
   this->camID      = 0;
   this->TimerWait             = 0;
   this->trackingActive        = false;
+  if (std::this_thread::get_id() == this->Main->MAIN_THREAD_ID)
+  {
+      std::cout << "C_frm_Object_Calibration::main thread\n";
+  }
+  else
+  {
+      std::cout << "not main thread\n";
+  }
+
   }
 
 C_frm_Object_Calibration::~C_frm_Object_Calibration()
@@ -99,20 +108,12 @@ void C_frm_Object_Calibration::Taktgeber_Tick()
   {
   this->Ui->txb_zaehler->setText(QString::number(this->Zaehler++));
     if(this->Main->cameraManager->pipelineQue->try_pop(pData))
-    {
-    this->Main->frm_Main->FillMat2Lbl(pData->cpuSrcImg[0], this->Ui->lbl_src_img);
-    this->Main->frm_Main->FillMat2Lbl(pData->cpuGrayImg[0], this->Ui->lbl_img_gray);
-    this->Main->frm_Main->FillMat2Lbl(pData->cpuUndistortedImg[0], this->Ui->lbl_imgFinal);
-        std::cout << "SRC IMAGE TYPE: " << pData->cpuSrcImg->type() << std::endl;
-        std::cout << "SRC IMAGE TYPE: " << pData->cpuGrayImg->type() << std::endl;
-        std::cout << "SRC IMAGE TYPE: " << pData->cpuUndistortedImg->type() << std::endl;
-
-    this->Ui->txb_fps->         setText(QString::number(pData->fps));
-    this->Ui->txb_frametime->   setText(QString::number(pData->frametime.count()));
-//    this->Ui->txb_delta_x->     setText(QString::number(payload->delta_x));
-//    this->Ui->txb_delta_y->     setText(QString::number(payload->delta_y));
-//    this->Ui->txb_s_x->         setText(QString::number(payload->s_x));
-//    this->Ui->txb_s_y->         setText(QString::number(payload->s_y));
+      {
+      this->Main->frm_Main->FillMat2Lbl(pData->cpuSrcImg[0], *this->Ui->lbl_src_img);
+      this->Main->frm_Main->FillMat2Lbl(pData->cpuGrayImg[0], *this->Ui->lbl_img_gray);
+      this->Main->frm_Main->FillMat2Lbl(pData->cpuUndistortedImg[0], *this->Ui->lbl_imgFinal);
+      this->Ui->txb_fps->         setText(QString::number(pData->fps));
+      this->Ui->txb_frametime->   setText(QString::number(pData->frametime.count()));
       this->Ui->txb_worker_1->         setText(QString::number(pData->executionTime[0].count()));
       this->Ui->txb_worker_2->         setText(QString::number(pData->executionTime[1].count()));
       this->Ui->txb_worker_3->         setText(QString::number(pData->executionTime[2].count()));
@@ -123,6 +124,15 @@ void C_frm_Object_Calibration::Taktgeber_Tick()
       this->Ui->txb_worker_8->         setText(QString::number(pData->executionTime[7].count()));
     delete(pData);
     }
+    if (std::this_thread::get_id() == this->Main->MAIN_THREAD_ID)
+    {
+        std::cout << "C_frm_Object_Calibration::Taktgeber_Tick main thread\n";
+    }
+    else
+    {
+        std::cout << "C_frm_Object_Calibration::Taktgeber_Tick not main thread\n";
+    }
+
   }
 
 

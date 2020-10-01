@@ -8,7 +8,7 @@ using namespace GlobalObjects;
 
 /*************************************************************** Konstruktoren **************************************************************/
 C_CameraManager::C_CameraManager ( C_GlobalObjects* GlobalObjects)
-  {
+  {    
   this->globalObjects   = GlobalObjects;
   this->loadManager     = new LoadManager::C_LoadManager(GlobalObjects);
   this->saveManager     = new Savemanager::c_SaveManager(GlobalObjects);
@@ -40,7 +40,6 @@ C_CameraManager::C_CameraManager ( C_GlobalObjects* GlobalObjects)
   this->transferZoneWidth   = frameWidth - 200;
   this->flush = false;
   this->flushComplete = false;
-
   }
 /**************************************************************** Destruktor ****************************************************************/
 C_CameraManager::~C_CameraManager ()
@@ -173,7 +172,7 @@ bool C_CameraManager::stopThreadCameraPositioning()
    }
 bool C_CameraManager::startPipelineTracking  ()
   {
-  pipelineQue->set_capacity(4);
+  pipelineQue->set_capacity(10);
   this->camPipeline     = new thread(&CameraManager::C_CameraManager::pipelineHelper,this);
 
   printf("\n**INFO** Kamerapipeline wurde gestartet");
@@ -654,6 +653,8 @@ void C_CameraManager::threadCameraPositioning(std::vector<Camera::C_Camera2*> ve
 
         }
       this->globalObjects->watchdog->pet();
+      delete (thData);
+
     }
   std::cout << "**INFO** Kamerathread wurde gestoppt" << std::endl;
   }
@@ -1125,7 +1126,7 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
     pData->queBuffer        = que->size();
 
     //try to push pData into que if space is available
-    if(!que->try_push(pData))
+    if(!que->try_push(pData) || que->size() >= 3)
         delete pData;
 
     //end flushing process if Que is of size 0

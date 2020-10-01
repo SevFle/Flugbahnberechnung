@@ -28,11 +28,6 @@ namespace frm_Camera_Calibration
    class C_frm_Camera_Calibration;
   }using namespace frm_Camera_Calibration;
 
-namespace frm_Camera_Calibration_Crop
-  {
-  class C_frm_Camera_Calibration_Crop;
-  }using namespace frm_Camera_Calibration_Crop;
-
 namespace frm_Camera_Positioning
   {
   class C_frm_Camera_Positioning;
@@ -49,6 +44,7 @@ namespace Main
   class C_Main
     {
     public:
+
     C_Main                              (C_GlobalObjects* GlobalObjects);
     ~C_Main                             ();
 
@@ -59,12 +55,12 @@ namespace Main
     C_frm_Object_Tracking*              frm_Object_Tracking;
 
     C_frm_Camera_Calibration*           frm_Camera_Calibration;
-    C_frm_Camera_Calibration_Crop*      frm_Camera_Calibration_Crop;
 
     C_frm_Camera_Positioning*           frm_Camera_Positioning;
     C_frm_Camera_Positioning_Pose*      frm_Camera_Positioning_Pose;
 
     C_GlobalObjects*                    GlobalObjects;
+    std::thread::id MAIN_THREAD_ID;
     };
   }
 
@@ -72,7 +68,6 @@ namespace Main
 #include "headers/frm_object_calibration.h"
 #include "headers/frm_object_tracking.h"
 #include "headers/frm_camera_calibration.h"
-#include "headers/frm_camera_calibration_crop.h"
 #include "headers/frm_camera_positioning.h"
 #include "headers/frm_camera_positioning_pose.h"
 
