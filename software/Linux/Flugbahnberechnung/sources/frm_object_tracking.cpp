@@ -94,14 +94,14 @@ void C_frm_Object_Tracking::Taktgeber_Tick()
   this->Ui->txb_zaehler->setText(QString::number(this->Zaehler++));
   if(this->Main->cameraManager->pipelineQue->try_pop(pData))
     {
-    this->Main->frm_Main->FillMat2Lbl(pData->cpuUndistortedImg[0], *this->Ui->lbl_img_left);
-    this->Main->frm_Main->FillMat2Lbl(pData->cpuUndistortedImg[1], *this->Ui->lbl_img_right);
+    this->Main->frm_Main->FillMat2Lbl(*pData->cpuUndistortedImg[0], *this->Ui->lbl_img_left);
+    this->Main->frm_Main->FillMat2Lbl(*pData->cpuUndistortedImg[1], *this->Ui->lbl_img_right);
 
 
     //TODO Add method to display current coordinates
-    this->Ui->txb_position_x->setText (QString::number(pData->objektVektor.X));
-    this->Ui->txb_position_y->setText (QString::number(pData->objektVektor.Y));
-    this->Ui->txb_position_z->setText (QString::number(pData->objektVektor.Z));
+    this->Ui->txb_position_x->setText (QString::number(pData->objektVektor->X));
+    this->Ui->txb_position_y->setText (QString::number(pData->objektVektor->Y));
+    this->Ui->txb_position_z->setText (QString::number(pData->objektVektor->Z));
 
     this->Ui->txb_activeCamera->setText (QString::number(pData->cameraID[0]));
     delete(pData);

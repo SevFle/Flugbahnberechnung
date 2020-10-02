@@ -179,7 +179,7 @@ void C_LoadManager::loadCameraCalibration (Camera::C_Camera2* Camera)
   Camera->setCalibrationParameter(DistCoeffs,Intrinsic);
   }
 
-bool C_LoadManager::loadCameraPositioning   (std::vector<Camera::C_Camera2*> &vecCameras)
+bool C_LoadManager::loadCameraPositioning   (std::vector<Camera::C_Camera2*>* vecCameras)
   {
   string                                                  Dateiname = "../Parameter/Camera_Positioning.csv";
   string                                                  Dateityp;
@@ -196,7 +196,7 @@ bool C_LoadManager::loadCameraPositioning   (std::vector<Camera::C_Camera2*> &ve
         std::vector<Camera::C_Camera2*>                         vecTempCameras;
         //std::vector<int>                                        istCamIDs;
         std::vector<int>                                        sollCamIDs;
-        vecTempCameras.resize(vecCameras.size());
+        vecTempCameras.resize(vecCameras->size());
 
       //Hole IST Reihenfolge der derzeitigen Kameras
 //      for (int i = 0; i < Camera_count; i++)
@@ -212,15 +212,15 @@ bool C_LoadManager::loadCameraPositioning   (std::vector<Camera::C_Camera2*> &ve
       for(int i = 0; i < Camera_count; i++)
         {
         Camera::C_Camera2 *ptrAdress = nullptr;
-        ptrAdress = vecCameras[sollCamIDs[i]];
+        ptrAdress = vecCameras->at(sollCamIDs[i]);
         vecTempCameras[i] = ptrAdress;
         }
-      vecCameras.clear();
-      vecCameras.resize(vecTempCameras.size());
+      vecCameras->clear();
+      vecCameras->resize(vecTempCameras.size());
       for(int i = 0; i < Camera_count; i++)
         {
-        vecCameras[i] = vecTempCameras[i];
-        vecCameras[i]->setCameraID(i);
+        vecCameras->at(i) = vecTempCameras[i];
+        vecCameras->at(i)->setCameraID(i);
         }
       std::cout << "**INFO** Positionierung wurde geladen" << std::endl;
       }

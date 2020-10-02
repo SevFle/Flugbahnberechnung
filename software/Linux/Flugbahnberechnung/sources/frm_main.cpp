@@ -12,32 +12,34 @@ C_frm_Main::C_frm_Main(C_GlobalObjects* GlobalObjects, C_Main* Main, QWidget *pa
     this->GlobalObjects = GlobalObjects;
     this->Main          = Main;
 
-    this->Zaehler = 0;
-    this->Taktgeber = new QTimer(this);
-    this->Taktgeber_Intervall = 100;
-    this->MsgBox = new QMessageBox();
+    this->MsgBox = new QMessageBox;
+    this->Taktgeber = new QTimer;
     this->Qimg = new QImage;
     this->QPixImg = new QPixmap;
     this->PixmapCache = new QPixmapCache;
     this->PixmapKey = new QPixmapCache::Key;
 
+    this->Taktgeber_Intervall = 0;
+    this->Zaehler = 0;
+    this->state = 0;
 
 }
 
 C_frm_Main::~C_frm_Main()
 {
+    this->state = 0;
+    this->Zaehler = 0;
+    this->Taktgeber_Intervall = 0;
     delete (PixmapKey);
     delete (PixmapCache);
     delete (QPixImg);
     delete (Qimg);
-
+    delete (Taktgeber);
     delete (MsgBox);
-    this->Taktgeber_Intervall = 0;
-    delete (this->Taktgeber);
-    this->Zaehler = 0;
+
     this->Main = nullptr;
     this->GlobalObjects = nullptr;
-    delete this->Ui;
+    delete (Ui);
 }
 
 /************************************** QT-Events******************************/
@@ -215,13 +217,16 @@ void frm_Main::C_frm_Main::on_bt_camera_positioning_clicked()
 
 void  frm_Main::C_frm_Main::FillMat2Lbl(cv::Mat& img, QLabel& label)
   {
-  if(img.empty())
+  cv::Mat* imgPtr = &img;
+  if(imgPtr == nullptr)
+    return;
+  else if(img.empty())
     return;
   else
     {
-    auto image = this->cvMatToQImage(img);
-    auto pixmap = QPixmap::fromImage(image);
-    label.setPixmap(pixmap.scaled(label.size(), Qt::KeepAspectRatio));
+    *this->Qimg = this->cvMatToQImage(img);
+    this->QPixImg->convertFromImage(*this->Qimg);
+    label.setPixmap(QPixImg->scaled(label.size(), Qt::KeepAspectRatio));
     }
   }
 inline QImage   frm_Main::C_frm_Main::cvMatToQImage( const cv::Mat &inMat )
@@ -251,7 +256,7 @@ inline QImage   frm_Main::C_frm_Main::cvMatToQImage( const cv::Mat &inMat )
      // 8-bit, 3 channel
      case CV_8UC3:
        {
-       QImage image( (uchar*)inMat.data, inMat.cols, inMat.rows, inMat.step, QImage::Format_RGB888 );
+       QImage image(inMat.data, inMat.cols, inMat.rows, inMat.step, QImage::Format_RGB888 );
        return image.rgbSwapped().copy();
        }
      // 8-bit, 1 channel

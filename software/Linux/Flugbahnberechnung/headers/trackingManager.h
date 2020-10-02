@@ -48,7 +48,7 @@ namespace trackingManager
     C_GlobalObjects*                    globalObjects;
     S_trackingPayload*                  trackingPayload;
     S_Positionsvektor*                  Positionsvektor_alt;
-    onCuda::KalmanFilter2::C_kalman*    kalmanfilter;
+   // onCuda::KalmanFilter2::C_kalman*    kalmanfilter;
 
 
     bool                                alive;

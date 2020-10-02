@@ -3,38 +3,29 @@ using namespace frm_Camera_Positioning;
 
 C_frm_Camera_Positioning::C_frm_Camera_Positioning(C_GlobalObjects* GlobalObjects, C_Main* Main, QWidget *parent) :
     QMainWindow(parent)
-{
-    this->Ui = new Ui::C_frm_camera_positioning();
-    Ui->setupUi(this);
-    this->GlobalObjects       = GlobalObjects;
-    this->Taktgeber           = new QTimer(this);
-    this->lock                = new pthread_mutex_t;
-    this->Main                = Main;
-    this->TimerWait           = 0;
-    this->Taktgeber_Intervall = 18;
-    if (std::this_thread::get_id() == this->Main->MAIN_THREAD_ID)
-    {
-        std::cout << "C_frm_Camera_Positioning::main thread\n";
-    }
-    else
-    {
-        std::cout << "not main thread\n";
-    }
-
-}
+  {
+  this->Ui = new Ui::C_frm_camera_positioning();
+  Ui->setupUi(this);
+  this->GlobalObjects       = GlobalObjects;
+  this->Main                = Main;
+  this->Taktgeber           = new QTimer(this);
+  this->tData = nullptr;
+  this->Taktgeber_Intervall = 0;
+  this->TimerWait = 0;
+  this->Zaehler = 0;
+  }
 
 C_frm_Camera_Positioning::~C_frm_Camera_Positioning()
   {
+  this->Zaehler = 0;
+  this->TimerWait = 0;
   this->Taktgeber_Intervall = 0;
-  this->TimerWait           = 0;
+  this->tData = nullptr;
+  delete                    (Taktgeber);
   this->Main                = nullptr;
-  delete                    (lock);
-  delete                    (this->Taktgeber);
   this->GlobalObjects       = nullptr;
   delete                    (Ui);
-}
-
-
+  }
 /************************************** QT-Events******************************/
 void C_frm_Camera_Positioning::showEvent(QShowEvent* ShowEvent)
   {
@@ -44,7 +35,6 @@ void C_frm_Camera_Positioning::showEvent(QShowEvent* ShowEvent)
   this->installEventFilter    (this);
   this->Ui->numTimerIntervall->setValue(Taktgeber_Intervall);
   this->Zaehler               = 0;
-  pthread_mutex_init          (lock, NULL);
   this->Main->cameraManager->positioningDone.store(false);
   this->Main->cameraManager->startThreadCameraPositioning();
   this->set_num_value(*GlobalObjects->camera_order);
@@ -106,64 +96,62 @@ void C_frm_Camera_Positioning::Taktgeber_Tick()
 
       if(this->Main->cameraManager->threadQue->try_pop(tData))
         {
-          std::cout << "SRC IMAGE TYPE: " << tData->srcImg[0]->type() << std::endl;
-
           this->Ui->txb_queBuffer->setText(QString::number(tData->queBuffer));
-          if(!tData->srcImg.empty() || tData->srcImg.size() != 0)
+          if(!tData->srcImg->empty() || tData->srcImg->size() != 0)
             {
             switch (this->GlobalObjects->absCameras)
               {
               case 2:
-                this->Main->frm_Main->FillMat2Lbl(*tData->srcImg[this->Ui->num_cam_0->value()], *this->Ui->lbl_cam_0);
-                this->Main->frm_Main->FillMat2Lbl(*tData->srcImg[this->Ui->num_cam_1->value()], *this->Ui->lbl_cam_1);
+                this->Main->frm_Main->FillMat2Lbl(*tData->srcImg->at(this->Ui->num_cam_0->value()), *this->Ui->lbl_cam_0);
+                this->Main->frm_Main->FillMat2Lbl(*tData->srcImg->at(this->Ui->num_cam_1->value()), *this->Ui->lbl_cam_1);
               break;
 
               case 4:
-                this->Main->frm_Main->FillMat2Lbl(*tData->srcImg[this->Ui->num_cam_0->value()], *this->Ui->lbl_cam_0);
-                this->Main->frm_Main->FillMat2Lbl(*tData->srcImg[this->Ui->num_cam_1->value()], *this->Ui->lbl_cam_1);
-                this->Main->frm_Main->FillMat2Lbl(*tData->srcImg[this->Ui->num_cam_2->value()], *this->Ui->lbl_cam_2);
-                this->Main->frm_Main->FillMat2Lbl(*tData->srcImg[this->Ui->num_cam_3->value()], *this->Ui->lbl_cam_3);
+                this->Main->frm_Main->FillMat2Lbl(*tData->srcImg->at(this->Ui->num_cam_0->value()), *this->Ui->lbl_cam_0);
+                this->Main->frm_Main->FillMat2Lbl(*tData->srcImg->at(this->Ui->num_cam_1->value()), *this->Ui->lbl_cam_1);
+                this->Main->frm_Main->FillMat2Lbl(*tData->srcImg->at(this->Ui->num_cam_2->value()), *this->Ui->lbl_cam_2);
+                this->Main->frm_Main->FillMat2Lbl(*tData->srcImg->at(this->Ui->num_cam_3->value()), *this->Ui->lbl_cam_3);
               break;
 
               case 6:
-                this->Main->frm_Main->FillMat2Lbl(*tData->srcImg[this->Ui->num_cam_0->value()], *this->Ui->lbl_cam_0);
-                this->Main->frm_Main->FillMat2Lbl(*tData->srcImg[this->Ui->num_cam_1->value()], *this->Ui->lbl_cam_1);
-                this->Main->frm_Main->FillMat2Lbl(*tData->srcImg[this->Ui->num_cam_2->value()], *this->Ui->lbl_cam_2);
-                this->Main->frm_Main->FillMat2Lbl(*tData->srcImg[this->Ui->num_cam_3->value()], *this->Ui->lbl_cam_3);
-                this->Main->frm_Main->FillMat2Lbl(*tData->srcImg[this->Ui->num_cam_4->value()], *this->Ui->lbl_cam_4);
-                this->Main->frm_Main->FillMat2Lbl(*tData->srcImg[this->Ui->num_cam_5->value()], *this->Ui->lbl_cam_5);
+                this->Main->frm_Main->FillMat2Lbl(*tData->srcImg->at(this->Ui->num_cam_0->value()), *this->Ui->lbl_cam_0);
+                this->Main->frm_Main->FillMat2Lbl(*tData->srcImg->at(this->Ui->num_cam_1->value()), *this->Ui->lbl_cam_1);
+                this->Main->frm_Main->FillMat2Lbl(*tData->srcImg->at(this->Ui->num_cam_2->value()), *this->Ui->lbl_cam_2);
+                this->Main->frm_Main->FillMat2Lbl(*tData->srcImg->at(this->Ui->num_cam_3->value()), *this->Ui->lbl_cam_3);
+                this->Main->frm_Main->FillMat2Lbl(*tData->srcImg->at(this->Ui->num_cam_4->value()), *this->Ui->lbl_cam_4);
+                this->Main->frm_Main->FillMat2Lbl(*tData->srcImg->at(this->Ui->num_cam_5->value()), *this->Ui->lbl_cam_5);
               break;
 
             case 8:
-              this->Main->frm_Main->FillMat2Lbl(*tData->srcImg[this->Ui->num_cam_0->value()], *this->Ui->lbl_cam_0);
-              this->Main->frm_Main->FillMat2Lbl(*tData->srcImg[this->Ui->num_cam_1->value()], *this->Ui->lbl_cam_1);
-              this->Main->frm_Main->FillMat2Lbl(*tData->srcImg[this->Ui->num_cam_2->value()], *this->Ui->lbl_cam_2);
-              this->Main->frm_Main->FillMat2Lbl(*tData->srcImg[this->Ui->num_cam_3->value()], *this->Ui->lbl_cam_3);
-              this->Main->frm_Main->FillMat2Lbl(*tData->srcImg[this->Ui->num_cam_4->value()], *this->Ui->lbl_cam_4);
-              this->Main->frm_Main->FillMat2Lbl(*tData->srcImg[this->Ui->num_cam_5->value()], *this->Ui->lbl_cam_5);
-              this->Main->frm_Main->FillMat2Lbl(*tData->srcImg[this->Ui->num_cam_6->value()], *this->Ui->lbl_cam_6);
-              this->Main->frm_Main->FillMat2Lbl(*tData->srcImg[this->Ui->num_cam_7->value()], *this->Ui->lbl_cam_7);
+              this->Main->frm_Main->FillMat2Lbl(*tData->srcImg->at(this->Ui->num_cam_0->value()), *this->Ui->lbl_cam_0);
+              this->Main->frm_Main->FillMat2Lbl(*tData->srcImg->at(this->Ui->num_cam_1->value()), *this->Ui->lbl_cam_1);
+              this->Main->frm_Main->FillMat2Lbl(*tData->srcImg->at(this->Ui->num_cam_2->value()), *this->Ui->lbl_cam_2);
+              this->Main->frm_Main->FillMat2Lbl(*tData->srcImg->at(this->Ui->num_cam_3->value()), *this->Ui->lbl_cam_3);
+              this->Main->frm_Main->FillMat2Lbl(*tData->srcImg->at(this->Ui->num_cam_4->value()), *this->Ui->lbl_cam_4);
+              this->Main->frm_Main->FillMat2Lbl(*tData->srcImg->at(this->Ui->num_cam_5->value()), *this->Ui->lbl_cam_5);
+              this->Main->frm_Main->FillMat2Lbl(*tData->srcImg->at(this->Ui->num_cam_6->value()), *this->Ui->lbl_cam_6);
+              this->Main->frm_Main->FillMat2Lbl(*tData->srcImg->at(this->Ui->num_cam_7->value()), *this->Ui->lbl_cam_7);
 
             break;
 
             case 10:
-              this->Main->frm_Main->FillMat2Lbl(*tData->srcImg[this->Ui->num_cam_0->value()], *this->Ui->lbl_cam_0);
-              this->Main->frm_Main->FillMat2Lbl(*tData->srcImg[this->Ui->num_cam_1->value()], *this->Ui->lbl_cam_1);
-              this->Main->frm_Main->FillMat2Lbl(*tData->srcImg[this->Ui->num_cam_2->value()], *this->Ui->lbl_cam_2);
-              this->Main->frm_Main->FillMat2Lbl(*tData->srcImg[this->Ui->num_cam_3->value()], *this->Ui->lbl_cam_3);
-              this->Main->frm_Main->FillMat2Lbl(*tData->srcImg[this->Ui->num_cam_4->value()], *this->Ui->lbl_cam_4);
-              this->Main->frm_Main->FillMat2Lbl(*tData->srcImg[this->Ui->num_cam_5->value()], *this->Ui->lbl_cam_5);
-              this->Main->frm_Main->FillMat2Lbl(*tData->srcImg[this->Ui->num_cam_6->value()], *this->Ui->lbl_cam_6);
-              this->Main->frm_Main->FillMat2Lbl(*tData->srcImg[this->Ui->num_cam_7->value()], *this->Ui->lbl_cam_7);
-              this->Main->frm_Main->FillMat2Lbl(*tData->srcImg[this->Ui->num_cam_8->value()], *this->Ui->lbl_cam_8);
-              this->Main->frm_Main->FillMat2Lbl(*tData->srcImg[this->Ui->num_cam_9->value()], *this->Ui->lbl_cam_9);
+              this->Main->frm_Main->FillMat2Lbl(*tData->srcImg->at(this->Ui->num_cam_0->value()), *this->Ui->lbl_cam_0);
+              this->Main->frm_Main->FillMat2Lbl(*tData->srcImg->at(this->Ui->num_cam_1->value()), *this->Ui->lbl_cam_1);
+              this->Main->frm_Main->FillMat2Lbl(*tData->srcImg->at(this->Ui->num_cam_2->value()), *this->Ui->lbl_cam_2);
+              this->Main->frm_Main->FillMat2Lbl(*tData->srcImg->at(this->Ui->num_cam_3->value()), *this->Ui->lbl_cam_3);
+              this->Main->frm_Main->FillMat2Lbl(*tData->srcImg->at(this->Ui->num_cam_4->value()), *this->Ui->lbl_cam_4);
+              this->Main->frm_Main->FillMat2Lbl(*tData->srcImg->at(this->Ui->num_cam_5->value()), *this->Ui->lbl_cam_5);
+              this->Main->frm_Main->FillMat2Lbl(*tData->srcImg->at(this->Ui->num_cam_6->value()), *this->Ui->lbl_cam_6);
+              this->Main->frm_Main->FillMat2Lbl(*tData->srcImg->at(this->Ui->num_cam_7->value()), *this->Ui->lbl_cam_7);
+              this->Main->frm_Main->FillMat2Lbl(*tData->srcImg->at(this->Ui->num_cam_8->value()), *this->Ui->lbl_cam_8);
+              this->Main->frm_Main->FillMat2Lbl(*tData->srcImg->at(this->Ui->num_cam_9->value()), *this->Ui->lbl_cam_9);
 
             break;
 
               }
 
             }
-        for(auto it = std::begin(tData->srcImg); it < std::end(tData->srcImg); it ++)
+        for(auto it = std::begin(*tData->srcImg); it < std::end(*tData->srcImg); it ++)
             {
             (*it)->release();
             delete (*it);
@@ -283,13 +271,13 @@ void C_frm_Camera_Positioning::on_bt_apply_clicked()
 
     for (int i = 0; i < GlobalObjects->absCameras; i++)
       {
-      this->Main->cameraManager->loadManager->loadCameraCalibration   (this->Main->cameraManager->vecCameras[i]);
-      this->Main->cameraManager->loadManager->loadCameraSettings      (this->Main->cameraManager->vecCameras[i]);
+      this->Main->cameraManager->loadManager->loadCameraCalibration   (this->Main->cameraManager->vecCameras->at(i));
+      this->Main->cameraManager->loadManager->loadCameraSettings      (this->Main->cameraManager->vecCameras->at(i));
       }
-    this->Main->cameraManager->saveManager->saveCameraPositioning   (this->Main->cameraManager->vecCameras);
+    this->Main->cameraManager->saveManager->saveCameraPositioning   (*this->Main->cameraManager->vecCameras);
     for(int i = 0; i < GlobalObjects->absCameras; i ++)
     {
-     this->Main->cameraManager->vecCameras[i]->setCameraID(i);
+     this->Main->cameraManager->vecCameras->at(i)->setCameraID(i);
     }
 
     this->Ui->bt_apply->setEnabled(true);
