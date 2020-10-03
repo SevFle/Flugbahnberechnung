@@ -46,7 +46,6 @@ namespace trackingManager
 
     private:
     C_GlobalObjects*                    globalObjects;
-    S_trackingPayload*                  trackingPayload;
     S_Positionsvektor*                  Positionsvektor_alt;
     onCuda::KalmanFilter2::C_kalman*    kalmanfilter;
 

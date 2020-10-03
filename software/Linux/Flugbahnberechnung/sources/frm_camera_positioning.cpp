@@ -3,27 +3,31 @@ using namespace frm_Camera_Positioning;
 
 C_frm_Camera_Positioning::C_frm_Camera_Positioning(C_GlobalObjects* GlobalObjects, C_Main* Main, QWidget *parent) :
     QMainWindow(parent)
-{
-    this->Ui = new Ui::C_frm_camera_positioning();
-    Ui->setupUi(this);
-    this->GlobalObjects       = GlobalObjects;
-    this->Taktgeber           = new QTimer(this);
-    this->lock                = new pthread_mutex_t;
-    this->Main                = Main;
-    this->TimerWait           = 0;
-    this->Taktgeber_Intervall = 18;
-}
+  {
+  this->Ui = new Ui::C_frm_camera_positioning();
+  Ui->setupUi(this);
+  this->GlobalObjects = GlobalObjects;
+  this->Main = Main;
+  this->Taktgeber = new QTimer;
+  this->tData = nullptr;
 
+  this->Taktgeber_Intervall = 0;
+  this->Zaehler = 0;
+  }
 C_frm_Camera_Positioning::~C_frm_Camera_Positioning()
   {
+  this->Zaehler = 0;
   this->Taktgeber_Intervall = 0;
-  this->TimerWait           = 0;
-  this->Main                = nullptr;
-  delete                    (lock);
-  delete                    (this->Taktgeber);
+  if(this->tData != nullptr)
+    {
+    delete (this->tData);
+    this->tData = nullptr;
+    }
+  delete (this->Taktgeber);
+  this->Main = nullptr;
   this->GlobalObjects       = nullptr;
   delete                    (Ui);
-}
+  }
 
 
 /************************************** QT-Events******************************/
@@ -35,7 +39,6 @@ void C_frm_Camera_Positioning::showEvent(QShowEvent* ShowEvent)
   this->installEventFilter    (this);
   this->Ui->numTimerIntervall->setValue(Taktgeber_Intervall);
   this->Zaehler               = 0;
-  pthread_mutex_init          (lock, NULL);
   this->Main->cameraManager->positioningDone.store(false);
   this->Main->cameraManager->startThreadCameraPositioning();
   this->set_num_value(*GlobalObjects->camera_order);
@@ -274,13 +277,13 @@ void C_frm_Camera_Positioning::on_bt_apply_clicked()
 
     for (int i = 0; i < GlobalObjects->absCameras; i++)
       {
-      this->Main->cameraManager->loadManager->loadCameraCalibration   (this->Main->cameraManager->vecCameras[i]);
-      this->Main->cameraManager->loadManager->loadCameraSettings      (this->Main->cameraManager->vecCameras[i]);
+      this->Main->cameraManager->loadManager->loadCameraCalibration   (this->Main->cameraManager->vecCameras->at(i));
+      this->Main->cameraManager->loadManager->loadCameraSettings      (this->Main->cameraManager->vecCameras->at(i));
       }
-    this->Main->cameraManager->saveManager->saveCameraPositioning   (this->Main->cameraManager->vecCameras);
+    this->Main->cameraManager->saveManager->saveCameraPositioning   (*this->Main->cameraManager->vecCameras);
     for(int i = 0; i < GlobalObjects->absCameras; i ++)
     {
-     this->Main->cameraManager->vecCameras[i]->setCameraID(i);
+     this->Main->cameraManager->vecCameras->at(i)->setCameraID(i);
     }
 
     this->Ui->bt_apply->setEnabled(true);

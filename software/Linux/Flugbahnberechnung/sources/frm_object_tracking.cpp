@@ -6,21 +6,34 @@ C_frm_Object_Tracking::C_frm_Object_Tracking(C_GlobalObjects* GlobalObjects, C_M
     {
     this->Ui = new Ui::C_frm_object_tracking();
     Ui->setupUi(this);
-    this->GlobalObjects = GlobalObjects;
-    this->Main          = Main;
-    this->Zaehler       = 0;
-    this->Taktgeber = new QTimer(this);
-    this->Taktgeber_Intervall = 100;
+    this->GlobalObjects           = GlobalObjects;
+    this->Main                    = Main;
+    this->Taktgeber               = new QTimer;
+    this->pData                   = nullptr;
+    this->Zaehler                 = 0;
+    this->Taktgeber_Intervall     = 0;
+    this->cameraID                = 0;
+
     this->container = QWidget::createWindowContainer(this->Main->cameraManager->trackingManager->dataPlotter->graph);
     this->Ui->horizontalLayout->addWidget(container);
+
+
     }
 
 C_frm_Object_Tracking::~C_frm_Object_Tracking()
   {
-  delete (container);
-  this->Taktgeber_Intervall = 0;
-  delete (this->Taktgeber);
+  delete (this->container);
 
+  this->cameraID                = 0;
+  this->Taktgeber_Intervall     = 0;
+  this->Zaehler                 = 0;
+  if(this->pData != nullptr)
+    {
+      delete (this->pData);
+      this->pData = nullptr;
+    }
+
+  delete (this->Taktgeber);
   this->Main          = nullptr;
   this->GlobalObjects = nullptr;
   delete Ui;

@@ -25,14 +25,11 @@ namespace frm_Object_Calibration
     C_Main*                         Main;
     QTimer*                         Taktgeber;
     Ui::C_frm_object_calibration*   Ui;
-    QMessageBox*                    MsgBox;
     CameraManager::S_pipelinePayload*       pData;
 
     int                                     Zaehler;
     int                                     Taktgeber_Intervall;
     int                                     camID;
-    int                                     TimerWait;
-    bool                                    trackingActive;
 
     bool dilate_active;
     bool bilateral_active;

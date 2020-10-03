@@ -34,7 +34,6 @@ namespace frm_Main
 
     int                   Taktgeber_Intervall;
     int                   Zaehler;
-    int                   state;
 
   private:
     void showEvent                          (QShowEvent*  ShowEvent) override;

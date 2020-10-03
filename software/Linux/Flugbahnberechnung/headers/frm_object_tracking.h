@@ -25,19 +25,16 @@ private slots:
     void on_num_camera_id_valueChanged(int arg1);
 
 private:
-  Ui::C_frm_object_tracking* Ui;
-  QWidget *container;
+  Ui::C_frm_object_tracking*  Ui;
+  QWidget*                    container;
+  QTimer*                     Taktgeber;
+  C_GlobalObjects*            GlobalObjects;
+  C_Main*                     Main;
 
-  C_GlobalObjects* GlobalObjects;
-  C_Main*         Main;
-  std::thread*    Tracking;
-
-  QTimer*         Taktgeber;
   CameraManager::S_pipelinePayload*       pData;
 
 
   int             Taktgeber_Intervall;
-  int             TimerWait;
   int Zaehler;
   int cameraID;
 

@@ -6,47 +6,52 @@ C_frm_Camera_Calibration::C_frm_Camera_Calibration(C_GlobalObjects* GlobalObject
 {
     this->Ui = new Ui::C_frm_camera_calibration();
     Ui->setupUi(this);
-    this->GlobalObjects         = GlobalObjects;
-    this->Main                  = Main;
-    this->Zaehler               = 0;
-    this->calibration_running   = false;
-    this->photo_interval        = 0;
-    this->photo_count           = 0;
-    this->photo_id              = 0;
-    this->intervall             = 0;
-    this->usrInputAbsPhoto      = 3;
-    this->Taktgeber             = new QTimer(this);
-    this->Taktgeber_Intervall   = 0;
-    this->lock                  = new pthread_mutex_t;
-    this->camThread             = new pthread_t;
-    this->imgPopOut             =  false;
-    this->imgBuffer[0]          = new cv::Mat;
-    this->imgBuffer[1]          = new cv::Mat;
-    this->mPose                 = new cv::Mat(cv::Mat_<double>(4,4));
-    this->pData                 = nullptr;
+    this->GlobalObjects = GlobalObjects;
+    this->Main = Main;
+    this->camThread = nullptr;
+    this->pData = nullptr;
+    this->Taktgeber = new QTimer;
+    this->imgBuffer[0] = new cv::Mat;
+    this->imgBuffer[1] = new cv::Mat;
+    this->mPose = new cv::Mat;
+
+    this->Taktgeber_Intervall = 0;
+    this->Zaehler = 0;
+    this->photo_id = 0;
+    this->method = 0;
+    this->cameraID = 0;
+    this->sm_calibration_state = 0;
+    this->usrInputAbsPhoto = 0;
+
+    this->calibration_running = false;
+
 }
 
 C_frm_Camera_Calibration::~C_frm_Camera_Calibration()
 {
-    this->pData                 = nullptr;
+  this->calibration_running = false;
 
-    delete imgBuffer[0];
-    delete imgBuffer[1];
+  this->usrInputAbsPhoto = 0;
+  this->sm_calibration_state = 0;
+  this->cameraID = 0;
+  this->method = 0;
+  this->photo_id = 0;
+  this->Zaehler = 0;
+  this->Taktgeber_Intervall = 0;
 
-    delete (lock);
-    this->Taktgeber_Intervall = 0;
-    delete (this->Taktgeber);
+  this->mPose = new cv::Mat;
+  this->imgBuffer[1] = new cv::Mat;
+  this->imgBuffer[0] = new cv::Mat;
+  this->Taktgeber = new QTimer;
+  if(this->pData != nullptr)
+    {
+      delete (this->pData);
+      this->pData = nullptr;
+    }
 
-    this->usrInputAbsPhoto = 3;
-    this->intervall             = 0;
-    this->photo_id              = 0;
-    this->photo_interval        = 0;
-    this->calibration_running   = false;
-    this->Zaehler               = 0;
-
-    this->Main          = nullptr;
-    this->GlobalObjects = nullptr;
-
+  this->camThread = nullptr;
+  this->Main = nullptr;
+  this->GlobalObjects = nullptr;
 
     delete Ui;
 }
@@ -133,7 +138,7 @@ void C_frm_Camera_Calibration::Taktgeber_Tick()
     switch (method)
       {
       case 0:
-        this->Main->cameraManager->scanChAruco(this->pData->cpuSrcImg[0], *Main->cameraManager->vecCameras[this->Ui->num_camera_id->value()], *this->mPose);
+        this->Main->cameraManager->scanChAruco(this->pData->cpuSrcImg[0], *Main->cameraManager->vecCameras->at(this->Ui->num_camera_id->value()), *this->mPose);
         this->Main->frm_Main->FillMat2Lbl(this->pData->cpuSrcImg[0], this->Ui->lbl_img_single_calibration);
         //imgBuffer dient zur speicherung von Bildern im Kalibrrierungsprozess
         this->pData->cpuSrcImg[0].copyTo(*this->imgBuffer[0]);
@@ -159,7 +164,7 @@ void C_frm_Camera_Calibration::Taktgeber_Tick()
         this->pData->cpuSrcImg[1].copyTo(*this->imgBuffer[1]);
 
         bool temp1, temp2;
-        temp1 = this->Main->cameraManager->scanChAruco(this->pData->cpuSrcImg[0], *Main->cameraManager->vecCameras[this->Ui->num_camera_id->value()], *this->mPose);
+        temp1 = this->Main->cameraManager->scanChAruco(this->pData->cpuSrcImg[0], *Main->cameraManager->vecCameras->at(this->Ui->num_camera_id->value()), *this->mPose);
         this->Ui->txb_nx->setText(QString::number(this->mPose->at<double>(0,0), 'f', 3));
         this->Ui->txb_ny->setText(QString::number(this->mPose->at<double>(1,0), 'f', 3));
         this->Ui->txb_nz->setText(QString::number(this->mPose->at<double>(2,0), 'f', 3));
@@ -176,7 +181,7 @@ void C_frm_Camera_Calibration::Taktgeber_Tick()
         this->Ui->txb_py->setText(QString::number(this->mPose->at<double>(1,3), 'f', 3));
         this->Ui->txb_pz->setText(QString::number(this->mPose->at<double>(2,3), 'f', 3));
 
-        temp2 = this->Main->cameraManager->scanChAruco(this->pData->cpuSrcImg[1], *Main->cameraManager->vecCameras[this->Ui->num_camera_id->value()+1], *this->mPose);
+        temp2 = this->Main->cameraManager->scanChAruco(this->pData->cpuSrcImg[1], *Main->cameraManager->vecCameras->at(this->Ui->num_camera_id->value()+1), *this->mPose);
         this->Ui->txb_nx_2->setText(QString::number(this->mPose->at<double>(0,0), 'f', 3));
         this->Ui->txb_ny_2->setText(QString::number(this->mPose->at<double>(1,0), 'f', 3));
         this->Ui->txb_nz_2->setText(QString::number(this->mPose->at<double>(2,0), 'f', 3));
@@ -247,14 +252,14 @@ void frm_Camera_Calibration::C_frm_Camera_Calibration::on_bt_exit_clicked()
 void C_frm_Camera_Calibration::on_num_camera_id_valueChanged(int arg1)
 {
     std::lock_guard<std::mutex> lck (*this->Main->cameraManager->getLock());
-    this->Main->cameraManager->setFlush(true);
+    this->Main->cameraManager->pipelineFlush.store(true);
     if(method == 0)
         this->Main->cameraManager->setArrActiveCameras(arg1,0);
     else
         this->Main->cameraManager->setArrActiveCameras(arg1,0);
         int arg2 = arg1+1;
         this->Main->cameraManager->setArrActiveCameras(arg2,1);
-        this->Main->cameraManager->setFlush(false);
+        this->Main->cameraManager->pipelineFlush.store(false);
 }
 
 void C_frm_Camera_Calibration::on_rb_single_calibration_clicked()
@@ -269,9 +274,9 @@ void C_frm_Camera_Calibration::on_rb_single_calibration_clicked()
 
 
     std::lock_guard<std::mutex> lck                   (*this->Main->cameraManager->getLock());
-    this->Main->cameraManager->setFlush               (true);
+    this->Main->cameraManager->pipelineFlush.store               (true);
     this->Main->cameraManager->setArrActiveCameras    (0,0);
-    this->Main->cameraManager->setFlush               (false);
+    this->Main->cameraManager->pipelineFlush.store               (false);
     this->Ui->rb_stereo_calibration->setChecked       (false);
     this->Ui->rb_single_calibration->setChecked       (true);
 
@@ -303,10 +308,10 @@ void C_frm_Camera_Calibration::on_rb_stereo_calibration_clicked()
 
     this->cameraID                            = 0;
     std::lock_guard<std::mutex> lck (*this->Main->cameraManager->getLock());
-    this->Main->cameraManager->setFlush               (true);
+    this->Main->cameraManager->pipelineFlush.store               (true);
     this->Main->cameraManager->setArrActiveCameras    (0,0);
     this->Main->cameraManager->setArrActiveCameras    (1,1);
-    this->Main->cameraManager->setFlush               (false);
+    this->Main->cameraManager->pipelineFlush.store               (false);
     this->Ui->rb_stereo_calibration->setChecked       (true);
     this->Ui->rb_single_calibration->setChecked       (false);
 
@@ -376,7 +381,7 @@ void C_frm_Camera_Calibration::sm_Single_camera_calibration ()
 
       //Take pictures
     case 1:
-      this->Main->cameraManager->vecCameras[cameraID]->save_picture    (photo_id,naming,*this->imgBuffer[0]);
+      this->Main->cameraManager->vecCameras->at(cameraID)->save_picture    (photo_id,naming,*this->imgBuffer[0]);
       this->Ui->txb_img_count->setText(QString::number                  (this->photo_id + 1));
       this->photo_id++;
 
@@ -425,8 +430,8 @@ void C_frm_Camera_Calibration::sm_Stereo_camera_calibration ()
 
       //Take pictures
     case 1:
-      this->Main->cameraManager->vecCameras[cameraID]->save_picture    (photo_id,naming,*this->imgBuffer[0]);
-      this->Main->cameraManager->vecCameras[cameraID+1]->save_picture    (photo_id,naming,*this->imgBuffer[1]);
+      this->Main->cameraManager->vecCameras->at(cameraID)->save_picture    (photo_id,naming,*this->imgBuffer[0]);
+      this->Main->cameraManager->vecCameras->at(cameraID+1)->save_picture    (photo_id,naming,*this->imgBuffer[1]);
       this->Ui->txb_img_count->                                     setText(QString::number(this->photo_id + 1));
       this->sm_calibration_state = 2;
       this->Ui->bt_photo->setVisible      (false);

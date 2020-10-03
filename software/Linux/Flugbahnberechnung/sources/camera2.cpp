@@ -75,7 +75,7 @@ void C_Camera2::setFrameWidth(int value)
 
 bool C_Camera2::open                        ()
     {
-    this->cap->open(pipeline, cv::CAP_GSTREAMER);
+    this->cap->open(*pipeline, cv::CAP_GSTREAMER);
     this->initialize();
     if(!this->cap->isOpened()) return false;
     else return true;
@@ -194,7 +194,7 @@ for (int i = 0; i < 3; i++)
 
 void C_Camera2::setPipeline                 (std::string Pipeline)
   {
-  this->pipeline = Pipeline;
+  *this->pipeline = Pipeline;
   }
 void C_Camera2::setTrackingRoi                      (int Radius, int istX, int istY)
   {

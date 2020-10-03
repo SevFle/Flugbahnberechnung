@@ -268,6 +268,7 @@ namespace CameraManager
     thread *getCamPipeline() const;
     thread *getCamPositioning() const;
     void setDelta_t(int value);
+    thread *getCamThread() const;
       };// c_camera_unmanaged
   }//nmsp_c_camera_unmanaged
 #endif

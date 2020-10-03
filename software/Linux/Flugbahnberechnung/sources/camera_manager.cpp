@@ -95,6 +95,11 @@ C_CameraManager::~C_CameraManager ()
   this->globalObjects = nullptr;
   }
 
+thread *C_CameraManager::getCamThread() const
+  {
+  return camThread;
+  }
+
 void C_CameraManager::setDelta_t(int value)
   {
   delta_t = value;
@@ -141,16 +146,16 @@ bool C_CameraManager::openCameras ()
       camera->setCameraID             (this->globalObjects->absCameras);
       if(!camera->open())
          std::cout << "**ERROR** Could not open device on path" << devicePath << std::endl;
-      vecCameras.push_back            (camera);
+      vecCameras->push_back            (camera);
       this->globalObjects->absCameras++;
       }
-    std::cout << "**INFO** Cameraspeed is \033[1m\033[33m" << this->vecCameras[0]->getFPS() << "\033[0m fps" << std::endl;
+    std::cout << "**INFO** Cameraspeed is \033[1m\033[33m" << this->vecCameras->at(0)->getFPS() << "\033[0m fps" << std::endl;
     std::cout << "**INFO** Created \033[1m\033[31m" << std::to_string(this->globalObjects->absCameras) << " \033[0m Devices" << std::endl;
 
     }
 
   //Reorder recently created Cameras
-  this->loadManager->loadCameraPositioning(this->vecCameras);
+  this->loadManager->loadCameraPositioning(*this->vecCameras);
                   //this->mvVecCamera2Temp(*globalObjects->camera_order);
   //Load Settings and Calibration for each camera created earlier
   loadCameras();
@@ -159,7 +164,7 @@ bool C_CameraManager::openCameras ()
   }
 bool C_CameraManager::closeCameras ()
   {
-  for (auto it = std::begin(vecCameras); it < std::end(vecCameras); it++)
+  for (auto it = std::begin(*vecCameras); it < std::end(*vecCameras); it++)
     {
     (*it)->close();
       delete(*it);
@@ -171,11 +176,11 @@ void C_CameraManager::loadCameras              ()
   {
   for (int i = 0; i < globalObjects->absCameras; i++)
     {
-    this->loadManager->loadCameraCalibration(this->vecCameras[i]);
-    this->loadManager->loadCameraSettings(this->vecCameras[i]);
-    this->loadManager->loadCameraCos(this->vecCameras[i]);
-    this->trackingManager->load_posen(*this->vecCameras[i]->cameraPose);
-    this->vecCameras[i]->initRectifyMap();
+    this->loadManager->loadCameraCalibration(this->vecCameras->at(i));
+    this->loadManager->loadCameraSettings(this->vecCameras->at(i));
+    this->loadManager->loadCameraCos(this->vecCameras->at(i));
+    this->trackingManager->load_posen(*this->vecCameras->at(i)->cameraPose);
+    this->vecCameras->at(i)->initRectifyMap();
     }
   this->trackingManager->init_posen();
 
@@ -183,7 +188,7 @@ void C_CameraManager::loadCameras              ()
 bool C_CameraManager::startThreadCameraPositioning()
   {
   threadQue->set_capacity(10);
-  this->camPositioning     = new thread(&CameraManager::C_CameraManager::threadHelper,this);
+  this->camThread     = new thread(&CameraManager::C_CameraManager::threadHelper,this);
   std::cout << "**INFO** Kamerathread wurde gestartet" << std::endl;
   return true;
   }
@@ -192,7 +197,7 @@ bool C_CameraManager::stopThreadCameraPositioning()
     this->positioningDone = true;
     std::this_thread::sleep_for (std::chrono::milliseconds (500));
 
-    this->camPositioning->join();
+    this->camThread->join();
     this->threadQue->clear();
     printf("\n**INFO** Kamerathread wurde gestoppt");
   return true;
@@ -200,7 +205,7 @@ bool C_CameraManager::stopThreadCameraPositioning()
 bool C_CameraManager::startPipelineTracking  ()
   {
   pipelineQue->set_capacity(10);
-  this->camPipeline     = new thread(&CameraManager::C_CameraManager::pipelineHelper,this);
+  this->camThread     = new thread(&CameraManager::C_CameraManager::pipelineHelper,this);
 
   printf("\n**INFO** Kamerapipeline wurde gestartet");
   return true;
@@ -210,7 +215,7 @@ bool C_CameraManager::stopPipelineTracking()
   this->pipelineDone.store(true);
   std::this_thread::sleep_for (std::chrono::milliseconds (500));
 
-  this->camPipeline->join();
+  this->camThread->join();
   this->pipelineQue->clear();
   printf("\n**INFO** Kamerapipeline wurde gestoppt");
   return true;
@@ -228,26 +233,26 @@ void C_CameraManager::mvVecCamera2Temp (std::vector<int> vecCamOrder)
     std::vector<int>                                        istCamIDs;
     std::vector<int>                                        sollCamIDs;
 
-    vecTempCameras.resize(this->vecCameras.size());
+    vecTempCameras.resize(this->vecCameras->size());
 
     for(int i = 0; i < globalObjects->absCameras; i++)
       {
       //vecTempCameras[vecCamOrder[i]] = std::move(this->vecCameras[i]);
-      vecTempCameras[vecCamOrder[i]] = this->vecCameras[i];
+      vecTempCameras[vecCamOrder[i]] = this->vecCameras->at(i);
       }
-      this->vecCameras.clear();
-      this->vecCameras.resize(vecTempCameras.size());
+      this->vecCameras->clear();
+      this->vecCameras->resize(vecTempCameras.size());
     for (int i = 0; i < globalObjects->absCameras; i++)
       {
       //this->vecCameras[i] = std::move (vecTempCameras[i]);
-      this->vecCameras[i] = vecTempCameras[i];
+      this->vecCameras->at(i) = vecTempCameras[i];
       }
   }
 void C_CameraManager::mvTemp2VecCamera (std::vector<Camera::C_Camera2*> vecCamerastemp)
   {
   for (int i = 0; i < globalObjects->absCameras; i++)
     {
-    this->vecCameras[i] = std::move (vecCamerastemp[i]);
+    this->vecCameras->at(i) = std::move (vecCamerastemp[i]);
   }
 }
 
@@ -436,13 +441,13 @@ void C_CameraManager::calibrateSingleCamera (int current_camera_id,
   std::cout << "Calculation finished. Saving data." << endl << endl;
 
   //Kopieren der berechneten Daten zur dazugehörigen Kamera
-  vecCameras[current_camera_id]->setIntrinsic(intrinsic);
-  vecCameras[current_camera_id]->setDistCoeffs(distCoeffs);
+  vecCameras->at(current_camera_id)->setIntrinsic(intrinsic);
+  vecCameras->at(current_camera_id)->setDistCoeffs(distCoeffs);
 
   //Speichern der berechenten Daten in CSV Datei
-  this->saveManager->saveCameraCalibration(*vecCameras[current_camera_id]);
+  this->saveManager->saveCameraCalibration(*vecCameras->at(current_camera_id));
   //Reaktivierung der Bildentzerrung
-  this->vecCameras[current_camera_id]->initRectifyMap();
+  this->vecCameras->at(current_camera_id)->initRectifyMap();
   }
 
 void C_CameraManager::calibrate_stereo_camera_aruco(int current_camera_id)
@@ -477,8 +482,8 @@ void C_CameraManager::calibrate_stereo_camera_aruco(int current_camera_id)
 
     //Hole aktuelle Intrinsic und Verzerrungsdaten der abgefragten (j) Kamera
     cv::Mat cameraMatrix, distCoeffs;
-    this->vecCameras[current_camera_id+j]->getIntrinsic()->copyTo(cameraMatrix);
-    this->vecCameras[current_camera_id+j]->getDistCoeffs()->copyTo(distCoeffs);
+    this->vecCameras->at(current_camera_id+j)->getIntrinsic()->copyTo(cameraMatrix);
+    this->vecCameras->at(current_camera_id+j)->getDistCoeffs()->copyTo(distCoeffs);
       std::vector<int>                        markerIds;
       std::vector<std::vector<cv::Point2f>>   markerCorners;
       std::vector<cv::Point2f>                recoveredIdxs;
@@ -697,7 +702,7 @@ void C_CameraManager::threadCameraPositioning(std::vector<Camera::C_Camera2*> ve
   }
 void *C_CameraManager::threadHelper(void* This)
   {
-  static_cast<CameraManager::C_CameraManager*>(This)->threadCameraPositioning(static_cast<CameraManager::C_CameraManager*>(This)->vecCameras,
+  static_cast<CameraManager::C_CameraManager*>(This)->threadCameraPositioning(*static_cast<CameraManager::C_CameraManager*>(This)->vecCameras,
                                   static_cast<CameraManager::C_CameraManager*>(This)->threadQue);
   }
 void C_CameraManager::calculate_camera_pose    (int camera1, int camera2, cv::Mat M10, cv::Mat M20)
@@ -746,19 +751,19 @@ void C_CameraManager::calculate_camera_pose    (int camera1, int camera2, cv::Ma
     {
     for (int j = 0; j < 4; j++)
       {
-      this->vecCameras[camera2]->getCameraPose()->HomogenePosenMatrix[i][j] = 0;
+      this->vecCameras->at(camera2)->getCameraPose()->HomogenePosenMatrix[i][j] = 0;
       for (int k = 0; k < 4; k++)
-        this->vecCameras[camera2]->getCameraPose()->HomogenePosenMatrix[i][j] += this->vecCameras[camera1]->getCameraPose()->HomogenePosenMatrix[i][k] *
+        this->vecCameras->at(camera2)->getCameraPose()->HomogenePosenMatrix[i][j] += this->vecCameras->at(camera1)->getCameraPose()->HomogenePosenMatrix[i][k] *
                                HomogenePosenMatrixTempPuffer[k][j];
       }
     }
 
-  this->saveManager->saveCameraCos(*this->vecCameras[camera2]);
+  this->saveManager->saveCameraCos(*this->vecCameras->at(camera2));
   }//calculate_camera_pose
 
 void *C_CameraManager::pipelineHelper(void* This)
   {
-  static_cast<CameraManager::C_CameraManager*>(This)->pipelineTracking(static_cast<CameraManager::C_CameraManager*>(This)->vecCameras,
+  static_cast<CameraManager::C_CameraManager*>(This)->pipelineTracking(*static_cast<CameraManager::C_CameraManager*>(This)->vecCameras,
                                                                       static_cast<CameraManager::C_CameraManager*>(This)->pipelineQue);
   }
 
@@ -775,7 +780,7 @@ bool C_CameraManager::pollPipeline               (CameraManager::S_pipelinePaylo
 
 void C_CameraManager::startTracking()
   {
-  this->roistatus = initZone;
+  *this->roistatus = initZone;
 
   this->filterFlags->setObjectDetection(true);
   this->filterFlags->setRoiAdjustment(true);
@@ -807,13 +812,13 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
 //    | CV_32F |  5 | 13 | 21 | 29 |   37 |   45 |   53 |   61 |
 //    | CV_64F |  6 | 14 | 22 | 30 |   38 |   46 |   54 |   62 |
 //    +--------+----+----+----+----+------+------+------+------+
-  int frameheight = this->vecCameras[0]->getFrameHeight();
-  int framewidth = this->vecCameras[0]->getFrameWidth();
+  int frameheight = this->vecCameras->at(0)->getFrameHeight();
+  int framewidth = this->vecCameras->at(0)->getFrameWidth();
 
   tbb::parallel_pipeline(5, tbb::make_filter<void, S_pipelinePayload*>(tbb::filter::serial_in_order, [&](tbb::flow_control& fc)->S_pipelinePayload*
     {
     //Flush ist aktiv, wenn die aktuell verwendeten Kameras gewechselt werden
-    if(flush)
+    if(this->pipelineFlush)
       std::this_thread::sleep_for (std::chrono::milliseconds (100));
 
     //Flowcontrol steuert die Pipeline und beendet sie, falls pipelineDone true sein sollte
@@ -912,7 +917,7 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
         {
         cv::cuda::GpuMat temp;
         this->ImageFilter->gpufUnidstord(it, temp, *vecCameras[pData->cameraID[i]]->getXMap(), *vecCameras[pData->cameraID[i]]->getYMap());
-        switch (roistatus)
+        switch (*roistatus)
           {
           case initZone:
             for(int i = 0; i < payloadSize; i++)
@@ -925,20 +930,20 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
                   initRoi.x = frameWidth-initZoneWidth-1;
               else
                   initRoi.x = 1;
-              this->vecCameras[pData->cameraID[i]]->setRoi(&initRoi);
+              this->vecCameras->at(pData->cameraID[i])->setRoi(&initRoi);
               }
            break;
           case objectLost:
             for(int i = 0; i < payloadSize; i++)
             {
-            this->vecCameras[pData->cameraID[i]]->filterValues->setOffset(0, 0);
-            this->vecCameras[pData->cameraID[i]]->filterValues->setOffset(1, 0);
+            this->vecCameras->at(pData->cameraID[i])->filterValues->setOffset(0, 0);
+            this->vecCameras->at(pData->cameraID[i])->filterValues->setOffset(1, 0);
             cv::Rect roi;
             roi.x = 1;
             roi.y = 1;
             roi.width = this->frameWidth-1;
             roi.height = this->frameHeight-1;
-            this->vecCameras[pData->cameraID[i]]->setRoi(&roi);
+            this->vecCameras->at(pData->cameraID[i])->setRoi(&roi);
             }
           break;
       case objectFound:
@@ -1048,8 +1053,8 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
           {
       int offsetL[2];
       int offsetR[2];
-      this->vecCameras[pData->cameraID[i]]->getFilterproperties()->getOffset(offsetL);
-      this->vecCameras[pData->cameraID[i+1]]->getFilterproperties()->getOffset(offsetR);
+      this->vecCameras->at(pData->cameraID[i])->getFilterproperties()->getOffset(offsetL);
+      this->vecCameras->at(pData->cameraID[i+1])->getFilterproperties()->getOffset(offsetR);
 
       if(this->ImageFilter->findContours(it,   &pData->cpuUndistortedImg[i], offsetL, *vecCameras[pData->cameraID[i]], pData->Richtungsvektoren[i], pData->ist_X[i], pData->ist_Y[i], pData->radius[i]) &&
          this->ImageFilter->findContours(it+1, &pData->cpuUndistortedImg[i+1], offsetR, *vecCameras[pData->cameraID[i+1]],pData->Richtungsvektoren[i+1], pData->ist_X[i+1], pData->ist_Y[i+1], pData->radius[i+1] ))
@@ -1058,13 +1063,12 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
           {
           std::cout << "***ERROR*** Position out of bounds detected. X = " << pData->ist_X << "; Y = " << pData->ist_Y << std::endl;
           pData->found = false;
-          if(this->roistatus == objectFound)
-             roistatus = objectLost;
+          if(*this->roistatus == objectFound)
+             *roistatus = objectLost;
           break;
           }
         pData->found = true;
-        this->initZoneActive.store(false);
-        this->roistatus = objectFound;
+        *this->roistatus = objectFound;
         }
     else
         {
@@ -1075,8 +1079,8 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
         pData->Richtungsvektoren[i+1].X = 0.0;
         pData->Richtungsvektoren[i+1].Y = 0.0;
         pData->Richtungsvektoren[i+1].Z = 0.0;
-        if(this->roistatus == objectFound)
-            roistatus = objectLost;
+        if(*this->roistatus == objectFound)
+            *roistatus = objectLost;
         }
       }
       else
@@ -1121,7 +1125,6 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
         {
         this->trackingManager->calcPixelVeloctiy              (delta_t, pData->ist_X[i], pData->ist_Y[i], pData->cameraID[i], pData->pred_X[i], pData->pred_Y[i]);
         }
-      this->timestampTm1 = pData->timestamp;
       //Überprüfe ob das verfolgte Objekt sich dem Rand des derzeitigen Kamerapaares nähert. Falls true wird das nächste Kamerapaar in arrActiveCameras geladen und das predicted ROI + Toleranz gesetzt.
       if(pData->ist_X[0] > this->transferZoneWidth)
         {
@@ -1136,7 +1139,7 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
         }
       for(int i = 0; i < payloadSize; i++)
         {
-        this->vecCameras[pData->cameraID[i]]->setTrackingRoi(pData->radius[i], pData->pred_X[i],pData->pred_Y[i]);
+        this->vecCameras->at(pData->cameraID[i])->setTrackingRoi(pData->radius[i], pData->pred_X[i],pData->pred_Y[i]);
         }
 
       }
@@ -1224,7 +1227,7 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
 
     //end flushing process if Que is of size 0
     if(que->size() == 0)
-        flush = false;
+        this->pipelineFlush.store(false);
     }
 
      }//STEP 5
@@ -1353,25 +1356,6 @@ void S_filterflags::setUndistordActive(bool value)
   {
   undistordActive = value;
 }
-thread *C_CameraManager::getCamPositioning() const
-  {
-  return camPositioning;
-  }
-
-thread *C_CameraManager::getCamPipeline() const
-  {
-  return camPipeline;
-  }
-
-bool C_CameraManager::getFlush() const
-  {
-  return flush;
-  }
-
-void C_CameraManager::setFlush(bool value)
-{
-    flush = value;
-}
 
 std::mutex *C_CameraManager::getLock() const
 {
@@ -1415,7 +1399,7 @@ void C_CameraManager::setArrActiveCameras                (int value, int positio
 
 void C_CameraManager::setRoiStatus(roiStatus status)
     {
-    this->roistatus = status;
+    *this->roistatus = status;
     }
 
 

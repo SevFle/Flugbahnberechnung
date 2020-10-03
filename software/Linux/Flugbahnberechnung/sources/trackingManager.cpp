@@ -5,19 +5,53 @@ using namespace GlobalObjects;
 
 C_trackingManager::C_trackingManager (C_GlobalObjects* GlobalObjects)
   {
-  this->Positionsvektor_alt = new S_Positionsvektor();
   this->globalObjects       = GlobalObjects;
-  this->trackingPayload     = new S_trackingPayload;
+  this->dataPlotter         = new plotter::C_plotter;
+
+  this->Positionsvektor_alt = new S_Positionsvektor();
 
   for(int i = 0; i < payloadSize; i++)
     {
     this->RichtungsvektorenTm1[i]  = new S_Positionsvektor;
     }
   this->objektVektorTm1     = new S_Positionsvektor;
-  this->dataPlotter         = new plotter::C_plotter;
   this->vecPixelVelocityX   = new std::vector<float>;
   this->vecPixelVelocityY   = new std::vector<float>;
   this->vecPixelVelocityZ   = new std::vector<float>;
+
+
+  S_trackingPayload*                  trackingPayload;
+  S_Positionsvektor*                  Positionsvektor_alt;
+  onCuda::KalmanFilter2::C_kalman*    kalmanfilter;
+
+
+  bool                                alive;
+  object::C_object*                   trackedObject;
+  std::vector<C_AbsolutePose>         vecWorldtoCamPose;
+  std::vector<S_Positionsvektor>*     vecPositions;
+  vector<C_AbsolutePose>              vecEinheitsVektor;
+
+  std::vector<int>                    vecIstX;
+  std::vector<int>                    vecIstY;
+  std::vector<float>*                   vecPixelVelocityX;
+  std::vector<float>*                   vecPixelVelocityY;
+  std::vector<float>*                   vecPixelVelocityZ;
+
+  /****************** Positionsbuffer T-1 *******************/
+  S_Positionsvektor*                  RichtungsvektorenTm1   [payloadSize];
+  S_Positionsvektor*                  objektVektorTm1;
+
+  float                               pixelVelocityTm1 [3];
+  float                               objectVelocityTm1 [3];
+  float                               pixelVelocity [payloadSize][2];
+  float                               pixelAcceleration [payloadSize][2];
+  float                               objectVelocity [3];
+  float                               objectAcceleration [3];
+  int                                 smState;
+  int                                 camIDLeft;
+  int                                 camIDRight;
+  bool                                initZoneAlive;
+
 
   }
 C_trackingManager::~C_trackingManager ()
@@ -70,16 +104,6 @@ int C_trackingManager::getSmState() const
 void C_trackingManager::setSmState(int value)
   {
   smState = value;
-  }
-
-S_trackingPayload C_trackingManager::getTrackingPayload() const
-  {
-  return *trackingPayload;
-  }
-
-void C_trackingManager::setTrackingPayload(const S_trackingPayload &value)
-  {
-  *trackingPayload = value;
   }
 
 S_Positionsvektor *C_trackingManager::getPositionsvektor_alt() const

@@ -3,32 +3,34 @@ using namespace frm_Main;
 
 C_frm_Main::C_frm_Main(C_GlobalObjects* GlobalObjects, C_Main* Main, QWidget *parent)
     : QMainWindow(parent)
-{
-    this->Ui = new Ui::C_frm_Main();
-    Ui->setupUi(this);
+  {
+  this->Ui = new Ui::C_frm_Main();
+  Ui->setupUi(this);
 
-    this->GlobalObjects = GlobalObjects;
-    this->Main          = Main;
+  this->GlobalObjects = GlobalObjects;
+  this->Main          = Main;
+  this->MsgBox = new QMessageBox;
+  this->Taktgeber = new QTimer;
+  this->Qimg = new QImage;
+  this->QPixImg = new QPixmap;
 
-    this->Zaehler = 0;
-    this->Taktgeber = new QTimer(this);
-    this->Taktgeber_Intervall = 100;
-    this->MsgBox = new QMessageBox();
-    this->Qimg = new QImage;
-    this->QPixImg = new QPixmap;
-
-}
+  this->Taktgeber_Intervall = 0;
+  this->Zaehler = 0;
+  }
 
 C_frm_Main::~C_frm_Main()
-{
-    delete (MsgBox);
-    this->Taktgeber_Intervall = 0;
-    delete (this->Taktgeber);
-    this->Zaehler = 0;
-    this->Main = nullptr;
-    this->GlobalObjects = nullptr;
-    delete this->Ui;
-}
+  {
+  this->Zaehler = 0;
+  this->Taktgeber_Intervall = 0;
+
+  delete (this->QPixImg);
+  delete (this->Qimg);
+  delete (this->Taktgeber);
+  delete (this->MsgBox);
+  this->Main = nullptr;
+  this->GlobalObjects = nullptr;
+  delete this->Ui;
+  }
 
 /************************************** QT-Events******************************/
 void C_frm_Main::showEvent(QShowEvent* ShowEvent)
@@ -123,7 +125,7 @@ void ::C_frm_Main::on_bt_apply_clicked()
 void frm_Main::C_frm_Main::on_bt_tracking_clicked()
   {
   this->GlobalObjects->watchdog = new watchdog::C_watchdog(100, this->Main->cameraManager->pipelineDone,
-                                                             this->Main->cameraManager->getCamPipeline(),
+                                                             this->Main->cameraManager->getCamThread(),
                                                              [&]{this->Main->cameraManager->startPipelineTracking();});
 
   this->Main->cameraManager->getFilterFlags()->undistordActive        = true;
@@ -151,7 +153,7 @@ void frm_Main::C_frm_Main::on_bt_tracking_clicked()
 void frm_Main::C_frm_Main::on_bt_camera_calibration_clicked()
   {
   this->GlobalObjects->watchdog = new watchdog::C_watchdog(100, this->Main->cameraManager->pipelineDone,
-                                                               this->Main->cameraManager->getCamPipeline(),
+                                                               this->Main->cameraManager->getCamThread(),
                                                                [&]{this->Main->cameraManager->startPipelineTracking();});
   this->Main->cameraManager->getFilterFlags()->undistordActive        = false;
   this->Main->cameraManager->getFilterFlags()->openActive             = false;
@@ -182,7 +184,7 @@ void frm_Main::C_frm_Main::on_bt_camera_pose_clicked()
 void frm_Main::C_frm_Main::on_bt_camera_positioning_clicked()
   {
   this->GlobalObjects->watchdog = new watchdog::C_watchdog(100, this->Main->cameraManager->positioningDone,
-                                         this->Main->cameraManager->getCamPositioning(),
+                                         this->Main->cameraManager->getCamThread(),
                                          [&]{this->Main->cameraManager->startThreadCameraPositioning();});
 
   if(!this->Main->cameraManager->startThreadCameraPositioning())
