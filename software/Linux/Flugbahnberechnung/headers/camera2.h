@@ -18,39 +18,39 @@ namespace Camera
   public:
     struct S_filterProperties
       {
-      int   hue_min;
-      int   hue_max;
-      int   saturation_min;
-      int   saturation_max;
-      int   value_min;
-      int   value_max;
+      int   hue_min = 0;
+      int   hue_max = 0;
+      int   saturation_min = 0;
+      int   saturation_max = 0;
+      int   value_min = 0;
+      int   value_max = 0;
 
-      int     erosion_iterations;
-      int     dilation_iterations;
-      int     opening_iterations;
-      int     closing_iterations;
-      int     morph_iterations;
+      int     erosion_iterations = 0;
+      int     dilation_iterations = 0;
+      int     opening_iterations = 0;
+      int     closing_iterations = 0;
+      int     morph_iterations = 0;
 
-      int     erosion_kernel_size;
-      int     dilation_kernel_size;
-      int     bilateral_kernel_size;
-      int     opening_kernel_size;
-      int     closing_kernel_size;
-      int     morph_kernel_size;
-      int     gaussian_kernel_size;
-      int     Object_Size_min;
-      int     Object_Size_max;
-      int     offset[2];
-      double  gaussian_sigma;
+      int     erosion_kernel_size = 0;
+      int     dilation_kernel_size = 0;
+      int     bilateral_kernel_size = 0;
+      int     opening_kernel_size = 0;
+      int     closing_kernel_size = 0;
+      int     morph_kernel_size = 0;
+      int     gaussian_kernel_size = 0;
+      int     Object_Size_min = 0;
+      int     Object_Size_max = 0;
+      int     offset[2] = { 0, 0};
+      double  gaussian_sigma = 0.0;
 
-      float   bilateral_sigma_color;
-      float   bilateral_sigma_spatial;
+      float   bilateral_sigma_color = 0.0f;
+      float   bilateral_sigma_spatial = 0.0f;
 
-      bool    erode_active;
-      bool    dilate_active;
-      bool    gaussian_active;
-      bool    morph_active;
-      bool    bilateral_active;
+      bool    erode_active =  false;
+      bool    dilate_active =  false;
+      bool    gaussian_active =  false;
+      bool    morph_active =  false;
+      bool    bilateral_active =  false;
 
 
     public:
@@ -121,7 +121,6 @@ namespace Camera
     ~C_Camera2();
 
   private:
-    C_GlobalObjects*                  globalObjects;
     cv::VideoCapture*                 cap;
     cv::Mat*                          cpuSrc;
     cv::Rect*                         roi;
@@ -130,7 +129,7 @@ namespace Camera
     cv::cuda::GpuMat*                 gpuSrc;
     cv::cuda::GpuMat*                 xMap;
     cv::cuda::GpuMat*                 yMap;
-    std::string                       pipeline;
+    std::string*                       pipeline;
     int                               cameraID;
     int                               frameWidth;
     int                               frameHeight;

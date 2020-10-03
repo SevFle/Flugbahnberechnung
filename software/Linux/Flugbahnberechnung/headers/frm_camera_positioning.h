@@ -21,11 +21,14 @@ private:
   Ui::C_frm_camera_positioning*     Ui;
   C_GlobalObjects*                  GlobalObjects;
   C_Main*                           Main;
+  pthread_mutex_t*  restrict        lock;
   QTimer*                           Taktgeber;
-  CameraManager::S_threadPayload*   tData;
+  CameraManager::S_threadPayload*       pData;
+
   int                               Taktgeber_Intervall;
   int                               TimerWait;
   int                               Zaehler;
+  CameraManager::S_threadPayload*   tData;
 
 
 private:

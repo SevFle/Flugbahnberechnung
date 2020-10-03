@@ -4,23 +4,36 @@ using namespace Camera;
 
 C_Camera2::C_Camera2                        ()
   {
-  this->cap           = new cv::VideoCapture;
-  this->cpuSrc        = new cv::Mat;
-  this->distCoeffs    = new cv::Mat(cv::Mat_<double>(1,5));//new Mat(1, 5, CV_64F);
-  this->intrinsic     = new cv::Mat(cv::Mat_<double>(3,3));//new Mat(3, 3, CV_32FC1);;
-  this->roi           = new cv::Rect;
-  this->gpuSrc        = new cv::cuda::GpuMat;
-  this->xMap          = new cv::cuda::GpuMat(CV_32FC1);
-  this->yMap          = new cv::cuda::GpuMat(CV_32FC1);
-  this->cameraPose    = new posen::C_AbsolutePose;
-  this->filterValues  = new C_Camera2::S_filterProperties;
+  this->cap = new cv::VideoCapture;
+  this->cpuSrc = new cv::Mat;
+  this->distCoeffs = new cv::Mat;
+  this->intrinsic = new cv::Mat;
+  this->gpuSrc = new cv::cuda::GpuMat;
+  this->xMap = new cv::cuda::GpuMat;
+  this->yMap = new cv::cuda::GpuMat;
+  this->roi = new cv::Rect;
+  this->pipeline = new std::string;
+  this->cameraPose = new C_AbsolutePose;
+  this->filterValues = new S_filterProperties;
+
+  this->cameraID = 0;
+  this->frameWidth = 0;
+  this->frameHeight = 0;
+
+
   }
 C_Camera2::~C_Camera2                       ()
   {
+  this->frameHeight = 0;
+  this->frameWidth = 0;
+  this->cameraID = 0;
+
   delete (filterValues);
   delete (cameraPose);
-  delete (xMap);
+  delete (pipeline);
+  delete (roi);
   delete (yMap);
+  delete (xMap);
   delete (gpuSrc);
   delete (intrinsic);
   delete (distCoeffs);

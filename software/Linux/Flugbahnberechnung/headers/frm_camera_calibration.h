@@ -11,8 +11,6 @@ namespace frm_Camera_Calibration
 class C_frm_Camera_Calibration : public QMainWindow
 {
     Q_OBJECT
-  typedef void * (*THREADFUNCPTR)(void *);
-
 
 public:
      C_frm_Camera_Calibration(C_GlobalObjects* GlobalObjects, C_Main* Main, QWidget* parent = Q_NULLPTR);
@@ -22,14 +20,24 @@ private:
   Ui::C_frm_camera_calibration*     Ui;
   C_GlobalObjects*                  GlobalObjects;
   C_Main*                           Main;
-  CameraManager::S_pipelinePayload*       pData;
+  pthread_mutex_t*  restrict        lock;
+  pthread_t*                        camThread;
+  CameraManager::S_pipelinePayload* pData;
   QTimer*                           Taktgeber;
   cv::Mat*                          imgBuffer[2];
   cv::Mat*                          mPose;
-  pthread_t*                        camThread;
 
   int                               Taktgeber_Intervall;
   int                               Zaehler;
+  int                               Timerwait;
+  int debug = 0;
+   typedef void * (*THREADFUNCPTR)(void *);
+
+  bool                              calibration_running;
+  bool                              imgPopOut;
+  int                               photo_interval;
+  int                               intervall;
+  int                               photo_count;
   int                               photo_id;
   int                               method;
   int                               cameraID;

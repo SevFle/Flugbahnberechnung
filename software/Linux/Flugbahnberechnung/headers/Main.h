@@ -44,7 +44,6 @@ namespace Main
   class C_Main
     {
     public:
-
     C_Main                              (C_GlobalObjects* GlobalObjects);
     ~C_Main                             ();
 
@@ -60,7 +59,6 @@ namespace Main
     C_frm_Camera_Positioning_Pose*      frm_Camera_Positioning_Pose;
 
     C_GlobalObjects*                    GlobalObjects;
-    std::thread::id MAIN_THREAD_ID;
     };
   }
 

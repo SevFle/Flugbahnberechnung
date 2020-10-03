@@ -74,7 +74,6 @@ HEADERS += \
 
 FORMS += \
     forms/frm_camera_calibration.ui \
-    forms/frm_camera_calibration_crop.ui \
     forms/frm_camera_positioning.ui \
     forms/frm_camera_positioning_pose.ui \
     forms/frm_main.ui \

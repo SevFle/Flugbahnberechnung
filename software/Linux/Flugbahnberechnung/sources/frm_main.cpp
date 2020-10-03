@@ -1,51 +1,38 @@
 #include "headers/frm_main.h"
 using namespace frm_Main;
-#define cacheLimit 512000
 
 C_frm_Main::C_frm_Main(C_GlobalObjects* GlobalObjects, C_Main* Main, QWidget *parent)
     : QMainWindow(parent)
 {
-
     this->Ui = new Ui::C_frm_Main();
     Ui->setupUi(this);
 
     this->GlobalObjects = GlobalObjects;
     this->Main          = Main;
 
-    this->MsgBox = new QMessageBox;
-    this->Taktgeber = new QTimer;
+    this->Zaehler = 0;
+    this->Taktgeber = new QTimer(this);
+    this->Taktgeber_Intervall = 100;
+    this->MsgBox = new QMessageBox();
     this->Qimg = new QImage;
     this->QPixImg = new QPixmap;
-    this->PixmapCache = new QPixmapCache;
-    this->PixmapKey = new QPixmapCache::Key;
-
-    this->Taktgeber_Intervall = 0;
-    this->Zaehler = 0;
-    this->state = 0;
 
 }
 
 C_frm_Main::~C_frm_Main()
 {
-    this->state = 0;
-    this->Zaehler = 0;
-    this->Taktgeber_Intervall = 0;
-    delete (PixmapKey);
-    delete (PixmapCache);
-    delete (QPixImg);
-    delete (Qimg);
-    delete (Taktgeber);
     delete (MsgBox);
-
+    this->Taktgeber_Intervall = 0;
+    delete (this->Taktgeber);
+    this->Zaehler = 0;
     this->Main = nullptr;
     this->GlobalObjects = nullptr;
-    delete (Ui);
+    delete this->Ui;
 }
 
 /************************************** QT-Events******************************/
 void C_frm_Main::showEvent(QShowEvent* ShowEvent)
 {
-
 Q_UNUSED(ShowEvent)
 this->Zaehler = 0;
 connect(this->Taktgeber, &QTimer::timeout, this, &C_frm_Main::Taktgeber_Tick);
@@ -163,7 +150,6 @@ void frm_Main::C_frm_Main::on_bt_tracking_clicked()
 
 void frm_Main::C_frm_Main::on_bt_camera_calibration_clicked()
   {
-  this->Taktgeber->stop();
   this->GlobalObjects->watchdog = new watchdog::C_watchdog(100, this->Main->cameraManager->pipelineDone,
                                                                this->Main->cameraManager->getCamPipeline(),
                                                                [&]{this->Main->cameraManager->startPipelineTracking();});
@@ -185,8 +171,6 @@ void frm_Main::C_frm_Main::on_bt_camera_calibration_clicked()
 
   this->Main->frm_Camera_Calibration->setWindowModality(Qt::ApplicationModal);
   this->Main->frm_Camera_Calibration->show();
-  delete(this->GlobalObjects->watchdog);
-  this->Taktgeber->start();
   }
 
 void frm_Main::C_frm_Main::on_bt_camera_pose_clicked()
@@ -215,7 +199,7 @@ void frm_Main::C_frm_Main::on_bt_camera_positioning_clicked()
   delete(this->GlobalObjects->watchdog);
   }
 
-void  frm_Main::C_frm_Main::FillMat2Lbl(cv::Mat& img, QLabel& label)
+void  frm_Main::C_frm_Main::FillMat2Lbl(cv::Mat& img, QLabel* label)
   {
   cv::Mat* imgPtr = &img;
   if(imgPtr == nullptr)
@@ -226,23 +210,11 @@ void  frm_Main::C_frm_Main::FillMat2Lbl(cv::Mat& img, QLabel& label)
     {
     *this->Qimg = this->cvMatToQImage(img);
     this->QPixImg->convertFromImage(*this->Qimg);
-    label.setPixmap(QPixImg->scaled(label.size(), Qt::KeepAspectRatio));
+    label->setPixmap(QPixImg->scaled(label->size(), Qt::KeepAspectRatio));
     }
   }
 inline QImage   frm_Main::C_frm_Main::cvMatToQImage( const cv::Mat &inMat )
    {
-//    +--------+----+----+----+----+------+------+------+------+
-//    |        | C1 | C2 | C3 | C4 | C(5) | C(6) | C(7) | C(8) |
-//    +--------+----+----+----+----+------+------+------+------+
-//    | CV_8U  |  0 |  8 | 16 | 24 |   32 |   40 |   48 |   56 |
-//    | CV_8S  |  1 |  9 | 17 | 25 |   33 |   41 |   49 |   57 |
-//    | CV_16U |  2 | 10 | 18 | 26 |   34 |   42 |   50 |   58 |
-//    | CV_16S |  3 | 11 | 19 | 27 |   35 |   43 |   51 |   59 |
-//    | CV_32S |  4 | 12 | 20 | 28 |   36 |   44 |   52 |   60 |
-//    | CV_32F |  5 | 13 | 21 | 29 |   37 |   45 |   53 |   61 |
-//    | CV_64F |  6 | 14 | 22 | 30 |   38 |   46 |   54 |   62 |
-//    +--------+----+----+----+----+------+------+------+------+
-
    switch ( inMat.type() )
      {
      // 8-bit, 4 channel
@@ -256,8 +228,8 @@ inline QImage   frm_Main::C_frm_Main::cvMatToQImage( const cv::Mat &inMat )
      // 8-bit, 3 channel
      case CV_8UC3:
        {
-       QImage image(inMat.data, inMat.cols, inMat.rows, inMat.step, QImage::Format_RGB888 );
-       return image.rgbSwapped().copy();
+       QImage image( inMat.data, inMat.cols, inMat.rows, inMat.step, QImage::Format_RGB888 );
+       return image.rgbSwapped();
        }
      // 8-bit, 1 channel
      case CV_8UC1:
@@ -281,4 +253,5 @@ inline QImage   frm_Main::C_frm_Main::cvMatToQImage( const cv::Mat &inMat )
       }
       return QImage();
    }
+
 

@@ -48,39 +48,32 @@ namespace CameraManager
   {
     struct S_threadPayload
     {
-    public:
-      S_threadPayload();
-      ~S_threadPayload();
-
-     std::vector<cv::Mat*>* srcImg;
+     std::vector<cv::Mat*> srcImg;
      int                   queBuffer;
 
     };
     struct S_pipelinePayload
       {
-    public:
-      S_pipelinePayload();
-      ~S_pipelinePayload();
-      milliseconds*                                            executionTime[8];
-      std::chrono::nanoseconds*                                frametime;
+      milliseconds                                            executionTime[8];
+      std::chrono::nanoseconds                                frametime;
 
-      Clock::time_point* start;
-      Clock::time_point* timestamp;
-      Clock::time_point* end;
-      Clock::time_point* fpsStart;
-      Clock::time_point* fpsEnd;
+      Clock::time_point start;
+      Clock::time_point timestamp;
+      Clock::time_point end;
+      Clock::time_point fpsStart;
+      Clock::time_point fpsEnd;
 
 
-     cv::Mat*                                cpuSrcImg           [payloadSize];
-     cv::Mat*                                cpuUndistortedImg   [payloadSize];
-     cv::Mat*                                cpuGrayImg          [payloadSize];
-     cv::Mat*                                cpuConturedImg      [payloadSize];
+     cv::Mat                                cpuSrcImg           [payloadSize];
+     cv::Mat                                cpuUndistortedImg   [payloadSize];
+     cv::Mat                                cpuGrayImg          [payloadSize];
+     cv::Mat                                cpuConturedImg      [payloadSize];
 
-     cv::cuda::GpuMat*                       gpuUndistortedImg   [payloadSize];
-     Camera::C_Camera2::S_filterProperties*  Filter              [payloadSize];
+     cv::cuda::GpuMat                       gpuUndistortedImg   [payloadSize];
+     Camera::C_Camera2::S_filterProperties  Filter              [payloadSize];
 
-     S_Positionsvektor*                      objektVektor;
-     S_Positionsvektor*                      Richtungsvektoren   [payloadSize];
+     S_Positionsvektor                      objektVektor;
+     S_Positionsvektor                      Richtungsvektoren   [payloadSize];
 
      int                                    cameraID            [payloadSize];
      int                                    ist_X               [payloadSize];
@@ -165,27 +158,25 @@ namespace CameraManager
     Savemanager::c_SaveManager*             saveManager;
     LoadManager::C_LoadManager*             loadManager;
     trackingManager::C_trackingManager*     trackingManager;
-    tbb::concurrent_bounded_queue<CameraManager::S_pipelinePayload*>*  pipelineQue;
-    tbb::concurrent_bounded_queue<CameraManager::S_threadPayload*>*                    threadQue;
-    std::atomic<bool>             calibrationDone;
-    std::atomic<bool>             positioningDone;
-    std::atomic<bool>             pipelineDone;
-    std::atomic<bool>             pipelineFlush;
-
+    cv::Mat                                 arrImgShow[payloadSize];
     /******************************************** Nicht öffentliche private Anwender-Attribute **************************************************/
     private:
     C_GlobalObjects*                        globalObjects;
     imagefilter::C_ImageFilter*             ImageFilter;
-    thread*                                 camPipeline;
-    thread*                                 camPositioning;
+    thread*                                 camThread;
     std::mutex*  restrict                   lock;
-    Clock::time_point*                       timestampTm1;
     posen::C_RelativePose*                  relPose;
     posen::C_AbsolutePose*                  absPose;
-    roiStatus*                               roistatus;
+    roiStatus*                              roistatus;
+    public:
+    tbb::concurrent_bounded_queue<CameraManager::S_pipelinePayload*>*  pipelineQue;
+    tbb::concurrent_bounded_queue<CameraManager::S_threadPayload*>*    threadQue;
+
+    private:
     S_pipelinePayload*                              payData;
     S_threadPayload*                                tData;
     S_filterflags*                            filterFlags;
+
     int                           camera_id;
     int                           frameWidth;
     int                           frameHeight;
@@ -195,6 +186,12 @@ namespace CameraManager
     int                           arrActiveCameras[4];
     int                           delta_t;
     int                           deltaT_old;
+
+    public:
+    std::atomic<bool>             calibrationDone;
+    std::atomic<bool>             positioningDone;
+    std::atomic<bool>             pipelineDone;
+    std::atomic<bool>             pipelineFlush;
 
     /********************************************************* Öffentliche Klassenmethoden*******************************************************/
     public:
@@ -271,9 +268,6 @@ namespace CameraManager
     thread *getCamPipeline() const;
     thread *getCamPositioning() const;
     void setDelta_t(int value);
-
-
-    Camera::C_Camera2* getCameraElement(int slot);
       };// c_camera_unmanaged
   }//nmsp_c_camera_unmanaged
 #endif

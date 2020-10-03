@@ -23,7 +23,7 @@ namespace LoadManager
     C_GlobalObjects* GlobalObjects;
 
     void              loadCameraCalibration   (Camera::C_Camera2* Camera);
-    bool              loadCameraPositioning   (std::vector<Camera::C_Camera2*>* vecCameras);
+    bool              loadCameraPositioning   (std::vector<Camera::C_Camera2*> &vecCameras);
     void              loadCameraCos           (Camera::C_Camera2* Camera);
     void              loadCameraSettings      (Camera::C_Camera2* Camera);
 
