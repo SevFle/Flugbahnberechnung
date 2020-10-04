@@ -11,8 +11,6 @@ namespace object
     C_object();
     ~C_object();
   private:
-    int                           objekt_id;
-    int                           state;
     int                           ID_Cam_Links[2];
     int                           ID_Cam_Rechts[2];
 
@@ -41,8 +39,6 @@ namespace object
 
     void save_trajectory          ();
 
-    void set_ID_Cam_Links         (int ID_Cam_Links);
-    void set_ID_Cam_Rechts        (int ID_Cam_Rechts);
 
 
     int get_ID_Cam_Links          ();

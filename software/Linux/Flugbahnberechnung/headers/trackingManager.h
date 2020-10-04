@@ -4,7 +4,6 @@
 
 #include "posen.h"
 #include "GlobalObjects.h"
-#include "object.h"
 #include "plotter.h"
 #include <chrono>
 #include <ctime>
@@ -23,19 +22,6 @@ typedef std::chrono::milliseconds milliseconds;
 
 namespace trackingManager
   {
-  struct S_trackingPayload
-    {
-    int               ID_Cam_Links[2];
-    int               ID_Cam_Rechts[2];
-    double            timestamp;
-
-
-    //GET_OBJECTPOSITION_FROM_CAMERA()
-    bool              found[4];
-    S_Positionsvektor vecRichtung[4];
-
-    };
-
   class C_trackingManager
     {
     public:
@@ -47,38 +33,23 @@ namespace trackingManager
     private:
     C_GlobalObjects*                    globalObjects;
     S_Positionsvektor*                  Positionsvektor_alt;
-    onCuda::KalmanFilter2::C_kalman*    kalmanfilter;
+    //onCuda::KalmanFilter2::C_kalman*    kalmanfilter;
 
 
-    bool                                alive;
-    object::C_object*                   trackedObject;
-    std::vector<C_AbsolutePose>         vecWorldtoCamPose;
-    std::vector<S_Positionsvektor>*     vecPositions;
-    vector<C_AbsolutePose>              vecEinheitsVektor;
+    std::vector<C_AbsolutePose>*         vecWorldtoCamPose;
+    vector<C_AbsolutePose>*              vecEinheitsVektor;
 
-    std::vector<int>                    vecIstX;
-    std::vector<int>                    vecIstY;
+    std::vector<int>*                    vecIstX;
+    std::vector<int>*                    vecIstY;
     std::vector<float>*                   vecPixelVelocityX;
     std::vector<float>*                   vecPixelVelocityY;
     std::vector<float>*                   vecPixelVelocityZ;
 
     /****************** Positionsbuffer T-1 *******************/
-  private:
-    S_Positionsvektor*                  RichtungsvektorenTm1   [payloadSize];
     S_Positionsvektor*                  objektVektorTm1;
-
-    float                               pixelVelocityTm1 [3];
     float                               objectVelocityTm1 [3];
-  public:
-    float                               pixelVelocity [payloadSize][2];
-    float                               pixelAcceleration [payloadSize][2];
     float                               objectVelocity [3];
     float                               objectAcceleration [3];
-  private:
-    int                                 smState;
-    int                                 camIDLeft;
-    int                                 camIDRight;
-    bool                                initZoneAlive;
 
 
     public:
@@ -103,8 +74,6 @@ namespace trackingManager
     void setPositionsvektor_alt                       (S_Positionsvektor *value);
 
     void smTracking                                   ();
-    S_trackingPayload getTrackingPayload              () const;
-    void setTrackingPayload                           (const S_trackingPayload &value);
     int getSmState                                    () const;
     void setSmState                                   (int value);
     bool getInitZoneAlive                             () const;

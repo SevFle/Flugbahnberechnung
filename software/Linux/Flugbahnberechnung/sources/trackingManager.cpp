@@ -8,61 +8,48 @@ C_trackingManager::C_trackingManager (C_GlobalObjects* GlobalObjects)
   this->globalObjects       = GlobalObjects;
   this->dataPlotter         = new plotter::C_plotter;
 
-  this->Positionsvektor_alt = new S_Positionsvektor();
+  this->Positionsvektor_alt = new S_Positionsvektor;
+  //onCuda::KalmanFilter2::C_kalman*    kalmanfilter;
 
-  for(int i = 0; i < payloadSize; i++)
-    {
-    this->RichtungsvektorenTm1[i]  = new S_Positionsvektor;
-    }
-  this->objektVektorTm1     = new S_Positionsvektor;
-  this->vecPixelVelocityX   = new std::vector<float>;
-  this->vecPixelVelocityY   = new std::vector<float>;
-  this->vecPixelVelocityZ   = new std::vector<float>;
-
-
-  S_trackingPayload*                  trackingPayload;
-  S_Positionsvektor*                  Positionsvektor_alt;
-  onCuda::KalmanFilter2::C_kalman*    kalmanfilter;
-
-
-  bool                                alive;
-  object::C_object*                   trackedObject;
-  std::vector<C_AbsolutePose>         vecWorldtoCamPose;
-  std::vector<S_Positionsvektor>*     vecPositions;
-  vector<C_AbsolutePose>              vecEinheitsVektor;
-
-  std::vector<int>                    vecIstX;
-  std::vector<int>                    vecIstY;
-  std::vector<float>*                   vecPixelVelocityX;
-  std::vector<float>*                   vecPixelVelocityY;
-  std::vector<float>*                   vecPixelVelocityZ;
-
+  this->vecWorldtoCamPose = new std::vector<C_AbsolutePose>;
+  this->vecEinheitsVektor = new std::vector<C_AbsolutePose>;
+  this->vecIstX = new std::vector<int>;
+  this->vecIstY = new std::vector<int>;
+  this->vecPixelVelocityX = new std::vector<float>;
+  this->vecPixelVelocityY = new std::vector<float>;
+  this->vecPixelVelocityZ = new std::vector<float>;
+  this->objektVektorTm1 = new S_Positionsvektor;
   /****************** Positionsbuffer T-1 *******************/
-  S_Positionsvektor*                  RichtungsvektorenTm1   [payloadSize];
-  S_Positionsvektor*                  objektVektorTm1;
-
-  float                               pixelVelocityTm1 [3];
-  float                               objectVelocityTm1 [3];
-  float                               pixelVelocity [payloadSize][2];
-  float                               pixelAcceleration [payloadSize][2];
-  float                               objectVelocity [3];
-  float                               objectAcceleration [3];
-  int                                 smState;
-  int                                 camIDLeft;
-  int                                 camIDRight;
-  bool                                initZoneAlive;
-
-
+  for(int i = 0; i < 3; i++)
+    {
+    this->objectVelocityTm1[i] = 0.0f;
+    this->objectVelocity[i] = 0.0f;
+    this->objectAcceleration[i] = 0.0f;
+    }
   }
 C_trackingManager::~C_trackingManager ()
   {
-  delete (vecPixelVelocityX);
-  delete (vecPixelVelocityY);
+  for(int i = 0; i < 3; i++)
+    {
+    this->objectAcceleration[i] = 0.0f;
+    this->objectVelocity[i] = 0.0f;
+    this->objectVelocityTm1[i] = 0.0f;
+    }
+  delete (objektVektorTm1);
   delete (vecPixelVelocityZ);
+  delete (vecPixelVelocityY);
+  delete (vecPixelVelocityX);
+
+  delete (vecIstY);
+  delete (vecIstX);
+
+  delete (vecEinheitsVektor);
+  delete (vecWorldtoCamPose);
+
+  delete (vecWorldtoCamPose);
 
   delete (dataPlotter);
   this->globalObjects = nullptr;
-  delete(Positionsvektor_alt);
   }
 
 void C_trackingManager::init_posen                     ()
@@ -71,10 +58,10 @@ void C_trackingManager::init_posen                     ()
   for(int i = 0; i < payloadSize; i++)
     {
       C_AbsolutePose            absEinheitsVektor;
-      vecEinheitsVektor.push_back(absEinheitsVektor);
+      vecEinheitsVektor->push_back(absEinheitsVektor);
     }
-  this->vecIstX.resize(globalObjects->absCameras);
-  this->vecIstY.resize(globalObjects->absCameras);
+  this->vecIstX->resize(globalObjects->absCameras);
+  this->vecIstY->resize(globalObjects->absCameras);
 
   this->vecPixelVelocityX->resize(globalObjects->absCameras);
   this->vecPixelVelocityY->resize(globalObjects->absCameras);
@@ -83,27 +70,7 @@ void C_trackingManager::init_posen                     ()
   }
 void C_trackingManager::load_posen                     (C_AbsolutePose& cameraPose)
   {
-  this->vecWorldtoCamPose.push_back(cameraPose);
-  }
-
-bool C_trackingManager::getInitZoneAlive() const
-  {
-  return initZoneAlive;
-  }
-
-void C_trackingManager::setInitZoneAlive(bool value)
-  {
-  initZoneAlive = value;
-  }
-
-int C_trackingManager::getSmState() const
-  {
-  return smState;
-  }
-
-void C_trackingManager::setSmState(int value)
-  {
-  smState = value;
+  this->vecWorldtoCamPose->push_back(cameraPose);
   }
 
 S_Positionsvektor *C_trackingManager::getPositionsvektor_alt() const
@@ -116,17 +83,6 @@ void C_trackingManager::setPositionsvektor_alt(S_Positionsvektor *value)
   Positionsvektor_alt = value;
     }
 
-bool C_trackingManager::getAlive() const
-    {
-    return alive;
-    }
-
-void C_trackingManager::setAlive(bool value)
-    {
-    alive = value;
-    }
-
-
 void C_trackingManager::Get_Position_ObjectTracking (S_Positionsvektor& objektVektor, S_Positionsvektor Richtungsvektoren   [payloadSize])
   {
   //objektVektor = aktuelle Position des objektes - Beinhaltet bei Übergabe keine Position [0],
@@ -135,7 +91,7 @@ void C_trackingManager::Get_Position_ObjectTracking (S_Positionsvektor& objektVe
   // Richtungsvektoren der Objekt-Lichtstrahlen auf das Welt-KS transformieren
   vector<S_Positionsvektor> vec_Richtungsvektoren_World;
   //
-  this->Calc_RichtungsvektorenToWorld(Richtungsvektoren, vec_Richtungsvektoren_World, vecEinheitsVektor);
+  this->Calc_RichtungsvektorenToWorld(Richtungsvektoren, vec_Richtungsvektoren_World, *vecEinheitsVektor);
 
   this->Calc_Position_ObjectTracking(objektVektor, vec_Richtungsvektoren_World);
 
@@ -228,12 +184,12 @@ void C_trackingManager::Calc_Position_ObjectTracking (S_Positionsvektor& Positio
     }
   for (int i = 0; i < Anzahl_Posen; i++)
     {
-    Matrix_b[0][0] += (-this->vecWorldtoCamPose[i].pz() * vec_Richtungsvektoren_World[i].X + this->vecWorldtoCamPose[i].px() * vec_Richtungsvektoren_World[i].Z) * vec_Richtungsvektoren_World[i].Z +
-      (-this->vecWorldtoCamPose[i].px() * vec_Richtungsvektoren_World[i].Y + this->vecWorldtoCamPose[i].py() * vec_Richtungsvektoren_World[i].X) * (-vec_Richtungsvektoren_World[i].Y);
-    Matrix_b[1][0] += (-this->vecWorldtoCamPose[i].px() * vec_Richtungsvektoren_World[i].Y + this->vecWorldtoCamPose[i].py() * vec_Richtungsvektoren_World[i].X) * vec_Richtungsvektoren_World[i].X +
-      (-this->vecWorldtoCamPose[i].py() * vec_Richtungsvektoren_World[i].Z + this->vecWorldtoCamPose[i].pz() * vec_Richtungsvektoren_World[i].Y) * (-vec_Richtungsvektoren_World[i].Z);
-    Matrix_b[2][0] += (-this->vecWorldtoCamPose[i].py() * vec_Richtungsvektoren_World[i].Z + this->vecWorldtoCamPose[i].pz() * vec_Richtungsvektoren_World[i].Y) * vec_Richtungsvektoren_World[i].Y +
-      (-this->vecWorldtoCamPose[i].pz() * vec_Richtungsvektoren_World[i].X + this->vecWorldtoCamPose[i].px() * vec_Richtungsvektoren_World[i].Z) * (-vec_Richtungsvektoren_World[i].X);
+    Matrix_b[0][0] += (-this->vecWorldtoCamPose->at(i).pz() * vec_Richtungsvektoren_World[i].X + this->vecWorldtoCamPose->at(i).px() * vec_Richtungsvektoren_World[i].Z) * vec_Richtungsvektoren_World[i].Z +
+      (-this->vecWorldtoCamPose->at(i).px() * vec_Richtungsvektoren_World[i].Y + this->vecWorldtoCamPose->at(i).py() * vec_Richtungsvektoren_World[i].X) * (-vec_Richtungsvektoren_World[i].Y);
+    Matrix_b[1][0] += (-this->vecWorldtoCamPose->at(i).px() * vec_Richtungsvektoren_World[i].Y + this->vecWorldtoCamPose->at(i).py() * vec_Richtungsvektoren_World[i].X) * vec_Richtungsvektoren_World[i].X +
+      (-this->vecWorldtoCamPose->at(i).py() * vec_Richtungsvektoren_World[i].Z + this->vecWorldtoCamPose->at(i).pz() * vec_Richtungsvektoren_World[i].Y) * (-vec_Richtungsvektoren_World[i].Z);
+    Matrix_b[2][0] += (-this->vecWorldtoCamPose->at(i).py() * vec_Richtungsvektoren_World[i].Z + this->vecWorldtoCamPose->at(i).pz() * vec_Richtungsvektoren_World[i].Y) * vec_Richtungsvektoren_World[i].Y +
+      (-this->vecWorldtoCamPose->at(i).pz() * vec_Richtungsvektoren_World[i].X + this->vecWorldtoCamPose->at(i).px() * vec_Richtungsvektoren_World[i].Z) * (-vec_Richtungsvektoren_World[i].X);
     }
 
   // Bestimmung der Hilfsmatrix "y" -> L*y=b
@@ -283,12 +239,11 @@ void C_trackingManager::calcPixelVeloctiy             (int dTimestamp, int ist_X
   int dPixelX;
   int dPixelY;
 
-  dPixelX = ist_X - this->vecIstX[camID];
-  dPixelY = ist_Y - this->vecIstY[camID];
+  dPixelX = ist_X - this->vecIstX->at(camID);
+  dPixelY = ist_Y - this->vecIstY->at(camID);
 
   int velX = dPixelX/dTimestamp;
   int velY = dPixelY/dTimestamp;
-  auto itPos = vecPixelVelocityX->begin() + camID;
 
   this->vecPixelVelocityX->at(camID) = velX;
   this->vecPixelVelocityY->at(camID) = velY;

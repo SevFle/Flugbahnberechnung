@@ -14,7 +14,7 @@ namespace imagefilter
   class C_ImageFilter
     {
   public:
-    C_ImageFilter(C_GlobalObjects* GlobalObjects);
+    C_ImageFilter();
     ~C_ImageFilter();
 
     void gpufErode                         (cv::cuda::GpuMat& gpu_src, cv::cuda::GpuMat& gpu_dst, Camera::C_Camera2::S_filterProperties &Filter);

@@ -93,7 +93,6 @@ bool               C_frm_Object_Tracking::eventFilter                           
 void ::C_frm_Object_Tracking::on_bt_exit_clicked()
   {
   this->Ui->lbl_thread_running->              setEnabled  (false);
-  this->Main->cameraManager->trackingManager->setAlive    (false);
   this->Ui->bt_start->                        setText     ("Start Tracking");
   this->Main->cameraManager->getFilterFlags()->setObjectDetection(false);
   this->Main->cameraManager->getFilterFlags()->setRoiAdjustment(false);
@@ -136,18 +135,16 @@ void C_frm_Object_Tracking::Fill_Mat_2_Lbl(cv::Mat& img, QLabel* label)
 
 void frm_Object_Tracking::C_frm_Object_Tracking::on_bt_start_clicked()
   {
-  if (!this->Main->cameraManager->trackingManager->getAlive())
+  if (!this->Main->cameraManager->getFilterFlags()->getTrackingActive())
     {
     this->Ui->lbl_thread_running->              setEnabled  (true);
     this->Ui->bt_start->                        setText     ("Stop");
-    this->Main->cameraManager->trackingManager->setAlive    (true);
 
     this->Main->cameraManager->startTracking();
     }
   else
     {
     this->Ui->lbl_thread_running->              setEnabled  (false);
-    this->Main->cameraManager->trackingManager->setAlive    (false);
     this->Ui->bt_start->                        setText     ("Start Tracking");
     this->Main->cameraManager->getFilterFlags()->setObjectDetection(false);
     this->Main->cameraManager->getFilterFlags()->setRoiAdjustment(false);

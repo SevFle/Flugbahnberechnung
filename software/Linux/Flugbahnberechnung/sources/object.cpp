@@ -5,8 +5,6 @@ using namespace object;
 
 C_object::C_object()
   {
-  this->objekt_id = 0;
-  this->state = 0;
   this->translation[0] = 0;
   this->translation[1] = 0;
   this->translation[2] = 0;
@@ -24,8 +22,6 @@ C_object::C_object()
 
 C_object::~C_object()
   {
-  this->objekt_id = 0;
-  this->state = 0;
   this->translation[0] = 0;
   this->translation[1] = 0;
   this->translation[2] = 0;
@@ -60,13 +56,6 @@ void C_object::calculate_ms_speed()
 void C_object::save_trajectory()
 {
 
-}
-
-void C_object::set_ID_Cam_Links(int ID_Cam_Links)
-{
-}
-void C_object::set_ID_Cam_Rechts(int ID_Cam_Rechts)
-{
 }
 
 

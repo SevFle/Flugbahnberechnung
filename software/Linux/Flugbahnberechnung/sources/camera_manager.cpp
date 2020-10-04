@@ -14,7 +14,7 @@ C_CameraManager::C_CameraManager ( C_GlobalObjects* GlobalObjects)
   this->saveManager       = new Savemanager::c_SaveManager(GlobalObjects);
   this->loadManager       = new LoadManager::C_LoadManager(GlobalObjects);
   this->trackingManager   = new trackingManager::C_trackingManager(GlobalObjects);
-  this->ImageFilter       = new imagefilter::C_ImageFilter(GlobalObjects);
+  this->ImageFilter       = new imagefilter::C_ImageFilter();
 
   this->camThread         = nullptr;
   this->lock              = new std::mutex;
@@ -785,7 +785,6 @@ void C_CameraManager::startTracking()
   this->filterFlags->setObjectDetection(true);
   this->filterFlags->setRoiAdjustment(true);
   this->filterFlags->setTrackingActive(true);
-
   }
 
 void C_CameraManager::stopTracking()
