@@ -10,8 +10,8 @@
 #include <iostream>
 
 #include <cuda_runtime.h>
-#include "cuda.h"
-#include "device_launch_parameters.h"
+
+#include <cuda_device_runtime_api.h>
 
 #include <cublas_v2.h>
 

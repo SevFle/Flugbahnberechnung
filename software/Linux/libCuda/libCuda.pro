@@ -17,20 +17,10 @@ DISTFILES += \
   src/matrix.cu \
   src/matrix_kernel.cu \
   src/kalman2.cu
-win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../../../../../../../usr/local/cuda-10.1/lib64/release/ -lcudart
-else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../../../../../../usr/local/cuda-10.1/lib64/debug/ -lcudart
-else:unix: LIBS += -L$$PWD/../../../../../../../usr/local/cuda-10.1/lib64/ -lcudart
 
-INCLUDEPATH += $$PWD/../../../../../../../usr/local/cuda-10.1/include
-DEPENDPATH += $$PWD/../../../../../../../usr/local/cuda-10.1/include
 
-unix:!macx: LIBS += -L$$PWD/../../../../../../../usr/local/cuda-10.1/lib64/ -lcudart
-
-INCLUDEPATH += $$PWD/../../../../../../../usr/local/cuda-10.1/include
-INCLUDEPATH += $$PWD/../../../../../../../usr/local/cuda-10.1/samples/common/inc
-DEPENDPATH += $$PWD/../../../../../../../usr/local/cuda-10.1/include
 
 unix:!macx: LIBS += -L$$PWD/../../../../../../../usr/lib/x86_64-linux-gnu/ -lcublas
 
-INCLUDEPATH += $$PWD/../../../../../../../usr/local/cuda-10.1/include
-DEPENDPATH += $$PWD/../../../../../../../usr/local/cuda-10.1/include
+INCLUDEPATH += $$PWD/../../../../../../../usr/include
+DEPENDPATH += $$PWD/../../../../../../../usr/include
