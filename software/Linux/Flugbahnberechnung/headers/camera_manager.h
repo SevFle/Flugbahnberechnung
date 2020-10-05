@@ -55,7 +55,7 @@ namespace CameraManager
     struct S_pipelinePayload
       {
       milliseconds                                            executionTime[8];
-      std::chrono::nanoseconds                                frametime;
+      std::chrono::milliseconds                               frametime;
 
       Clock::time_point start;
       Clock::time_point timestamp;
@@ -75,6 +75,10 @@ namespace CameraManager
      S_Positionsvektor                      objektVektor;
      S_Positionsvektor                      Richtungsvektoren   [payloadSize];
 
+     float                                  objectVelocity [3];
+     float                                  objectAcceleration [3];
+
+
      int                                    cameraID            [payloadSize];
      int                                    ist_X               [payloadSize];
      int                                    ist_Y               [payloadSize];
@@ -86,8 +90,6 @@ namespace CameraManager
 
      int                                    fps = 0;
      bool                                   found = false;
-     double                                 timestampT0 = 0;
-     double                                 dTimestamp = 0;
 
     };
     struct S_filterflags
@@ -203,7 +205,8 @@ namespace CameraManager
                                    int absCornersWidth,
                                    int absCornersHeight,
                                    int absBoardImg,
-                                   float absCornerLength);
+                                   float absCornerLength,
+                                   double* rms);
 
     void calibrate_stereo_camera  (int current_camera_id,
                                    int absCornersWidth,
@@ -220,7 +223,7 @@ namespace CameraManager
 
 
 
-    void calculate_camera_pose    (int camera1, int camera2, cv::Mat M10, cv::Mat M20);
+    void calculate_camera_pose    (int camera1, int camera2, cv::Mat* M10, cv::Mat* M20);
 
     void getDeviceList            ();
 
@@ -231,6 +234,7 @@ namespace CameraManager
 
     /******************************************************* Private Klassenmethoden***************************************************************/
   private:
+    void initialize                         ();
     void start_camera_thread                ();
     void loadCameras                        ();
     void pipelineTracking                   (std::vector<Camera::C_Camera2*> vecCameras, tbb::concurrent_bounded_queue<S_pipelinePayload*> *que);

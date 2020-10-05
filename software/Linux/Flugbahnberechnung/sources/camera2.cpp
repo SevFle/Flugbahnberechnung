@@ -6,11 +6,11 @@ C_Camera2::C_Camera2                        ()
   {
   this->cap = new cv::VideoCapture;
   this->cpuSrc = new cv::Mat;
-  this->distCoeffs = new cv::Mat;
-  this->intrinsic = new cv::Mat;
+  this->distCoeffs = new cv::Mat(cv::Mat_<double>(1,5));
+  this->intrinsic = new cv::Mat(cv::Mat_<double>(3,3));
   this->gpuSrc = new cv::cuda::GpuMat;
-  this->xMap = new cv::cuda::GpuMat;
-  this->yMap = new cv::cuda::GpuMat;
+  this->xMap = new cv::cuda::GpuMat(CV_32FC1);
+  this->yMap = new cv::cuda::GpuMat(CV_32FC1);
   this->roi = new cv::Rect;
   this->pipeline = new std::string;
   this->cameraPose = new C_AbsolutePose;
@@ -320,56 +320,56 @@ void C_Camera2::setIntrinsic                              (cv::Mat &value)
   *intrinsic = value;
   }
 
-uchar C_Camera2::S_filterProperties::getHue_min           () const
+int C_Camera2::S_filterProperties::getHue_min           () const
   {
   return hue_min;
   }
-void C_Camera2::S_filterProperties::setHue_min            (const uchar &value)
+void C_Camera2::S_filterProperties::setHue_min            (const int &value)
   {
   hue_min = value;
   }
 
-uchar C_Camera2::S_filterProperties::getHue_max           () const
+int C_Camera2::S_filterProperties::getHue_max           () const
   {
   return hue_max;
   }
-void C_Camera2::S_filterProperties::setHue_max            (const uchar &value)
+void C_Camera2::S_filterProperties::setHue_max            (const int &value)
   {
   hue_max = value;
   }
 
-uchar C_Camera2::S_filterProperties::getSaturation_min    () const
+int C_Camera2::S_filterProperties::getSaturation_min    () const
   {
-  return saturation_min;
+  return this->saturation_min;
   }
-void C_Camera2::S_filterProperties::setSaturation_min     (const uchar &value)
+void C_Camera2::S_filterProperties::setSaturation_min     (const int &value)
   {
   saturation_min = value;
   }
 
-uchar C_Camera2::S_filterProperties::getSaturation_max    () const
+int C_Camera2::S_filterProperties::getSaturation_max    () const
   {
   return saturation_max;
   }
-void C_Camera2::S_filterProperties::setSaturation_max     (const uchar &value)
+void C_Camera2::S_filterProperties::setSaturation_max     (const int &value)
   {
   saturation_max = value;
   }
 
-uchar C_Camera2::S_filterProperties::getValue_min() const
+int C_Camera2::S_filterProperties::getValue_min() const
   {
   return value_min;
   }
-void C_Camera2::S_filterProperties::setValue_min(const uchar &value)
+void C_Camera2::S_filterProperties::setValue_min(const int &value)
   {
   value_min = value;
   }
 
-uchar C_Camera2::S_filterProperties::getValue_max() const
+int C_Camera2::S_filterProperties::getValue_max() const
   {
   return value_max;
   }
-void C_Camera2::S_filterProperties::setValue_max(const uchar &value)
+void C_Camera2::S_filterProperties::setValue_max(const int &value)
   {
   value_max = value;
   }

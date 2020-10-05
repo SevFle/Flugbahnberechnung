@@ -19,6 +19,13 @@ C_trackingManager::C_trackingManager (C_GlobalObjects* GlobalObjects)
   this->vecPixelVelocityY = new std::vector<float>;
   this->vecPixelVelocityZ = new std::vector<float>;
   this->objektVektorTm1 = new S_Positionsvektor;
+
+  this->dTime = 0;
+
+  for (int i = 0; i < payloadSize; i++)
+    {
+    this->Richtungsvektoren[i] = new S_Positionsvektor;
+    }
   /****************** Positionsbuffer T-1 *******************/
   for(int i = 0; i < 3; i++)
     {
@@ -26,15 +33,32 @@ C_trackingManager::C_trackingManager (C_GlobalObjects* GlobalObjects)
     this->objectVelocity[i] = 0.0f;
     this->objectAcceleration[i] = 0.0f;
     }
+  this->dTimestamp = new milliseconds;
+  this->timestamp_ms = new Clock::time_point;
+  this->timestamp_ms_old = new Clock::time_point;
+  this->timer = new std::chrono::steady_clock;
+
   }
 C_trackingManager::~C_trackingManager ()
   {
+  delete(timer);
+  delete(timestamp_ms_old);
+  delete(timestamp_ms);
+  delete(timestamp_ms);
+
   for(int i = 0; i < 3; i++)
     {
     this->objectAcceleration[i] = 0.0f;
     this->objectVelocity[i] = 0.0f;
     this->objectVelocityTm1[i] = 0.0f;
     }
+  for (int i = 0; i < payloadSize; i++)
+    {
+    delete (Richtungsvektoren[i]);
+    this->Richtungsvektoren[i] = nullptr;
+    }
+  this->dTime = 0;
+
   delete (objektVektorTm1);
   delete (vecPixelVelocityZ);
   delete (vecPixelVelocityY);
@@ -73,6 +97,16 @@ void C_trackingManager::load_posen                     (C_AbsolutePose& cameraPo
   this->vecWorldtoCamPose->push_back(cameraPose);
   }
 
+void C_trackingManager::setTime                         ()
+  {
+  *this->timestamp_ms     = timer->now();
+  *this->dTimestamp       = std::chrono::duration_cast<milliseconds>(*this->timestamp_ms_old - *this->timestamp_ms);
+  this->dTime             = this->dTimestamp->count()*1000;
+  *this->timestamp_ms_old = timer->now();
+  if(this->dTime < 0)
+    this->dTime = 1;
+  }
+
 S_Positionsvektor *C_trackingManager::getPositionsvektor_alt() const
   {
   return Positionsvektor_alt;
@@ -83,7 +117,13 @@ void C_trackingManager::setPositionsvektor_alt(S_Positionsvektor *value)
   Positionsvektor_alt = value;
     }
 
-void C_trackingManager::Get_Position_ObjectTracking (S_Positionsvektor& objektVektor, S_Positionsvektor Richtungsvektoren   [payloadSize])
+void C_trackingManager::setRichtungsvektor(S_Positionsvektor *value, int pos)
+  {
+  Richtungsvektoren[pos] = value;
+  }
+
+
+void C_trackingManager::Get_Position_ObjectTracking (S_Positionsvektor& objektVektor)
   {
   //objektVektor = aktuelle Position des objektes - Beinhaltet bei Übergabe keine Position [0],
   //Richtungsvektoren[payloadsize] = Objektrichttungsvektoren aufgenommen durch die Bilder der Kameras
@@ -91,7 +131,7 @@ void C_trackingManager::Get_Position_ObjectTracking (S_Positionsvektor& objektVe
   // Richtungsvektoren der Objekt-Lichtstrahlen auf das Welt-KS transformieren
   vector<S_Positionsvektor> vec_Richtungsvektoren_World;
   //
-  this->Calc_RichtungsvektorenToWorld(Richtungsvektoren, vec_Richtungsvektoren_World, *vecEinheitsVektor);
+  this->Calc_RichtungsvektorenToWorld(vec_Richtungsvektoren_World, *vecEinheitsVektor);
 
   this->Calc_Position_ObjectTracking(objektVektor, vec_Richtungsvektoren_World);
 
@@ -103,9 +143,9 @@ void C_trackingManager::Get_Position_ObjectTracking (S_Positionsvektor& objektVe
   vec3d.setY(objektVektor.Y);
   vec3d.setZ(objektVektor.Z);
 
-  this->dataPlotter->addSingleData(vec3d, plotter::series::realValue);
+  //this->dataPlotter->addSingleData(vec3d, plotter::series::realValue);
   }
-void C_trackingManager::Calc_Position_ObjectTracking (S_Positionsvektor& Positionsvektor, std::vector<S_Positionsvektor> vec_Richtungsvektoren_World)
+void C_trackingManager::Calc_Position_ObjectTracking(S_Positionsvektor &objektVektor, vector<S_Positionsvektor> &vec_Richtungsvektoren_World)
   {
   // Berechnung der aktuellen Objecktposition bezogen auf das Welt-koordinatensystem in Abhngigkeit aller Kameraposen. Hierbei wird ber
   // Matrizen die Position bestimmt, bei der die Summe aller Abstandsquadrate der optischen Achsen zum Objekt am geringsten ist (Minimierungsproblem).
@@ -199,11 +239,11 @@ void C_trackingManager::Calc_Position_ObjectTracking (S_Positionsvektor& Positio
   Matrix_y[2][0] = (Matrix_b[2][0] - Matrix_L[2][0] * Matrix_y[0][0] - Matrix_L[2][1] * Matrix_y[1][0]) / Matrix_L[2][2];
 
   // Bestimmung der Position "x" -> L_T * x = y
-  Positionsvektor.Z = Matrix_y[2][0] / Matrix_L_T[2][2];
-  Positionsvektor.Y = (Matrix_y[1][0] - Matrix_L_T[1][2] * Positionsvektor.Z) / Matrix_L_T[1][1];
-  Positionsvektor.X = (Matrix_y[0][0] - Matrix_L_T[0][1] * Positionsvektor.Y - Matrix_L_T[0][2] * Positionsvektor.Z) / Matrix_L_T[0][0];
+  objektVektor.Z = Matrix_y[2][0] / Matrix_L_T[2][2];
+  objektVektor.Y = (Matrix_y[1][0] - Matrix_L_T[1][2] * objektVektor.Z) / Matrix_L_T[1][1];
+  objektVektor.X = (Matrix_y[0][0] - Matrix_L_T[0][1] * objektVektor.Y - Matrix_L_T[0][2] * objektVektor.Z) / Matrix_L_T[0][0];
   }
-void C_trackingManager::Calc_RichtungsvektorenToWorld (S_Positionsvektor vec_Richtungsvektoren[payloadSize], std::vector<S_Positionsvektor>& vec_Richtungsvektoren_World, std::vector<C_AbsolutePose> vecEinheitsMatrix)
+void C_trackingManager::Calc_RichtungsvektorenToWorld (std::vector<S_Positionsvektor>& vec_Richtungsvektoren_World, std::vector<C_AbsolutePose> vecEinheitsMatrix)
   {
   // Die Orientierung von Welt- und Roboter-KS sind identisch. Es gilt:
   // w_r_R = Einheitsmatrix
@@ -220,21 +260,21 @@ void C_trackingManager::Calc_RichtungsvektorenToWorld (S_Positionsvektor vec_Ric
 
     vec_Richtungsvektoren_World.push_back (Richtungsvektor);
 
-    vec_Richtungsvektoren_World[i].X = vecEinheitsMatrix[i].nx() * vec_Richtungsvektoren[i].X
-      + vecEinheitsMatrix[i].ox() * vec_Richtungsvektoren[i].Y
-      + vecEinheitsMatrix[i].ax() * vec_Richtungsvektoren[i].Z;
+    vec_Richtungsvektoren_World[i].X = vecEinheitsMatrix[i].nx() * this->Richtungsvektoren[i]->X
+      + vecEinheitsMatrix[i].ox() * Richtungsvektoren[i]->Y
+      + vecEinheitsMatrix[i].ax() * Richtungsvektoren[i]->Z;
 
-    vec_Richtungsvektoren_World[i].Y = vecEinheitsMatrix[i].ny() * vec_Richtungsvektoren[i].X
-      + vecEinheitsMatrix[i].oy() * vec_Richtungsvektoren[i].Y
-      + vecEinheitsMatrix[i].ay() * vec_Richtungsvektoren[i].Z;
+    vec_Richtungsvektoren_World[i].Y = vecEinheitsMatrix[i].ny() * Richtungsvektoren[i]->X
+      + vecEinheitsMatrix[i].oy() * Richtungsvektoren[i]->Y
+      + vecEinheitsMatrix[i].ay() * Richtungsvektoren[i]->Z;
 
-    vec_Richtungsvektoren_World[i].Z = vecEinheitsMatrix[i].nz() * vec_Richtungsvektoren[i].X
-      + vecEinheitsMatrix[i].oz() * vec_Richtungsvektoren[i].Y
-      + vecEinheitsMatrix[i].az() * vec_Richtungsvektoren[i].Z;
+    vec_Richtungsvektoren_World[i].Z = vecEinheitsMatrix[i].nz() * Richtungsvektoren[i]->X
+      + vecEinheitsMatrix[i].oz() * Richtungsvektoren[i]->Y
+      + vecEinheitsMatrix[i].az() * Richtungsvektoren[i]->Z;
     }
   }
 
-void C_trackingManager::calcPixelVeloctiy             (int dTimestamp, int ist_X, int ist_Y, int camID, int& pred_X, int& pred_Y)
+void C_trackingManager::calcPixelVeloctiy             (int ist_X, int ist_Y, int camID, int& pred_X, int& pred_Y)
   {
   int dPixelX;
   int dPixelY;
@@ -242,44 +282,55 @@ void C_trackingManager::calcPixelVeloctiy             (int dTimestamp, int ist_X
   dPixelX = ist_X - this->vecIstX->at(camID);
   dPixelY = ist_Y - this->vecIstY->at(camID);
 
-  int velX = dPixelX/dTimestamp;
-  int velY = dPixelY/dTimestamp;
+  int velX = dPixelX/this->dTime;
+  int velY = dPixelY/this->dTime;
 
   this->vecPixelVelocityX->at(camID) = velX;
   this->vecPixelVelocityY->at(camID) = velY;
-  this->predictPixelMovement(dTimestamp, pred_X, pred_Y, this->vecPixelVelocityX->at(camID), this->vecPixelVelocityY->at(camID), ist_X, ist_Y);
+  this->predictPixelMovement(pred_X, pred_Y, this->vecPixelVelocityX->at(camID), this->vecPixelVelocityY->at(camID), ist_X, ist_Y);
   }
 
-void C_trackingManager::calcObjectVeloctiy(int dTimestamp, S_Positionsvektor&             objektVektor)
+void C_trackingManager::calcObjectVeloctiy(S_Positionsvektor&             objektVektor)
   {
+
   S_Positionsvektor dObjektVektor;
   dObjektVektor.X = objektVektor.X - this->objektVektorTm1->X;
   dObjektVektor.Y = objektVektor.Y - this->objektVektorTm1->Y;
   dObjektVektor.Z = objektVektor.Z - this->objektVektorTm1->Z;
-  this->objectVelocity[0] = dObjektVektor.X/dTimestamp;
-  this->objectVelocity[1] = dObjektVektor.Y/dTimestamp;
-  this->objectVelocity[2] = dObjektVektor.Z/dTimestamp;
-  this->calcObjectAcceleration(dTimestamp);
+  this->objectVelocity[0] = dObjektVektor.X/this->dTime;
+  this->objectVelocity[1] = dObjektVektor.Y/this->dTime;
+  this->objectVelocity[2] = dObjektVektor.Z/this->dTime;
+  this->calcObjectAcceleration();
   }
 
-void C_trackingManager::calcPixelAcceleration(int dTimestamp)
+void C_trackingManager::calcPixelAcceleration()
   {
 
   }
-void C_trackingManager::calcObjectAcceleration(int dTimestamp)
+void C_trackingManager::calcObjectAcceleration()
   {
   float dObjectVelocity [3];
   dObjectVelocity[0] = this->objectVelocityTm1[0]-this->objectVelocity[0];
   dObjectVelocity[1] = this->objectVelocityTm1[1]-this->objectVelocity[1];
   dObjectVelocity[2] = this->objectVelocityTm1[2]-this->objectVelocity[2];
 
-  this->objectAcceleration[0] = dObjectVelocity[0]/dTimestamp;
-  this->objectAcceleration[1] = dObjectVelocity[1]/dTimestamp;
-  this->objectAcceleration[2] = dObjectVelocity[2]/dTimestamp;
+  this->objectAcceleration[0] = dObjectVelocity[0]/this->dTime;
+  this->objectAcceleration[1] = dObjectVelocity[1]/this->dTime;
+  this->objectAcceleration[2] = dObjectVelocity[2]/this->dTime;
   }
 
-void C_trackingManager::predictPixelMovement           (int dTimestamp,int& predX, int& predY, int pixelVelocityX, int pixelVelocityY, int ist_X, int ist_Y)
+void C_trackingManager::predictPixelMovement           (int& predX, int& predY, int pixelVelocityX, int pixelVelocityY, int ist_X, int ist_Y)
   {
-  predX = ist_X +  dTimestamp*pixelVelocityX;
-  predY = ist_Y + dTimestamp*pixelVelocityY;
+  predX = ist_X +  this->dTime*pixelVelocityX;
+  predY = ist_Y + this->dTime*pixelVelocityY;
   }
+
+const float& C_trackingManager::getObjectVelocity()
+  {
+  return *this->objectVelocity;
+  }
+const float& C_trackingManager::getObjectAcceleration()
+  {
+  return *this->objectAcceleration;
+  }
+

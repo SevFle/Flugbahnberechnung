@@ -163,6 +163,7 @@ void C_frm_Camera_Positioning::Taktgeber_Tick()
             delete (*it);
             }
       delete (tData);
+      this->tData = nullptr;
        }
 }
 

@@ -36,7 +36,9 @@ C_frm_Main::~C_frm_Main()
 void C_frm_Main::showEvent(QShowEvent* ShowEvent)
 {
 Q_UNUSED(ShowEvent)
-this->Zaehler = 0;
+    this->Zaehler                           = 0;
+    this->Taktgeber_Intervall               = 25;
+this->Taktgeber_Intervall = 100;
 connect(this->Taktgeber, &QTimer::timeout, this, &C_frm_Main::Taktgeber_Tick);
 this->Taktgeber->start(this->Taktgeber_Intervall);
 this->installEventFilter(this);
@@ -147,7 +149,6 @@ void frm_Main::C_frm_Main::on_bt_tracking_clicked()
   //this->Main->frm_Object_Calibration->setWindowModality(Qt::ApplicationModal);
   this->Main->frm_Object_Calibration->show();
   this->Main->frm_Main->setEnabled(true);
-  delete(this->GlobalObjects->watchdog);
   }
 
 void frm_Main::C_frm_Main::on_bt_camera_calibration_clicked()

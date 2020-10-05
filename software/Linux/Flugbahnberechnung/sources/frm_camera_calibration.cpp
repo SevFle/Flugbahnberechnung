@@ -8,12 +8,12 @@ C_frm_Camera_Calibration::C_frm_Camera_Calibration(C_GlobalObjects* GlobalObject
     Ui->setupUi(this);
     this->GlobalObjects = GlobalObjects;
     this->Main = Main;
-    this->camThread = nullptr;
+    this->camThread = new pthread_t;
     this->pData = nullptr;
     this->Taktgeber = new QTimer;
     this->imgBuffer[0] = new cv::Mat;
     this->imgBuffer[1] = new cv::Mat;
-    this->mPose = new cv::Mat;
+    this->mPose = new cv::Mat(cv::Mat_<double>(4,4));
 
     this->Taktgeber_Intervall = 0;
     this->Zaehler = 0;
@@ -49,7 +49,7 @@ C_frm_Camera_Calibration::~C_frm_Camera_Calibration()
       this->pData = nullptr;
     }
 
-  this->camThread = nullptr;
+  delete (this->camThread);
   this->Main = nullptr;
   this->GlobalObjects = nullptr;
 
@@ -60,29 +60,28 @@ C_frm_Camera_Calibration::~C_frm_Camera_Calibration()
 /************************************** QT-Events******************************/
 void C_frm_Camera_Calibration::showEvent(QShowEvent* ShowEvent)
 {
-this->Zaehler                     = 0;
-this->Taktgeber_Intervall         = 25;
-
-connect                           (this->Taktgeber, &QTimer::timeout, this, &C_frm_Camera_Calibration::Taktgeber_Tick);
-this->Taktgeber->start            (this->Taktgeber_Intervall);
-this->installEventFilter          (this);
-this->Zaehler                     = 0;
-this->cameraID                    = 0;
-this->Ui->num_TimerIntervall->setValue(this->Taktgeber_Intervall);
-this->on_rb_single_calibration_clicked();
-this->Ui->num_camera_id->setMaximum(GlobalObjects->absCameras-1);
-this->Ui->grpb_2_output->setVisible(false);
+this->Zaehler                           = 0;
+this->Taktgeber_Intervall               = 25;
+this->cameraID = 0;
+connect                                 (this->Taktgeber, &QTimer::timeout, this, &C_frm_Camera_Calibration::Taktgeber_Tick);
+this->Taktgeber->start                  (this->Taktgeber_Intervall);
+this->installEventFilter                (this);
+this->Ui->num_TimerIntervall->setValue  (this->Taktgeber_Intervall);
+this->on_rb_single_calibration_clicked  ();
+this->Ui->num_camera_id->setMaximum     (GlobalObjects->absCameras-1);
+this->Ui->grpb_2_output->setVisible     (false);
 
 Q_UNUSED(ShowEvent)
 }
 
 void C_frm_Camera_Calibration::closeEvent(QCloseEvent* CloseEvent)
 {
- Q_UNUSED(CloseEvent);
- this->removeEventFilter(this);
- this->Taktgeber->stop();
- disconnect(this->Taktgeber, &QTimer::timeout, this, &C_frm_Camera_Calibration::Taktgeber_Tick);
- this->Zaehler = 0;
+ Q_UNUSED                   (CloseEvent);
+ this->removeEventFilter    (this);
+ this->Taktgeber->stop      ();
+ disconnect                 (this->Taktgeber, &QTimer::timeout, this, &C_frm_Camera_Calibration::Taktgeber_Tick);
+ this->Zaehler              = 0;
+ this->cameraID             = 0;
 
  }
 
@@ -138,26 +137,48 @@ void C_frm_Camera_Calibration::Taktgeber_Tick()
     switch (method)
       {
       case 0:
-        this->Main->cameraManager->scanChAruco(this->pData->cpuSrcImg[0], *Main->cameraManager->vecCameras->at(this->Ui->num_camera_id->value()), *this->mPose);
-        this->Main->frm_Main->FillMat2Lbl(this->pData->cpuSrcImg[0], this->Ui->lbl_img_single_calibration);
-        //imgBuffer dient zur speicherung von Bildern im Kalibrrierungsprozess
-        this->pData->cpuSrcImg[0].copyTo(*this->imgBuffer[0]);
-        this->Ui->txb_nx->setText(QString::number(this->mPose->at<double>(0,0), 'f', 3));
-        this->Ui->txb_ny->setText(QString::number(this->mPose->at<double>(1,0), 'f', 3));
-        this->Ui->txb_nz->setText(QString::number(this->mPose->at<double>(2,0), 'f', 3));
+        if(this->Main->cameraManager->scanChAruco(this->pData->cpuSrcImg[0], *Main->cameraManager->vecCameras->at(this->Ui->num_camera_id->value()), *this->mPose))
+          {
+          this->Main->frm_Main->FillMat2Lbl(this->pData->cpuSrcImg[0], this->Ui->lbl_img_single_calibration);
+          //imgBuffer dient zur speicherung von Bildern im Kalibrrierungsprozess
+          this->pData->cpuSrcImg[0].copyTo(*this->imgBuffer[0]);
+          this->Ui->txb_nx->setText(QString::number(this->mPose->at<double>(0,0), 'f', 3));
+          this->Ui->txb_ny->setText(QString::number(this->mPose->at<double>(1,0), 'f', 3));
+          this->Ui->txb_nz->setText(QString::number(this->mPose->at<double>(2,0), 'f', 3));
 
-        this->Ui->txb_ox->setText(QString::number(this->mPose->at<double>(0,1), 'f', 3));
-        this->Ui->txb_oy->setText(QString::number(this->mPose->at<double>(1,1), 'f', 3));
-        this->Ui->txb_oz->setText(QString::number(this->mPose->at<double>(2,1), 'f', 3));
+          this->Ui->txb_ox->setText(QString::number(this->mPose->at<double>(0,1), 'f', 3));
+          this->Ui->txb_oy->setText(QString::number(this->mPose->at<double>(1,1), 'f', 3));
+          this->Ui->txb_oz->setText(QString::number(this->mPose->at<double>(2,1), 'f', 3));
 
-        this->Ui->txb_ax->setText(QString::number(this->mPose->at<double>(0,2), 'f', 3));
-        this->Ui->txb_ay->setText(QString::number(this->mPose->at<double>(1,2), 'f', 3));
-        this->Ui->txb_az->setText(QString::number(this->mPose->at<double>(2,2), 'f', 3));
+          this->Ui->txb_ax->setText(QString::number(this->mPose->at<double>(0,2), 'f', 3));
+          this->Ui->txb_ay->setText(QString::number(this->mPose->at<double>(1,2), 'f', 3));
+          this->Ui->txb_az->setText(QString::number(this->mPose->at<double>(2,2), 'f', 3));
 
-        this->Ui->txb_px->setText(QString::number(this->mPose->at<double>(0,3), 'f', 3));
-        this->Ui->txb_py->setText(QString::number(this->mPose->at<double>(1,3), 'f', 3));
-        this->Ui->txb_pz->setText(QString::number(this->mPose->at<double>(2,3), 'f', 3));
+          this->Ui->txb_px->setText(QString::number(this->mPose->at<double>(0,3), 'f', 3));
+          this->Ui->txb_py->setText(QString::number(this->mPose->at<double>(1,3), 'f', 3));
+          this->Ui->txb_pz->setText(QString::number(this->mPose->at<double>(2,3), 'f', 3));
+          }
+        else
+          {
+            this->Main->frm_Main->FillMat2Lbl(this->pData->cpuSrcImg[0], this->Ui->lbl_img_single_calibration);
+            //imgBuffer dient zur speicherung von Bildern im Kalibrrierungsprozess
+            this->pData->cpuSrcImg[0].copyTo(*this->imgBuffer[0]);
+            this->Ui->txb_nx->setText(QString::number(0));
+            this->Ui->txb_ny->setText(QString::number(0));
+            this->Ui->txb_nz->setText(QString::number(0));
 
+            this->Ui->txb_ox->setText(QString::number(0));
+            this->Ui->txb_oy->setText(QString::number(0));
+            this->Ui->txb_oz->setText(QString::number(0));
+
+            this->Ui->txb_ax->setText(QString::number(0));
+            this->Ui->txb_ay->setText(QString::number(0));
+            this->Ui->txb_az->setText(QString::number(0));
+
+            this->Ui->txb_px->setText(QString::number(0));
+            this->Ui->txb_py->setText(QString::number(0));
+            this->Ui->txb_pz->setText(QString::number(0));
+          }
         break;
       case 1:
         this->pData->cpuSrcImg[0].copyTo(*this->imgBuffer[0]);
@@ -165,38 +186,79 @@ void C_frm_Camera_Calibration::Taktgeber_Tick()
 
         bool temp1, temp2;
         temp1 = this->Main->cameraManager->scanChAruco(this->pData->cpuSrcImg[0], *Main->cameraManager->vecCameras->at(this->Ui->num_camera_id->value()), *this->mPose);
-        this->Ui->txb_nx->setText(QString::number(this->mPose->at<double>(0,0), 'f', 3));
-        this->Ui->txb_ny->setText(QString::number(this->mPose->at<double>(1,0), 'f', 3));
-        this->Ui->txb_nz->setText(QString::number(this->mPose->at<double>(2,0), 'f', 3));
+        if(temp1)
+          {
+          this->Ui->txb_nx->setText(QString::number(this->mPose->at<double>(0,0), 'f', 3));
+          this->Ui->txb_ny->setText(QString::number(this->mPose->at<double>(1,0), 'f', 3));
+          this->Ui->txb_nz->setText(QString::number(this->mPose->at<double>(2,0), 'f', 3));
 
-        this->Ui->txb_ox->setText(QString::number(this->mPose->at<double>(0,1), 'f', 3));
-        this->Ui->txb_oy->setText(QString::number(this->mPose->at<double>(1,1), 'f', 3));
-        this->Ui->txb_oz->setText(QString::number(this->mPose->at<double>(2,1), 'f', 3));
+          this->Ui->txb_ox->setText(QString::number(this->mPose->at<double>(0,1), 'f', 3));
+          this->Ui->txb_oy->setText(QString::number(this->mPose->at<double>(1,1), 'f', 3));
+          this->Ui->txb_oz->setText(QString::number(this->mPose->at<double>(2,1), 'f', 3));
 
-        this->Ui->txb_ax->setText(QString::number(this->mPose->at<double>(0,2), 'f', 3));
-        this->Ui->txb_ay->setText(QString::number(this->mPose->at<double>(1,2), 'f', 3));
-        this->Ui->txb_az->setText(QString::number(this->mPose->at<double>(2,2), 'f', 3));
+          this->Ui->txb_ax->setText(QString::number(this->mPose->at<double>(0,2), 'f', 3));
+          this->Ui->txb_ay->setText(QString::number(this->mPose->at<double>(1,2), 'f', 3));
+          this->Ui->txb_az->setText(QString::number(this->mPose->at<double>(2,2), 'f', 3));
 
-        this->Ui->txb_px->setText(QString::number(this->mPose->at<double>(0,3), 'f', 3));
-        this->Ui->txb_py->setText(QString::number(this->mPose->at<double>(1,3), 'f', 3));
-        this->Ui->txb_pz->setText(QString::number(this->mPose->at<double>(2,3), 'f', 3));
+          this->Ui->txb_px->setText(QString::number(this->mPose->at<double>(0,3), 'f', 3));
+          this->Ui->txb_py->setText(QString::number(this->mPose->at<double>(1,3), 'f', 3));
+          this->Ui->txb_pz->setText(QString::number(this->mPose->at<double>(2,3), 'f', 3));
+          }
+        else
+          {
+          this->Ui->txb_nx->setText(QString::number(0));
+          this->Ui->txb_ny->setText(QString::number(0));
+          this->Ui->txb_nz->setText(QString::number(0));
 
+          this->Ui->txb_ox->setText(QString::number(0));
+          this->Ui->txb_oy->setText(QString::number(0));
+          this->Ui->txb_oz->setText(QString::number(0));
+
+          this->Ui->txb_ax->setText(QString::number(0));
+          this->Ui->txb_ay->setText(QString::number(0));
+          this->Ui->txb_az->setText(QString::number(0));
+
+          this->Ui->txb_px->setText(QString::number(0));
+          this->Ui->txb_py->setText(QString::number(0));
+          this->Ui->txb_pz->setText(QString::number(0));
+          }
         temp2 = this->Main->cameraManager->scanChAruco(this->pData->cpuSrcImg[1], *Main->cameraManager->vecCameras->at(this->Ui->num_camera_id->value()+1), *this->mPose);
-        this->Ui->txb_nx_2->setText(QString::number(this->mPose->at<double>(0,0), 'f', 3));
-        this->Ui->txb_ny_2->setText(QString::number(this->mPose->at<double>(1,0), 'f', 3));
-        this->Ui->txb_nz_2->setText(QString::number(this->mPose->at<double>(2,0), 'f', 3));
+        if(temp2)
+          {
+          this->Ui->txb_nx_2->setText(QString::number(this->mPose->at<double>(0,0), 'f', 3));
+          this->Ui->txb_ny_2->setText(QString::number(this->mPose->at<double>(1,0), 'f', 3));
+          this->Ui->txb_nz_2->setText(QString::number(this->mPose->at<double>(2,0), 'f', 3));
 
-        this->Ui->txb_ox_2->setText(QString::number(this->mPose->at<double>(0,1), 'f', 3));
-        this->Ui->txb_oy_2->setText(QString::number(this->mPose->at<double>(1,1), 'f', 3));
-        this->Ui->txb_oz_2->setText(QString::number(this->mPose->at<double>(2,1), 'f', 3));
+          this->Ui->txb_ox_2->setText(QString::number(this->mPose->at<double>(0,1), 'f', 3));
+          this->Ui->txb_oy_2->setText(QString::number(this->mPose->at<double>(1,1), 'f', 3));
+          this->Ui->txb_oz_2->setText(QString::number(this->mPose->at<double>(2,1), 'f', 3));
 
-        this->Ui->txb_ax_2->setText(QString::number(this->mPose->at<double>(0,2), 'f', 3));
-        this->Ui->txb_ay_2->setText(QString::number(this->mPose->at<double>(1,2), 'f', 3));
-        this->Ui->txb_az_2->setText(QString::number(this->mPose->at<double>(2,2), 'f', 3));
+          this->Ui->txb_ax_2->setText(QString::number(this->mPose->at<double>(0,2), 'f', 3));
+          this->Ui->txb_ay_2->setText(QString::number(this->mPose->at<double>(1,2), 'f', 3));
+          this->Ui->txb_az_2->setText(QString::number(this->mPose->at<double>(2,2), 'f', 3));
 
-        this->Ui->txb_px_2->setText(QString::number(this->mPose->at<double>(0,3), 'f', 3));
-        this->Ui->txb_py_2->setText(QString::number(this->mPose->at<double>(1,3), 'f', 3));
-        this->Ui->txb_pz_2->setText(QString::number(this->mPose->at<double>(2,3), 'f', 3));
+          this->Ui->txb_px_2->setText(QString::number(this->mPose->at<double>(0,3), 'f', 3));
+          this->Ui->txb_py_2->setText(QString::number(this->mPose->at<double>(1,3), 'f', 3));
+          this->Ui->txb_pz_2->setText(QString::number(this->mPose->at<double>(2,3), 'f', 3));
+          }
+        else
+          {
+          this->Ui->txb_nx_2->setText(QString::number(0));
+          this->Ui->txb_ny_2->setText(QString::number(0));
+          this->Ui->txb_nz_2->setText(QString::number(0));
+
+          this->Ui->txb_ox_2->setText(QString::number(0));
+          this->Ui->txb_oy_2->setText(QString::number(0));
+          this->Ui->txb_oz_2->setText(QString::number(0));
+
+          this->Ui->txb_ax_2->setText(QString::number(0));
+          this->Ui->txb_ay_2->setText(QString::number(0));
+          this->Ui->txb_az_2->setText(QString::number(0));
+
+          this->Ui->txb_px_2->setText(QString::number(0));
+          this->Ui->txb_py_2->setText(QString::number(0));
+          this->Ui->txb_pz_2->setText(QString::number(0));
+          }
 
         if(temp1 && temp2)
           {
@@ -211,7 +273,7 @@ void C_frm_Camera_Calibration::Taktgeber_Tick()
         break;
        }
     delete(pData);
-    //pData = nullptr;
+    pData = nullptr;
 
     }
   else
@@ -243,6 +305,7 @@ void C_frm_Camera_Calibration::on_bt_start_clicked()
 
 void frm_Camera_Calibration::C_frm_Camera_Calibration::on_bt_exit_clicked()
 {
+  this->Taktgeber->stop();
   delete(this->GlobalObjects->watchdog);
   this->Main->cameraManager->pipelineDone.store(true);
   if(!this->Main->cameraManager->stopPipelineTracking()) return;
@@ -256,10 +319,13 @@ void C_frm_Camera_Calibration::on_num_camera_id_valueChanged(int arg1)
     if(method == 0)
         this->Main->cameraManager->setArrActiveCameras(arg1,0);
     else
+      {
         this->Main->cameraManager->setArrActiveCameras(arg1,0);
         int arg2 = arg1+1;
         this->Main->cameraManager->setArrActiveCameras(arg2,1);
-        this->Main->cameraManager->pipelineFlush.store(false);
+      }
+    this->Main->cameraManager->pipelineFlush.store(false);
+
 }
 
 void C_frm_Camera_Calibration::on_rb_single_calibration_clicked()
@@ -282,6 +348,12 @@ void C_frm_Camera_Calibration::on_rb_single_calibration_clicked()
 
     this->Ui->lbl_img_stereo_right->setVisible        (false);
     this->Ui->lbl_img_stereo_left->setVisible         (false);
+
+    this->Ui->txb_edge_width->setVisible              (true);
+    this->Ui->txb_edge_height->setVisible             (true);
+    this->Ui->txb_edge_length->setVisible             (true);
+    this->Ui->txb_usrInput_images->setVisible         (true);
+
 
    this->Ui->lbl_img_single_calibration->setVisible   (true);
 }
@@ -336,6 +408,7 @@ void C_frm_Camera_Calibration::on_bt_photo_clicked()
   }
 void C_frm_Camera_Calibration::camera_calibration_thread (void* This)
   {
+  double rms = 0.0;
   static_cast<frm_Camera_Calibration::C_frm_Camera_Calibration*>(This)->Ui->lbl_calibration_running->setVisible(true);
   switch (static_cast<frm_Camera_Calibration::C_frm_Camera_Calibration*>(This)->method)
     {
@@ -345,22 +418,17 @@ void C_frm_Camera_Calibration::camera_calibration_thread (void* This)
                                                         static_cast<frm_Camera_Calibration::C_frm_Camera_Calibration*>(This)->Ui->txb_edge_width->toPlainText().toInt(),
                                                         static_cast<frm_Camera_Calibration::C_frm_Camera_Calibration*>(This)->Ui->txb_edge_height->toPlainText().toInt(),
                                                         static_cast<frm_Camera_Calibration::C_frm_Camera_Calibration*>(This)->Ui->txb_usrInput_images->toPlainText().toInt(),
-                                                        static_cast<frm_Camera_Calibration::C_frm_Camera_Calibration*>(This)->Ui->txb_edge_length->toPlainText().toFloat()/ 1000.0f);
+                                                        static_cast<frm_Camera_Calibration::C_frm_Camera_Calibration*>(This)->Ui->txb_edge_length->toPlainText().toFloat()/ 1000.0f, &rms);
       break;
 
     case 1:
-//      static_cast<frm_Camera_Calibration::C_frm_Camera_Calibration*>(This)->Main->cameraManager->calibrate_stereo_camera
-//                                                       (static_cast<frm_Camera_Calibration::C_frm_Camera_Calibration*>(This)->cameraID,
-//                                                        static_cast<frm_Camera_Calibration::C_frm_Camera_Calibration*>(This)->Ui->txb_edge_width->toPlainText().toInt(),
-//                                                        static_cast<frm_Camera_Calibration::C_frm_Camera_Calibration*>(This)->Ui->txb_edge_height->toPlainText().toInt(),
-//                                                        static_cast<frm_Camera_Calibration::C_frm_Camera_Calibration*>(This)->Ui->txb_usrInput_images->toPlainText().toInt(),
-//                                                        static_cast<frm_Camera_Calibration::C_frm_Camera_Calibration*>(This)->Ui->txb_edge_length->toPlainText().toFloat()/1000.0f);
        static_cast<frm_Camera_Calibration::C_frm_Camera_Calibration*>(This)->Main->cameraManager->calibrate_stereo_camera_aruco(static_cast<frm_Camera_Calibration::C_frm_Camera_Calibration*>(This)->cameraID);
 
       break;
 
     }
   static_cast<frm_Camera_Calibration::C_frm_Camera_Calibration*>(This)->Ui->lbl_calibration_running->setVisible(false);
+
 
   }
 
@@ -471,4 +539,9 @@ void C_frm_Camera_Calibration::ShowTable()
 void frm_Camera_Calibration::C_frm_Camera_Calibration::on_num_TimerIntervall_valueChanged(int arg1)
   {
   this->Taktgeber->setInterval(arg1);
+  }
+
+void frm_Camera_Calibration::C_frm_Camera_Calibration::on_bt_pose_estimation_clicked()
+  {
+  //if(this->mPose)
   }

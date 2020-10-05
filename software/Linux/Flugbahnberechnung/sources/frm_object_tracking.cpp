@@ -115,10 +115,20 @@ void C_frm_Object_Tracking::Taktgeber_Tick()
     this->Ui->txb_position_y->setText (QString::number(pData->objektVektor.Y));
     this->Ui->txb_position_z->setText (QString::number(pData->objektVektor.Z));
 
+    this->Ui->txb_velocity_x->setText(QString::number(pData->objectVelocity[0]));
+    this->Ui->txb_velocity_y->setText(QString::number(pData->objectVelocity[1]));
+    this->Ui->txb_velocity_z->setText(QString::number(pData->objectVelocity[2]));
+
+    this->Ui->txb_acceleration_x->setText(QString::number(pData->objectAcceleration[0]));
+    this->Ui->txb_acceleration_y->setText(QString::number(pData->objectAcceleration[1]));
+    this->Ui->txb_acceleration_z->setText(QString::number(pData->objectAcceleration[2]));
+
+
+
     this->Ui->txb_activeCamera->setText (QString::number(pData->cameraID[0]));
     delete(pData);
+    pData = nullptr;
     }
-    //Get Current Object Position
   }
 void C_frm_Object_Tracking::Fill_Mat_2_Lbl(cv::Mat& img, QLabel* label)
   {

@@ -233,6 +233,10 @@ bool C_ImageFilter::findContours                     (cv::Mat* cpuSrc, cv::Mat* 
     Vec_Object[1] /= Vec_Object_Abs;
     Vec_Object[2] /= Vec_Object_Abs;
 
+    vecPosition.X = Vec_Object[0];
+    vecPosition.Y = Vec_Object[1];
+    vecPosition.Z = Vec_Object[2];
+
     // Zeichne eine Linie zwischen kalibriertem Bildmittelpunkt und dem Objektschwerpunkt
     line (*dstCpuContouredImg,cv::Point (static_cast<int> (Ist_x),static_cast<int> (Ist_y)),cv::Point (static_cast<int> (Soll_x),static_cast<int> (Soll_y)),cv::Scalar (0,0,255),4,8,0);
     return true;
@@ -255,6 +259,13 @@ void C_ImageFilter::gpufUnidstord (cv::Mat* cpuSrc,           cv::cuda::GpuMat& 
     {
     std::cout << "Src in gpuRemap empty" << std::endl;
     return;
+    }
+
+  if(cpuSrc->type() !=CV_8UC3)
+    {
+    cv::Mat temp;
+    cpuSrc->convertTo(temp, CV_8UC3);
+    temp.copyTo(*cpuSrc);
     }
   cv::cuda::GpuMat gpuSrcImg;
   gpuSrcImg.upload (*cpuSrc);

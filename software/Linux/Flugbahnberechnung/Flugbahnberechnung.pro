@@ -33,7 +33,6 @@ SOURCES += \
     sources/CSV_Datei.cpp \
     sources/GlobalObjects.cpp \
     sources/Kalmanfilter.cpp \
-    sources/camera.cpp \
     sources/camera_manager.cpp \
     sources/object.cpp \
     sources/posen.cpp \
@@ -53,7 +52,6 @@ HEADERS += \
     headers/CSV_Datei.h \
     headers/GlobalObjects.h \
     headers/Kalmanfilter.h \
-    headers/camera.h \
     headers/camera_manager.h \
     headers/object.h \
     headers/point.h \

@@ -60,7 +60,8 @@ private slots:
   void ShowTable                        ();
 
   void on_num_TimerIntervall_valueChanged(int arg1);
-};
+  void on_bt_pose_estimation_clicked();
+  };
 }
 
 #endif // FRM_CAMERA_CALIBRATION_H

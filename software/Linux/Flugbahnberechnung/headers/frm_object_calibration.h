@@ -76,7 +76,7 @@ private slots:
   void on_bt_exit_clicked();
 
 private:
-  void get_camera_settings (int camera_id);
+  void get_camera_settings (Camera::C_Camera2 &Camera);
   void set_gui();
   void Fill_Mat_2_Lbl(cv::Mat& img, QLabel* label);
   void on_numTimerIntervall_valueChanged(int arg1);

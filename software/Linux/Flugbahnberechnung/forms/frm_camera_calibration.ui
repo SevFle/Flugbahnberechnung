@@ -17,8 +17,8 @@
    <widget class="QTextEdit" name="txb_zaehler">
     <property name="geometry">
      <rect>
-      <x>860</x>
-      <y>910</y>
+      <x>630</x>
+      <y>900</y>
       <width>141</width>
       <height>31</height>
      </rect>
@@ -27,8 +27,8 @@
    <widget class="QPushButton" name="bt_exit">
     <property name="geometry">
      <rect>
-      <x>860</x>
-      <y>950</y>
+      <x>630</x>
+      <y>940</y>
       <width>141</width>
       <height>71</height>
      </rect>
@@ -295,22 +295,6 @@
      </property>
     </widget>
    </widget>
-   <widget class="QGroupBox" name="grpb_single_output">
-    <property name="enabled">
-     <bool>false</bool>
-    </property>
-    <property name="geometry">
-     <rect>
-      <x>340</x>
-      <y>360</y>
-      <width>271</width>
-      <height>461</height>
-     </rect>
-    </property>
-    <property name="title">
-     <string>Output</string>
-    </property>
-   </widget>
    <widget class="QLabel" name="lbl_img_stereo_left">
     <property name="geometry">
      <rect>
@@ -340,8 +324,8 @@
    <widget class="QPushButton" name="bt_start">
     <property name="geometry">
      <rect>
-      <x>710</x>
-      <y>950</y>
+      <x>340</x>
+      <y>750</y>
       <width>141</width>
       <height>71</height>
      </rect>
@@ -352,13 +336,13 @@
    </widget>
    <widget class="QLabel" name="lbl_calibration_running">
     <property name="enabled">
-     <bool>false</bool>
+     <bool>true</bool>
     </property>
     <property name="geometry">
      <rect>
-      <x>640</x>
-      <y>840</y>
-      <width>361</width>
+      <x>340</x>
+      <y>370</y>
+      <width>111</width>
       <height>31</height>
      </rect>
     </property>
@@ -368,7 +352,7 @@
      </font>
     </property>
     <property name="text">
-     <string>Calibration is being calculated. Please wait.</string>
+     <string>Please wait.</string>
     </property>
    </widget>
    <widget class="QPushButton" name="bt_photo">
@@ -377,8 +361,8 @@
     </property>
     <property name="geometry">
      <rect>
-      <x>710</x>
-      <y>870</y>
+      <x>340</x>
+      <y>400</y>
       <width>141</width>
       <height>71</height>
      </rect>
@@ -840,8 +824,8 @@
    <widget class="QSpinBox" name="num_camera_id">
     <property name="geometry">
      <rect>
-      <x>870</x>
-      <y>870</y>
+      <x>640</x>
+      <y>860</y>
       <width>121</width>
       <height>31</height>
      </rect>
@@ -1183,6 +1167,363 @@
      </property>
     </widget>
     <widget class="QTextEdit" name="txb_pz_2">
+     <property name="geometry">
+      <rect>
+       <x>430</x>
+       <y>120</y>
+       <width>121</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="readOnly">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QPushButton" name="bt_pose_estimation">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>340</x>
+      <y>480</y>
+      <width>141</width>
+      <height>71</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Initialpose 
+aufnehmen</string>
+    </property>
+   </widget>
+   <widget class="QGroupBox" name="groupBox_3">
+    <property name="geometry">
+     <rect>
+      <x>340</x>
+      <y>560</y>
+      <width>271</width>
+      <height>181</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>Output</string>
+    </property>
+    <widget class="QTextEdit" name="txb_rms">
+     <property name="geometry">
+      <rect>
+       <x>60</x>
+       <y>30</y>
+       <width>91</width>
+       <height>31</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lbl_calibration_running_2">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>30</y>
+       <width>51</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>14</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>RMS</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lbl_calibration_running_3">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>70</y>
+       <width>51</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>14</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>fy</string>
+     </property>
+    </widget>
+    <widget class="QTextEdit" name="txb_fy">
+     <property name="geometry">
+      <rect>
+       <x>40</x>
+       <y>70</y>
+       <width>81</width>
+       <height>31</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QTextEdit" name="txb_fx">
+     <property name="geometry">
+      <rect>
+       <x>170</x>
+       <y>70</y>
+       <width>81</width>
+       <height>31</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lbl_calibration_running_4">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>140</x>
+       <y>70</y>
+       <width>21</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>14</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>fx</string>
+     </property>
+    </widget>
+    <widget class="QTextEdit" name="txb_cy">
+     <property name="geometry">
+      <rect>
+       <x>40</x>
+       <y>110</y>
+       <width>81</width>
+       <height>31</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QTextEdit" name="txb_cx">
+     <property name="geometry">
+      <rect>
+       <x>170</x>
+       <y>110</y>
+       <width>81</width>
+       <height>31</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lbl_calibration_running_5">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>140</x>
+       <y>110</y>
+       <width>21</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>14</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>cx</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lbl_calibration_running_6">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>110</y>
+       <width>51</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>14</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>cy</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QGroupBox" name="grpb_2_m12">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>780</x>
+      <y>820</y>
+      <width>571</width>
+      <height>191</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>Pose</string>
+    </property>
+    <widget class="QTextEdit" name="txb_px_3">
+     <property name="geometry">
+      <rect>
+       <x>430</x>
+       <y>40</y>
+       <width>121</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="readOnly">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QTextEdit" name="txb_nx_3">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>40</y>
+       <width>121</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="readOnly">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QTextEdit" name="txb_ox_3">
+     <property name="geometry">
+      <rect>
+       <x>150</x>
+       <y>40</y>
+       <width>121</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="readOnly">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QTextEdit" name="txb_ax_3">
+     <property name="geometry">
+      <rect>
+       <x>290</x>
+       <y>40</y>
+       <width>121</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="readOnly">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QTextEdit" name="txb_ny_3">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>80</y>
+       <width>121</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="readOnly">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QTextEdit" name="txb_oy_3">
+     <property name="geometry">
+      <rect>
+       <x>150</x>
+       <y>80</y>
+       <width>121</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="readOnly">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QTextEdit" name="txb_ay_3">
+     <property name="geometry">
+      <rect>
+       <x>290</x>
+       <y>80</y>
+       <width>121</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="readOnly">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QTextEdit" name="txb_py_3">
+     <property name="geometry">
+      <rect>
+       <x>430</x>
+       <y>80</y>
+       <width>121</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="readOnly">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QTextEdit" name="txb_nz_3">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>120</y>
+       <width>121</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="readOnly">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QTextEdit" name="txb_oz_3">
+     <property name="geometry">
+      <rect>
+       <x>150</x>
+       <y>120</y>
+       <width>121</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="readOnly">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QTextEdit" name="txb_az_3">
+     <property name="geometry">
+      <rect>
+       <x>290</x>
+       <y>120</y>
+       <width>121</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="readOnly">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QTextEdit" name="txb_pz_3">
      <property name="geometry">
       <rect>
        <x>430</x>
