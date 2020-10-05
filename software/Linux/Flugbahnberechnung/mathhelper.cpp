@@ -1,4 +1,4 @@
-#include "C_mathhelper.h"
+#include "mathhelper.h"
 
 C_mathHelper::C_mathHelper()
   {
