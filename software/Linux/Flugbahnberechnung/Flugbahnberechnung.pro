@@ -24,6 +24,7 @@ QMAKE_CXXFLAGS_RELEASE =-03
 CONFIG += -O0
 
 SOURCES += \
+  C_mathhelper.cpp \
   plotter.cpp \
     sources/camera2.cpp \
     sources/imagefilter.cpp \
@@ -48,6 +49,7 @@ SOURCES += \
 
 
 HEADERS += \
+    C_mathhelper.h \
     headers/camera2.h \
     headers/CSV_Datei.h \
     headers/GlobalObjects.h \

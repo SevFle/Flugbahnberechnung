@@ -475,10 +475,10 @@ void C_CameraManager::calibrate_stereo_camera_aruco(int current_camera_id)
   //3x1 Matrizen der jeweiligen Kameras (L+R)
   cv::Vec3d rBoardAxisL, tBoardAxisL, rBoardAxisR, tBoardAxisR;
   //Initialisierung der ChAruco Kalibrierung
-//  cv::Ptr<cv::aruco::Dictionary>            dictionary = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_4X4_50);// (cv::aruco::DICT_6X6_250)
-//  cv::Ptr<cv::aruco::CharucoBoard>          board = cv::aruco::CharucoBoard::create(9, 6, 0.03190f, 0.02002f, dictionary);
   cv::Ptr<cv::aruco::Dictionary>            dictionary = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_4X4_50);// (cv::aruco::DICT_6X6_250)
-  cv::Ptr<cv::aruco::CharucoBoard>          board = cv::aruco::CharucoBoard::create(5, 8, 0.05f, 0.03745f, dictionary);
+//  cv::Ptr<cv::aruco::CharucoBoard>          board = cv::aruco::CharucoBoard::create(5, 8, 0.05f, 0.03745f, dictionary);
+  cv::Ptr<cv::aruco::CharucoBoard>          board = cv::aruco::CharucoBoard::create(5, 8, 50.00f, 37.45f, dictionary);
+
   cv::Ptr<cv::aruco::DetectorParameters>    params = cv::aruco::DetectorParameters::create();
 
   cv::Size                                  imgSize;
@@ -724,60 +724,61 @@ void *C_CameraManager::threadHelper(void* This)
 void C_CameraManager::calculate_camera_pose    (int camera1, int camera2, cv::Mat* M10, cv::Mat* M20)
   {
   //M12 = M10*M02
-  cv::Mat M12(cv::Mat_<double>(4,4));
-  double doubleM20[4][4];
-  double doubleM20Inverse[4][4];
+    cv::Mat M12(cv::Mat_<double>(4,4));
+    double doubleM20[4][4];
+    double doubleM20Inverse[4][4];
 
-  //Erzeuge inverse von M20 = M02
-  for(int i = 0; i <= 3; i ++)
-    {
-    for(int j = 0; j <= 3; j ++)
+    //Erzeuge inverse von M20 = M02
+    for(int i = 0; i <= 3; i ++)
       {
-      doubleM20[i][j] =   M20->at<double>(i,j);
-      }
-    }
-  relPose->InversHomogenousPose(doubleM20, doubleM20Inverse);
-
-
-  //Multiplizere Matrizen M10*M02
-  for(int i=0;i<4;i++)
-    {
-    for(int j=0;j<4;j++)
+      for(int j = 0; j <= 3; j ++)
         {
-        M12.at<double>(i,j)=0;
-        for(int k=0;k<4;k++)
-            {
-            M12.at<double>(i,j)+=M10->at<double>(i,k)*doubleM20Inverse[k][j];
-            }
+        doubleM20[i][j] =   M20->at<double>(i,j);
         }
-    }
-  std::cout << "M12 temp in pose: " << M12 << std::endl;
-
-  //Buffer für die M12 Mat zur erleichterten Verarbeitung
-  double HomogenePosenMatrixTempPuffer[4][4];
-  for (int i=0; i < 3; i++)
-    {
-    for (int j=0; j < 3; j++)
-      {
-      HomogenePosenMatrixTempPuffer[j][i] = M12.at<double>(j,i);
       }
-    }
+    relPose->InversHomogenousPose(doubleM20, doubleM20Inverse);
 
-  //Berechne Absolute Pose für Kamera 2 durch Pose Kamera 1 * M12
-  for (int i = 0; i < 4; i++)
-    {
-    for (int j = 0; j < 4; j++)
+
+    //Multiplizere Matrizen M10*M02
+    for(int i=0;i<4;i++)
       {
-      this->vecCameras->at(camera2)->getCameraPose()->HomogenePosenMatrix[i][j] = 0;
-      for (int k = 0; k < 4; k++)
-        this->vecCameras->at(camera2)->getCameraPose()->HomogenePosenMatrix[i][j] += this->vecCameras->at(camera1)->getCameraPose()->HomogenePosenMatrix[i][k] *
-                               HomogenePosenMatrixTempPuffer[k][j];
+      for(int j=0;j<4;j++)
+          {
+          M12.at<double>(i,j)=0;
+          for(int k=0;k<4;k++)
+              {
+              M12.at<double>(i,j)+=M10->at<double>(i,k)*doubleM20Inverse[k][j];
+              }
+          }
       }
-    }
+    std::cout << "M12 temp in pose: " << M12 << std::endl;
 
-  std::cout << std::endl << std::endl << "M12: " << M12 << std::endl;
+    //Buffer fr die M12 Mat zur erleichterten Verarbeitung
+    double HomogenePosenMatrixTempPuffer[4][4];
+    for (int i=0; i < 3; i++)
+      {
+      for (int j=0; j < 3; j++)
+        {
+        HomogenePosenMatrixTempPuffer[j][i] = M12.at<double>(j,i);
+        }
+      }
 
-  this->saveManager->saveCameraCos(*this->vecCameras->at(camera2));
+    //Berechne Absolute Pose fr Kamera 2 durch Pose Kamera 1 * M12
+    for (int i = 0; i < 4; i++)
+      {
+      for (int j = 0; j < 4; j++)
+        {
+        this->vecCameras->at(camera2)->getCameraPose()->HomogenePosenMatrix[i][j] = 0;
+        for (int k = 0; k < 4; k++)
+          this->vecCameras->at(camera2)->getCameraPose()->HomogenePosenMatrix[i][j] += this->vecCameras->at(camera1)->getCameraPose()->HomogenePosenMatrix[i][k] *
+                                 HomogenePosenMatrixTempPuffer[k][j];
+        }
+      }
+
+    std::cout << std::endl << std::endl << "M12: " << M12 << std::endl;
+
+    this->saveManager->saveCameraCos(*this->vecCameras->at(camera2));
+
   }//calculate_camera_pose
 
 void *C_CameraManager::pipelineHelper(void* This)
