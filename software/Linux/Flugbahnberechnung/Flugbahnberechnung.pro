@@ -24,7 +24,6 @@ QMAKE_CXXFLAGS_RELEASE =-03
 CONFIG += -O0
 
 SOURCES += \
-  mathhelper.cpp \
   plotter.cpp \
     sources/camera2.cpp \
     sources/imagefilter.cpp \
@@ -68,7 +67,6 @@ HEADERS += \
     headers/imagefilter.h \
     headers/loadmanager.h \
     headers/savemanager.h \
-    mathhelper.h \
     plotter.h \
     watchdog.h
 

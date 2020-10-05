@@ -11,9 +11,12 @@ C_GlobalObjects::C_GlobalObjects ()
   this->csv_parameter_datei = new C_CSV_Parameter_Datei();
   this->camera_order        = new std::vector<int>;
   this->watchdog = nullptr;
+  this->mathHelper = new mathhelper::C_mathHelper;
+
   }
 C_GlobalObjects::~C_GlobalObjects ()
   {
+  delete (mathHelper);
   this->watchdog = nullptr;
 
   delete                    (this->camera_order);

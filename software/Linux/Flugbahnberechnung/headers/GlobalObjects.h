@@ -18,6 +18,7 @@ namespace GlobalObjects
 
     C_CSV_Parameter_Datei* csv_parameter_datei;
     watchdog::C_watchdog* watchdog;
+    mathhelper::C_mathHelper* mathHelper;
 
 
     int absCameras;
