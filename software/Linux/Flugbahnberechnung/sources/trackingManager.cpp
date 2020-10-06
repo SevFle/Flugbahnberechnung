@@ -100,7 +100,7 @@ void C_trackingManager::load_posen                     (C_AbsolutePose& cameraPo
 void C_trackingManager::setTime                         ()
   {
   *this->timestamp_ms     = timer->now();
-  *this->dTimestamp       = std::chrono::duration_cast<milliseconds>(*this->timestamp_ms_old - *this->timestamp_ms);
+  *this->dTimestamp       = std::chrono::duration_cast<milliseconds>(*this->timestamp_ms - *this->timestamp_ms_old);
   this->dTime             = this->dTimestamp->count()*1000;
   *this->timestamp_ms_old = timer->now();
   if(this->dTime < 0)

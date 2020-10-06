@@ -39,8 +39,6 @@ void C_frm_Camera_Positioning::showEvent(QShowEvent* ShowEvent)
   this->installEventFilter    (this);
   this->Ui->numTimerIntervall->setValue(Taktgeber_Intervall);
   this->Zaehler               = 0;
-  this->Main->cameraManager->positioningDone.store(false);
-  this->Main->cameraManager->startThreadCameraPositioning();
   this->set_num_value(*GlobalObjects->camera_order);
   Q_UNUSED                    (ShowEvent)
   }

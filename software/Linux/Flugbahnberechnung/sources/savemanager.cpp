@@ -45,9 +45,9 @@ void c_SaveManager::saveCameraCos         (Camera::C_Camera2 &Camera)
     GlobalObjects->csv_parameter_datei->Schreiben ("ax",ax,"[1]");
     GlobalObjects->csv_parameter_datei->Schreiben ("ay",ay,"[1]");
     GlobalObjects->csv_parameter_datei->Schreiben ("az",az,"[1]");
-    GlobalObjects->csv_parameter_datei->Schreiben ("px",px,"[mm]");
-    GlobalObjects->csv_parameter_datei->Schreiben ("py",py,"[mm]");
-    GlobalObjects->csv_parameter_datei->Schreiben ("pz",pz,"[mm]");
+    GlobalObjects->csv_parameter_datei->Schreiben ("px",px,"[m]");
+    GlobalObjects->csv_parameter_datei->Schreiben ("py",py,"[m]");
+    GlobalObjects->csv_parameter_datei->Schreiben ("pz",pz,"[m]");
     GlobalObjects->csv_parameter_datei->Schliessen();
     std::cout << "**INFO** Pose fuer Kamera " << std::to_string(Camera.getCameraID()) << " wurde gespeichert" << std::endl;
  }

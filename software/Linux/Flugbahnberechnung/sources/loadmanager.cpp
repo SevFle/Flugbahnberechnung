@@ -261,7 +261,7 @@ void C_LoadManager::loadCameraCos (Camera::C_Camera2* Camera)
     GlobalObjects->csv_parameter_datei->Lesen (py);
     GlobalObjects->csv_parameter_datei->Lesen (pz);
 
-    Camera->getCameraPose()->nx(nx);
+    Camera->getCameraPose()->nx (nx);
     Camera->getCameraPose()->ny (ny);
     Camera->getCameraPose()->nz (nz);
     Camera->getCameraPose()->ox (ox);

@@ -352,7 +352,6 @@ void C_frm_Camera_Calibration::on_rb_single_calibration_clicked()
     this->Ui->txb_edge_width->setVisible              (true);
     this->Ui->txb_edge_height->setVisible             (true);
     this->Ui->txb_edge_length->setVisible             (true);
-    this->Ui->txb_usrInput_images->setVisible         (true);
 
 
    this->Ui->lbl_img_single_calibration->setVisible   (true);
@@ -376,7 +375,6 @@ void C_frm_Camera_Calibration::on_rb_stereo_calibration_clicked()
     this->Ui->txb_edge_width->setVisible              (false);
     this->Ui->txb_edge_height->setVisible             (false);
     this->Ui->txb_edge_length->setVisible             (false);
-    this->Ui->txb_usrInput_images->setVisible         (false);
 
     this->cameraID                            = 0;
     std::lock_guard<std::mutex> lck (*this->Main->cameraManager->getLock());
@@ -422,7 +420,8 @@ void C_frm_Camera_Calibration::camera_calibration_thread (void* This)
       break;
 
     case 1:
-       static_cast<frm_Camera_Calibration::C_frm_Camera_Calibration*>(This)->Main->cameraManager->calibrate_stereo_camera_aruco(static_cast<frm_Camera_Calibration::C_frm_Camera_Calibration*>(This)->cameraID);
+       static_cast<frm_Camera_Calibration::C_frm_Camera_Calibration*>(This)->Main->cameraManager->calibrate_stereo_camera_aruco(static_cast<frm_Camera_Calibration::C_frm_Camera_Calibration*>(This)->cameraID,
+                                                                                                                      static_cast<frm_Camera_Calibration::C_frm_Camera_Calibration*>(This)->Ui->txb_usrInput_images->toPlainText().toInt());
 
       break;
 
@@ -493,6 +492,8 @@ void C_frm_Camera_Calibration::sm_Stereo_camera_calibration ()
       this->cameraID                        = this->Ui->num_camera_id->value();
       this->Ui->bt_photo->setEnabled        (true);
       this->Ui->bt_start->setText           ("Beenden");
+      this->usrInputAbsPhoto                = this->Ui->txb_usrInput_images->toPlainText().toInt();
+
       this->sm_calibration_state            = 1;
       break;
 
@@ -500,8 +501,16 @@ void C_frm_Camera_Calibration::sm_Stereo_camera_calibration ()
     case 1:
       this->Main->cameraManager->vecCameras->at(cameraID)->save_picture    (photo_id,naming,*this->imgBuffer[0]);
       this->Main->cameraManager->vecCameras->at(cameraID+1)->save_picture    (photo_id,naming,*this->imgBuffer[1]);
+      this->photo_id++;
       this->Ui->txb_img_count->                                     setText(QString::number(this->photo_id + 1));
-      this->sm_calibration_state = 2;
+
+      if (photo_id >= usrInputAbsPhoto)
+        {
+        this->sm_calibration_state = 2;
+        }
+
+      break;
+    case 2:
       this->Ui->bt_photo->setVisible      (false);
       this->Ui->bt_start->setText         ("Start");
       this->Ui->lbl_calibration_running->setVisible(true);

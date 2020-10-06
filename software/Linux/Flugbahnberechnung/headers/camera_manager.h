@@ -213,7 +213,7 @@ namespace CameraManager
                                    int absCornersHeight,
                                    int absBoardImg,
                                    float absCornerLength);
-    void calibrate_stereo_camera_aruco(int current_camera_id);
+    void calibrate_stereo_camera_aruco(int current_camera_id, int numImages);
 
     bool startThreadCameraPositioning();
     bool stopThreadCameraPositioning();

@@ -2,7 +2,6 @@
 #define __GlobalObjects_H
 #include "CSV_Datei.h"
 #include "watchdog.h"
-#include "mathhelper.h"
 #include <vector>
 
 using namespace UM_CSV_Datei;
@@ -18,7 +17,6 @@ namespace GlobalObjects
 
     C_CSV_Parameter_Datei* csv_parameter_datei;
     watchdog::C_watchdog* watchdog;
-    mathhelper::C_mathHelper* mathHelper;
 
 
     int absCameras;
