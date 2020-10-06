@@ -65,8 +65,8 @@ namespace trackingManager
     void init_posen                     ();
     void load_posen                     (C_AbsolutePose& cameraPose);
 
-    void Get_Position_ObjectTracking    (S_Positionsvektor&             objektVektor);
-    void Calc_Position_ObjectTracking   (S_Positionsvektor&             objektVektor, vector<S_Positionsvektor>&  vec_Richtungsvektoren_World);
+    void Get_Position_ObjectTracking    (S_Positionsvektor&             objektVektor, vector<C_AbsolutePose*> &poseActiveCamera);
+    void Calc_Position_ObjectTracking   (S_Positionsvektor&             objektVektor, vector<S_Positionsvektor>&  vec_Richtungsvektoren_World, vector<C_AbsolutePose*> &poseActiveCamera);
     void Calc_RichtungsvektorenToWorld  (std::vector<S_Positionsvektor>& vec_Richtungsvektoren_World, std::vector<C_AbsolutePose> vecEinheitsMatrix);
     void calcPixelVeloctiy              (int ist_X, int ist_Y, int camID, int& pred_X, int& pred_Y);
     void calcObjectVeloctiy             (S_Positionsvektor&             objektVektor);

@@ -662,103 +662,203 @@ void C_CameraManager::calibrate_stereo_camera_aruco(int current_camera_id, int n
   //    std::vector<cv::Mat> vecRvec_left + vectvec_left
   //    std::vector<cv::Mat> vecRvec_right + vectec_right
 
-  std::vector<cv::Vec3d> vec_tempR_L, vec_tempR_R, vec_tempT_L, vec_tempT_R;
-  std::vector<cv::Mat> vec_L, vec_R;
+  std::vector<cv::Vec3d> vecM12total;
+  std::vector<cv::Mat> vec_M10, vec_M20, vecM12;
   cv::Vec3d total_t_R, total_t_L, total_R_R, total_R_L;
-  int Charuco_dimension = vecRvec_left.size();
+  cv::Mat M12_average(cv::Mat_<double>(4,4));
+  cv::Mat M10_average(cv::Mat_<double>(4,4));
+  cv::Mat M20_average(cv::Mat_<double>(4,4));
 
+  int Charuco_dimension = vecRvec_left.size();
+  //Erstelle einen Vektor bestehend aus 4x4 Matrizen, welche die relative Pose M10 und M20 beschreiben. 0 ist hierbei das
+  //KOS des ChAruco Boardes, 1 und 2 stehen für die Kameras (L,R).
   for(int i = 0; i < Charuco_dimension; i ++)
     {
-      cv::Vec3d valueR_L, valueR_R, valueT_L, valueT_R;
-      cv::Mat rodR, rodL, matrixL, matrixR;
-      for(int j = 0; j < 3; j++)
-        {
-        valueR_L.val[j] = vecRvec_left[i].at<double>(j);
-        valueR_R.val[j] = vecRvec_right[i].at<double>(j);
-        valueT_L.val[j] = vectvec_left[i].at<double>(j);
-        valueT_R.val[j] = vectec_right[i].at<double>(j);
-        }
+    cv::Vec3d valueT_L, valueT_R;
+    cv::Mat rodR, rodL, matrixL, matrixR;
+    cv::Rodrigues       (vecRvec_left[i], rodL);
+    cv::Rodrigues       (vecRvec_right[i], rodR);
 
-    cv::Rodrigues(valueR_L, rodL);
-    cv::Rodrigues(valueR_R, rodR);
-    cv::hconcat(rodL, valueT_L, matrixL);
-    cv::hconcat(rodR, valueT_R, matrixR);
-    vec_L.push_back(matrixL);
-    vec_R.push_back(matrixR);
+    cv::hconcat         (rodL, vectvec_left[i], matrixL);
+    cv::hconcat         (rodR, vectec_right[i], matrixR);
+
+    vec_M10.push_back   (matrixL);
+    vec_M20.push_back   (matrixR);
     }
-  for(int i = 0; i < vec_L.size(); i ++)
+  //Zwischenberechnung! Berechne den Durchschnitt der M10/M20 Matrizen. !DEBUG!
+  for(int i = 0; i < Charuco_dimension; i++)
     {
-      //M12 = M10*M02
-      cv::Mat M12(cv::Mat_<double>(4,4));
-      cv::Mat M02(cv::Mat_<double>(4,4));
+      M10_average += vec_M10.at(i);
+      M20_average += vec_M20.at(i);
+    }
+  for(int i =0; i < 4; i++)
+    for(int j = 0; j < 4; j++)
+      {
+      M10_average.at<double>(i,j) /= Charuco_dimension;
+      M20_average.at<double>(i,j) /= Charuco_dimension;
+      }
 
-      //clear Matrix
-        for(int i = 0; i < 4; i++)
-          for(int j = 0; j < 4; j++)
+  std::cout << "M10 averaged: " << M10_average << std::endl;
+  std::cout << "M20 averaged: " << M20_average << std::endl;
+
+  //Berechne für jede Position in den M10/M20 Vektoren die dazugehörigen M12 Wert. !DEBUG!
+  for(int i = 0; i < Charuco_dimension; i ++)
+    {
+    cv::Mat M02(cv::Mat_<double>(4,4));
+    cv::Mat M12(cv::Mat_<double>(4,4));
+    M02 = vec_M20.at(i).inv(cv::DECOMP_LU);
+
+    //clear Matrix
+      for(int i = 0; i < 4; i++)
+        for(int j = 0; j < 4; j++)
+          {
+          M12.at<double>(i,j)=0;
+          }
+
+      //M12 = M10*M02;
+      for(int i=0;i<4;i++)
+        for(int j=0;j<4;j++)
+            for(int k=0;k<4;k++)
+                {
+                M12.at<double>(i,j)+=vec_M10.at(i).at<double>(i,k)* M02.at<double>(k,j);
+                }
+      vecM12.push_back(M12);
+    }
+
+  //Zwischenberechnung! Berechne den Durchschnitt der M12 Matrizen. !DEBUG!
+  for(int i = 0; i < Charuco_dimension; i++)
+    {
+      M12_average += vecM12.at(i);
+    }
+  for(int i =0; i < 4; i++)
+    for(int j = 0; j < 4; j++)
+      {
+      M12_average.at<double>(i,j) /= Charuco_dimension;
+      }
+  std::cout << "M12 averaged: " << M10_average << std::endl;
+
+  this->calculate_camera_pose(current_camera_id, current_camera_id+1, &vec_M10, &vec_M20);
+
+
+///************************************ OLD *************************************/
+//  //Posenberechnungen
+//  cv::Mat rvecM12, rBoardAxisRodL, rBoardAxisRodR;
+//  cv::Mat M10(cv::Mat_<double>(4,4));
+//  cv::Mat M20(cv::Mat_<double>(4,4));
+//  for(int i = 0; i < 4; i ++)
+//  {
+//      for(int j = 0; j < 4; j ++)
+//      {
+//      M10.at<double>(i,j) =   0.0;
+//      M20.at<double>(i,j) =   0.0;
+//      }
+//  }
+//  cv::Mat row = cv::Mat::zeros(1, 4, CV_64F);  // 3 cols, 1 row
+
+
+//  std::cout << "M10: " << endl << M10 << std::endl << std::endl;
+//  std::cout << "M20: " << endl << M20 << std::endl << std::endl;
+
+//  cv::Rodrigues(rBoardAxisL, rBoardAxisRodL);
+//  cv::Rodrigues(rBoardAxisR, rBoardAxisRodR);
+
+//  //Hconcat kombiniert zwei Matrizen
+//  cv::hconcat(rBoardAxisRodL, tBoardAxisL, M10);
+//  cv::hconcat(rBoardAxisRodR, tBoardAxisR, M20);
+//  M10.push_back(row);
+//  M20.push_back(row);
+//  M10.at<double>(3,3) =   1.0;
+//  M20.at<double>(3,3) =   1.0;
+
+
+//  std::cout << "M10: " << endl << M10 << std::endl << std::endl;
+//  std::cout << "M20: " << endl << M20 << std::endl << std::endl;
+
+
+//  this->calculate_camera_pose(current_camera_id, current_camera_id+1, &M10, &M20);
+  }
+
+
+void C_CameraManager::calculate_camera_pose    (int camera1, int camera2, std::vector<cv::Mat>* M10, std::vector<cv::Mat>* M20)
+  {
+  int i = 0;
+  std::vector<cv::Mat> vecM12;
+  cv::Mat M12_averaged(cv::Mat_<double>(4,4));
+  //Berechne für jede Position in den M10/M20 Vektoren die dazugehörigen M12 Wert.
+  for(auto it = std::begin(*M10); it < std::end(*M10); it++)
+    {
+    //M12 = M10*M02
+    cv::Mat M12(cv::Mat_<double>(4,4));
+    cv::Mat M02(cv::Mat_<double>(4,4));
+    M02 = M20->at(i).inv(cv::DECOMP_LU);
+    //clear Matrix
+      for(int i = 0; i < 4; i++)
+        for(int j = 0; j < 4; j++)
+          {
+          M12.at<double>(i,j)=0;
+          }
+    //M12 = M10*M02;
+    for(int i=0;i<4;i++)
+      for(int j=0;j<4;j++)
+          for(int k=0;k<4;k++)
+              {
+              M12.at<double>(i,j)+=M10->at(i).at<double>(i,k)* M02.at<double>(k,j);
+              }
+    vecM12.push_back(M12);
+    }
+  //Zwischenberechnung! Berechne den Durchschnitt der M12 Matrizen. !
+  for(auto it = std::begin(vecM12); it < std::end(vecM12); it++)
+    {
+      M12_averaged += (*it);
+    }
+  for(int i =0; i < 4; i++)
+    for(int j = 0; j < 4; j++)
+      {
+      M12_averaged.at<double>(i,j) /= vecM12.size();
+      }
+//Schreibe M12 in relPose für Berechnung der Pose von Kamera 2
+  for(int i = 0; i < 4; i++)
+    for(int j = 0; j < 4; j++)
+      {
+      this->relPose->HomogenePosenMatrix[i][j] = M12_averaged.at<double>(i,j);
+      }
+
+  cv::Mat PoseC1(cv::Mat_<double>(4,4));
+  cv::Mat PoseC1_inv(cv::Mat_<double>(4,4));
+  cv::Mat PoseC2(cv::Mat_<double>(4,4));
+
+  for(int i = 0; i < 4; i++)
+    for(int j = 0; j < 4; j++)
+      {
+      PoseC1.at<double>(i,j) = this->vecCameras->at(camera1)->getCameraPose()->HomogenePosenMatrix[i][j];
+      PoseC2.at<double>(i,j) = 0.0;
+      }
+
+  std::cout << "Pose Kamera 1: " << PoseC1 << std::endl;
+  PoseC1_inv = PoseC1.inv(cv::DECOMP_LU);
+
+  //Pose2 = Pose01 * M12;
+  for(int i=0;i<4;i++)
+    for(int j=0;j<4;j++)
+        for(int k=0;k<4;k++)
             {
-            M12.at<double>(i,j)=0;
+            PoseC2.at<double>(i,j)+=PoseC1_inv.at<double>(i,k)* M12_averaged.at<double>(k,j);
             }
 
-        M02 = M20->inv(cv::DECOMP_LU);
+  std::cout << "Pose Kamera 2: " << PoseC2 << std::endl;
 
-        //M12 = M10*M02;
-        for(int i=0;i<4;i++)
-          for(int j=0;j<4;j++)
-              for(int k=0;k<4;k++)
-                  {
-                  M12.at<double>(i,j)+=M10->at<double>(i,k)* M02.at<double>(k,j);
-                  }
-        std::cout << "M02: " << M02 << std::endl;
-        std::cout << "M12: " << M12 << std::endl;
-    }
-
-
-
-
-/************************************ OLD *************************************/
-  //Posenberechnungen
-  cv::Mat rvecM12, rBoardAxisRodL, rBoardAxisRodR;
-  cv::Mat M10(cv::Mat_<double>(4,4));
-  cv::Mat M20(cv::Mat_<double>(4,4));
-  for(int i = 0; i < 4; i ++)
-  {
-      for(int j = 0; j < 4; j ++)
+  for(int i = 0; i < 4; i++)
+    for(int j = 0; j < 4; j++)
       {
-      M10.at<double>(i,j) =   0.0;
-      M20.at<double>(i,j) =   0.0;
+      this->absPose->HomogenePosenMatrix[i][j] = PoseC2.at<double>(i,j);
       }
+
+  this->vecCameras->at(camera2)->cameraPose = this->absPose;
+  this->saveManager->saveCameraCos(*this->vecCameras->at(camera2));
+
   }
-  cv::Mat row = cv::Mat::zeros(1, 4, CV_64F);  // 3 cols, 1 row
-
-
-  std::cout << "M10: " << endl << M10 << std::endl << std::endl;
-  std::cout << "M20: " << endl << M20 << std::endl << std::endl;
-
-  cv::Rodrigues(rBoardAxisL, rBoardAxisRodL);
-  cv::Rodrigues(rBoardAxisR, rBoardAxisRodR);
-
-  //Hconcat kombiniert zwei Matrizen
-  cv::hconcat(rBoardAxisRodL, tBoardAxisL, M10);
-  cv::hconcat(rBoardAxisRodR, tBoardAxisR, M20);
-  M10.push_back(row);
-  M20.push_back(row);
-  M10.at<double>(3,3) =   1.0;
-  M20.at<double>(3,3) =   1.0;
-
-
-  std::cout << "M10: " << endl << M10 << std::endl << std::endl;
-  std::cout << "M20: " << endl << M20 << std::endl << std::endl;
-
-
-  this->calculate_camera_pose(current_camera_id, current_camera_id+1, &M10, &M20);
-  }
-
-
-
 void C_CameraManager::calculate_camera_pose    (int camera1, int camera2, cv::Mat* M10, cv::Mat* M20)
   {
-  std::cout << "M10: " << *M10 << std::endl;
-  std::cout << "M20: " << *M20 << std::endl;
   //M12 = M10*M02
   cv::Mat M12(cv::Mat_<double>(4,4));
   cv::Mat M02(cv::Mat_<double>(4,4));
@@ -941,6 +1041,8 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
   int frameheight = this->vecCameras->at(0)->getFrameHeight();
   int framewidth = this->vecCameras->at(0)->getFrameWidth();
   std::cout << "**INFO** Thread " <<   std::this_thread::get_id() << " alive!" << std::endl;
+  vector<C_AbsolutePose*> poseActiveCameras;
+  poseActiveCameras.resize(payloadSize);
 
 
   tbb::parallel_pipeline(3, tbb::make_filter<void, S_pipelinePayload*>(tbb::filter::serial_in_order, [&](tbb::flow_control& fc)->S_pipelinePayload*
@@ -1253,8 +1355,12 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
     }
     if(pData->found)
       {
+      for(int i = 0; i < 2; i++)
+        {
+        poseActiveCameras[i] = this->vecCameras->at(pData->cameraID[i])->getCameraPose();
+        }
       this->trackingManager->setTime();
-      this->trackingManager->Get_Position_ObjectTracking    (pData->objektVektor);
+      this->trackingManager->Get_Position_ObjectTracking    (pData->objektVektor, poseActiveCameras);
       this->trackingManager->calcObjectVeloctiy             (pData->objektVektor);
 
       for(int i =0; i < payloadSize; i++)

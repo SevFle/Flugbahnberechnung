@@ -123,7 +123,7 @@ void C_trackingManager::setRichtungsvektor(S_Positionsvektor *value, int pos)
   }
 
 
-void C_trackingManager::Get_Position_ObjectTracking (S_Positionsvektor& objektVektor)
+void C_trackingManager::Get_Position_ObjectTracking (S_Positionsvektor& objektVektor, vector<C_AbsolutePose*> &poseActiveCameras)
   {
   //objektVektor = aktuelle Position des objektes - Beinhaltet bei Übergabe keine Position [0],
   //Richtungsvektoren[payloadsize] = Objektrichttungsvektoren aufgenommen durch die Bilder der Kameras
@@ -133,7 +133,7 @@ void C_trackingManager::Get_Position_ObjectTracking (S_Positionsvektor& objektVe
   //
   this->Calc_RichtungsvektorenToWorld(vec_Richtungsvektoren_World, *vecEinheitsVektor);
 
-  this->Calc_Position_ObjectTracking(objektVektor, vec_Richtungsvektoren_World);
+  this->Calc_Position_ObjectTracking(objektVektor, vec_Richtungsvektoren_World, poseActiveCameras);
 
   *this->Positionsvektor_alt = objektVektor;
 
@@ -145,9 +145,9 @@ void C_trackingManager::Get_Position_ObjectTracking (S_Positionsvektor& objektVe
 
   //this->dataPlotter->addSingleData(vec3d, plotter::series::realValue);
   }
-void C_trackingManager::Calc_Position_ObjectTracking(S_Positionsvektor &objektVektor, vector<S_Positionsvektor> &vec_Richtungsvektoren_World)
+void C_trackingManager::Calc_Position_ObjectTracking(S_Positionsvektor &objektVektor, vector<S_Positionsvektor> &vec_Richtungsvektoren_World, vector<C_AbsolutePose*> &poseActiveCamera)
   {
-  // Berechnung der aktuellen Objecktposition bezogen auf das Welt-koordinatensystem in Abhngigkeit aller Kameraposen. Hierbei wird ber
+  // Berechnung der aktuellen Objecktposition bezogen auf das Welt-koordinatensystem in Abhngigkeit aller TCP- / Kameraposen. Hierbei wird ber
   // Matrizen die Position bestimmt, bei der die Summe aller Abstandsquadrate der optischen Achsen zum Objekt am geringsten ist (Minimierungsproblem).
   // Siehe Ausarbeitung.
 
@@ -167,7 +167,7 @@ void C_trackingManager::Calc_Position_ObjectTracking(S_Positionsvektor &objektVe
   for (int i = 0; i < Anzahl_Posen; i++)
     {
     // Berechnung a_00 = Sum(r_y + r_z)
-    Matrix_A[0][0] += vec_Richtungsvektoren_World[i].Y * vec_Richtungsvektoren_World[i].Y + vec_Richtungsvektoren_World[i].Z * vec_Richtungsvektoren_World[i].Z;
+    Matrix_A[0][0] +=  vec_Richtungsvektoren_World[i].Y * vec_Richtungsvektoren_World[i].Y + vec_Richtungsvektoren_World[i].Z * vec_Richtungsvektoren_World[i].Z;
 
     // Berechnung a_01 = Sum(-r_x * r_y)
     Matrix_A[0][1] += -vec_Richtungsvektoren_World[i].X * vec_Richtungsvektoren_World[i].Y;
@@ -176,37 +176,37 @@ void C_trackingManager::Calc_Position_ObjectTracking(S_Positionsvektor &objektVe
     Matrix_A[0][2] += -vec_Richtungsvektoren_World[i].X * vec_Richtungsvektoren_World[i].Z;
 
     // Berechnung a_10 = Sum(-r_y * r_x)
-    Matrix_A[1][0] = Matrix_A[0][1];
+    Matrix_A[1][0]  =  Matrix_A[0][1];
 
     // Berechnung a_11 = Sum(r_x + r_z)
-    Matrix_A[1][1] += vec_Richtungsvektoren_World[i].X * vec_Richtungsvektoren_World[i].X + vec_Richtungsvektoren_World[i].Z * vec_Richtungsvektoren_World[i].Z;
+    Matrix_A[1][1] +=  vec_Richtungsvektoren_World[i].X * vec_Richtungsvektoren_World[i].X + vec_Richtungsvektoren_World[i].Z * vec_Richtungsvektoren_World[i].Z;
 
     // Berechnung a_12 = Sum(-r_y * r_z)
     Matrix_A[1][2] += -vec_Richtungsvektoren_World[i].Y * vec_Richtungsvektoren_World[i].Z;
 
     // Berechnung a_20 = Sum(-r_z * r_x)
-    Matrix_A[2][0] = Matrix_A[0][2];
+    Matrix_A[2][0]  =  Matrix_A[0][2];
 
     // Berechnung a_21 = Sum(-r_z * r_y)
-    Matrix_A[2][1] = Matrix_A[1][2];
+    Matrix_A[2][1]  =  Matrix_A[1][2];
 
     // Berechnung a_22 = Sum(r_x + r_y)
-    Matrix_A[2][2] += vec_Richtungsvektoren_World[i].X * vec_Richtungsvektoren_World[i].X + vec_Richtungsvektoren_World[i].Y * vec_Richtungsvektoren_World[i].Y;
+    Matrix_A[2][2] +=  vec_Richtungsvektoren_World[i].X * vec_Richtungsvektoren_World[i].X + vec_Richtungsvektoren_World[i].Y * vec_Richtungsvektoren_World[i].Y;
     }
 
   // Bestimmen der Cholesky-Matrix L und L^T
   double Matrix_L[3][3];
   double Matrix_L_T[3][3];
 
-  Matrix_L_T[0][0] = sqrt (Matrix_A[0][0]);
+  Matrix_L_T[0][0] = sqrt(Matrix_A[0][0]);
   Matrix_L_T[0][1] = Matrix_A[0][1] / Matrix_L_T[0][0];
   Matrix_L_T[0][2] = Matrix_A[0][2] / Matrix_L_T[0][0];
   Matrix_L_T[1][0] = 0.0;
-  Matrix_L_T[1][1] = sqrt (Matrix_A[1][1] - Matrix_L_T[0][1] * Matrix_L_T[0][1]);
+  Matrix_L_T[1][1] = sqrt(Matrix_A[1][1] - Matrix_L_T[0][1] * Matrix_L_T[0][1]);
   Matrix_L_T[1][2] = (Matrix_A[1][2] - Matrix_L_T[0][1] * Matrix_L_T[0][2]) / Matrix_L_T[1][1];
   Matrix_L_T[2][0] = 0.0;
   Matrix_L_T[2][1] = 0.0;
-  Matrix_L_T[2][2] = sqrt (Matrix_A[2][2] - Matrix_L_T[0][2] * Matrix_L_T[0][2] - Matrix_L_T[1][2] * Matrix_L_T[1][2]);
+  Matrix_L_T[2][2] = sqrt(Matrix_A[2][2] - Matrix_L_T[0][2] * Matrix_L_T[0][2] - Matrix_L_T[1][2] * Matrix_L_T[1][2]);
 
   for (int i = 0; i < 3; i++)
     {
@@ -222,27 +222,29 @@ void C_trackingManager::Calc_Position_ObjectTracking(S_Positionsvektor &objektVe
     {
     Matrix_b[i][0] = 0.0;
     }
+
   for (int i = 0; i < Anzahl_Posen; i++)
     {
-    Matrix_b[0][0] += (-this->vecWorldtoCamPose->at(i).pz() * vec_Richtungsvektoren_World[i].X + this->vecWorldtoCamPose->at(i).px() * vec_Richtungsvektoren_World[i].Z) * vec_Richtungsvektoren_World[i].Z +
-      (-this->vecWorldtoCamPose->at(i).px() * vec_Richtungsvektoren_World[i].Y + this->vecWorldtoCamPose->at(i).py() * vec_Richtungsvektoren_World[i].X) * (-vec_Richtungsvektoren_World[i].Y);
-    Matrix_b[1][0] += (-this->vecWorldtoCamPose->at(i).px() * vec_Richtungsvektoren_World[i].Y + this->vecWorldtoCamPose->at(i).py() * vec_Richtungsvektoren_World[i].X) * vec_Richtungsvektoren_World[i].X +
-      (-this->vecWorldtoCamPose->at(i).py() * vec_Richtungsvektoren_World[i].Z + this->vecWorldtoCamPose->at(i).pz() * vec_Richtungsvektoren_World[i].Y) * (-vec_Richtungsvektoren_World[i].Z);
-    Matrix_b[2][0] += (-this->vecWorldtoCamPose->at(i).py() * vec_Richtungsvektoren_World[i].Z + this->vecWorldtoCamPose->at(i).pz() * vec_Richtungsvektoren_World[i].Y) * vec_Richtungsvektoren_World[i].Y +
-      (-this->vecWorldtoCamPose->at(i).pz() * vec_Richtungsvektoren_World[i].X + this->vecWorldtoCamPose->at(i).px() * vec_Richtungsvektoren_World[i].Z) * (-vec_Richtungsvektoren_World[i].X);
+    Matrix_b[0][0] += (-poseActiveCamera[i]->pz() * vec_Richtungsvektoren_World[i].X + poseActiveCamera[i]->px() * vec_Richtungsvektoren_World[i].Z) *   vec_Richtungsvektoren_World[i].Z +
+                      (-poseActiveCamera[i]->px() * vec_Richtungsvektoren_World[i].Y + poseActiveCamera[i]->py() * vec_Richtungsvektoren_World[i].X) * (-vec_Richtungsvektoren_World[i].Y);
+    Matrix_b[1][0] += (-poseActiveCamera[i]->px() * vec_Richtungsvektoren_World[i].Y + poseActiveCamera[i]->py() * vec_Richtungsvektoren_World[i].X) *   vec_Richtungsvektoren_World[i].X +
+                      (-poseActiveCamera[i]->py() * vec_Richtungsvektoren_World[i].Z + poseActiveCamera[i]->pz() * vec_Richtungsvektoren_World[i].Y) * (-vec_Richtungsvektoren_World[i].Z);
+    Matrix_b[2][0] += (-poseActiveCamera[i]->py() * vec_Richtungsvektoren_World[i].Z + poseActiveCamera[i]->pz() * vec_Richtungsvektoren_World[i].Y) *   vec_Richtungsvektoren_World[i].Y +
+                      (-poseActiveCamera[i]->pz() * vec_Richtungsvektoren_World[i].X + poseActiveCamera[i]->px() * vec_Richtungsvektoren_World[i].Z) * (-vec_Richtungsvektoren_World[i].X);
     }
 
   // Bestimmung der Hilfsmatrix "y" -> L*y=b
   double Matrix_y[3][1];
-  Matrix_y[0][0] = Matrix_b[0][0] / Matrix_L[0][0];
-  Matrix_y[1][0] = (Matrix_b[1][0] - Matrix_L[1][0] * Matrix_y[0][0]) / Matrix_L[1][1];
+  Matrix_y[0][0] =  Matrix_b[0][0]                                                                      / Matrix_L[0][0];
+  Matrix_y[1][0] = (Matrix_b[1][0] - Matrix_L[1][0] * Matrix_y[0][0])                                   / Matrix_L[1][1];
   Matrix_y[2][0] = (Matrix_b[2][0] - Matrix_L[2][0] * Matrix_y[0][0] - Matrix_L[2][1] * Matrix_y[1][0]) / Matrix_L[2][2];
 
   // Bestimmung der Position "x" -> L_T * x = y
-  objektVektor.Z = Matrix_y[2][0] / Matrix_L_T[2][2];
-  objektVektor.Y = (Matrix_y[1][0] - Matrix_L_T[1][2] * objektVektor.Z) / Matrix_L_T[1][1];
+  objektVektor.Z =  Matrix_y[2][0]                                                                                / Matrix_L_T[2][2];
+  objektVektor.Y = (Matrix_y[1][0] - Matrix_L_T[1][2] * objektVektor.Z)                                        / Matrix_L_T[1][1];
   objektVektor.X = (Matrix_y[0][0] - Matrix_L_T[0][1] * objektVektor.Y - Matrix_L_T[0][2] * objektVektor.Z) / Matrix_L_T[0][0];
   }
+
 void C_trackingManager::Calc_RichtungsvektorenToWorld (std::vector<S_Positionsvektor>& vec_Richtungsvektoren_World, std::vector<C_AbsolutePose> vecEinheitsMatrix)
   {
   // Die Orientierung von Welt- und Roboter-KS sind identisch. Es gilt:
@@ -254,26 +256,21 @@ void C_trackingManager::Calc_RichtungsvektorenToWorld (std::vector<S_Positionsve
   for (int i = 0; i < Anzahl_Posen; i++)
     {
     S_Positionsvektor Richtungsvektor;
-    Richtungsvektor.X = 0.0;
-    Richtungsvektor.Y = 0.0;
-    Richtungsvektor.Z = 0.0;
+    vec_Richtungsvektoren_World.push_back(Richtungsvektor);
 
-    vec_Richtungsvektoren_World.push_back (Richtungsvektor);
+    vec_Richtungsvektoren_World[i].X  = vecEinheitsMatrix[i].nx() * Richtungsvektoren[i]->X
+                                      + vecEinheitsMatrix[i].ox() * Richtungsvektoren[i]->Y
+                                      + vecEinheitsMatrix[i].ax() * Richtungsvektoren[i]->Z;
 
-    vec_Richtungsvektoren_World[i].X = vecEinheitsMatrix[i].nx() * this->Richtungsvektoren[i]->X
-      + vecEinheitsMatrix[i].ox() * Richtungsvektoren[i]->Y
-      + vecEinheitsMatrix[i].ax() * Richtungsvektoren[i]->Z;
+    vec_Richtungsvektoren_World[i].Y  = vecEinheitsMatrix[i].ny() * Richtungsvektoren[i]->X
+                                      + vecEinheitsMatrix[i].oy() * Richtungsvektoren[i]->Y
+                                      + vecEinheitsMatrix[i].ay() * Richtungsvektoren[i]->Z;
 
-    vec_Richtungsvektoren_World[i].Y = vecEinheitsMatrix[i].ny() * Richtungsvektoren[i]->X
-      + vecEinheitsMatrix[i].oy() * Richtungsvektoren[i]->Y
-      + vecEinheitsMatrix[i].ay() * Richtungsvektoren[i]->Z;
-
-    vec_Richtungsvektoren_World[i].Z = vecEinheitsMatrix[i].nz() * Richtungsvektoren[i]->X
-      + vecEinheitsMatrix[i].oz() * Richtungsvektoren[i]->Y
-      + vecEinheitsMatrix[i].az() * Richtungsvektoren[i]->Z;
+    vec_Richtungsvektoren_World[i].Z  = vecEinheitsMatrix[i].nz() * Richtungsvektoren[i]->X
+                                      + vecEinheitsMatrix[i].oz() * Richtungsvektoren[i]->Y
+                                      + vecEinheitsMatrix[i].az() * Richtungsvektoren[i]->Z;
     }
   }
-
 void C_trackingManager::calcPixelVeloctiy             (int ist_X, int ist_Y, int camID, int& pred_X, int& pred_Y)
   {
   int dPixelX;
