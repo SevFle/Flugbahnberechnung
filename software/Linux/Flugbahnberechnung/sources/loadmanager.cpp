@@ -129,9 +129,6 @@ void C_LoadManager::loadCameraCalibration (Camera::C_Camera2* Camera)
   string Dateityp   = "Intrinisic and distortion parameters of camera-single-calibration";
   double DistCoeffs[1][5];
   double Intrinsic[3][3];
-  int    real_size_width = 800;
-  int    real_size_height = 600;
-
   this->GlobalObjects->csv_parameter_datei->Oeffnen (Dateiname,Enum_CSV_Access::Read);
 
   if (this->GlobalObjects->csv_parameter_datei->IsOpen())
@@ -151,8 +148,6 @@ void C_LoadManager::loadCameraCalibration (Camera::C_Camera2* Camera)
     this->GlobalObjects->csv_parameter_datei->Lesen (Intrinsic[2][0]);
     this->GlobalObjects->csv_parameter_datei->Lesen (Intrinsic[2][1]);
     this->GlobalObjects->csv_parameter_datei->Lesen (Intrinsic[2][2]);
-    this->GlobalObjects->csv_parameter_datei->Lesen (real_size_width);
-    this->GlobalObjects->csv_parameter_datei->Lesen (real_size_height);
     this->GlobalObjects->csv_parameter_datei->Schliessen();
     std::cout << "**INFO** Gespeicherte Kalibrierung fuer Kamera " << std::to_string(cameraID) << " wurde geladen" << std::endl;
     }

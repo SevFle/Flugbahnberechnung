@@ -253,7 +253,7 @@ bool C_ImageFilter::findContours                     (cv::Mat* cpuSrc, cv::Mat* 
   }
 
 
-void C_ImageFilter::gpufUnidstord (cv::Mat* cpuSrc,           cv::cuda::GpuMat& gpuDst, cv::cuda::GpuMat& gpuMap1, cv::cuda::GpuMat& gpuMap2)
+void C_ImageFilter::gpufUnidstord (cv::Mat* cpuSrc,           cv::cuda::GpuMat& gpuDst, cv::cuda::GpuMat& gpuMapX, cv::cuda::GpuMat& gpuMapY)
   {
   if(cpuSrc->empty())
     {
@@ -269,7 +269,7 @@ void C_ImageFilter::gpufUnidstord (cv::Mat* cpuSrc,           cv::cuda::GpuMat& 
     }
   cv::cuda::GpuMat gpuSrcImg;
   gpuSrcImg.upload (*cpuSrc);
-  cv::cuda::remap (gpuSrcImg,gpuDst,gpuMap1,gpuMap2,cv::INTER_NEAREST,cv::BORDER_CONSTANT,0);
+  cv::cuda::remap (gpuSrcImg,gpuDst,gpuMapX,gpuMapY,cv::INTER_NEAREST,cv::BORDER_CONSTANT,0);
   }
 
 void C_ImageFilter::gpuROI(cv::cuda::GpuMat &gpuSrc, cv::cuda::GpuMat &gpuDst, cv::Rect &roi)

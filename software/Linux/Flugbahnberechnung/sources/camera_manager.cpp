@@ -864,7 +864,10 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
     {
     //Flush ist aktiv, wenn die aktuell verwendeten Kameras gewechselt werden
     if(this->pipelineFlush)
-      std::this_thread::sleep_for (std::chrono::milliseconds (100));
+      {
+      //std::this_thread::sleep_for (std::chrono::milliseconds (100));
+      return nullptr;
+      }
 
     //Flowcontrol steuert die Pipeline und beendet sie, falls pipelineDone true sein sollte
     if(pipelineDone)
@@ -1207,71 +1210,12 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
     return pData;
     }
   )&
-
-
-  //STEP 6: ADJUST ROI ON CPU UNDISTORT ****NOT NEEDED******
-  tbb::make_filter<S_pipelinePayload*, S_pipelinePayload*>(tbb::filter::serial_in_order, [&] (S_pipelinePayload *pData)->S_pipelinePayload*
-    {
-    if(pData == nullptr)
-       return pData;
-
-    pData->start = Clock::now();
-    if(!this->filterFlags->roiAdjustmentActive)
-    {
-    pData->end = Clock::now();
-    pData->executionTime[5] = std::chrono::duration_cast<milliseconds>(pData->end - pData->start);
-    return pData;
-    }
-
-//    switch (this->roistatus)
-//      {
-//      case initZone:
-//        for(int i = 0; i < payloadSize; i++)
-//          {
-//          cv::Rect initRoi;
-//          initRoi.x = 1;
-//          initRoi.y = 1;
-//          initRoi.width = initZoneWidth;
-//          initRoi.height = initZoneHeight-1;
-
-//          this->vecCameras[pData->cameraID[i]]->setRoi(&initRoi);
-//          }
-//        return pData;
-//      case objectLost:
-//        for(int i = 0; i < payloadSize; i++)
-//          {
-//          this->vecCameras[pData->cameraID[i]]->filterValues->setOffset(0, 0);
-//          this->vecCameras[pData->cameraID[i]]->filterValues->setOffset(1, 0);
-//          cv::Rect roi;
-//          roi.x = 1;
-//          roi.y = 1;
-//          roi.width = this->frameWidth-1;
-//          roi.height = this->frameHeight-1;
-//          this->vecCameras[pData->cameraID[i]]->setRoi(&roi);
-//          }
-
-
-//        break;
-//      case objectFound:
-//        for(int i = 0; i < payloadSize; i++)
-//          {
-//          this->vecCameras[pData->cameraID[i]]->setTrackingRoi(pData->radius[i], pData->pred_X[i],pData->pred_Y[i]);
-//          }
-//        break;
-//      }
-      pData->end = Clock::now();
-      pData->executionTime[5] = std::chrono::duration_cast<milliseconds>(pData->end - pData->start);
-      return pData;
-    }//make_filter
-  )&
-
   //STEP 7: FINAL PUSH TO QUE
   tbb::make_filter<S_pipelinePayload*,void>(tbb::filter::serial_in_order, [&] (S_pipelinePayload *pData)
     {
     if(pData != nullptr)
     {
     pData->start            = Clock::now();
-    // TBB NOTE: pipeline end point. dispatch to GUI
     pData->fpsEnd           = Clock::now();
     pData->frametime        = std::chrono::duration_cast<std::chrono::milliseconds>(pData->fpsEnd - pData->fpsStart);
     //this->globalObjects->watchdog->pet();
