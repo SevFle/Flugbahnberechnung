@@ -15,7 +15,7 @@ using namespace posen;
 using namespace GlobalObjects;
 /********************************************** DEFINE PAYLOAD SIZE ******************************************************/
 const int payloadSize =  2;
-typedef std::chrono::steady_clock Clock;
+typedef std::chrono::system_clock Clock;
 typedef std::chrono::milliseconds milliseconds;
 
 
@@ -53,7 +53,7 @@ namespace trackingManager
     int                                 dTime;
 
     milliseconds*                       dTimestamp;
-    std::chrono::steady_clock*          timer;
+    Clock*                              timer;
     Clock::time_point*                  timestamp_ms;
     Clock::time_point*                  timestamp_ms_old;
 

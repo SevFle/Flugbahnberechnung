@@ -1012,6 +1012,7 @@ void C_CameraManager::startTracking()
   this->filterFlags->setObjectDetection(true);
   this->filterFlags->setRoiAdjustment(true);
   this->filterFlags->setTrackingActive(true);
+  this->trackingManager->setTime();
   }
 
 void C_CameraManager::stopTracking()

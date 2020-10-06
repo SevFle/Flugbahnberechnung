@@ -36,7 +36,7 @@ C_trackingManager::C_trackingManager (C_GlobalObjects* GlobalObjects)
   this->dTimestamp = new milliseconds;
   this->timestamp_ms = new Clock::time_point;
   this->timestamp_ms_old = new Clock::time_point;
-  this->timer = new std::chrono::steady_clock;
+  this->timer = new Clock;
 
   }
 C_trackingManager::~C_trackingManager ()
