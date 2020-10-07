@@ -137,13 +137,6 @@ void C_trackingManager::Get_Position_ObjectTracking (S_Positionsvektor& objektVe
 
   *this->Positionsvektor_alt = objektVektor;
 
-  //Mappe die aktuellen Objektpositionen auf einen QVector um diesen plotten zu können
-  QVector3D vec3d;
-  vec3d.setX(objektVektor.X);
-  vec3d.setY(objektVektor.Y);
-  vec3d.setZ(objektVektor.Z);
-
-  //this->dataPlotter->addSingleData(vec3d, plotter::series::realValue);
   }
 void C_trackingManager::Calc_Position_ObjectTracking(S_Positionsvektor &objektVektor, vector<S_Positionsvektor> &vec_Richtungsvektoren_World, vector<C_AbsolutePose*> &poseActiveCamera)
   {

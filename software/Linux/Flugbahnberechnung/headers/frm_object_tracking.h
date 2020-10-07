@@ -36,7 +36,9 @@ private:
 
   int             Taktgeber_Intervall;
   int Zaehler;
+  int Zaehler_old;
   int cameraID;
+  int Plotter_Intervall;
 
 private:
   void showEvent (QShowEvent* ShowEvent) override;

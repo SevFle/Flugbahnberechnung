@@ -13,6 +13,8 @@ C_frm_Object_Tracking::C_frm_Object_Tracking(C_GlobalObjects* GlobalObjects, C_M
     this->Zaehler                 = 0;
     this->Taktgeber_Intervall     = 0;
     this->cameraID                = 0;
+    this->Plotter_Intervall       = 0;
+    this->Zaehler_old             = 0;
 
     this->container = QWidget::createWindowContainer(this->Main->cameraManager->trackingManager->dataPlotter->graph);
     this->Ui->horizontalLayout->addWidget(container);
@@ -23,7 +25,8 @@ C_frm_Object_Tracking::C_frm_Object_Tracking(C_GlobalObjects* GlobalObjects, C_M
 C_frm_Object_Tracking::~C_frm_Object_Tracking()
   {
   delete (this->container);
-
+  this->Zaehler_old             = 0;
+  this->Plotter_Intervall       = 0;
   this->cameraID                = 0;
   this->Taktgeber_Intervall     = 0;
   this->Zaehler                 = 0;
@@ -45,6 +48,7 @@ void C_frm_Object_Tracking::showEvent(QShowEvent* ShowEvent)
   {
   Q_UNUSED(ShowEvent)
   this->Zaehler = 0;
+  this->Plotter_Intervall = 50;
   connect(this->Taktgeber, &QTimer::timeout, this, &C_frm_Object_Tracking::Taktgeber_Tick);
   this->Taktgeber->start(this->Taktgeber_Intervall);
   this->showNormal();
@@ -126,6 +130,18 @@ void C_frm_Object_Tracking::Taktgeber_Tick()
 
 
     this->Ui->txb_activeCamera->setText (QString::number(pData->cameraID[0]));
+
+    if(this->Zaehler > Plotter_Intervall + Zaehler_old)
+      {
+      //Mappe die aktuellen Objektpositionen auf einen QVector um diesen plotten zu können
+      QVector3D vec3d;
+      vec3d.setX(pData->objektVektor.X);
+      vec3d.setY(pData->objektVektor.Y);
+      vec3d.setZ(pData->objektVektor.Z);
+
+      this->Main->cameraManager->trackingManager->dataPlotter->addSingleData(vec3d, plotter::series::realValue);
+      this->Zaehler_old = Zaehler;
+      }
     delete(pData);
     pData = nullptr;
     }
