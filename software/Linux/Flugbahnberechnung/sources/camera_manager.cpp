@@ -473,16 +473,12 @@ void C_CameraManager::calibrate_stereo_camera_aruco(int current_camera_id, int n
   //  board->draw(cv::Size(3200, 2200), boardImage, 10, 1);
   //  cv::imwrite("../Parameter/Charuco_BoardImage_5_7_0.04f_0.02f_Size(3200, 2200).jpg", boardImage);
 
-  //3x1 Matrizen der jeweiligen Kameras (L+R)
-  cv::Vec3d rBoardAxisL, tBoardAxisL, rBoardAxisR, tBoardAxisR;
   //Initialisierung der ChAruco Kalibrierung
   cv::Ptr<cv::aruco::Dictionary>            dictionary = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_4X4_50);// (cv::aruco::DICT_6X6_250)
 //  cv::Ptr<cv::aruco::CharucoBoard>          board = cv::aruco::CharucoBoard::create(5, 8, 0.05f, 0.03745f, dictionary);
   cv::Ptr<cv::aruco::CharucoBoard>          board = cv::aruco::CharucoBoard::create(5, 8, 0.050f, 0.03764f, dictionary);
   cv::Ptr<cv::aruco::DetectorParameters>    params = cv::aruco::DetectorParameters::create();
   cv::Size                                  imgSize;
-  std::vector<std::vector<cv::Point2f>>     veccharucoCorners;
-  std::vector<std::vector<int>>             veccharucoIds;
   //Vektoren zur Speicherung der einzelnen relativen Posen jedes einzelnen Aruco Tags
   std::vector<cv::Mat>                      vecRvec_right, vectec_right, vecRvec_left, vectvec_left;
 
@@ -496,6 +492,8 @@ void C_CameraManager::calibrate_stereo_camera_aruco(int current_camera_id, int n
   for(int j = 0; j < 2; j ++)
     {
     cv::Mat cameraMatrix, distCoeffs;
+    std::vector<std::vector<cv::Point2f>>     veccharucoCorners;
+    std::vector<std::vector<int>>             veccharucoIds;
     this->vecCameras->at(current_camera_id+j)->getIntrinsic()->copyTo(cameraMatrix);
     this->vecCameras->at(current_camera_id+j)->getDistCoeffs()->copyTo(distCoeffs);
 
@@ -572,16 +570,6 @@ void C_CameraManager::calibrate_stereo_camera_aruco(int current_camera_id, int n
 //    Jedes tag hat ein einzigartiges COS und gibt rvec+tvec im bezug zum Kamerakoordinatensystem zurück. Reicht nicht für M10 weil jeder vektor anders ist,
 //        aber für M12 wäre der Bezug relativ
 
-      //cv::Mat rvecMarker, tvecMarker, objpoints;
-      //      This function receives the detected markers and returns their pose estimation respect to the camera individually.
-      //      So for each marker, one rotation and translation vector is returned.
-      //      The returned transformation is the one that transforms points from each marker coordinate system to the camera coordinate system.
-      //      The marker corrdinate system is centered on the middle of the marker, with the Z axis perpendicular to the marker plane.
-      //      The coordinates of the four corners of the marker in its own coordinate system are:
-      //      (-markerLength/2, markerLength/2, 0), (markerLength/2, markerLength/2, 0), (markerLength/2, -markerLength/2, 0), (-markerLength/2, -markerLength/2, 0)
-      //cv::aruco::estimatePoseSingleMarkers(markerCorners, board->getMarkerLength(), cameraMatrix, distCoeffs, rvecMarker, tvecMarker,  objpoints);
-      /**************************************** GIBT MOMENTAN NUR EINEN RVEC AUS ************************************************/
-
       if(veccharucoCorners.size() > 0 && veccharucoIds.size() > 0)
         {
         cv::Mat                                   stdDeviationsIntrinsics, stdDeviationsExtrinsics,  	perViewErrors;
@@ -614,249 +602,67 @@ void C_CameraManager::calibrate_stereo_camera_aruco(int current_camera_id, int n
         }
     }
 
-  /********************/
-//  Zur Berechnung stehen zur verfügung:
-//    std::vector<cv::Mat> vecRvec_left + vectvec_left
-//    std::vector<cv::Mat> vecRvec_right + vectec_right
-//    Aus calibrateCameraCharuco
-
-//    std::vector<cv::Vec3d> vec_rvecBoardAxisL + vec_tvecBoardAxisL
-//    std::vector<cv::Vec3d> vec_rvecBoardAxisR + vec_tvecBoardAxisR
-//    Aus estimatePoseCharucoBoard
-
-  /************************* average of vecBoardaxis******************************/
-//  int dimension;
-//  dimension = vec_tvecBoardAxisL.size();
-//  cv::Mat axis_M12(cv::Mat_<double>(4,4));
-
-//  for(int i = 0; i < dimension; i ++)
-//    {
-//      cv::Vec3d totalT, totalR, axisL, axisR;
-//      cv::Mat rodR, rodL;
-
-//    totalT += vec_tvecBoardAxisL.at(i);
-//    totalR += vec_rvecBoardAxisL.at(i);
-//    }
-//  totalT = totalT/dimension;
-//  totalR = totalR/dimension;
-//  cv::Mat M_Axis_L(cv::Mat_<double>(4,4));
-//  cv::Rodrigues(totalR, rodL);
-//  cv::hconcat(rodL, totalT, M_Axis_L);
-//  std::cout << "M_Axis_L: " << M_Axis_L << std::endl << std::endl;
-
-//  totalT = 0; totalR = 0;
-//  for(int i = 0; i < dimension; i ++)
-//    {
-//    totalT += vec_tvecBoardAxisR.at(i);
-//    totalR += vec_rvecBoardAxisR.at(i);
-//    }
-//  totalT = totalT/dimension;
-//  totalR = totalR/dimension;
-//  cv::Mat M_Axis_R(cv::Mat_<double>(4,4));
-//  cv::Rodrigues(totalR, rodR);
-//  cv::hconcat(rodR, totalT, M_Axis_R);
-//  std::cout << "M_Axis_R: " << M_Axis_R << std::endl << std::endl;
-
-
-//  /************************* average of calibrateCameraCharuco******************************/
-  //    std::vector<cv::Mat> vecRvec_left + vectvec_left
-  //    std::vector<cv::Mat> vecRvec_right + vectec_right
-
-  std::vector<cv::Vec3d> vecM12total;
-  std::vector<cv::Mat> vec_M10, vec_M20, vecM12;
-  cv::Vec3d total_t_R, total_t_L, total_R_R, total_R_L;
-  cv::Mat M12_average(cv::Mat_<double>(4,4));
-  cv::Mat M10_average(cv::Mat_<double>(4,4));
-  cv::Mat M20_average(cv::Mat_<double>(4,4));
+  std::vector<cv::Mat> vec_M10_calibrate, vec_M20_calibrate, vec_M10_axis, vec_M20_axis;
 
   int Charuco_dimension = vecRvec_left.size();
   //Erstelle einen Vektor bestehend aus 4x4 Matrizen, welche die relative Pose M10 und M20 beschreiben. 0 ist hierbei das
   //KOS des ChAruco Boardes, 1 und 2 stehen für die Kameras (L,R).
   for(int i = 0; i < Charuco_dimension; i ++)
     {
-    cv::Vec3d valueT_L, valueT_R;
-    cv::Mat rodR, rodL, matrixL, matrixR;
-    cv::Rodrigues       (vecRvec_left[i], rodL);
-    cv::Rodrigues       (vecRvec_right[i], rodR);
+    cv::Vec3d valueT_L_calibrate, valueT_R_calibrate;
+    cv::Mat rodR_calibrate, rodL_calibrate, matrixL_calibrate, matrixR_calibrate;
 
-    cv::hconcat         (rodL, vectvec_left[i], matrixL);
-    cv::hconcat         (rodR, vectec_right[i], matrixR);
+    cv::Vec3d valueT_L_axis, valueT_R_axis;
+    cv::Mat rodR_axis, rodL_axis, matrixL_axis, matrixR_axis;
 
-    vec_M10.push_back   (matrixL);
-    vec_M20.push_back   (matrixR);
-    }
-  //Zwischenberechnung! Berechne den Durchschnitt der M10/M20 Matrizen. !DEBUG!
-  for(int i = 0; i < Charuco_dimension; i++)
-    {
-      M10_average += vec_M10.at(i);
-      M20_average += vec_M20.at(i);
-    }
-  for(int i =0; i < 4; i++)
-    for(int j = 0; j < 4; j++)
-      {
-      M10_average.at<double>(i,j) /= Charuco_dimension;
-      M20_average.at<double>(i,j) /= Charuco_dimension;
-      }
 
-  std::cout << "M10 averaged: " << M10_average << std::endl;
-  std::cout << "M20 averaged: " << M20_average << std::endl;
+    cv::Rodrigues       (vecRvec_left[i], rodL_calibrate);
+    cv::Rodrigues       (vecRvec_right[i], rodR_calibrate);
 
-  //Berechne für jede Position in den M10/M20 Vektoren die dazugehörigen M12 Wert. !DEBUG!
-  for(int i = 0; i < Charuco_dimension; i ++)
-    {
-    cv::Mat M02(cv::Mat_<double>(4,4));
-    cv::Mat M12(cv::Mat_<double>(4,4));
-    M02 = vec_M20.at(i).inv(cv::DECOMP_LU);
 
-    //clear Matrix
-      for(int i = 0; i < 4; i++)
-        for(int j = 0; j < 4; j++)
-          {
-          M12.at<double>(i,j)=0;
-          }
+    cv::hconcat         (rodL_calibrate, vectvec_left[i], matrixL_calibrate);
+    cv::hconcat         (rodR_calibrate, vectec_right[i], matrixR_calibrate);
 
-      //M12 = M10*M02;
-      for(int i=0;i<4;i++)
-        for(int j=0;j<4;j++)
-            for(int k=0;k<4;k++)
-                {
-                M12.at<double>(i,j)+=vec_M10.at(i).at<double>(i,k)* M02.at<double>(k,j);
-                }
-      vecM12.push_back(M12);
+    std::cout << std::endl << "M10_calibrate: " << std::endl <<matrixL_calibrate << std::endl;
+    std::cout << std::endl << "M20_calibrate: " << std::endl << matrixR_calibrate << std::endl;
+
+
+    vec_M10_calibrate.push_back   (matrixL_calibrate);
+    vec_M20_calibrate.push_back   (matrixR_calibrate);
+
+    cv::Rodrigues       (vecRvec_left[i], rodL_axis);
+    cv::Rodrigues       (vecRvec_right[i], rodR_axis);
+
+
+    cv::hconcat         (rodL_axis, vectvec_left[i], matrixL_axis);
+    cv::hconcat         (rodR_axis, vectec_right[i], matrixR_axis);
+
+    std::cout << std::endl << "M10_axis: " << std::endl <<matrixL_axis << std::endl;
+    std::cout << std::endl << "M20:_axis " << std::endl << matrixR_axis << std::endl;
+
+
+    vec_M10_axis.push_back   (matrixL_axis);
+    vec_M20_axis.push_back   (matrixR_calibrate);
+
+
+
+
     }
 
-  //Zwischenberechnung! Berechne den Durchschnitt der M12 Matrizen. !DEBUG!
-  for(int i = 0; i < Charuco_dimension; i++)
-    {
-      M12_average += vecM12.at(i);
-    }
-  for(int i =0; i < 4; i++)
-    for(int j = 0; j < 4; j++)
-      {
-      M12_average.at<double>(i,j) /= Charuco_dimension;
-      }
-  std::cout << "M12 averaged: " << M10_average << std::endl;
-
-  this->calculate_camera_pose(current_camera_id, current_camera_id+1, &vec_M10, &vec_M20);
-
-
-///************************************ OLD *************************************/
-//  //Posenberechnungen
-//  cv::Mat rvecM12, rBoardAxisRodL, rBoardAxisRodR;
-//  cv::Mat M10(cv::Mat_<double>(4,4));
-//  cv::Mat M20(cv::Mat_<double>(4,4));
-//  for(int i = 0; i < 4; i ++)
-//  {
-//      for(int j = 0; j < 4; j ++)
-//      {
-//      M10.at<double>(i,j) =   0.0;
-//      M20.at<double>(i,j) =   0.0;
-//      }
-//  }
-//  cv::Mat row = cv::Mat::zeros(1, 4, CV_64F);  // 3 cols, 1 row
-
-
-//  std::cout << "M10: " << endl << M10 << std::endl << std::endl;
-//  std::cout << "M20: " << endl << M20 << std::endl << std::endl;
-
-//  cv::Rodrigues(rBoardAxisL, rBoardAxisRodL);
-//  cv::Rodrigues(rBoardAxisR, rBoardAxisRodR);
-
-//  //Hconcat kombiniert zwei Matrizen
-//  cv::hconcat(rBoardAxisRodL, tBoardAxisL, M10);
-//  cv::hconcat(rBoardAxisRodR, tBoardAxisR, M20);
-//  M10.push_back(row);
-//  M20.push_back(row);
-//  M10.at<double>(3,3) =   1.0;
-//  M20.at<double>(3,3) =   1.0;
-
-
-//  std::cout << "M10: " << endl << M10 << std::endl << std::endl;
-//  std::cout << "M20: " << endl << M20 << std::endl << std::endl;
-
-
-//  this->calculate_camera_pose(current_camera_id, current_camera_id+1, &M10, &M20);
+  this->calculate_camera_pose(current_camera_id, current_camera_id+1, &vec_M10_calibrate, &vec_M20_calibrate);
   }
 
 
 void C_CameraManager::calculate_camera_pose    (int camera1, int camera2, std::vector<cv::Mat>* M10, std::vector<cv::Mat>* M20)
   {
-  int i = 0;
-  std::vector<cv::Mat> vecM12;
-  cv::Mat M12_averaged(cv::Mat_<double>(4,4));
-  //Berechne für jede Position in den M10/M20 Vektoren die dazugehörigen M12 Wert.
-  for(auto it = std::begin(*M10); it < std::end(*M10); it++)
-    {
-    //M12 = M10*M02
-    cv::Mat M12(cv::Mat_<double>(4,4));
-    cv::Mat M02(cv::Mat_<double>(4,4));
-    M02 = M20->at(i).inv(cv::DECOMP_LU);
-    //clear Matrix
-      for(int i = 0; i < 4; i++)
-        for(int j = 0; j < 4; j++)
-          {
-          M12.at<double>(i,j)=0;
-          }
-    //M12 = M10*M02;
-    for(int i=0;i<4;i++)
-      for(int j=0;j<4;j++)
-          for(int k=0;k<4;k++)
-              {
-              M12.at<double>(i,j)+=M10->at(i).at<double>(i,k)* M02.at<double>(k,j);
-              }
-    vecM12.push_back(M12);
-    }
-  //Zwischenberechnung! Berechne den Durchschnitt der M12 Matrizen. !
-  for(auto it = std::begin(vecM12); it < std::end(vecM12); it++)
-    {
-      M12_averaged += (*it);
-    }
-  for(int i =0; i < 4; i++)
-    for(int j = 0; j < 4; j++)
-      {
-      M12_averaged.at<double>(i,j) /= vecM12.size();
-      }
-//Schreibe M12 in relPose für Berechnung der Pose von Kamera 2
-  for(int i = 0; i < 4; i++)
-    for(int j = 0; j < 4; j++)
-      {
-      this->relPose->HomogenePosenMatrix[i][j] = M12_averaged.at<double>(i,j);
-      }
+  //this->version1(camera1, camera2, M10, M20);   //OWN MAT INVERSE, POSEN INVERSE
 
-  cv::Mat PoseC1(cv::Mat_<double>(4,4));
-  cv::Mat PoseC1_inv(cv::Mat_<double>(4,4));
-  cv::Mat PoseC2(cv::Mat_<double>(4,4));
+  this->version2(camera1, camera2, M10, M20);    //MAT INVERSE, POSEN INVERSE
 
-  for(int i = 0; i < 4; i++)
-    for(int j = 0; j < 4; j++)
-      {
-      PoseC1.at<double>(i,j) = this->vecCameras->at(camera1)->getCameraPose()->HomogenePosenMatrix[i][j];
-      PoseC2.at<double>(i,j) = 0.0;
-      }
-
-  std::cout << "Pose Kamera 1: " << PoseC1 << std::endl;
-  PoseC1_inv = PoseC1.inv(cv::DECOMP_LU);
-
-  //Pose2 = Pose01 * M12;
-  for(int i=0;i<4;i++)
-    for(int j=0;j<4;j++)
-        for(int k=0;k<4;k++)
-            {
-            PoseC2.at<double>(i,j)+=PoseC1_inv.at<double>(i,k)* M12_averaged.at<double>(k,j);
-            }
-
-  std::cout << "Pose Kamera 2: " << PoseC2 << std::endl;
-
-  for(int i = 0; i < 4; i++)
-    for(int j = 0; j < 4; j++)
-      {
-      this->absPose->HomogenePosenMatrix[i][j] = PoseC2.at<double>(i,j);
-      }
-
-  this->vecCameras->at(camera2)->cameraPose = this->absPose;
-  this->saveManager->saveCameraCos(*this->vecCameras->at(camera2));
+  this->version3(camera1, camera2, M10, M20);    //OWN MAT INVERSE, OWN POSEN INVERSE
 
   }
+
 void C_CameraManager::calculate_camera_pose    (int camera1, int camera2, cv::Mat* M10, cv::Mat* M20)
   {
   //M12 = M10*M02
@@ -909,7 +715,7 @@ void C_CameraManager::calculate_camera_pose    (int camera1, int camera2, cv::Ma
       for(int j=0;j<4;j++)
           for(int k=0;k<4;k++)
               {
-              PoseC2.at<double>(i,j)+=PoseC1_inv.at<double>(i,k)* M12.at<double>(k,j);
+              PoseC2.at<double>(i,j)+=PoseC1.at<double>(i,k)* M12.at<double>(k,j);
               }
 
     std::cout << "Pose Kamera 2: " << PoseC2 << std::endl;
@@ -932,6 +738,359 @@ void C_CameraManager::calculate_camera_pose    (int camera1, int camera2, cv::Ma
     this->saveManager->saveCameraCos(*this->vecCameras->at(camera2));
 
   }//calculate_camera_pose
+cv::Mat C_CameraManager::inverseMat(cv::Mat& Matrix)
+  {
+
+  //https://tams.informatik.uni-hamburg.de/lehre/2010ss/vorlesung/Introduction_to_robotics/folien/Vorlesung2_druck4to1.pdf
+
+//   inverse=   Rt  -Rt*t
+//              000   1
+
+  //   inverse=   Rt  -t*R1/R2/R3
+  //              000   1
+
+  cv::Mat Rot(cv::Mat_<double>(3,3));
+  cv::Mat t(cv::Mat_<double>(3,1));
+  cv::Mat t_rot(cv::Mat_<double>(3,1));
+  cv::Mat r1(cv::Mat_<double>(1,3));
+  cv::Mat r2(cv::Mat_<double>(1,3));
+  cv::Mat r3(cv::Mat_<double>(1,3));
+
+  cv::Mat value;
+
+  for(int i =0; i < 3; i++)
+    for(int j=0; j < 3; j++)
+      {
+      Rot.at<double>(i,j) = Matrix.at<double>(i,j);
+      }
+
+
+  for(int i =0; i < 3; i++)
+    {
+    t.at<double>(i,0) = Matrix.at<double>(i,3);
+    t_rot.at<double>(i,0) = 0;
+    }
+  t.t();
+  for(int i = 0; i < 3; i++)
+    for(int j = 0; j < 3; j ++)
+      {
+      t_rot.at<double>(i,0) +=-t.at<double>(j,0)* Rot.at<double>(j,i);
+      }
+
+  Rot.t();
+
+
+  cv::hconcat(Rot, t_rot, value);
+  cv::Mat row = cv::Mat::zeros(1, 4, CV_64F);  // 3 cols, 1 row
+  value.push_back(row);
+  value.at<double>(3,3)  =   1.0;
+
+  return value;
+  }
+
+
+
+
+void C_CameraManager::version1(int camera1, int camera2, std::vector<cv::Mat>* M10, std::vector<cv::Mat>* M20)
+  {
+  //OWN MAT INVERSE, POSEN INVERSE
+  std::cout << "Version 2: OWN MAT INVERSE, POSEN INVERSE" << std::endl << std::endl;
+
+  int dimension = M20->size();
+  std::vector<cv::Mat> vecM12;
+  cv::Mat M12_averaged(cv::Mat_<double>(4,4));
+
+
+  //Berechne für jede Position in den M10/M20 Vektoren die dazugehörigen M12 Wert.
+  for(auto itM10 = std::begin(*M10),  itM20 = std::begin(*M20); itM10 < std::end(*M10); itM10++, itM20++)
+    {
+    //M12 = M10*M02
+    cv::Mat M12                 (cv::Mat_<double>(4,4));
+    cv::Mat M02                 (cv::Mat_<double>(4,4));
+
+    cv::Mat row                 = cv::Mat::zeros(1, 4, CV_64F);  // 3 cols, 1 row
+    (*itM10).push_back(row);
+    (*itM10).at<double>(3,3)  =   1.0;
+    (*itM20).push_back(row);
+    (*itM20).at<double>(3,3)  =   1.0;
+
+    cv::Mat M20Copy (cv::Mat_<double>(4,4));
+    (*itM20).copyTo(M20Copy);
+
+    M02 = this->inverseMat(M20Copy);
+
+    //clear Matrix
+      for(int i = 0; i < 4; i++)
+        for(int j = 0; j < 4; j++)
+          {
+          M12.at<double>(i,j)=0;
+          }
+    //M12 = M10*M02;
+    for(int i=0;i<4;i++)
+      for(int j=0;j<4;j++)
+          for(int k=0;k<4;k++)
+              {
+              M12.at<double>(i,j)+=(*itM10).at<double>(i,k)* M02.at<double>(k,j);
+              }
+    std::cout << "M12: " << endl << M12 << std::endl << std::endl;
+
+    vecM12.push_back(M12);
+    }
+
+  //Zwischenberechnung! Berechne den Durchschnitt der M12 Matrizen. !
+  for(auto it = std::begin(vecM12); it < std::end(vecM12); it++)
+    {
+      M12_averaged += (*it);
+    }
+  for(int i =0; i < 4; i++)
+    for(int j = 0; j < 4; j++)
+      {
+      M12_averaged.at<double>(i,j) /= dimension;
+      }
+
+
+  std::cout << "M12_averaged divided by " << dimension << ": " << endl << M12_averaged << std::endl << std::endl;
+
+  C_AbsolutePose Kamera1_inverse;
+  this->absPose->InversHomogenousPose(*this->vecCameras->at(camera1)->getCameraPose(), Kamera1_inverse.HomogenePosenMatrix);
+
+  for(int i =0; i < 4; i++)
+    for(int j = 0; j < 4; j++)
+      {
+      this->relPose->HomogenePosenMatrix[i][j] = M12_averaged.at<double>(i,j);
+      }
+
+
+  for (int i = 0; i < 4; i++)
+    for (int j = 0; j < 4; j++)
+      for (int k = 0; k < 4; k++)
+        {
+        //this->relPose ist die Pose von Kamera1 zu Kamera 2 (M12)
+        this->vecCameras->at(camera2)->getCameraPose()->HomogenePosenMatrix[i][j] += Kamera1_inverse.HomogenePosenMatrix[i][k] * this->relPose->HomogenePosenMatrix[k][j];
+        }
+
+  /********************************* DEBUG *******************************/
+
+  cv::Mat Pose_Kamera1_Debug(cv::Mat_<double>(4,4));
+  cv::Mat Pose_Kamera2_Debug(cv::Mat_<double>(4,4));
+
+  for(int i =0; i < 4; i++)
+    for(int j = 0; j < 4; j++)
+      {
+      Pose_Kamera1_Debug.at<double>(i,j)       = this->vecCameras->at(camera1)->getCameraPose()->HomogenePosenMatrix[i][j];
+      Pose_Kamera2_Debug.at<double>(i,j)         = this->vecCameras->at(camera2)->getCameraPose()->HomogenePosenMatrix[i][j];
+      }
+  std::cout << "Pose_Kamera1_Debug: "  << endl << Pose_Kamera1_Debug << std::endl << std::endl;
+  std::cout << "Pose_Kamera2_Debug: "  << endl << Pose_Kamera2_Debug << std::endl << std::endl;
+  /********************************* DEBUG *******************************/
+
+
+
+  }
+void C_CameraManager::version2(int camera1, int camera2, std::vector<cv::Mat>* M10, std::vector<cv::Mat>* M20)
+  {
+  //MAT INVERSE, POSEN INVERSE
+  std::cout << "Version 2: MAT INVERSE, POSEN INVERSE" << std::endl << std::endl;
+
+  int dimension = M20->size();
+  std::vector<cv::Mat> vecM12;
+  cv::Mat M12_averaged(cv::Mat_<double>(4,4));
+
+
+  //Berechne für jede Position in den M10/M20 Vektoren die dazugehörigen M12 Wert.
+  for(auto itM10 = std::begin(*M10),  itM20 = std::begin(*M20); itM10 < std::end(*M10); itM10++, itM20++)
+    {
+    //M12 = M10*M02
+    cv::Mat M12                 (cv::Mat_<double>(4,4));
+    cv::Mat M02                 (cv::Mat_<double>(4,4));
+
+    cv::Mat row                 = cv::Mat::zeros(1, 4, CV_64F);  // 3 cols, 1 row
+    (*itM10).push_back(row);
+    (*itM10).at<double>(3,3)  =   1.0;
+    (*itM20).push_back(row);
+    (*itM20).at<double>(3,3)  =   1.0;
+
+    cv::Mat M20Copy (cv::Mat_<double>(4,4));
+    (*itM20).copyTo(M20Copy);
+
+
+    M02 = M20Copy.inv();
+
+    //clear Matrix
+      for(int i = 0; i < 4; i++)
+        for(int j = 0; j < 4; j++)
+          {
+          M12.at<double>(i,j)=0;
+          }
+    //M12 = M10*M02;
+    for(int i=0;i<4;i++)
+      for(int j=0;j<4;j++)
+          for(int k=0;k<4;k++)
+              {
+              M12.at<double>(i,j)+=(*itM10).at<double>(i,k)* M02.at<double>(k,j);
+              }
+    std::cout << "M12: " << endl << M12 << std::endl << std::endl;
+
+    vecM12.push_back(M12);
+    }
+
+  //Zwischenberechnung! Berechne den Durchschnitt der M12 Matrizen. !
+  for(auto it = std::begin(vecM12); it < std::end(vecM12); it++)
+    {
+      M12_averaged += (*it);
+    }
+  for(int i =0; i < 4; i++)
+    for(int j = 0; j < 4; j++)
+      {
+      M12_averaged.at<double>(i,j) /= dimension;
+      }
+
+
+  std::cout << "M12_averaged divided by " << dimension << ": " << endl << M12_averaged << std::endl << std::endl;
+
+  C_AbsolutePose Kamera1_inverse;
+  this->absPose->InversHomogenousPose(*this->vecCameras->at(camera1)->getCameraPose(), Kamera1_inverse.HomogenePosenMatrix);
+
+  for(int i =0; i < 4; i++)
+    for(int j = 0; j < 4; j++)
+      {
+      this->relPose->HomogenePosenMatrix[i][j] = M12_averaged.at<double>(i,j);
+      }
+
+
+  for (int i = 0; i < 4; i++)
+    for (int j = 0; j < 4; j++)
+      for (int k = 0; k < 4; k++)
+        {
+        //this->relPose ist die Pose von Kamera1 zu Kamera 2 (M12)
+        this->vecCameras->at(camera2)->getCameraPose()->HomogenePosenMatrix[i][j] += Kamera1_inverse.HomogenePosenMatrix[i][k] * this->relPose->HomogenePosenMatrix[k][j];
+        }
+
+  /********************************* DEBUG *******************************/
+
+  cv::Mat Pose_Kamera1_Debug(cv::Mat_<double>(4,4));
+  cv::Mat Pose_Kamera2_Debug(cv::Mat_<double>(4,4));
+
+  for(int i =0; i < 4; i++)
+    for(int j = 0; j < 4; j++)
+      {
+      Pose_Kamera1_Debug.at<double>(i,j)       = this->vecCameras->at(camera1)->getCameraPose()->HomogenePosenMatrix[i][j];
+      Pose_Kamera2_Debug.at<double>(i,j)         = this->vecCameras->at(camera2)->getCameraPose()->HomogenePosenMatrix[i][j];
+      }
+  std::cout << "Pose_Kamera1_Debug: "  << endl << Pose_Kamera1_Debug << std::endl << std::endl;
+  std::cout << "Pose_Kamera2_Debug: "  << endl << Pose_Kamera2_Debug << std::endl << std::endl;
+  /********************************* DEBUG *******************************/
+
+
+  }
+void C_CameraManager::version3(int camera1, int camera2, std::vector<cv::Mat>* M10, std::vector<cv::Mat>* M20)
+  {
+  std::cout << "Version 3: OWN MAT INVERSE, OWN POSEN INVERSE" << std::endl << std::endl;
+
+  int dimension = M20->size();
+  std::vector<cv::Mat> vecM12;
+  cv::Mat M12_averaged(cv::Mat_<double>(4,4));
+
+
+  //Berechne für jede Position in den M10/M20 Vektoren die dazugehörigen M12 Wert.
+  for(auto itM10 = std::begin(*M10),  itM20 = std::begin(*M20); itM10 < std::end(*M10); itM10++, itM20++)
+    {
+    //M12 = M10*M02
+    cv::Mat M12                 (cv::Mat_<double>(4,4));
+    cv::Mat M02                 (cv::Mat_<double>(4,4));
+
+    cv::Mat row                 = cv::Mat::zeros(1, 4, CV_64F);  // 3 cols, 1 row
+    (*itM10).push_back(row);
+    (*itM10).at<double>(3,3)  =   1.0;
+    (*itM20).push_back(row);
+    (*itM20).at<double>(3,3)  =   1.0;
+
+    cv::Mat M20Copy (cv::Mat_<double>(4,4));
+    (*itM20).copyTo(M20Copy);
+
+    M02 = this->inverseMat(M20Copy);
+
+    //clear Matrix
+      for(int i = 0; i < 4; i++)
+        for(int j = 0; j < 4; j++)
+          {
+          M12.at<double>(i,j)=0;
+          }
+    //M12 = M10*M02;
+    for(int i=0;i<4;i++)
+      for(int j=0;j<4;j++)
+          for(int k=0;k<4;k++)
+              {
+              M12.at<double>(i,j)+=(*itM10).at<double>(i,k)* M02.at<double>(k,j);
+              }
+    std::cout << "M12: " << endl << M12 << std::endl << std::endl;
+
+    vecM12.push_back(M12);
+    }
+
+  //Zwischenberechnung! Berechne den Durchschnitt der M12 Matrizen. !
+  for(auto it = std::begin(vecM12); it < std::end(vecM12); it++)
+    {
+      M12_averaged += (*it);
+    }
+  for(int i =0; i < 4; i++)
+    for(int j = 0; j < 4; j++)
+      {
+      M12_averaged.at<double>(i,j) /= dimension;
+      }
+
+
+  std::cout << "M12_averaged divided by " << dimension << ": " << endl << M12_averaged << std::endl << std::endl;
+
+  C_AbsolutePose Kamera1_inverse;
+  this->absPose->InversHomogenousPose(*this->vecCameras->at(camera1)->getCameraPose(), Kamera1_inverse.HomogenePosenMatrix);
+  cv::Mat Kamera1_Pose(cv::Mat_<double>(4,4));
+  cv::Mat Kamera1_Pose_invers(cv::Mat_<double>(4,4));
+
+  for(int i =0; i < 4; i++)
+    for(int j = 0; j < 4; j++)
+      {
+       Kamera1_Pose.at<double>(i,j) = this->vecCameras->at(camera1)->getCameraPose()->HomogenePosenMatrix[i][j];
+      }
+
+  Kamera1_Pose_invers = this->inverseMat(Kamera1_Pose);
+
+
+
+  for(int i =0; i < 4; i++)
+    for(int j = 0; j < 4; j++)
+      {
+      this->relPose->HomogenePosenMatrix[i][j] = M12_averaged.at<double>(i,j);
+      }
+
+
+  for (int i = 0; i < 4; i++)
+    for (int j = 0; j < 4; j++)
+      for (int k = 0; k < 4; k++)
+        {
+        //this->relPose ist die Pose von Kamera1 zu Kamera 2 (M12)
+        this->vecCameras->at(camera2)->getCameraPose()->HomogenePosenMatrix[i][j] += Kamera1_Pose_invers.at<double>(i,k) * this->relPose->HomogenePosenMatrix[k][j];
+        }
+
+  /********************************* DEBUG *******************************/
+
+  cv::Mat Pose_Kamera1_Debug(cv::Mat_<double>(4,4));
+  cv::Mat Pose_Kamera2_Debug(cv::Mat_<double>(4,4));
+
+  for(int i =0; i < 4; i++)
+    for(int j = 0; j < 4; j++)
+      {
+      Pose_Kamera1_Debug.at<double>(i,j)       = this->vecCameras->at(camera1)->getCameraPose()->HomogenePosenMatrix[i][j];
+      Pose_Kamera2_Debug.at<double>(i,j)         = this->vecCameras->at(camera2)->getCameraPose()->HomogenePosenMatrix[i][j];
+      }
+  std::cout << "Pose_Kamera1_Debug: "  << endl << Pose_Kamera1_Debug << std::endl << std::endl;
+  std::cout << "Pose_Kamera2_Debug: "  << endl << Pose_Kamera2_Debug << std::endl << std::endl;
+  /********************************* DEBUG *******************************/
+  }
+
+
+
+
 
 void C_CameraManager::threadCameraPositioning(std::vector<Camera::C_Camera2*> vecCameras, tbb::concurrent_bounded_queue<S_threadPayload*>* que)
   {

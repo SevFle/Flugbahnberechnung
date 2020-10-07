@@ -107,8 +107,6 @@ void c_SaveManager::saveCameraCalibration (Camera::C_Camera2 &Camera)
     this->GlobalObjects->csv_parameter_datei->Schreiben ("Intrinsic 20",Intrinsic[2][0],"[Px]");
     this->GlobalObjects->csv_parameter_datei->Schreiben ("Intrinsic 21",Intrinsic[2][1],"[Px]");
     this->GlobalObjects->csv_parameter_datei->Schreiben ("Intrinsic 22",Intrinsic[2][2],"[Px]");
-    this->GlobalObjects->csv_parameter_datei->Schreiben ("Intrinsic 21",Intrinsic[2][1],"[Px]");
-    this->GlobalObjects->csv_parameter_datei->Schreiben ("Intrinsic 22",Intrinsic[2][2],"[Px]");
 
     this->GlobalObjects->csv_parameter_datei->Schliessen();
     std::cout << "**INFO** Kalibrierung fuer Kamera " << std::to_string(Camera.getCameraID()) << " wurde gespeichert" << std::endl;

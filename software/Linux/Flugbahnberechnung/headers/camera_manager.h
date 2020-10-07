@@ -246,6 +246,10 @@ namespace CameraManager
 
     void mvTemp2VecCamera                   (std::vector<Camera::C_Camera2*> temp_CameraVector);
     void helper() const;
+    cv::Mat inverseMat(cv::Mat& Matrix);
+    void version1(int camera1, int camera2, std::vector<cv::Mat>* M10, std::vector<cv::Mat>* M20);
+    void version2(int camera1, int camera2, std::vector<cv::Mat>* M10, std::vector<cv::Mat>* M20);
+    void version3(int camera1, int camera2, std::vector<cv::Mat>* M10, std::vector<cv::Mat>* M20);
 
     /******************************************************* Getter-Setter Klassenmethoden***************************************************************/
   public:
