@@ -94,7 +94,16 @@ void C_trackingManager::init_posen                     ()
   }
 void C_trackingManager::load_posen                     (C_AbsolutePose& cameraPose)
   {
-  this->vecWorldtoCamPose->push_back(cameraPose);
+  C_AbsolutePose CamInverse;
+  double CamInverseOut[4][4];
+  cameraPose.InversHomogenousPose(cameraPose, CamInverseOut);
+  for(int i = 0; i < 4; i++)
+    for(int j = 0; j < 4; j++)
+      {
+      CamInverse.HomogenePosenMatrix[i][j] = CamInverseOut[i][j];
+      }
+
+  this->vecWorldtoCamPose->push_back(CamInverse);
   }
 
 void C_trackingManager::setTime                         ()
@@ -215,7 +224,7 @@ void C_trackingManager::Calc_Position_ObjectTracking(S_Positionsvektor &objektVe
     {
     Matrix_b[i][0] = 0.0;
     }
-
+  //poseActiveCamera = WorldToTCPPose
   for (int i = 0; i < Anzahl_Posen; i++)
     {
     Matrix_b[0][0] += (-poseActiveCamera[i]->pz() * vec_Richtungsvektoren_World[i].X + poseActiveCamera[i]->px() * vec_Richtungsvektoren_World[i].Z) *   vec_Richtungsvektoren_World[i].Z +
