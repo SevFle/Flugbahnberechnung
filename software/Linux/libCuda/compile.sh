@@ -4,11 +4,11 @@ cd $SCRIPTPATH/lib
 pwd
 echo "linking cublas"
 
-/usr/local/cuda-10.1/bin/nvcc ../src/inRange.cu -lcublas
-/usr/local/cuda-10.1/bin/nvcc ../src/kalman.cu -lcublas
-/usr/local/cuda-10.1/bin/nvcc ../src/kalman2.cu -lcublas
-/usr/local/cuda-10.1/bin/nvcc ../src/matrix.cu -lcublas
-/usr/local/cuda-10.1/bin/nvcc ../src/matrix_kernel.cu -lcublas
+/usr/local/cuda-10.1/bin/nvcc -c ../src/inRange.cu -lcublas
+/usr/local/cuda-10.1/bin/nvcc -c ../src/kalman.cu -lcublas
+/usr/local/cuda-10.1/bin/nvcc -c ../src/kalman2.cu -lcublas
+/usr/local/cuda-10.1/bin/nvcc -c ../src/matrix.cu -lcublas
+/usr/local/cuda-10.1/bin/nvcc -c ../src/matrix_kernel.cu -lcublas
 
 
 echo "linking .cu files"

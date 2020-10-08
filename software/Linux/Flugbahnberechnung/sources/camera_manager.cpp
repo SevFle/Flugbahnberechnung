@@ -487,6 +487,8 @@ void C_CameraManager::calibrate_stereo_camera_aruco(int current_camera_id, int n
   std::vector<cv::Vec3d>                        vec_tvecBoardAxisL;
   std::vector<cv::Vec3d>                        vec_tvecBoardAxisR;
   int rejectedImages = 0;
+  int dimension =0;
+
 
   //Iterator über Kamera 0 + 1
   for(int j = 0; j < 2; j ++)
@@ -541,6 +543,7 @@ void C_CameraManager::calibrate_stereo_camera_aruco(int current_camera_id, int n
               {
               vec_rvecBoardAxisL.push_back(rvecBoardAxis);
               vec_tvecBoardAxisL.push_back(tvecBoardAxis);
+              dimension++;
               }
             if(j==1) // Kamera rechts
               {
@@ -623,8 +626,6 @@ void C_CameraManager::calibrate_stereo_camera_aruco(int current_camera_id, int n
     cv::hconcat         (rodL_calibrate, vectvec_left[i], matrixL_calibrate);
     cv::hconcat         (rodR_calibrate, vectec_right[i], matrixR_calibrate);
 
-    std::cout << std::endl << "M10_calibrate: " << std::endl <<matrixL_calibrate << std::endl;
-    std::cout << std::endl << "M20_calibrate: " << std::endl << matrixR_calibrate << std::endl;
 
 
     vec_M10_calibrate.push_back   (matrixL_calibrate);
@@ -638,13 +639,15 @@ void C_CameraManager::calibrate_stereo_camera_aruco(int current_camera_id, int n
     cv::hconcat         (rodR_axis, vectec_right[i], matrixR_axis);
 
     std::cout << std::endl << "M10_axis: " << std::endl <<matrixL_axis << std::endl;
+    std::cout << std::endl << "M10_calibrate: " << std::endl <<matrixL_calibrate << std::endl;
     std::cout << std::endl << "M20:_axis " << std::endl << matrixR_axis << std::endl;
-
+    std::cout << std::endl << "M20_calibrate: " << std::endl << matrixR_calibrate << std::endl;
 
     vec_M10_axis.push_back   (matrixL_axis);
     vec_M20_axis.push_back   (matrixR_calibrate);
 
-
+    std::cout << std::endl << "vec_M10_axis.size() " <<  vec_M10_axis.size() << std::endl;
+    std::cout << std::endl << "Dimension " <<  dimension << std::endl;
 
 
     }
@@ -655,7 +658,7 @@ void C_CameraManager::calibrate_stereo_camera_aruco(int current_camera_id, int n
 
 void C_CameraManager::calculate_camera_pose    (int camera1, int camera2, std::vector<cv::Mat>* M10, std::vector<cv::Mat>* M20)
   {
-  //this->version1(camera1, camera2, M10, M20);   //OWN MAT INVERSE, POSEN INVERSE
+  this->version1(camera1, camera2, M10, M20);   //OWN MAT INVERSE, POSEN INVERSE
 
   this->version2(camera1, camera2, M10, M20);    //MAT INVERSE, POSEN INVERSE
 
@@ -752,9 +755,6 @@ cv::Mat C_CameraManager::inverseMat(cv::Mat& Matrix)
   cv::Mat Rot(cv::Mat_<double>(3,3));
   cv::Mat t(cv::Mat_<double>(3,1));
   cv::Mat t_rot(cv::Mat_<double>(3,1));
-  cv::Mat r1(cv::Mat_<double>(1,3));
-  cv::Mat r2(cv::Mat_<double>(1,3));
-  cv::Mat r3(cv::Mat_<double>(1,3));
 
   cv::Mat value;
 
@@ -764,13 +764,12 @@ cv::Mat C_CameraManager::inverseMat(cv::Mat& Matrix)
       Rot.at<double>(i,j) = Matrix.at<double>(i,j);
       }
 
-
   for(int i =0; i < 3; i++)
     {
-    t.at<double>(i,0) = Matrix.at<double>(i,3);
+    t.at<double>    (i,0) = Matrix.at<double>(i,3);
     t_rot.at<double>(i,0) = 0;
     }
-  t.t();
+
   for(int i = 0; i < 3; i++)
     for(int j = 0; j < 3; j ++)
       {
@@ -779,17 +778,13 @@ cv::Mat C_CameraManager::inverseMat(cv::Mat& Matrix)
 
   Rot.t();
 
-
-  cv::hconcat(Rot, t_rot, value);
-  cv::Mat row = cv::Mat::zeros(1, 4, CV_64F);  // 3 cols, 1 row
-  value.push_back(row);
-  value.at<double>(3,3)  =   1.0;
+  cv::hconcat             (Rot, t_rot, value);
+  cv::Mat row             = cv::Mat::zeros(1, 4, CV_64F);  // 3 cols, 1 row
+  value.push_back         (row);
+  value.at<double>(3,3)   =   1.0;
 
   return value;
   }
-
-
-
 
 void C_CameraManager::version1(int camera1, int camera2, std::vector<cv::Mat>* M10, std::vector<cv::Mat>* M20)
   {
@@ -820,11 +815,11 @@ void C_CameraManager::version1(int camera1, int camera2, std::vector<cv::Mat>* M
     M02 = this->inverseMat(M20Copy);
 
     //clear Matrix
-      for(int i = 0; i < 4; i++)
-        for(int j = 0; j < 4; j++)
-          {
-          M12.at<double>(i,j)=0;
-          }
+    for(int i = 0; i < 4; i++)
+      for(int j = 0; j < 4; j++)
+        {
+        M12.at<double>(i,j)=0;
+        }
     //M12 = M10*M02;
     for(int i=0;i<4;i++)
       for(int j=0;j<4;j++)
@@ -846,20 +841,12 @@ void C_CameraManager::version1(int camera1, int camera2, std::vector<cv::Mat>* M
     for(int j = 0; j < 4; j++)
       {
       M12_averaged.at<double>(i,j) /= dimension;
+      this->relPose->HomogenePosenMatrix[i][j] = M12_averaged.at<double>(i,j);
       }
-
-
   std::cout << "M12_averaged divided by " << dimension << ": " << endl << M12_averaged << std::endl << std::endl;
 
   C_AbsolutePose Kamera1_inverse;
   this->absPose->InversHomogenousPose(*this->vecCameras->at(camera1)->getCameraPose(), Kamera1_inverse.HomogenePosenMatrix);
-
-  for(int i =0; i < 4; i++)
-    for(int j = 0; j < 4; j++)
-      {
-      this->relPose->HomogenePosenMatrix[i][j] = M12_averaged.at<double>(i,j);
-      }
-
 
   for (int i = 0; i < 4; i++)
     for (int j = 0; j < 4; j++)
@@ -878,14 +865,11 @@ void C_CameraManager::version1(int camera1, int camera2, std::vector<cv::Mat>* M
     for(int j = 0; j < 4; j++)
       {
       Pose_Kamera1_Debug.at<double>(i,j)       = this->vecCameras->at(camera1)->getCameraPose()->HomogenePosenMatrix[i][j];
-      Pose_Kamera2_Debug.at<double>(i,j)         = this->vecCameras->at(camera2)->getCameraPose()->HomogenePosenMatrix[i][j];
+      Pose_Kamera2_Debug.at<double>(i,j)       = this->vecCameras->at(camera2)->getCameraPose()->HomogenePosenMatrix[i][j];
       }
   std::cout << "Pose_Kamera1_Debug: "  << endl << Pose_Kamera1_Debug << std::endl << std::endl;
   std::cout << "Pose_Kamera2_Debug: "  << endl << Pose_Kamera2_Debug << std::endl << std::endl;
   /********************************* DEBUG *******************************/
-
-
-
   }
 void C_CameraManager::version2(int camera1, int camera2, std::vector<cv::Mat>* M10, std::vector<cv::Mat>* M20)
   {
