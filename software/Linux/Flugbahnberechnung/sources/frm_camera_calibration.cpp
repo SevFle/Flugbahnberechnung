@@ -414,8 +414,9 @@ void C_frm_Camera_Calibration::on_bt_photo_clicked()
 void C_frm_Camera_Calibration::camera_calibration_thread (void* This)
   {
   double rms = 0.0;
-  double intrinsic[3][3];;
-  double distcoeffs[1][5];;
+  double intrinsic[3][3];
+  double distcoeffs[1][5];
+  C_AbsolutePose Pose;
   static_cast<frm_Camera_Calibration::C_frm_Camera_Calibration*>(This)->Ui->lbl_calibration_running->setVisible(true);
   switch (static_cast<frm_Camera_Calibration::C_frm_Camera_Calibration*>(This)->method)
     {
@@ -427,7 +428,7 @@ void C_frm_Camera_Calibration::camera_calibration_thread (void* This)
                                                         static_cast<frm_Camera_Calibration::C_frm_Camera_Calibration*>(This)->Ui->txb_usrInput_images->toPlainText().toInt(),
                                                         static_cast<frm_Camera_Calibration::C_frm_Camera_Calibration*>(This)->Ui->txb_edge_length->toPlainText().toFloat()/ 1000.0f, &rms);
 
-
+/************************************************************* SET UI **********************************************************************************************************************************/
       static_cast<frm_Camera_Calibration::C_frm_Camera_Calibration*>(This)->
           Main->cameraManager->vecCameras->at(static_cast<frm_Camera_Calibration::C_frm_Camera_Calibration*>(This)->cameraID)->getCalibrationParameter(distcoeffs, intrinsic);
       static_cast<frm_Camera_Calibration::C_frm_Camera_Calibration*>(This)->Ui->txb_rms->setText(QString::number(rms));
@@ -441,7 +442,8 @@ void C_frm_Camera_Calibration::camera_calibration_thread (void* This)
     case 1:
        static_cast<frm_Camera_Calibration::C_frm_Camera_Calibration*>(This)->Main->cameraManager->calibrate_stereo_camera_aruco(static_cast<frm_Camera_Calibration::C_frm_Camera_Calibration*>(This)->cameraID,
                                                                                                                       static_cast<frm_Camera_Calibration::C_frm_Camera_Calibration*>(This)->Ui->txb_usrInput_images->toPlainText().toInt());
-
+      /************************************************************* SET UI **********************************************************************************************************************************/
+      Pose = static_cast<frm_Camera_Calibration::C_frm_Camera_Calibration*>(This)->Main->cameraManager->vecCameras.at(static_cast<frm_Camera_Calibration::C_frm_Camera_Calibration*>(This)->cameraID + 1)
       break;
 
     }
