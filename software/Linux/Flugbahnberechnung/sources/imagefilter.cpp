@@ -229,6 +229,7 @@ bool C_ImageFilter::findContours                     (cv::Mat* cpuSrc, cv::Mat* 
     Vec_Object[1]  = y_Kamera_KS;
     Vec_Object[2]  = f;
     Vec_Object_Abs = sqrt (x_Kamera_KS * x_Kamera_KS + y_Kamera_KS * y_Kamera_KS + f * f);
+
     Vec_Object[0] /= Vec_Object_Abs;
     Vec_Object[1] /= Vec_Object_Abs;
     Vec_Object[2] /= Vec_Object_Abs;
@@ -248,6 +249,10 @@ bool C_ImageFilter::findContours                     (cv::Mat* cpuSrc, cv::Mat* 
     Vec_Object[1] = 0.0;
     Vec_Object[2] = 0.0;
     max_Moment_m00 = 0.0;
+    vecPosition.X = Vec_Object[0];
+    vecPosition.Y = Vec_Object[1];
+    vecPosition.Z = Vec_Object[2];
+
     return false;
     }
   }
@@ -269,7 +274,7 @@ void C_ImageFilter::gpufUnidstord (cv::Mat* cpuSrc,           cv::cuda::GpuMat& 
     }
   cv::cuda::GpuMat gpuSrcImg;
   gpuSrcImg.upload (*cpuSrc);
-  cv::cuda::remap (gpuSrcImg,gpuDst,gpuMapX,gpuMapY,cv::INTER_LINEAR);//cv::INTER_NEAREST,cv::BORDER_CONSTANT,0
+  cv::cuda::remap (gpuSrcImg,gpuDst,gpuMapX,gpuMapY, cv::INTER_NEAREST,cv::BORDER_CONSTANT,0);
   }
 
 void C_ImageFilter::gpuROI(cv::cuda::GpuMat &gpuSrc, cv::cuda::GpuMat &gpuDst, cv::Rect &roi)

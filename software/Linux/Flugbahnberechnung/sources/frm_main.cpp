@@ -156,7 +156,7 @@ void frm_Main::C_frm_Main::on_bt_camera_calibration_clicked()
   this->GlobalObjects->watchdog = new watchdog::C_watchdog(100, this->Main->cameraManager->pipelineDone,
                                                                this->Main->cameraManager->getCamThread(),
                                                                [&]{this->Main->cameraManager->startPipelineTracking();});
-  this->Main->cameraManager->getFilterFlags()->undistordActive        = false;
+  this->Main->cameraManager->getFilterFlags()->undistordActive        = true;
   this->Main->cameraManager->getFilterFlags()->openActive             = false;
   this->Main->cameraManager->getFilterFlags()->filterActive           = false;
   this->Main->cameraManager->getFilterFlags()->objectDetectionActive  = false;

@@ -120,6 +120,8 @@ bool               C_frm_Camera_Calibration::eventFilter                        
 void C_frm_Camera_Calibration::Taktgeber_Tick()
   {
   this->Ui->txb_zaehler->setText(QString::number(this->Zaehler++));
+  this->Main->cameraManager->setRoiStatus(roiStatus::objectLost);
+
   if(this->Main->cameraManager->pipelineQue->try_pop(this->pData))
     {
     this->Ui->txb_worker_1->setText(QString::number(pData->executionTime[0].count(), 'f', 1));
@@ -181,12 +183,15 @@ void C_frm_Camera_Calibration::Taktgeber_Tick()
           }
         break;
       case 1:
-        this->pData->cpuSrcImg[0].copyTo(*this->imgBuffer[0]);
-        this->pData->cpuSrcImg[1].copyTo(*this->imgBuffer[1]);
+        cv::Mat temp1, temp2;
+        this->pData->gpuUndistortedImg[0].download(temp1);
+          this->pData->gpuUndistortedImg[1].download(temp2);
+        temp1.copyTo(*this->imgBuffer[0]);
+        temp2.copyTo(*this->imgBuffer[1]);
 
-        bool temp1, temp2;
-        temp1 = this->Main->cameraManager->scanChAruco(this->pData->cpuSrcImg[0], *Main->cameraManager->vecCameras->at(this->Ui->num_camera_id->value()), *this->mPose);
-        if(temp1)
+        bool btemp1, btemp2;
+        btemp1 = this->Main->cameraManager->scanChAruco(temp1, *Main->cameraManager->vecCameras->at(this->Ui->num_camera_id->value()), *this->mPose);
+        if(btemp1)
           {
           this->Ui->txb_nx->setText(QString::number(this->mPose->at<double>(0,0), 'f', 3));
           this->Ui->txb_ny->setText(QString::number(this->mPose->at<double>(1,0), 'f', 3));
@@ -222,8 +227,8 @@ void C_frm_Camera_Calibration::Taktgeber_Tick()
           this->Ui->txb_py->setText(QString::number(0));
           this->Ui->txb_pz->setText(QString::number(0));
           }
-        temp2 = this->Main->cameraManager->scanChAruco(this->pData->cpuSrcImg[1], *Main->cameraManager->vecCameras->at(this->Ui->num_camera_id->value()+1), *this->mPose);
-        if(temp2)
+        btemp2 = this->Main->cameraManager->scanChAruco(temp2, *Main->cameraManager->vecCameras->at(this->Ui->num_camera_id->value()+1), *this->mPose);
+        if(btemp2)
           {
           this->Ui->txb_nx_2->setText(QString::number(this->mPose->at<double>(0,0), 'f', 3));
           this->Ui->txb_ny_2->setText(QString::number(this->mPose->at<double>(1,0), 'f', 3));
@@ -260,15 +265,15 @@ void C_frm_Camera_Calibration::Taktgeber_Tick()
           this->Ui->txb_pz_2->setText(QString::number(0));
           }
 
-        if(temp1 && temp2)
+        if(btemp1 && btemp2)
           {
 //          sm_calibration_state = 1;
 //          sm_Stereo_camera_calibration();
           }
 
 
-        this->Main->frm_Main->FillMat2Lbl(this->pData->cpuSrcImg[0], this->Ui->lbl_img_stereo_left);
-        this->Main->frm_Main->FillMat2Lbl(this->pData->cpuSrcImg[1], this->Ui->lbl_img_stereo_right);
+        this->Main->frm_Main->FillMat2Lbl(temp1, this->Ui->lbl_img_stereo_left);
+        this->Main->frm_Main->FillMat2Lbl(temp2, this->Ui->lbl_img_stereo_right);
 
         break;
        }

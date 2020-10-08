@@ -37,6 +37,8 @@ namespace trackingManager
 
     S_Positionsvektor*                   Richtungsvektoren[payloadSize];
     std::vector<C_AbsolutePose>*         vecWorldtoCamPose;
+    std::vector<C_AbsolutePose>*         vecCamToWorldPose;
+
     vector<C_AbsolutePose>*              vecEinheitsVektor;
 
     std::vector<int>*                    vecIstX;
@@ -65,9 +67,9 @@ namespace trackingManager
     void init_posen                     ();
     void load_posen                     (C_AbsolutePose& cameraPose);
 
-    void Get_Position_ObjectTracking    (S_Positionsvektor&             objektVektor, vector<C_AbsolutePose*> &poseActiveCamera);
-    void Calc_Position_ObjectTracking   (S_Positionsvektor&             objektVektor, vector<S_Positionsvektor>&  vec_Richtungsvektoren_World, vector<C_AbsolutePose*> &poseActiveCamera);
-    void Calc_RichtungsvektorenToWorld  (std::vector<S_Positionsvektor>& vec_Richtungsvektoren_World, std::vector<C_AbsolutePose> vecEinheitsMatrix);
+    void Get_Position_ObjectTracking    (S_Positionsvektor&             objektVektor, vector<int> WorldToCamPose_active);
+    void Calc_Position_ObjectTracking   (S_Positionsvektor&             objektVektor, vector<S_Positionsvektor>&  vec_Richtungsvektoren_World, vector<int> WorldToCamPose_active);
+    void Calc_RichtungsvektorenToWorld  (std::vector<S_Positionsvektor>& vec_Richtungsvektoren_World, vector<int> WorldToCamPose_active);
     void calcPixelVeloctiy              (int ist_X, int ist_Y, int camID, int& pred_X, int& pred_Y);
     void calcObjectVeloctiy             (S_Positionsvektor&             objektVektor);
 
