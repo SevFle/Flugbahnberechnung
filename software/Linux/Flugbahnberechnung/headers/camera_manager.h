@@ -54,14 +54,14 @@ namespace CameraManager
     };
     struct S_pipelinePayload
       {
-      milliseconds                                            executionTime[8];
-      std::chrono::milliseconds                               frametime;
+      nanoseconds                           executionTime[8];
+      std::chrono::nanoseconds              frametime;
 
-      Clock::time_point start;
-      Clock::time_point timestamp;
-      Clock::time_point end;
-      Clock::time_point fpsStart;
-      Clock::time_point fpsEnd;
+      Clock::time_point                     start;
+      Clock::time_point                     timestamp;
+      Clock::time_point                     end;
+      Clock::time_point                     fpsStart;
+      Clock::time_point                     fpsEnd;
 
 
      cv::Mat                                cpuSrcImg           [payloadSize];

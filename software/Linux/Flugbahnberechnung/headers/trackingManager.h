@@ -16,7 +16,7 @@ using namespace GlobalObjects;
 /********************************************** DEFINE PAYLOAD SIZE ******************************************************/
 const int payloadSize =  2;
 typedef std::chrono::system_clock Clock;
-typedef std::chrono::milliseconds milliseconds;
+typedef std::chrono::nanoseconds nanoseconds;
 
 
 
@@ -49,12 +49,12 @@ namespace trackingManager
 
     /****************** Positionsbuffer T-1 *******************/
     S_Positionsvektor*                  objektVektorTm1;
-    float                               objectVelocityTm1 [3];
-    float                               objectVelocity [3];
-    float                               objectAcceleration [3];
-    int                                 dTime;
+    double                              objectVelocityTm1 [3];
+    double                              objectVelocity [3];
+    double                              objectAcceleration [3];
+    double                              dTime;
 
-    milliseconds*                       dTimestamp;
+    nanoseconds*                        dTimestamp;
     Clock*                              timer;
     Clock::time_point*                  timestamp_ms;
     Clock::time_point*                  timestamp_ms_old;
@@ -64,17 +64,17 @@ namespace trackingManager
 
 
     public:
-    void init_posen                     ();
-    void load_posen                     (C_AbsolutePose& cameraPose);
+    void init_posen                                   ();
+    void load_posen                                   (C_AbsolutePose& cameraPose);
 
-    void Get_Position_ObjectTracking    (S_Positionsvektor&             objektVektor, vector<int> WorldToCamPose_active);
-    void Calc_Position_ObjectTracking   (S_Positionsvektor&             objektVektor, vector<S_Positionsvektor>&  vec_Richtungsvektoren_World, vector<int> WorldToCamPose_active);
-    void Calc_RichtungsvektorenToWorld  (std::vector<S_Positionsvektor>& vec_Richtungsvektoren_World, vector<int> WorldToCamPose_active);
-    void calcPixelVeloctiy              (int ist_X, int ist_Y, int camID, int& pred_X, int& pred_Y);
-    void calcObjectVeloctiy             (S_Positionsvektor&             objektVektor);
+    void Get_Position_ObjectTracking                  (S_Positionsvektor&             objektVektor, vector<int> WorldToCamPose_active);
+    void Calc_Position_ObjectTracking                 (S_Positionsvektor&             objektVektor, vector<S_Positionsvektor>&  vec_Richtungsvektoren_World, vector<int> WorldToCamPose_active);
+    void Calc_RichtungsvektorenToWorld                (std::vector<S_Positionsvektor>& vec_Richtungsvektoren_World, vector<int> WorldToCamPose_active);
+    void calcPixelVeloctiy                            (int ist_X, int ist_Y, int camID, int& pred_X, int& pred_Y);
+    void calcObjectVeloctiy                           (S_Positionsvektor&             objektVektor);
 
-    void calcPixelAcceleration          ();
-    void calcObjectAcceleration         ();
+    void calcPixelAcceleration                        ();
+    void calcObjectAcceleration                       ();
 
     void predictPixelMovement                         (int& predX, int& predY, int pixelVelocityX, int pixelVelocityY, int ist_X, int ist_Y);
 

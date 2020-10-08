@@ -17,6 +17,8 @@ namespace frm_Main
   class C_frm_Main : public QMainWindow
     {
     Q_OBJECT
+    typedef void * (*THREADFUNCPTR)(void *);
+
 
     public:
     C_frm_Main                              (C_GlobalObjects* GlobalObjects, C_Main* Main, QWidget *parent = nullptr);
@@ -31,14 +33,18 @@ namespace frm_Main
     QTimer*               Taktgeber;
     QImage* Qimg;
     QPixmap* QPixImg;
+    pthread_t*            subThread;
+
 
     int                   Taktgeber_Intervall;
     int                   Zaehler;
-
+    std::atomic<bool>     finished;
+    std::atomic<bool>     running;
   private:
     void showEvent                          (QShowEvent*  ShowEvent) override;
     void closeEvent                         (QCloseEvent* CloseEvent) override;
     bool eventFilter                        (QObject* Object, QEvent* Event) override;
+    static void initialize                  (void *This);
 
   private slots:
     void Taktgeber_Tick                     ();

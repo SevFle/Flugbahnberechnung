@@ -3,7 +3,7 @@
  <class>C_frm_object_calibration</class>
  <widget class="QMainWindow" name="C_frm_object_calibration">
   <property name="windowModality">
-   <enum>Qt::ApplicationModal</enum>
+   <enum>Qt::NonModal</enum>
   </property>
   <property name="geometry">
    <rect>

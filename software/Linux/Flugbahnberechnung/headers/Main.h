@@ -4,6 +4,8 @@
 #include "headers/GlobalObjects.h"
 #include "headers/camera_manager.h"
 #include <thread>
+#include <memory>
+
 
 using namespace GlobalObjects;
 using namespace CameraManager;

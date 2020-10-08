@@ -34,7 +34,7 @@ C_trackingManager::C_trackingManager (C_GlobalObjects* GlobalObjects)
     this->objectVelocity[i] = 0.0f;
     this->objectAcceleration[i] = 0.0f;
     }
-  this->dTimestamp = new milliseconds;
+  this->dTimestamp = new nanoseconds;
   this->timestamp_ms = new Clock::time_point;
   this->timestamp_ms_old = new Clock::time_point;
   this->timer = new Clock;
@@ -44,7 +44,6 @@ C_trackingManager::~C_trackingManager ()
   {
   delete(timer);
   delete(timestamp_ms_old);
-  delete(timestamp_ms);
   delete(timestamp_ms);
 
   for(int i = 0; i < 3; i++)
@@ -103,8 +102,8 @@ void C_trackingManager::load_posen                     (C_AbsolutePose& cameraPo
 void C_trackingManager::setTime                         ()
   {
   *this->timestamp_ms     = timer->now();
-  *this->dTimestamp       = std::chrono::duration_cast<milliseconds>(*this->timestamp_ms - *this->timestamp_ms_old);
-  this->dTime             = this->dTimestamp->count()*1000;
+  *this->dTimestamp       = std::chrono::duration_cast<nanoseconds>(*this->timestamp_ms - *this->timestamp_ms_old);
+  this->dTime             = this->dTimestamp->count()/1000000;
   *this->timestamp_ms_old = timer->now();
   if(this->dTime < 0)
     this->dTime = 1;
@@ -285,6 +284,7 @@ void C_trackingManager::calcPixelVeloctiy             (int ist_X, int ist_Y, int
 
 void C_trackingManager::calcObjectVeloctiy(S_Positionsvektor&             objektVektor)
   {
+  this->setTime();
 
   S_Positionsvektor dObjektVektor;
   dObjektVektor.X = objektVektor.X - this->objektVektorTm1->X;
@@ -294,6 +294,10 @@ void C_trackingManager::calcObjectVeloctiy(S_Positionsvektor&             objekt
   this->objectVelocity[1] = dObjektVektor.Y/this->dTime;
   this->objectVelocity[2] = dObjektVektor.Z/this->dTime;
   this->calcObjectAcceleration();
+  this->objektVektorTm1->X = objektVektor.X;
+  this->objektVektorTm1->Y = objektVektor.Y;
+  this->objektVektorTm1->Z = objektVektor.Z;
+
   }
 
 void C_trackingManager::calcPixelAcceleration()

@@ -449,8 +449,7 @@ void C_CameraManager::calibrateSingleCamera (int current_camera_id,
   //The parameters \alpha_{ x } = f \cdot m_{ x } and \alpha_{ y } = f \cdot m_{ y } represent focal length in terms of pixels, 
   //where m_{ x } and m_{ y } are the scale factors relating pixels to distance and f is the focal length in terms of distance.
   std::cout << endl << "Calculating Intrinsic and DistCoeffs. This may take a while, please wait." << endl;
-  double err = cv::calibrateCamera (Object_Points,Image_Points,Originalbild.size(),intrinsic,distCoeffs,Rvecs,Tvecs);
-  std::cout << "RMS: " << err << std::endl << endl;
+  *rms = cv::calibrateCamera (Object_Points,Image_Points,Originalbild.size(),intrinsic,distCoeffs,Rvecs,Tvecs);
   std::cout << "Calculation finished. Saving data." << endl << endl;
 
   //Kopieren der berechneten Daten zur dazugehörigen Kamera
@@ -1279,7 +1278,7 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
     //cntPipeline++;
     pData->timestamp = Clock::now();
     pData->end = Clock::now();
-    pData->executionTime[0] = std::chrono::duration_cast<milliseconds>(pData->end - pData->start);
+    pData->executionTime[0] = std::chrono::duration_cast<nanoseconds>(pData->end - pData->start);
 
     return pData;
     }
@@ -1303,7 +1302,7 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
       }
 
     pData->end = Clock::now();
-    pData->executionTime[1] = std::chrono::duration_cast<milliseconds>(pData->end - pData->start);
+    pData->executionTime[1] = std::chrono::duration_cast<nanoseconds>(pData->end - pData->start);
     return pData;
     }
   )&
@@ -1318,7 +1317,7 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
     if(!this->filterFlags->undistordActive)
     {
     pData->end = Clock::now();
-    pData->executionTime[2] = std::chrono::duration_cast<milliseconds>(pData->end - pData->start);
+    pData->executionTime[2] = std::chrono::duration_cast<nanoseconds>(pData->end - pData->start);
     return pData;
     }
 
@@ -1370,7 +1369,7 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
         }
     }//for
     pData->end = Clock::now();
-    pData->executionTime[2] = std::chrono::duration_cast<milliseconds>(pData->end - pData->start);
+    pData->executionTime[2] = std::chrono::duration_cast<nanoseconds>(pData->end - pData->start);
     return pData;
     }
   )&
@@ -1386,7 +1385,7 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
     if(!this->filterFlags->filterActive)
     {
     pData->end = Clock::now();
-    pData->executionTime[3] = std::chrono::duration_cast<milliseconds>(pData->end - pData->start);
+    pData->executionTime[3] = std::chrono::duration_cast<nanoseconds>(pData->end - pData->start);
     return pData;
     }
 
@@ -1437,7 +1436,7 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
       i++;
       }
     pData->end = Clock::now();
-    pData->executionTime[3] = std::chrono::duration_cast<milliseconds>(pData->end - pData->start);
+    pData->executionTime[3] = std::chrono::duration_cast<nanoseconds>(pData->end - pData->start);
     return pData;
     }
   )&
@@ -1453,7 +1452,7 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
     if(!this->filterFlags->objectDetectionActive)
       {
       pData->end = Clock::now();
-      pData->executionTime[4] = std::chrono::duration_cast<milliseconds>(pData->end - pData->start);
+      pData->executionTime[4] = std::chrono::duration_cast<nanoseconds>(pData->end - pData->start);
       return pData;
       }
 
@@ -1468,8 +1467,12 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
         this->vecCameras->at(pData->cameraID[i])->getFilterproperties()->getOffset(offsetL);
         this->vecCameras->at(pData->cameraID[i+1])->getFilterproperties()->getOffset(offsetR);
 
-        if(this->ImageFilter->findContours(it,   &pData->cpuUndistortedImg[i], offsetL, *vecCameras[pData->cameraID[i]], pData->Richtungsvektoren[i], pData->ist_X[i], pData->ist_Y[i], pData->radius[i]) &&
-           this->ImageFilter->findContours(it+1, &pData->cpuUndistortedImg[i+1], offsetR, *vecCameras[pData->cameraID[i+1]],pData->Richtungsvektoren[i+1], pData->ist_X[i+1], pData->ist_Y[i+1], pData->radius[i+1] ))
+        bool L, R;
+        L = this->ImageFilter->findContours(it,   &pData->cpuUndistortedImg[i], offsetL, *vecCameras[pData->cameraID[i]], pData->Richtungsvektoren[i], pData->ist_X[i], pData->ist_Y[i], pData->radius[i]);
+        R = this->ImageFilter->findContours(it+1, &pData->cpuUndistortedImg[i+1], offsetR, *vecCameras[pData->cameraID[i+1]],pData->Richtungsvektoren[i+1], pData->ist_X[i+1], pData->ist_Y[i+1], pData->radius[i+1] );
+
+        //Wenn das Objekt von den beiden Kameras (Links + Rechts) gefunden wurde wird die Stereoskopie angewandt
+        if( L && R)
           {
           if(*pData->ist_X < 0 || *pData->ist_X > this->frameWidth || *pData->ist_Y < 0 || *pData->ist_Y > this->frameHeight)
             {
@@ -1502,7 +1505,7 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
       i++;
       }
     pData->end = Clock::now();
-    pData->executionTime[4] = std::chrono::duration_cast<milliseconds>(pData->end - pData->start);
+    pData->executionTime[4] = std::chrono::duration_cast<nanoseconds>(pData->end - pData->start);
     return pData;
     }
   )&
@@ -1518,18 +1521,17 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
     if(!this->filterFlags->trackingActive)
     {
     pData->end = Clock::now();
-    pData->executionTime[6] = std::chrono::duration_cast<milliseconds>(pData->end - pData->start);
+    pData->executionTime[6] = std::chrono::duration_cast<nanoseconds>(pData->end - pData->start);
     return pData;
     }
     if(pData->found)
       {
 
-      for(int i = 0; i < 2; i++)
+      for(int i = 0; i < payloadSize; i++)
         {
         WorldToCamPose_active.at(i) = pData->cameraID[i];
         this->trackingManager->setRichtungsvektor(&pData->Richtungsvektoren[i], i);
         }
-      this->trackingManager->setTime();
       this->trackingManager->Get_Position_ObjectTracking    (pData->objektVektor, WorldToCamPose_active);
       this->trackingManager->calcObjectVeloctiy             (pData->objektVektor);
 
@@ -1538,17 +1540,17 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
         this->trackingManager->calcPixelVeloctiy              (pData->ist_X[i], pData->ist_Y[i], pData->cameraID[i], pData->pred_X[i], pData->pred_Y[i]);
         }
       //Überprüfe ob das verfolgte Objekt sich dem Rand des derzeitigen Kamerapaares nähert. Falls true wird das nächste Kamerapaar in arrActiveCameras geladen und das predicted ROI + Toleranz gesetzt.
-//      if(pData->ist_X[0] > this->transferZoneWidth)
-//        {
-//        int newCam[2];
-//        newCam[0] = pData->cameraID[0] + 1;
-//        newCam[1] = pData->cameraID[1] + 1;
-////        vecCameras[newCam[0]]->setTrackingRoi(pData->radius[0], pData->radius[0],pData->pred_Y[0]);
-////        vecCameras[newCam[1]]->setTrackingRoi(pData->radius[1], pData->radius[1],pData->pred_Y[1]);
-//        std::lock_guard<std::mutex> lck (*this->lock);
-//        this->arrActiveCameras[0] = newCam[0];
-//        this->arrActiveCameras[1] = newCam[1];
-//        }
+      if(pData->ist_X[0] > 0 &&  pData->ist_X[0] < this->transferZoneWidth && pData->ist_X[1] > this->frameWidth - this->transferZoneWidth)
+        {
+        int newCam[2];
+        newCam[0] = pData->cameraID[0] + 1;
+        newCam[1] = pData->cameraID[1] + 1;
+//        vecCameras[newCam[0]]->setTrackingRoi(pData->radius[0], pData->radius[0],pData->pred_Y[0]);
+//        vecCameras[newCam[1]]->setTrackingRoi(pData->radius[1], pData->radius[1],pData->pred_Y[1]);
+        std::lock_guard<std::mutex> lck (*this->lock);
+        this->arrActiveCameras[0] = newCam[0];
+        this->arrActiveCameras[1] = newCam[1];
+        }
 //      for(int i = 0; i < payloadSize; i++)
 //        {
 //        this->vecCameras->at(pData->cameraID[i])->setTrackingRoi(pData->radius[i], pData->pred_X[i],pData->pred_Y[i]);
@@ -1559,13 +1561,24 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
 //            this->vecCameras->at(pData->cameraID[i])->setTrackingRoi(pData->radius[i], pData->ist_X[i],pData->ist_Y[i]);
 //            }
 
+      *pData->objectVelocity = this->trackingManager->getObjectVelocity();
+      *pData->objectAcceleration = this->trackingManager->getObjectAcceleration();
 
       }
-    *pData->objectVelocity = this->trackingManager->getObjectVelocity();
-    *pData->objectAcceleration = this->trackingManager->getObjectAcceleration();
+    else
+      {
+      for(int i = 0; i < 3; i ++)
+        {
+        pData->objectAcceleration[i] = 0.0f;
+        pData->objectVelocity[i]     = 0.0f;
+        }
+      pData->objektVektor.X = 0;
+      pData->objektVektor.Y = 0;
+      pData->objektVektor.Z = 0;
 
+      }
     pData->end = Clock::now();
-    pData->executionTime[6] = std::chrono::duration_cast<milliseconds>(pData->end - pData->start);
+    pData->executionTime[6] = std::chrono::duration_cast<nanoseconds>(pData->end - pData->start);
     return pData;
     }
   )&
@@ -1579,7 +1592,7 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
     pData->frametime        = std::chrono::duration_cast<std::chrono::milliseconds>(pData->fpsEnd - pData->fpsStart);
     //this->globalObjects->watchdog->pet();
     pData->end              = Clock::now();
-    pData->executionTime[7] = std::chrono::duration_cast<milliseconds>(pData->end - pData->start);
+    pData->executionTime[7] = std::chrono::duration_cast<nanoseconds>(pData->end - pData->start);
     pData->queBuffer        = que->size();
 
     //try to push pData into que if space is available

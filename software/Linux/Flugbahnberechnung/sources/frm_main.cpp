@@ -13,6 +13,10 @@ C_frm_Main::C_frm_Main(C_GlobalObjects* GlobalObjects, C_Main* Main, QWidget *pa
   this->Taktgeber = new QTimer;
   this->Qimg = new QImage;
   this->QPixImg = new QPixmap;
+  this->subThread = new pthread_t;
+  this->finished.store(false);
+  this->running.store(false);
+
 
   this->Taktgeber_Intervall = 0;
   this->Zaehler = 0;
@@ -23,6 +27,9 @@ C_frm_Main::~C_frm_Main()
   this->Zaehler = 0;
   this->Taktgeber_Intervall = 0;
 
+  this->running.store(false);
+  this->finished.store(false);
+  delete (subThread);
   delete (this->QPixImg);
   delete (this->Qimg);
   delete (this->Taktgeber);
@@ -42,6 +49,10 @@ this->Taktgeber_Intervall = 100;
 connect(this->Taktgeber, &QTimer::timeout, this, &C_frm_Main::Taktgeber_Tick);
 this->Taktgeber->start(this->Taktgeber_Intervall);
 this->installEventFilter(this);
+QPalette p = this->Ui->txb_init->palette();
+p.setColor(QPalette::Base, Qt::red);
+p.setColor(QPalette::Text, Qt::white);
+this->Ui->txb_init->setPalette(p);
 }
 
 void C_frm_Main::closeEvent(QCloseEvent* CloseEvent)
@@ -100,31 +111,55 @@ void ::C_frm_Main::on_bt_exit_clicked()
 void C_frm_Main::Taktgeber_Tick()
   {
   this->Ui->txb_zaehler->setText(QString::number(this->Zaehler++));
-  }
-
-void ::C_frm_Main::on_bt_apply_clicked()
-{
- if(!this->Main->cameraManager->openCameras() || GlobalObjects->absCameras % 2 !=0 || GlobalObjects->absCameras == 0)
+  if(this->running)
+    {
+    this->Ui->txb_cameras->setText(QString::number(this->GlobalObjects->absCameras));
+      if(this->finished)
         {
-        this->MsgBox->setText("Kameras konnten nicht geöffnet werden");
-        this->MsgBox->setIcon(QMessageBox::Critical);
-        this->MsgBox->exec();
-        this->Main->cameraManager->closeCameras();
-        return;
-        }
-      else
-        {
-        this->Ui->bt_apply->setEnabled     (false);
         this->Ui->bt_tracking->setEnabled(true);
         this->Ui->bt_camera_calibration->setEnabled(true);
         this->Ui->bt_camera_positioning->setEnabled(true);
         this->Ui->bt_camera_pose->setEnabled(true);
+        QPalette p = this->Ui->txb_init->palette();
+        p.setColor(QPalette::Base, Qt::green);
+        p.setColor(QPalette::Text, Qt::white);
+        this->Ui->txb_init->setPalette(p);
+        this->Ui->txb_init->setText(QString(""));
 
+        this->finished.store(false);
+        this->running.store(false);
         }
+    }
+  }
 
-
-}
-void frm_Main::C_frm_Main::on_bt_tracking_clicked()
+void ::C_frm_Main::on_bt_apply_clicked()
+  {
+  if(int err = pthread_create(this->subThread,NULL, (THREADFUNCPTR) &frm_Main::C_frm_Main::initialize, this) !=0)
+    {
+    this->MsgBox->setText("Kameras konnten nicht geöffnet werden");
+    this->MsgBox->setIcon(QMessageBox::Critical);
+    this->MsgBox->exec();
+    this->Main->cameraManager->closeCameras();
+    return;
+    }
+  else
+    {
+    this->Ui->bt_apply->setEnabled     (false);
+    QPalette p = this->Ui->txb_init->palette();
+    p.setColor(QPalette::Base, Qt::yellow);
+    p.setColor(QPalette::Text, Qt::black);
+    this->Ui->txb_init->setPalette(p);
+    this->Ui->txb_init->setText(QString("Wait"));
+    this->running.store(true);
+    }
+  }
+void C_frm_Main::initialize(void* This)
+  {
+  static_cast<frm_Main::C_frm_Main*>(This)->finished.store(false);
+  static_cast<frm_Main::C_frm_Main*>(This)->Main->cameraManager->openCameras();
+  static_cast<frm_Main::C_frm_Main*>(This)->finished.store(true);
+  }
+void C_frm_Main::on_bt_tracking_clicked()
   {
   this->GlobalObjects->watchdog = new watchdog::C_watchdog(100, this->Main->cameraManager->pipelineDone,
                                                              this->Main->cameraManager->getCamThread(),
@@ -145,10 +180,9 @@ void frm_Main::C_frm_Main::on_bt_tracking_clicked()
     this->MsgBox->exec();
     return;
     }
-  this->Main->frm_Main->setEnabled(false);
-  //this->Main->frm_Object_Calibration->setWindowModality(Qt::ApplicationModal);
+  this->Taktgeber->stop();
   this->Main->frm_Object_Calibration->show();
-  this->Main->frm_Main->setEnabled(true);
+  this->Taktgeber->start();
   }
 
 void frm_Main::C_frm_Main::on_bt_camera_calibration_clicked()
@@ -171,16 +205,18 @@ void frm_Main::C_frm_Main::on_bt_camera_calibration_clicked()
     this->MsgBox->exec();
     return;
     }
-
-  this->Main->frm_Camera_Calibration->setWindowModality(Qt::ApplicationModal);
+  this->Taktgeber->stop();
   this->Main->frm_Camera_Calibration->show();
+  this->Taktgeber->start();
   }
 
 void frm_Main::C_frm_Main::on_bt_camera_pose_clicked()
-{
-    this->Main->frm_Camera_Positioning_Pose->setWindowModality(Qt::ApplicationModal);
-    this->Main->frm_Camera_Positioning_Pose->show();
-}
+  {
+  this->Main->frm_Camera_Positioning_Pose->setWindowModality(Qt::ApplicationModal);
+  this->Taktgeber->stop();
+  this->Main->frm_Camera_Positioning_Pose->show();
+  this->Taktgeber->start();
+  }
 
 void frm_Main::C_frm_Main::on_bt_camera_positioning_clicked()
   {
@@ -197,7 +233,6 @@ void frm_Main::C_frm_Main::on_bt_camera_positioning_clicked()
     this->MsgBox->exec();
     return;
     }
-  this->Main->frm_Camera_Positioning->setWindowModality(Qt::ApplicationModal);
   this->Main->frm_Camera_Positioning->show();
   delete(this->GlobalObjects->watchdog);
   }

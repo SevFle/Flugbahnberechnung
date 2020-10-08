@@ -131,7 +131,7 @@ void C_frm_Object_Tracking::Taktgeber_Tick()
 
     this->Ui->txb_activeCamera->setText (QString::number(pData->cameraID[0]));
 
-    if(this->Zaehler > Plotter_Intervall + Zaehler_old)
+    if(this->Main->cameraManager->getFilterFlags()->getTrackingActive() && this->Zaehler > Plotter_Intervall + Zaehler_old)
       {
       //Mappe die aktuellen Objektpositionen auf einen QVector um diesen plotten zu können
       QVector3D vec3d;
@@ -172,7 +172,6 @@ void frm_Object_Tracking::C_frm_Object_Tracking::on_bt_start_clicked()
     {
     this->Ui->lbl_thread_running->              setEnabled  (false);
     this->Ui->bt_start->                        setText     ("Start Tracking");
-    this->Main->cameraManager->getFilterFlags()->setObjectDetection(false);
     this->Main->cameraManager->getFilterFlags()->setRoiAdjustment(false);
     this->Main->cameraManager->getFilterFlags()->setTrackingActive(false);
 

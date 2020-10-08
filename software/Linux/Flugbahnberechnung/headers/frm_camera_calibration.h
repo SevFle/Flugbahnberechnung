@@ -37,6 +37,7 @@ private:
   int                               cameraID;
   int                               sm_calibration_state;
   int                               usrInputAbsPhoto;
+  std::atomic<bool>                 finished;
 
 
 private:

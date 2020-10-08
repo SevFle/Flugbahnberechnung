@@ -14,7 +14,7 @@ C_frm_Camera_Calibration::C_frm_Camera_Calibration(C_GlobalObjects* GlobalObject
     this->imgBuffer[0] = new cv::Mat;
     this->imgBuffer[1] = new cv::Mat;
     this->mPose = new cv::Mat(cv::Mat_<double>(4,4));
-
+    this->finished.store(false);
     this->Taktgeber_Intervall = 0;
     this->Zaehler = 0;
     this->photo_id = 0;
@@ -39,10 +39,12 @@ C_frm_Camera_Calibration::~C_frm_Camera_Calibration()
   this->Zaehler = 0;
   this->Taktgeber_Intervall = 0;
 
-  this->mPose = new cv::Mat;
-  this->imgBuffer[1] = new cv::Mat;
-  this->imgBuffer[0] = new cv::Mat;
-  this->Taktgeber = new QTimer;
+
+  this->finished.store(false);
+  delete (mPose);
+  delete(imgBuffer[1]);
+  delete (imgBuffer[0]);
+  delete (Taktgeber);
   if(this->pData != nullptr)
     {
       delete (this->pData);
@@ -412,6 +414,8 @@ void C_frm_Camera_Calibration::on_bt_photo_clicked()
 void C_frm_Camera_Calibration::camera_calibration_thread (void* This)
   {
   double rms = 0.0;
+  double intrinsic[3][3];;
+  double distcoeffs[1][5];;
   static_cast<frm_Camera_Calibration::C_frm_Camera_Calibration*>(This)->Ui->lbl_calibration_running->setVisible(true);
   switch (static_cast<frm_Camera_Calibration::C_frm_Camera_Calibration*>(This)->method)
     {
@@ -422,6 +426,16 @@ void C_frm_Camera_Calibration::camera_calibration_thread (void* This)
                                                         static_cast<frm_Camera_Calibration::C_frm_Camera_Calibration*>(This)->Ui->txb_edge_height->toPlainText().toInt(),
                                                         static_cast<frm_Camera_Calibration::C_frm_Camera_Calibration*>(This)->Ui->txb_usrInput_images->toPlainText().toInt(),
                                                         static_cast<frm_Camera_Calibration::C_frm_Camera_Calibration*>(This)->Ui->txb_edge_length->toPlainText().toFloat()/ 1000.0f, &rms);
+
+
+      static_cast<frm_Camera_Calibration::C_frm_Camera_Calibration*>(This)->
+          Main->cameraManager->vecCameras->at(static_cast<frm_Camera_Calibration::C_frm_Camera_Calibration*>(This)->cameraID)->getCalibrationParameter(distcoeffs, intrinsic);
+      static_cast<frm_Camera_Calibration::C_frm_Camera_Calibration*>(This)->Ui->txb_rms->setText(QString::number(rms));
+      static_cast<frm_Camera_Calibration::C_frm_Camera_Calibration*>(This)->Ui->txb_fx->setText(QString::number(intrinsic[0][0]));
+      static_cast<frm_Camera_Calibration::C_frm_Camera_Calibration*>(This)->Ui->txb_fy->setText(QString::number(intrinsic[1][1]));
+      static_cast<frm_Camera_Calibration::C_frm_Camera_Calibration*>(This)->Ui->txb_cx->setText(QString::number(intrinsic[0][2]));
+      static_cast<frm_Camera_Calibration::C_frm_Camera_Calibration*>(This)->Ui->txb_cy->setText(QString::number(intrinsic[1][2]));
+
       break;
 
     case 1:
@@ -432,8 +446,6 @@ void C_frm_Camera_Calibration::camera_calibration_thread (void* This)
 
     }
   static_cast<frm_Camera_Calibration::C_frm_Camera_Calibration*>(This)->Ui->lbl_calibration_running->setVisible(false);
-
-
   }
 
 void C_frm_Camera_Calibration::sm_Single_camera_calibration ()
@@ -454,6 +466,7 @@ void C_frm_Camera_Calibration::sm_Single_camera_calibration ()
       //Take pictures
     case 1:
       this->Main->cameraManager->vecCameras->at(cameraID)->save_picture    (photo_id,naming,*this->imgBuffer[0]);
+      this->Main->frm_Main->FillMat2Lbl(*this->imgBuffer[0], this->Ui->lbl_img_0);
       this->Ui->txb_img_count->setText(QString::number                  (this->photo_id + 1));
       this->photo_id++;
 
@@ -504,8 +517,10 @@ void C_frm_Camera_Calibration::sm_Stereo_camera_calibration ()
 
       //Take pictures
     case 1:
-//      this->Main->cameraManager->vecCameras->at(cameraID)->save_picture    (photo_id,naming,*this->imgBuffer[0]);
-//      this->Main->cameraManager->vecCameras->at(cameraID+1)->save_picture    (photo_id,naming,*this->imgBuffer[1]);
+      this->Main->cameraManager->vecCameras->at(cameraID)->save_picture    (photo_id,naming,*this->imgBuffer[0]);
+      this->Main->cameraManager->vecCameras->at(cameraID+1)->save_picture    (photo_id,naming,*this->imgBuffer[1]);
+      this->Main->frm_Main->FillMat2Lbl(*this->imgBuffer[0], this->Ui->lbl_img_0);
+      this->Main->frm_Main->FillMat2Lbl(*this->imgBuffer[1], this->Ui->lbl_img_0);
       this->photo_id++;
       this->Ui->txb_img_count->                                     setText(QString::number(this->photo_id + 1));
 

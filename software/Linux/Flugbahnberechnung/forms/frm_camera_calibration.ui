@@ -43,13 +43,13 @@
       <x>10</x>
       <y>0</y>
       <width>321</width>
-      <height>821</height>
+      <height>551</height>
      </rect>
     </property>
     <property name="title">
      <string>Aufgenommene Bilder</string>
     </property>
-    <widget class="QLabel" name="label">
+    <widget class="QLabel" name="lbl_img_0">
      <property name="geometry">
       <rect>
        <x>10</x>
@@ -62,24 +62,11 @@
       <string>TextLabel</string>
      </property>
     </widget>
-    <widget class="QLabel" name="label_2">
+    <widget class="QLabel" name="lbl_img_1">
      <property name="geometry">
       <rect>
        <x>10</x>
        <y>330</y>
-       <width>301</width>
-       <height>191</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>TextLabel</string>
-     </property>
-    </widget>
-    <widget class="QLabel" name="label_3">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>550</y>
        <width>301</width>
        <height>191</height>
       </rect>
@@ -324,8 +311,8 @@
    <widget class="QPushButton" name="bt_start">
     <property name="geometry">
      <rect>
-      <x>340</x>
-      <y>750</y>
+      <x>10</x>
+      <y>740</y>
       <width>141</width>
       <height>71</height>
      </rect>
@@ -1200,8 +1187,8 @@ aufnehmen</string>
    <widget class="QGroupBox" name="groupBox_3">
     <property name="geometry">
      <rect>
-      <x>340</x>
-      <y>560</y>
+      <x>10</x>
+      <y>550</y>
       <width>271</width>
       <height>181</height>
      </rect>

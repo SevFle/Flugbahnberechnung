@@ -30,6 +30,9 @@ namespace frm_Object_Calibration
     int                                     Zaehler;
     int                                     Taktgeber_Intervall;
     int                                     camID;
+    int executionTime[8];
+    int Zaehler_old;
+
 
     bool dilate_active;
     bool bilateral_active;

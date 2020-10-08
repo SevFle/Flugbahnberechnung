@@ -17,11 +17,23 @@ C_frm_Object_Calibration::C_frm_Object_Calibration(C_GlobalObjects* GlobalObject
   this->bilateral_active        = false;
   this->morph_active        = false;
   this->erode_active        = false;
+  this->Zaehler_old             = 0;
+
+
+  for(int i = 0; i < 8; i++)
+    {
+    this->executionTime[i] = 0;
+    }
 
   }
 
 C_frm_Object_Calibration::~C_frm_Object_Calibration()
   {
+  for(int i = 0; i < 8; i++)
+    {
+    this->executionTime[i] = 0;
+    }
+  this->Zaehler_old             = 0;
   this->erode_active        = false;
   this->morph_active        = false;
   this->bilateral_active        = false;
@@ -60,6 +72,9 @@ this->get_camera_settings (*this->Main->cameraManager->vecCameras->at(camID));
 connect(this->Taktgeber, &QTimer::timeout, this, &C_frm_Object_Calibration::Taktgeber_Tick);
 this->Taktgeber->start(this->Taktgeber_Intervall);
 this->installEventFilter(this);
+
+this->Main->cameraManager->setArrActiveCameras(0,0);
+this->Main->cameraManager->setArrActiveCameras(0,1);
 }
 
 
@@ -119,12 +134,12 @@ void C_frm_Object_Calibration::Taktgeber_Tick()
   this->Ui->txb_zaehler->setText(QString::number(this->Zaehler++));
   if(this->Main->cameraManager->pipelineQue->try_pop(pData))
     {
-    this->Main->frm_Main->FillMat2Lbl(pData->cpuSrcImg[0], this->Ui->lbl_src_img);
-    this->Main->frm_Main->FillMat2Lbl(pData->cpuGrayImg[0], this->Ui->lbl_img_gray);
-    this->Main->frm_Main->FillMat2Lbl(pData->cpuUndistortedImg[0], this->Ui->lbl_imgFinal);
-    this->Ui->txb_fps->         setText(QString::number(pData->fps));
-    this->Ui->txb_frametime->   setText(QString::number(pData->frametime.count()));
-    this->Ui->txb_quebuffer->setText(QString::number(pData->queBuffer));
+    this->Main->frm_Main->           FillMat2Lbl(pData->cpuSrcImg[0], this->Ui->lbl_src_img);
+    this->Main->frm_Main->           FillMat2Lbl(pData->cpuGrayImg[0], this->Ui->lbl_img_gray);
+    this->Main->frm_Main->           FillMat2Lbl(pData->cpuUndistortedImg[0], this->Ui->lbl_imgFinal);
+    this->Ui->txb_fps->              setText(QString::number(pData->fps));
+    this->Ui->txb_frametime->        setText(QString::number(pData->frametime.count()));
+    this->Ui->txb_quebuffer->        setText(QString::number(pData->queBuffer));
     this->Ui->txb_worker_1->         setText(QString::number(pData->executionTime[0].count()));
     this->Ui->txb_worker_2->         setText(QString::number(pData->executionTime[1].count()));
     this->Ui->txb_worker_3->         setText(QString::number(pData->executionTime[2].count()));
@@ -296,6 +311,7 @@ void C_frm_Object_Calibration::on_num_morph_iterations_valueChanged(int arg1)
 
 void C_frm_Object_Calibration::on_bt_apply_all_clicked()
 {
+
     int i = 0;
     for (auto it = std::begin(*this->Main->cameraManager->vecCameras); it != std::end(*this->Main->cameraManager->vecCameras); it++)
       {
@@ -531,9 +547,9 @@ void frm_Object_Calibration::C_frm_Object_Calibration::on_bt_tracking_clicked()
     this->Main->cameraManager->pipelineFlush.store(false);
 
     this->Main->frm_Object_Tracking->setTaktgeber_Intervall(this->Ui->numTimerIntervall->value());
-    this->Main->frm_Object_Tracking->setWindowModality(Qt::ApplicationModal);
+    this->Taktgeber->stop();
     this->Main->frm_Object_Tracking->show();
-
+    this->Taktgeber->start();
     this->Ui->num_camera->setEnabled(true);
 
 }
