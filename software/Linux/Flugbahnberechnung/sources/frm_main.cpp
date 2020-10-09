@@ -53,6 +53,7 @@ QPalette p = this->Ui->txb_init->palette();
 p.setColor(QPalette::Base, Qt::red);
 p.setColor(QPalette::Text, Qt::white);
 this->Ui->txb_init->setPalette(p);
+this->Ui->txb_init->setText(QString("Uninitialised"));
 }
 
 void C_frm_Main::closeEvent(QCloseEvent* CloseEvent)
@@ -122,9 +123,9 @@ void C_frm_Main::Taktgeber_Tick()
         this->Ui->bt_camera_pose->setEnabled(true);
         QPalette p = this->Ui->txb_init->palette();
         p.setColor(QPalette::Base, Qt::green);
-        p.setColor(QPalette::Text, Qt::white);
+        p.setColor(QPalette::Text, Qt::black);
         this->Ui->txb_init->setPalette(p);
-        this->Ui->txb_init->setText(QString(""));
+        this->Ui->txb_init->setText(QString("Ready"));
 
         this->finished.store(false);
         this->running.store(false);

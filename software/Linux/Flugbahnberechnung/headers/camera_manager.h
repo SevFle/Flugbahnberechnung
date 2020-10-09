@@ -54,8 +54,8 @@ namespace CameraManager
     };
     struct S_pipelinePayload
       {
-      nanoseconds                           executionTime[8];
-      std::chrono::nanoseconds              frametime;
+      milliseconds                          executionTime[7];
+      std::chrono::milliseconds             frametime;
 
       Clock::time_point                     start;
       Clock::time_point                     timestamp;
@@ -67,9 +67,11 @@ namespace CameraManager
      cv::Mat                                cpuSrcImg           [payloadSize];
      cv::Mat                                cpuUndistortedImg   [payloadSize];
      cv::Mat                                cpuGrayImg          [payloadSize];
-     cv::Mat                                cpuConturedImg      [payloadSize];
+     cv::Mat                                cpuFinal            [payloadSize];
 
      cv::cuda::GpuMat                       gpuUndistortedImg   [payloadSize];
+     cv::cuda::GpuMat                       gpuFinal            [payloadSize];
+
      Camera::C_Camera2::S_filterProperties  Filter              [payloadSize];
 
      S_Positionsvektor                      objektVektor;
@@ -273,8 +275,6 @@ namespace CameraManager
     void setFilterFlags(S_filterflags *value);
     std::mutex *getLock() const;
     void setLock(std::mutex *value);
-    bool getFlush() const;
-    void setFlush(bool value);
     thread *getCamPipeline() const;
     thread *getCamPositioning() const;
     void setDelta_t(int value);

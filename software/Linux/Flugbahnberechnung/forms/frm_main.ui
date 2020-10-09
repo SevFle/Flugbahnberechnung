@@ -134,6 +134,9 @@
       <height>31</height>
      </rect>
     </property>
+    <property name="readOnly">
+     <bool>true</bool>
+    </property>
    </widget>
    <widget class="QTextEdit" name="txb_cameras">
     <property name="geometry">
@@ -148,6 +151,9 @@
      <font>
       <pointsize>14</pointsize>
      </font>
+    </property>
+    <property name="readOnly">
+     <bool>true</bool>
     </property>
    </widget>
    <widget class="QLabel" name="lbl_cameras">

@@ -283,4 +283,5 @@ void C_ImageFilter::gpuROI(cv::cuda::GpuMat &gpuSrc, cv::cuda::GpuMat &gpuDst, c
         return;
 
     gpuDst= gpuSrc.operator()(roi);
+
     }

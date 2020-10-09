@@ -9,7 +9,6 @@ C_plotter::C_plotter()
   this->dataReal    = new QtDataVisualization::QScatterDataArray;
   this->seriesPredicted  = new QtDataVisualization::QScatter3DSeries;
   this->dataPredicted    = new QtDataVisualization::QScatterDataArray;
-
   seriesType    = new plotter::series;
   init();
   }
@@ -34,19 +33,18 @@ void C_plotter::init()
   graph->axisZ()->setTitle("Z-Achse");
   QFont font = graph->activeTheme()->font();
   font.setPointSize(2);
-  auto *axisX = new QtDataVisualization::QValue3DAxis;
-  auto *axisY = new QtDataVisualization::QValue3DAxis;
-  auto *axisZ = new QtDataVisualization::QValue3DAxis;
+//  auto *axisX = new QtDataVisualization::QValue3DAxis;
+//  auto *axisY = new QtDataVisualization::QValue3DAxis;
+//  auto *axisZ = new QtDataVisualization::QValue3DAxis;
+//  QtDataVisualization::QValue3DAxis axisX_temp;
+//  QtDataVisualization::QValue3DAxis axisY_temp;
+//  QtDataVisualization::QValue3DAxis axisZ_temp;
 
   graph->setAspectRatio(10.0);
   graph->setHorizontalAspectRatio(10.0);
 
-  axisX->setRange(0, 10);
   //axisY->setSegmentCount(10);
   //axisX->setLabelFormat("%.2f");
- graph->setAxisX(axisX);
-  graph->setAxisY(axisY);
- graph->setAxisZ(axisZ);
   }
 void C_plotter::addSingleData(QVector3D point3D, enum series Type)
   {
@@ -87,4 +85,9 @@ void C_plotter::pushData(QtDataVisualization::QScatterDataArray *data)
       graph->addSeries(seriesReal);
       break;
     }
+  }
+void C_plotter::flush()
+  {
+  this->graph->removeSeries(seriesReal);
+  this->graph->removeSeries(seriesPredicted);
   }

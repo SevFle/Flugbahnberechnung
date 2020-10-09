@@ -17,7 +17,7 @@ using namespace GlobalObjects;
 const int payloadSize =  2;
 typedef std::chrono::system_clock Clock;
 typedef std::chrono::nanoseconds nanoseconds;
-
+typedef std::chrono::milliseconds milliseconds;
 
 
 namespace trackingManager
@@ -96,6 +96,7 @@ namespace trackingManager
     bool getInitZoneAlive                             () const;
     void setInitZoneAlive                             (bool value);
     void setTime                                      ();
+    double getDTime() const;
     };
   }
 #endif

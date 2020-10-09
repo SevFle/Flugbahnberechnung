@@ -34,6 +34,7 @@ namespace plotter
       void init();
 
       void pushData(QtDataVisualization::QScatterDataArray* data);
+      void flush();
 
       };
   }

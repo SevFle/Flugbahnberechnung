@@ -147,7 +147,6 @@ void C_frm_Object_Calibration::Taktgeber_Tick()
     this->Ui->txb_worker_5->         setText(QString::number(pData->executionTime[4].count()));
     this->Ui->txb_worker_6->         setText(QString::number(pData->executionTime[5].count()));
     this->Ui->txb_worker_7->         setText(QString::number(pData->executionTime[6].count()));
-    this->Ui->txb_worker_8->         setText(QString::number(pData->executionTime[7].count()));
     delete(pData);
     pData = nullptr;
     }
@@ -545,6 +544,9 @@ void frm_Object_Calibration::C_frm_Object_Calibration::on_bt_tracking_clicked()
     this->Main->cameraManager->setArrActiveCameras(0,0);
     this->Main->cameraManager->setArrActiveCameras(1,1);
     this->Main->cameraManager->pipelineFlush.store(false);
+    this->Main->cameraManager->getFilterFlags()->roiAdjustmentActive    = false;
+    this->Main->cameraManager->getFilterFlags()->trackingActive         = false;
+    this->Main->cameraManager->getFilterFlags()->objectDetectionActive  = false;
 
     this->Main->frm_Object_Tracking->setTaktgeber_Intervall(this->Ui->numTimerIntervall->value());
     this->Taktgeber->stop();

@@ -443,7 +443,7 @@ void C_frm_Camera_Calibration::camera_calibration_thread (void* This)
        static_cast<frm_Camera_Calibration::C_frm_Camera_Calibration*>(This)->Main->cameraManager->calibrate_stereo_camera_aruco(static_cast<frm_Camera_Calibration::C_frm_Camera_Calibration*>(This)->cameraID,
                                                                                                                       static_cast<frm_Camera_Calibration::C_frm_Camera_Calibration*>(This)->Ui->txb_usrInput_images->toPlainText().toInt());
       /************************************************************* SET UI **********************************************************************************************************************************/
-      Pose = static_cast<frm_Camera_Calibration::C_frm_Camera_Calibration*>(This)->Main->cameraManager->vecCameras.at(static_cast<frm_Camera_Calibration::C_frm_Camera_Calibration*>(This)->cameraID + 1)
+      Pose = *static_cast<frm_Camera_Calibration::C_frm_Camera_Calibration*>(This)->Main->cameraManager->vecCameras->at(static_cast<frm_Camera_Calibration::C_frm_Camera_Calibration*>(This)->cameraID + 1)->getCameraPose();
       break;
 
     }

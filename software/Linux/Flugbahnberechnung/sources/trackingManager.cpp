@@ -54,7 +54,7 @@ C_trackingManager::~C_trackingManager ()
     }
   for (int i = 0; i < payloadSize; i++)
     {
-    delete (Richtungsvektoren[i]);
+    delete (this->Richtungsvektoren[i]);
     this->Richtungsvektoren[i] = nullptr;
     }
   this->dTime = 0;
@@ -72,6 +72,11 @@ C_trackingManager::~C_trackingManager ()
   delete (vecWorldtoCamPose);
   delete (dataPlotter);
   this->globalObjects = nullptr;
+  }
+
+double C_trackingManager::getDTime() const
+  {
+  return dTime;
   }
 
 void C_trackingManager::init_posen                     ()
