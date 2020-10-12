@@ -26,6 +26,8 @@ CONFIG += -O0
 SOURCES += \
   mathhelper.cpp \
   plotter.cpp \
+  robot.cpp \
+  robotmanager.cpp \
     sources/camera2.cpp \
     sources/imagefilter.cpp \
     sources/loadmanager.cpp \
@@ -70,6 +72,8 @@ HEADERS += \
     headers/savemanager.h \
     mathhelper.h \
     plotter.h \
+    robot.h \
+    robotmanager.h \
     watchdog.h
 
 FORMS += \
