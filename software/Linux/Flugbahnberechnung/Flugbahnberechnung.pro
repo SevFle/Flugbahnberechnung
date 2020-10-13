@@ -24,57 +24,60 @@ QMAKE_CXXFLAGS_RELEASE =-03
 CONFIG += -O0
 
 SOURCES += \
-  mathhelper.cpp \
-  plotter.cpp \
-  robot.cpp \
-  robotmanager.cpp \
-    sources/camera2.cpp \
-    sources/imagefilter.cpp \
-    sources/loadmanager.cpp \
-    sources/savemanager.cpp \
-    sources/App_main.cpp \
-    sources/CSV_Datei.cpp \
-    sources/GlobalObjects.cpp \
-    sources/Kalmanfilter.cpp \
-    sources/camera_manager.cpp \
-    sources/object.cpp \
-    sources/posen.cpp \
-    sources/Main.cpp \
-    sources/frm_camera_calibration.cpp \
-    sources/frm_camera_positioning.cpp \
-    sources/frm_camera_positioning_pose.cpp \
-    sources/frm_object_calibration.cpp \
-    sources/frm_object_tracking.cpp \
-    sources/frm_main.cpp \
-    sources/trackingManager.cpp \
-  watchdog.cpp
-
+  sources/Etc/mathhelper.cpp \
+  sources/Etc/plotter.cpp \
+  sources/Etc/App_main.cpp \
+  sources/Etc/GlobalObjects.cpp \
+  sources/Etc/watchdog.cpp \
+  sources/Etc/object.cpp \
+  sources/Etc/Main.cpp \
+  sources/CSV_Manager/loadmanager.cpp \
+  sources/CSV_Manager/savemanager.cpp \
+  sources/CSV_Manager/CSV_Datei.cpp \
+  sources/Roboter/pidregler.cpp \
+  sources/Roboter/robot.cpp \
+  sources/Roboter/robotmanager.cpp \
+  sources/Roboter/posen.cpp \
+  sources/Bildverarbeitung/camera2.cpp \
+  sources/Bildverarbeitung/imagefilter.cpp \
+  sources/Bildverarbeitung/camera_manager.cpp \
+  sources/Positionsbestimmung/trackingManager.cpp \
+  sources/Positionsbestimmung/Kalmanfilter.cpp \
+  sources/Forms/frm_camera_calibration.cpp \
+  sources/Forms/frm_camera_positioning.cpp \
+  sources/Forms/frm_camera_positioning_pose.cpp \
+  sources/Forms/frm_object_calibration.cpp \
+  sources/Forms/frm_object_tracking.cpp \
+  sources/Forms/frm_main.cpp \
+  sources/Forms/frm_robot_calibration.cpp
 
 HEADERS += \
-    headers/camera2.h \
-    headers/CSV_Datei.h \
-    headers/GlobalObjects.h \
-    headers/Kalmanfilter.h \
-    headers/camera_manager.h \
-    headers/object.h \
-    headers/point.h \
-    headers/posen.h \
-    headers/Main.h \
-    headers/frm_camera_calibration.h \
-    headers/frm_camera_positioning.h \
-    headers/frm_camera_positioning_pose.h \
-    headers/frm_main.h \
-    headers/frm_object_calibration.h \
-    headers/frm_object_tracking.h \
-    headers/trackingManager.h \
-    headers/imagefilter.h \
-    headers/loadmanager.h \
-    headers/savemanager.h \
-    mathhelper.h \
-    plotter.h \
-    robot.h \
-    robotmanager.h \
-    watchdog.h
+headers/Etc/mathhelper.h \
+headers/Etc/plotter.h \
+headers/Etc/App_main.h \
+headers/Etc/GlobalObjects.h \
+headers/Etc/watchdog.h \
+headers/Etc/object.h \
+headers/Etc/Main.h \
+headers/CSV_Manager/loadmanager.h \
+headers/CSV_Manager/savemanager.h \
+headers/CSV_Manager/CSV_Datei.h \
+  headers/Roboter/pidregler.h \
+headers/Roboter/robot.h \
+headers/Roboter/robotmanager.h \
+headers/Roboter/posen.h \
+headers/Bildverarbeitung/camera2.h \
+headers/Bildverarbeitung/imagefilter.h \
+headers/Bildverarbeitung/camera_manager.h \
+headers/Positionsbestimmung/trackingManager.h \
+headers/Positionsbestimmung/Kalmanfilter.h \
+headers/Forms/frm_camera_calibration.h \
+headers/Forms/frm_camera_positioning.h \
+headers/Forms/frm_camera_positioning_pose.h \
+headers/Forms/frm_object_calibration.h \
+headers/Forms/frm_object_tracking.h \
+headers/Forms/frm_main.h \
+headers/Forms/frm_robot_calibration.h
 
 FORMS += \
     forms/frm_camera_calibration.ui \
@@ -82,7 +85,8 @@ FORMS += \
     forms/frm_camera_positioning_pose.ui \
     forms/frm_main.ui \
     forms/frm_object_calibration.ui \
-    forms/frm_object_tracking.ui
+    forms/frm_object_tracking.ui \
+    forms/frm_robot_calibration.ui
 
 ################################################## OPENCV INCLUDE ###########################################
 
@@ -257,3 +261,8 @@ INCLUDEPATH += $$PWD/../../../../../../../usr/local/cuda-10.1/include
 INCLUDEPATH += $$PWD/../../../../../../../usr/local/include/eigen3
 
 DEPENDPATH += $$PWD/../../../../../../../usr/local/cuda-10.1/include
+
+unix:!macx: LIBS += -L$$PWD/../../../../../../../usr/local/lib/ -lfranka
+
+INCLUDEPATH += $$PWD/../../../../../../../usr/local/include
+DEPENDPATH += $$PWD/../../../../../../../usr/local/include
