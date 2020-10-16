@@ -5,9 +5,11 @@ using namespace UM_CSV_Datei;
 
 c_SaveManager::c_SaveManager()
   {
+  this->csv_parameter_datei = new UM_CSV_Datei::C_CSV_Parameter_Datei;
   }
 c_SaveManager::~c_SaveManager()
   {
+  delete (csv_parameter_datei);
   }
 
 void c_SaveManager::saveCameraCos         (Camera::C_Camera2 &Camera)
@@ -165,27 +167,72 @@ void c_SaveManager::saveCameraSettings    (Camera::C_Camera2 &Camera)
   }
 
 
-void c_SaveManager::saveRobotCos           (robot::C_robot& robot)
+void c_SaveManager::saveRobotCos           (Robot_Panda::C_Robot_Panda& robot)
   {
   string Dateiname = "../Parameter/RobotToWorld_Pose.csv";
   string Dateityp = "Pose Robot to World";;
   double nx, ny, nz, ox, oy, oz, ax, ay, az, px, py, pz;
 
-  nx = robot.RobotToWorld->nx();
-  ny = robot.RobotToWorld->ny();
-  nz = robot.RobotToWorld->nz();
+  nx = robot.Abs_RobotToWorld_Pose.nx();
+  ny = robot.Abs_RobotToWorld_Pose.ny();
+  nz = robot.Abs_RobotToWorld_Pose.nz();
 
-  ox = robot.RobotToWorld->ox();
-  oy = robot.RobotToWorld->oy();
-  oz = robot.RobotToWorld->oz();
+  ox = robot.Abs_RobotToWorld_Pose.ox();
+  oy = robot.Abs_RobotToWorld_Pose.oy();
+  oz = robot.Abs_RobotToWorld_Pose.oz();
 
-  ax = robot.RobotToWorld->ax();
-  ay = robot.RobotToWorld->ay();
-  az = robot.RobotToWorld->az();
+  ax = robot.Abs_RobotToWorld_Pose.ax();
+  ay = robot.Abs_RobotToWorld_Pose.ay();
+  az = robot.Abs_RobotToWorld_Pose.az();
 
-  px = robot.RobotToWorld->px();
-  py = robot.RobotToWorld->py();
-  pz = robot.RobotToWorld->pz();
+  px = robot.Abs_RobotToWorld_Pose.px();
+  py = robot.Abs_RobotToWorld_Pose.py();
+  pz = robot.Abs_RobotToWorld_Pose.pz();
+ this->csv_parameter_datei->Oeffnen (Dateiname, Enum_CSV_Access::Write);
+ if(this->csv_parameter_datei->IsOpen())
+ {
+    this->csv_parameter_datei->Schreiben ("Dateityp",Dateityp,"[1]");
+    this->csv_parameter_datei->Schreiben ("nx",nx,"[1]");
+    this->csv_parameter_datei->Schreiben ("ny",ny,"[1]");
+    this->csv_parameter_datei->Schreiben ("nz",nz,"[1]");
+    this->csv_parameter_datei->Schreiben ("ox",ox,"[1]");
+    this->csv_parameter_datei->Schreiben ("oy",oy,"[1]");
+    this->csv_parameter_datei->Schreiben ("oz",oz,"[1]");
+    this->csv_parameter_datei->Schreiben ("ax",ax,"[1]");
+    this->csv_parameter_datei->Schreiben ("ay",ay,"[1]");
+    this->csv_parameter_datei->Schreiben ("az",az,"[1]");
+    this->csv_parameter_datei->Schreiben ("px",px,"[m]");
+    this->csv_parameter_datei->Schreiben ("py",py,"[m]");
+    this->csv_parameter_datei->Schreiben ("pz",pz,"[m]");
+    this->csv_parameter_datei->Schliessen();
+    std::cout << "**INFO** Pose fuer Roboter wurde gespeichert" << std::endl;
+ }
+ else
+ {}
+  }
+
+
+void c_SaveManager::saveRobotHomePose         (C_AbsolutePose* HomePose)
+  {
+  string Dateiname = "../Parameter/RobotHome_Pose.csv";
+  string Dateityp = "Pose Robot TCP Home";;
+  double nx, ny, nz, ox, oy, oz, ax, ay, az, px, py, pz;
+
+  nx = HomePose->nx();
+  ny = HomePose->ny();
+  nz = HomePose->nz();
+
+  ox = HomePose->ox();
+  oy = HomePose->oy();
+  oz = HomePose->oz();
+
+  ax = HomePose->ax();
+  ay = HomePose->ay();
+  az = HomePose->az();
+
+  px = HomePose->px();
+  py = HomePose->py();
+  pz = HomePose->pz();
  this->csv_parameter_datei->Oeffnen (Dateiname, Enum_CSV_Access::Write);
  if(this->csv_parameter_datei->IsOpen())
  {

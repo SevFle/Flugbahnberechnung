@@ -6,9 +6,11 @@ using namespace UM_CSV_Datei;
 
 C_LoadManager::C_LoadManager()
   {
+  this->csv_parameter_datei = new UM_CSV_Datei::C_CSV_Parameter_Datei();
   }
 C_LoadManager::~C_LoadManager()
   {
+  delete (csv_parameter_datei);
   }
 
 
@@ -176,12 +178,13 @@ void C_LoadManager::loadCameraCalibration (Camera::C_Camera2* Camera)
 
 bool C_LoadManager::loadCameraPositioning   (std::vector<Camera::C_Camera2*> &vecCameras, int absCameras)
   {
-  string                                                  Dateiname = "../Parameter/Camera_Positioning.csv";
+  string Dateiname = "test";
+  //string                                                  Dateiname = "../Parameter/Camera_Positioning.csv";
   string                                                  Dateityp;
   int                                                     id;
   int                                                     Camera_count;
 
-  this->csv_parameter_datei->Oeffnen (Dateiname,Enum_CSV_Access::Read);
+  this->csv_parameter_datei->Oeffnen(Dateiname, Enum_CSV_Access::Read);
   if (this->csv_parameter_datei->IsOpen())
     {
     this->csv_parameter_datei->Lesen (Dateityp);
@@ -335,7 +338,7 @@ double* C_LoadManager::loadRobotTCP(double (&tcp)[4][4])
         }
     }
 
-void C_LoadManager::loadRobotCos    (robot::C_robot& robot)
+void C_LoadManager::loadRobotCos    (Robot_Panda::C_Robot_Panda& robot)
   {
   double         Abs_Pose[4][4];
   C_AbsolutePose WorldToRobot;
@@ -365,13 +368,140 @@ void C_LoadManager::loadRobotCos    (robot::C_robot& robot)
     this->csv_parameter_datei->Lesen(RobotToWorld.HomogenePosenMatrix[2][3]);
 
     RobotToWorld.InversHomogenousPose(RobotToWorld.HomogenePosenMatrix, WorldToRobot.HomogenePosenMatrix);
-    *robot.RobotToWorld = RobotToWorld;
-    *robot.WorldToRobot = WorldToRobot;
+    robot.Abs_RobotToWorld_Pose = RobotToWorld;
+    robot.Abs_WorldToRobot_Pose = WorldToRobot;
     this->csv_parameter_datei->Schliessen();
 
 
     }
   }
+
+void C_LoadManager::loadRobotHomePose(C_AbsolutePose *HomePose)
+  {
+  string Dateiname = "../Parameter/RobotHome_Pose.csv";
+  string Dateityp = "Pose Robot TCP Home";;
+
+  this->csv_parameter_datei->Oeffnen(Dateiname, Enum_CSV_Access::Read);
+
+  if (this->csv_parameter_datei->IsOpen())
+    {
+    this->csv_parameter_datei->Lesen(Dateityp);
+
+    this->csv_parameter_datei->Lesen(HomePose->HomogenePosenMatrix[0][0]);
+    this->csv_parameter_datei->Lesen(HomePose->HomogenePosenMatrix[1][0]);
+    this->csv_parameter_datei->Lesen(HomePose->HomogenePosenMatrix[2][0]);
+    this->csv_parameter_datei->Lesen(HomePose->HomogenePosenMatrix[0][1]);
+    this->csv_parameter_datei->Lesen(HomePose->HomogenePosenMatrix[1][1]);
+    this->csv_parameter_datei->Lesen(HomePose->HomogenePosenMatrix[2][1]);
+    this->csv_parameter_datei->Lesen(HomePose->HomogenePosenMatrix[0][2]);
+    this->csv_parameter_datei->Lesen(HomePose->HomogenePosenMatrix[1][2]);
+    this->csv_parameter_datei->Lesen(HomePose->HomogenePosenMatrix[2][2]);
+    this->csv_parameter_datei->Lesen(HomePose->HomogenePosenMatrix[0][3]);
+    this->csv_parameter_datei->Lesen(HomePose->HomogenePosenMatrix[1][3]);
+    this->csv_parameter_datei->Lesen(HomePose->HomogenePosenMatrix[2][3]);
+    this->csv_parameter_datei->Schliessen();
+      std::cout << "Home Pose loaded" << std::endl;
+
+    }
+  }
+
+void C_LoadManager::loadPID(Robot_Panda::C_Robot_Panda &robot)
+  {
+  double  Kp;
+  double  Tn;
+  double  Tv;
+  bool    P_Enabled;
+  bool    I_Enabled;
+  bool    D_Enabled;
+  double  Kp_OT_trans;
+  double  Tn_OT_trans;
+  double  Tv_OT_trans;
+  bool    P_OT_Enabled_trans;
+  bool    I_OT_Enabled_trans;
+  bool    D_OT_Enabled_trans;
+  double  Kp_OT_rot;
+  double  Tn_OT_rot;
+  double  Tv_OT_rot;
+  bool    P_OT_Enabled_rot;
+  bool    I_OT_Enabled_rot;
+  bool    D_OT_Enabled_rot;
+  string  Dateiname;
+  string  Dateityp;
+  double  Taktzeit;
+
+    Dateiname   = "../../../Parameter/PID_Parameter_PandaID.csv";
+    Dateityp    = "";
+
+    this->csv_parameter_datei->Oeffnen(Dateiname, Enum_CSV_Access::Read);
+
+    if (this->csv_parameter_datei->IsOpen())
+      {
+      this->csv_parameter_datei->Lesen(Dateityp);
+      this->csv_parameter_datei->Lesen(Kp);
+      this->csv_parameter_datei->Lesen(Tn);
+      this->csv_parameter_datei->Lesen(Tv);
+      this->csv_parameter_datei->Lesen(P_Enabled);
+      this->csv_parameter_datei->Lesen(I_Enabled);
+      this->csv_parameter_datei->Lesen(D_Enabled);
+      this->csv_parameter_datei->Lesen(Kp_OT_trans);
+      this->csv_parameter_datei->Lesen(Tn_OT_trans);
+      this->csv_parameter_datei->Lesen(Tv_OT_trans);
+      this->csv_parameter_datei->Lesen(P_OT_Enabled_trans);
+      this->csv_parameter_datei->Lesen(I_OT_Enabled_trans);
+      this->csv_parameter_datei->Lesen(D_OT_Enabled_trans);
+      this->csv_parameter_datei->Lesen(Kp_OT_rot);
+      this->csv_parameter_datei->Lesen(Tn_OT_rot);
+      this->csv_parameter_datei->Lesen(Tv_OT_rot);
+      this->csv_parameter_datei->Lesen(P_OT_Enabled_rot);
+      this->csv_parameter_datei->Lesen(I_OT_Enabled_rot);
+      this->csv_parameter_datei->Lesen(D_OT_Enabled_rot);
+      this->csv_parameter_datei->Lesen(Taktzeit);
+
+      this->csv_parameter_datei->Schliessen();
+      }
+    else
+      {
+      // Standartwerte
+      Kp                    = 1.0;
+      Tn                    = 1000.0;
+      Tv                    = 0.001;
+      P_Enabled             = true;
+      I_Enabled             = false;
+      D_Enabled             = false;
+
+      Kp_OT_trans           = 1.0;
+      Tn_OT_trans           = 1000.0;
+      Tv_OT_trans           = 0.001;
+      P_OT_Enabled_trans    = true;
+      I_OT_Enabled_trans    = false;
+      D_OT_Enabled_trans    = false;
+
+      Kp_OT_rot             = 1.0;
+      Tn_OT_rot             = 1000.0;
+      Tv_OT_rot             = 0.001;
+      P_OT_Enabled_rot      = true;
+      I_OT_Enabled_rot      = false;
+      D_OT_Enabled_rot      = false;
+
+      Taktzeit              = 0.001;
+      }
+
+    robot.PID_Regler_X_CamCalib->Set_PID_Parameter    (P_Enabled,          I_Enabled,          D_Enabled,          Kp,          Tn,          Tv ,          Taktzeit);
+    robot.PID_Regler_Y_CamCalib->Set_PID_Parameter    (P_Enabled,          I_Enabled,          D_Enabled,          Kp,          Tn,          Tv ,          Taktzeit);
+    robot.PID_Regler_Z_CamCalib->Set_PID_Parameter    (P_Enabled,          I_Enabled,          D_Enabled,          Kp,          Tn,          Tv ,          Taktzeit);
+    robot.PID_Regler_RX_CamCalib->Set_PID_Parameter   (P_Enabled,          I_Enabled,          D_Enabled,          Kp,          Tn,          Tv ,          Taktzeit);
+    robot.PID_Regler_RY_CamCalib->Set_PID_Parameter   (P_Enabled,          I_Enabled,          D_Enabled,          Kp,          Tn,          Tv ,          Taktzeit);
+    robot.PID_Regler_RZ_CamCalib->Set_PID_Parameter   (P_Enabled,          I_Enabled,          D_Enabled,          Kp,          Tn,          Tv ,          Taktzeit);
+    robot.PID_Regler_X_OT->Set_PID_Parameter          (P_OT_Enabled_trans, I_OT_Enabled_trans, D_OT_Enabled_trans, Kp_OT_trans, Tn_OT_trans, Tv_OT_trans,  Taktzeit);
+    robot.PID_Regler_Y_OT->Set_PID_Parameter          (P_OT_Enabled_trans, I_OT_Enabled_trans, D_OT_Enabled_trans, Kp_OT_trans, Tn_OT_trans, Tv_OT_trans,  Taktzeit);
+    robot.PID_Regler_Z_OT->Set_PID_Parameter          (P_OT_Enabled_trans, I_OT_Enabled_trans, D_OT_Enabled_trans, Kp_OT_trans, Tn_OT_trans, Tv_OT_trans,  Taktzeit);
+    robot.PID_Regler_RX_OT->Set_PID_Parameter         (P_OT_Enabled_rot,   I_OT_Enabled_rot,   D_OT_Enabled_rot,   Kp_OT_rot,   Tn_OT_rot,   Tv_OT_rot,    Taktzeit);
+    robot.PID_Regler_RY_OT->Set_PID_Parameter         (P_OT_Enabled_rot,   I_OT_Enabled_rot,   D_OT_Enabled_rot,   Kp_OT_rot,   Tn_OT_rot,   Tv_OT_rot,    Taktzeit);
+    robot.PID_Regler_RZ_OT->Set_PID_Parameter         (P_OT_Enabled_rot,   I_OT_Enabled_rot,   D_OT_Enabled_rot,   Kp_OT_rot,   Tn_OT_rot,   Tv_OT_rot,    Taktzeit);
+    std::cout << "PID Values loaded" << std::endl;
+    }
+
+
 
 
 

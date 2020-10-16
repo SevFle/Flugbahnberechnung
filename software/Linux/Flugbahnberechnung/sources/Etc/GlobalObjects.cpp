@@ -12,12 +12,16 @@ C_GlobalObjects::C_GlobalObjects ()
   this->camToWorld          = new C_AbsolutePose;
   this->worldToCam          = new C_AbsolutePose;
   this->camToBoard          = new C_RelativePose;
+  this->loadManager         = new LoadManager::C_LoadManager;
+  this->saveManager         = new Savemanager::c_SaveManager;
   this->watchdog            = nullptr;
 
   }
 C_GlobalObjects::~C_GlobalObjects ()
   {
   this->watchdog            = nullptr;
+  delete                    (saveManager);
+  delete                    (loadManager);
   delete                    (camToBoard);
   delete                    (camToWorld);
   delete                    (worldToCam);

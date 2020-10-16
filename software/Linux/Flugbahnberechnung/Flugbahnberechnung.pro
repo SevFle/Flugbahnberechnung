@@ -20,8 +20,8 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DESTDIR     = $$system(pwd)
 #OBJECTS_DIR = $$DESTDIR/Obj
 # C++ flags
-QMAKE_CXXFLAGS_RELEASE =-03
-CONFIG += -O0
+#QMAKE_CXXFLAGS_RELEASE =-03
+#CONFIG += -O0
 
 SOURCES += \
   sources/Etc/mathhelper.cpp \
@@ -34,7 +34,6 @@ SOURCES += \
   sources/CSV_Manager/loadmanager.cpp \
   sources/CSV_Manager/savemanager.cpp \
   sources/CSV_Manager/CSV_Datei.cpp \
-  sources/Roboter/pidregler.cpp \
   sources/Roboter/robot.cpp \
   sources/Roboter/robotmanager.cpp \
   sources/Roboter/posen.cpp \
@@ -62,7 +61,7 @@ headers/Etc/Main.h \
 headers/CSV_Manager/loadmanager.h \
 headers/CSV_Manager/savemanager.h \
 headers/CSV_Manager/CSV_Datei.h \
-  headers/Roboter/pidregler.h \
+headers/Roboter/pidregler.h \
 headers/Roboter/robot.h \
 headers/Roboter/robotmanager.h \
 headers/Roboter/posen.h \

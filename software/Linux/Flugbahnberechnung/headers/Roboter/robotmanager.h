@@ -14,17 +14,24 @@ namespace robotManager
     C_robotManager(C_GlobalObjects* globalObjects);
     ~C_robotManager();
 
-    robot::C_robot *roboter;
+    Robot_Panda::C_Robot_Panda *roboter;
     C_GlobalObjects* globalObjects;
+    std::thread*                  robotThread;
 
-    void initRobots(std::string IPAdresse);
 
+    bool threadActive;
     void initTCP();
+    void initRobot(std::string IPAdresse);
 
     void getAbsoluteHomogenousBaseToTCP(posen::C_RelativePose* TcpPose);
     void getAbsoluteHomogenousBaseToWorld(posen::C_AbsolutePose* BasePose);
 
-    void calibrateRobotToWorld(C_AbsolutePose& camToWorld);
+    C_AbsolutePose calibrateRobotToWorld(C_AbsolutePose& worldToCam);
+
+    bool moveRobotToTarget_Slow(C_AbsolutePose* targetPose);
+
+  private:
+    static void open_Panda_threading(void *This);
 
 
     };

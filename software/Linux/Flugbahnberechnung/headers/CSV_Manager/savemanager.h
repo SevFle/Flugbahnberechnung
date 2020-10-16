@@ -5,6 +5,8 @@
 #include "headers/Bildverarbeitung/camera2.h"
 #include "headers/Roboter/robot.h"
 
+using namespace UM_CSV_Datei;
+
 namespace Savemanager
   {
   class c_SaveManager
@@ -13,7 +15,7 @@ namespace Savemanager
     c_SaveManager();
     ~c_SaveManager();
 
-    UM_CSV_Datei::C_CSV_Parameter_Datei* csv_parameter_datei;
+    C_CSV_Parameter_Datei* csv_parameter_datei;
 
 
 
@@ -22,7 +24,9 @@ namespace Savemanager
     void saveCameraCos            (Camera::C_Camera2 &Camera);
     void saveCameraSettings       (Camera::C_Camera2 &Camera);
 
-    void saveRobotCos            (robot::C_robot& robot);
+    void saveRobotCos            (Robot_Panda::C_Robot_Panda& robot);
+    void saveRobotHomePose         (C_AbsolutePose* HomePose);
+    void savePID                   (Robot_Panda::C_Robot_Panda& robot);
 
 
     };

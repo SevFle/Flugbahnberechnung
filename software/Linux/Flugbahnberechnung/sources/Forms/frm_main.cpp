@@ -163,7 +163,7 @@ void C_frm_Main::initialize(void* This)
   QString IP = static_cast<frm_Main::C_frm_Main*>(This)->Ui->txb_robot_ip->toPlainText();
   std::string IPAdresse;
   IPAdresse = IP.toStdString();
-  static_cast<frm_Main::C_frm_Main*>(This)->Main->robotManager->initRobots(IPAdresse);
+  static_cast<frm_Main::C_frm_Main*>(This)->Main->robotManager->initRobot(IPAdresse);
   static_cast<frm_Main::C_frm_Main*>(This)->finished.store(true);
   }
 void C_frm_Main::on_bt_tracking_clicked()
@@ -262,6 +262,7 @@ void frm_Main::C_frm_Main::on_bt_calibrate_robot_clicked()
     return;
     }
   this->Taktgeber->stop();
+  this->Main->frm_Robot_Calibration->setWindowModality(Qt::ApplicationModal);
   this->Main->frm_Robot_Calibration->show();
   this->Taktgeber->start();
   }

@@ -19,6 +19,7 @@ namespace GlobalObjects
     watchdog::C_watchdog*         watchdog;
     Savemanager::c_SaveManager*   saveManager;
     LoadManager::C_LoadManager*   loadManager;
+    C_CSV_Parameter_Datei*        csv_parameter_datei;
     posen::C_AbsolutePose*        camToWorld;
     posen::C_AbsolutePose*        worldToCam;
     posen::C_RelativePose*        camToBoard;
