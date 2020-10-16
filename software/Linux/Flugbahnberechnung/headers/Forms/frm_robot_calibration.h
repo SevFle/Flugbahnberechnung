@@ -33,6 +33,7 @@ namespace frm_Robot_Calibration
     int                               Taktgeber_Intervall;
     int                               Zaehler;
     int                               cameraID;
+    bool                              moving;
 
   private:
     void showEvent                    (QShowEvent* ShowEvent) override;
