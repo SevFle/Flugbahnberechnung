@@ -44,6 +44,8 @@ C_CameraManager::C_CameraManager ( C_GlobalObjects* GlobalObjects)
    this->positioningDone = new std::atomic<bool>(false);
    this->pipelineDone = new std::atomic<bool>(false);
    this->pipelineFlush = new std::atomic<bool>(false);
+   this->switchCamForward = new std::atomic<bool>(false);
+   this->switchCamBackward = new std::atomic<bool>(false);
 
    this->initialize();
 
@@ -51,10 +53,12 @@ C_CameraManager::C_CameraManager ( C_GlobalObjects* GlobalObjects)
 /**************************************************************** Destruktor ****************************************************************/
 C_CameraManager::~C_CameraManager ()
   {
-  this->pipelineFlush.store(false);
-  this->pipelineDone.store(false);
-  this->positioningDone.store(false);
-  this->calibrationDone.store(false);
+  delete (switchCamBackward);
+  delete (switchCamForward);
+  delete (pipelineFlush);
+  delete (pipelineDone);
+  delete (positioningDone);
+  delete (calibrationDone);
 
   this->deltaT_old = 0;
   this->delta_t = 0;
@@ -1546,10 +1550,21 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
         }
       this->trackingManager->Get_Position_ObjectTracking    (pData->objektVektor, WorldToCamPose_active);
       this->trackingManager->calcObjectVeloctiy             (pData->objektVektor);
+
+
       for(int i =0; i < payloadSize; i++)
         {
         this->trackingManager->calcPixelVeloctiy              (pData->ist_X[i], pData->ist_Y[i], pData->cameraID[i], pData->pred_X[i], pData->pred_Y[i]);
         }
+      if(pData->ist_X[0] < (this->frameWidth/2) + this->transferZoneWidth && pData->ist_X[1] > (this->frameWidth/2) - this->transferZoneWidth&& !this->switchCamBackward)
+        {
+        this->switchCamBackward->store(true);
+        }
+      if(pData->ist_X[0] < (this->frameWidth/2) - this->transferZoneWidth && pData->ist_X[1] > (this->frameWidth/2) + this->transferZoneWidth&& !this->switchCamForward)
+        {
+        this->switchCamForward->store(true);
+        }
+
 //      //Überprüfe ob das verfolgte Objekt sich dem Rand des derzeitigen Kamerapaares nähert. Falls true wird das nächste Kamerapaar in arrActiveCameras geladen und das predicted ROI + Toleranz gesetzt.
 //      if(pData->ist_X[0] > 0 &&  pData->ist_X[0] < this->transferZoneWidth && pData->ist_X[1] > this->frameWidth - this->transferZoneWidth)
 //        {
@@ -1564,7 +1579,7 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
 //        }
 
         //Erhöhe die Kameras um 1
-        if(pData->ist_X[0] > 0 && pData->ist_X[0] < initZoneWidth && pData->ist_X[1] > this->frameWidth - initZoneWidth && pData->ist_X[1] < frameWidth)
+        if(pData->ist_X[0] > 0 && pData->ist_X[0] < transferZoneWidth && pData->ist_X[1] > this->frameWidth - transferZoneWidth && pData->ist_X[1] < frameWidth && this->switchCamForward)
           {
           if(pData->cameraID[0] != this->globalObjects->absCameras - payloadSize)
             {
@@ -1572,24 +1587,24 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
             newCam[0] = pData->cameraID[0] + 2;
             newCam[1] = pData->cameraID[1] + 2;
 
-            this->pipelineFlush.store(true);
+            this->pipelineFlush->store(true);
             this->arrActiveCameras[0] = newCam[0];
             this->arrActiveCameras[1] = newCam[1];
-            this->pipelineFlush.store(false);
+            this->pipelineFlush->store(false);
             }
           }
         //Verringere die Kameras um 1
-        if(pData->ist_X[0] > this->frameWidth - initZoneWidth && pData->ist_X[0] < frameWidth && pData->ist_X[1] > 0 && pData->ist_X[1] < initZoneWidth)
+        if(pData->ist_X[0] > this->frameWidth - transferZoneWidth && pData->ist_X[0] < frameWidth && pData->ist_X[1] > 0 && pData->ist_X[1] < transferZoneWidth && this->switchCamBackward)
           {
           if(pData->cameraID[0] !=0)
             {
             int newCam[2];
             newCam[0] = pData->cameraID[0] - 2;
             newCam[1] = pData->cameraID[1] - 2;
-            this->pipelineFlush.store(true);
+            this->pipelineFlush->store(true);
             this->arrActiveCameras[0] = newCam[0];
             this->arrActiveCameras[1] = newCam[1];
-            this->pipelineFlush.store(false);
+            this->pipelineFlush->store(false);
             }
           }
 
@@ -1644,7 +1659,7 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
 
     //end flushing process if Que is of size 0
     if(que->size() == 0)
-        this->pipelineFlush.store(false);
+        this->pipelineFlush->store(false);
     }
 
      }//STEP 5

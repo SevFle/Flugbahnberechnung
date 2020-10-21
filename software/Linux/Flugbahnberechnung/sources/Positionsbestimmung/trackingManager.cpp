@@ -289,15 +289,16 @@ void C_trackingManager::calcPixelVeloctiy             (int ist_X, int ist_Y, int
 
 void C_trackingManager::calcObjectVeloctiy(S_Positionsvektor&             objektVektor)
   {
-  this->setTime();
+  //Aktualisere dt mit der aktuellen Zeit. dt ist die Zeitspanne zwischen jetzt und dem letzten Aufrufen der Funktion
+  this->setTime(); //[ms]
 
   S_Positionsvektor dObjektVektor;
-  dObjektVektor.X = objektVektor.X - this->objektVektorTm1->X;
-  dObjektVektor.Y = objektVektor.Y - this->objektVektorTm1->Y;
-  dObjektVektor.Z = objektVektor.Z - this->objektVektorTm1->Z;
-  this->objectVelocity[0] = dObjektVektor.X/this->dTime;
-  this->objectVelocity[1] = dObjektVektor.Y/this->dTime;
-  this->objectVelocity[2] = dObjektVektor.Z/this->dTime;
+  dObjektVektor.X = objektVektor.X - this->objektVektorTm1->X; //[m]
+  dObjektVektor.Y = objektVektor.Y - this->objektVektorTm1->Y; //[m]
+  dObjektVektor.Z = objektVektor.Z - this->objektVektorTm1->Z; //[m]
+  this->objectVelocity[0] = dObjektVektor.X/this->dTime; //[m/ms]
+  this->objectVelocity[1] = dObjektVektor.Y/this->dTime; //[m/ms]
+  this->objectVelocity[2] = dObjektVektor.Z/this->dTime; //[m/ms]
   this->calcObjectAcceleration();
   this->objektVektorTm1->X = objektVektor.X;
   this->objektVektorTm1->Y = objektVektor.Y;
@@ -315,6 +316,10 @@ void C_trackingManager::calcObjectAcceleration()
   dObjectVelocity[0] = this->objectVelocityTm1[0]-this->objectVelocity[0];
   dObjectVelocity[1] = this->objectVelocityTm1[1]-this->objectVelocity[1];
   dObjectVelocity[2] = this->objectVelocityTm1[2]-this->objectVelocity[2];
+
+  this->objectVelocityTm1[0] = this->objectVelocity[0];
+  this->objectVelocityTm1[1] = this->objectVelocity[1];
+  this->objectVelocityTm1[2] = this->objectVelocity[2];
 
   this->objectAcceleration[0] = dObjectVelocity[0]/this->dTime;
   this->objectAcceleration[1] = dObjectVelocity[1]/this->dTime;

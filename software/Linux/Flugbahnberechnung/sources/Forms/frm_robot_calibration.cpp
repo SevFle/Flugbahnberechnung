@@ -146,6 +146,11 @@ void C_frm_Robot_Calibration::Taktgeber_Tick()
     writeCamPose();
     writeRobotTcpPose();
     }
+  if(this->Main->robotManager->roboter->Is_MotionDone())
+    {
+    this->moving = false;
+    this->Main->robotManager->close_Panda_threading();
+    }
   }//void C_frm_Robot_Calibration::Taktgeber_Tick()
 
 void C_frm_Robot_Calibration::writeCamPose()
@@ -169,22 +174,25 @@ void C_frm_Robot_Calibration::writeCamPose()
   }
 void C_frm_Robot_Calibration::writeRobotTcpPose()
   {
-  this->Main->robotManager->getAbsoluteHomogenousBaseToTCP(this->robotTcpPose);
-  this->ui->txb_nx_robot->setText(QString::number(this->robotTcpPose->HomogenePosenMatrix[0][0]));
-  this->ui->txb_ny_robot->setText(QString::number(this->robotTcpPose->HomogenePosenMatrix[1][0]));
-  this->ui->txb_nz_robot->setText(QString::number(this->robotTcpPose->HomogenePosenMatrix[2][0]));
+  if(!this->moving)
+    {
+    this->Main->robotManager->getAbsoluteHomogenousBaseToTCP(this->robotTcpPose);
+    this->ui->txb_nx_robot->setText(QString::number(this->robotTcpPose->HomogenePosenMatrix[0][0]));
+    this->ui->txb_ny_robot->setText(QString::number(this->robotTcpPose->HomogenePosenMatrix[1][0]));
+    this->ui->txb_nz_robot->setText(QString::number(this->robotTcpPose->HomogenePosenMatrix[2][0]));
 
-  this->ui->txb_ox_robot->setText(QString::number(this->robotTcpPose->HomogenePosenMatrix[0][1]));
-  this->ui->txb_oy_robot->setText(QString::number(this->robotTcpPose->HomogenePosenMatrix[1][1]));
-  this->ui->txb_oz_robot->setText(QString::number(this->robotTcpPose->HomogenePosenMatrix[2][1]));
+    this->ui->txb_ox_robot->setText(QString::number(this->robotTcpPose->HomogenePosenMatrix[0][1]));
+    this->ui->txb_oy_robot->setText(QString::number(this->robotTcpPose->HomogenePosenMatrix[1][1]));
+    this->ui->txb_oz_robot->setText(QString::number(this->robotTcpPose->HomogenePosenMatrix[2][1]));
 
-  this->ui->txb_ax_robot->setText(QString::number(this->robotTcpPose->HomogenePosenMatrix[0][2]));
-  this->ui->txb_ay_robot->setText(QString::number(this->robotTcpPose->HomogenePosenMatrix[1][2]));
-  this->ui->txb_az_robot->setText(QString::number(this->robotTcpPose->HomogenePosenMatrix[2][2]));
+    this->ui->txb_ax_robot->setText(QString::number(this->robotTcpPose->HomogenePosenMatrix[0][2]));
+    this->ui->txb_ay_robot->setText(QString::number(this->robotTcpPose->HomogenePosenMatrix[1][2]));
+    this->ui->txb_az_robot->setText(QString::number(this->robotTcpPose->HomogenePosenMatrix[2][2]));
 
-  this->ui->txb_px_robot->setText(QString::number(this->robotTcpPose->HomogenePosenMatrix[0][3]));
-  this->ui->txb_py_robot->setText(QString::number(this->robotTcpPose->HomogenePosenMatrix[1][3]));
-  this->ui->txb_pz_robot->setText(QString::number(this->robotTcpPose->HomogenePosenMatrix[2][3]));
+    this->ui->txb_px_robot->setText(QString::number(this->robotTcpPose->HomogenePosenMatrix[0][3]));
+    this->ui->txb_py_robot->setText(QString::number(this->robotTcpPose->HomogenePosenMatrix[1][3]));
+    this->ui->txb_pz_robot->setText(QString::number(this->robotTcpPose->HomogenePosenMatrix[2][3]));
+    }
   }
 
 void C_frm_Robot_Calibration::writeRobotToWorld()
@@ -279,15 +287,15 @@ this->GlobalObjects->saveManager->saveRobotHomePose(&HomePose);
 }
 
 void frm_Robot_Calibration::C_frm_Robot_Calibration::on_bt_move_home_clicked()
-{
+  {
   double Panda_Vel_max   = abs(this->ui->dspb_Panda_Vel_max->value());
   double Panda_Acc_max   = abs(this->ui->dspb_Panda_Acc_max->value());
   double Panda_Omega_max = abs(this->ui->dspb_Panda_Omega_max->value());
   double Panda_Alpha_max = abs(this->ui->dspb_Panda_Alpha_max->value());
   this->Main->robotManager->roboter->Set_Panda_Vel_Acc_max(Panda_Vel_max, Panda_Acc_max, Panda_Omega_max, Panda_Alpha_max);
 
-C_AbsolutePose target;
-target = this->Main->robotManager->roboter->Abs_Home_Pose;
-this->Taktgeber->stop();
-this->Main->robotManager->moveRobotToTarget_Slow(&target);
-}
+  C_AbsolutePose target;
+  target = this->Main->robotManager->roboter->Abs_Home_Pose;
+  this->moving = true;
+  this->Main->robotManager->moveRobotToTarget_Slow(&target);
+  }

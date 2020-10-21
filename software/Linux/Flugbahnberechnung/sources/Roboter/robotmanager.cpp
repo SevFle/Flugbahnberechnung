@@ -92,6 +92,13 @@ bool C_robotManager::moveRobotToTarget_Slow(C_AbsolutePose* targetPose)
   this->threadActive = true;
   return true;
   }
+bool C_robotManager::close_Panda_threading()
+  {
+  this->robotThread->join();
+  this->threadActive = false;
+  this->roboter->SM_Panda_Processor_Move_Robot_Slow_Enabled = false;
+  return true;
+  }
 
 void C_robotManager::open_Panda_threading(void* This)
   {

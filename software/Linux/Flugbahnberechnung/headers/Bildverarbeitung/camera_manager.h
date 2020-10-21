@@ -187,10 +187,13 @@ namespace CameraManager
     int                           deltaT_old;
 
     public:
-    std::atomic<bool>             calibrationDone;
-    std::atomic<bool>             positioningDone;
-    std::atomic<bool>             pipelineDone;
-    std::atomic<bool>             pipelineFlush;
+    std::atomic<bool>*             calibrationDone;
+    std::atomic<bool>*             positioningDone;
+    std::atomic<bool>*             pipelineDone;
+    std::atomic<bool>*             pipelineFlush;
+    std::atomic<bool>*             switchCamForward;
+    std::atomic<bool>*             switchCamBackward;
+
 
     /********************************************************* Öffentliche Klassenmethoden*******************************************************/
     public:

@@ -5,6 +5,7 @@
 #include "headers/Roboter/posen.h"
 #include "headers/Etc/GlobalObjects.h"
 #include "headers/Etc/plotter.h"
+#include "headers/Positionsbestimmung/Kalmanfilter.h"
 #include <chrono>
 #include <ctime>
 
@@ -33,7 +34,7 @@ namespace trackingManager
     private:
     C_GlobalObjects*                    globalObjects;
     S_Positionsvektor*                  Positionsvektor_alt;
-    //onCuda::KalmanFilter2::C_kalman*    kalmanfilter;
+    kalmanFilter::C_kalmanFilter*       kalmanfilter;
 
     S_Positionsvektor*                   Richtungsvektoren[payloadSize];
     std::vector<C_AbsolutePose>*         vecWorldtoCamPose;

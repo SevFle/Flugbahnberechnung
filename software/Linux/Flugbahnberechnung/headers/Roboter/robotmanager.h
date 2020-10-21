@@ -29,11 +29,10 @@ namespace robotManager
     C_AbsolutePose calibrateRobotToWorld(C_AbsolutePose& worldToCam);
 
     bool moveRobotToTarget_Slow(C_AbsolutePose* targetPose);
+    bool close_Panda_threading();
 
   private:
     static void open_Panda_threading(void *This);
-
-
     };
   }
 
