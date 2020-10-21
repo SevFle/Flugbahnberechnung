@@ -3,6 +3,7 @@
 #include "watchdog.h"
 #include "headers/CSV_Manager/loadmanager.h"
 #include "headers/CSV_Manager/savemanager.h"
+#include "tbb/concurrent_queue.h"
 #include <vector>
 
 using namespace UM_CSV_Datei;
@@ -10,6 +11,12 @@ using namespace UM_CSV_Datei;
 /*********************************************************** Definition Namespace **************************************************************/
 namespace GlobalObjects
   {
+  struct S_PositionPayload
+    {
+    posen::S_Positionsvektor*     predPosition;
+    double                        predVelocity[3];
+    double                        dt;
+    };
   class C_GlobalObjects
     {
     public:
@@ -23,6 +30,10 @@ namespace GlobalObjects
     posen::C_AbsolutePose*        camToWorld;
     posen::C_AbsolutePose*        worldToCam;
     posen::C_RelativePose*        camToBoard;
+    std::mutex*                   globalLock;
+
+    tbb::concurrent_bounded_queue<GlobalObjects::S_PositionPayload*>*  objectPosenQue;
+
 
     int absCameras;
     int camera_id;

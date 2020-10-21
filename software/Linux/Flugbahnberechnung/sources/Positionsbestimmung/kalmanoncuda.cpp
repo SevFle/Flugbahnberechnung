@@ -9,6 +9,10 @@ C_kalmanOnCuda::C_kalmanOnCuda(int dynamParams, int measureParams, int controlPa
   {
   init(dynamParams, measureParams, controlParams, type);
   }
+C_kalmanOnCuda::~C_kalmanOnCuda()
+  {
+
+  }
 
 
 void C_kalmanOnCuda::init(int DP, int MP, int CP, int type)

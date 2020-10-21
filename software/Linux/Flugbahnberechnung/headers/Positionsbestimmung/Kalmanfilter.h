@@ -2,11 +2,13 @@
 #define __Kalmanfilter_H
 #include "headers/Positionsbestimmung/kalmanoncuda.h"
 
+#define gravity -9.807
+
 namespace kalmanFilter
   {
   class C_kalmanFilter
     {
-    protected:
+  public:
     C_kalmanFilter ();
     ~C_kalmanFilter ();
 
@@ -26,16 +28,20 @@ namespace kalmanFilter
     cv::Mat* errorCovPost;       //!< posteriori error estimate covariance matrix (P(k)): P(k)=(I-K(k)*H)*P'(k)
 
 
-
+    cv::Mat* predictedState;       //!< predicted state a priori
+    cv::Mat* measurement;
+private:
+    cv::cuda::GpuMat* gpuState;
+    cv::cuda::GpuMat* gpuMeasurement;
+    void init();
+  public:
+    void reset();
     void create(int dynamParams, int measureParams, int controlParams, int type);
-
-
-
-
-
+    void predict(float dT);
+    void update(float x, float y, float z);
+    void initFirstPosition(float x, float y, float z, float vx, float vy, float vz);
 
     private:
-    void init();
 
     public:
     };

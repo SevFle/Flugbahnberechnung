@@ -208,10 +208,10 @@ void frm_Object_Tracking::C_frm_Object_Tracking::on_bt_start_clicked()
     {
     this->Ui->lbl_thread_running->              setEnabled  (true);
     this->Ui->bt_start->                        setText     ("Stop");
-      this->Main->cameraManager->pipelineFlush.store(true);
+    this->Main->cameraManager->pipelineFlush->store(true);
     this->Main->cameraManager->setArrActiveCameras(0,0);
     this->Main->cameraManager->setArrActiveCameras(1,1);
-    this->Main->cameraManager->pipelineFlush.store(false);
+    this->Main->cameraManager->pipelineFlush->store(false);
     this->Main->cameraManager->startTracking();
     }
   else

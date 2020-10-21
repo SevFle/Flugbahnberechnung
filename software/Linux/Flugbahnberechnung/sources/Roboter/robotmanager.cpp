@@ -8,9 +8,17 @@ C_robotManager::C_robotManager(C_GlobalObjects* Globalobjects)
   this->globalObjects = Globalobjects;
   this->robotThread = nullptr;
   this->threadActive = false;
+  this->smBallTrackingStep = 0;
+  this->objectPayload = nullptr;
+  this->robotConstraints = new robotManager::robotConstraints;
   }
 C_robotManager::~C_robotManager()
   {
+  delete (robotConstraints);
+  if(this->objectPayload != nullptr)
+    delete (this->objectPayload);
+
+  this->smBallTrackingStep = 0;
   this->threadActive = false;
   this->robotThread = nullptr;
   this->globalObjects = nullptr;
@@ -50,7 +58,6 @@ void C_robotManager::getAbsoluteHomogenousBaseToWorld(posen::C_AbsolutePose* Bas
   *BasePose = this->roboter->Abs_RobotToWorld_Pose;
   }
 
-
 C_AbsolutePose C_robotManager::calibrateRobotToWorld(C_AbsolutePose& worldToCam)
   {
   C_RelativePose robotBaseToTCP;
@@ -81,8 +88,7 @@ C_AbsolutePose C_robotManager::calibrateRobotToWorld(C_AbsolutePose& worldToCam)
 
   }
 
-
-bool C_robotManager::moveRobotToTarget_Slow(C_AbsolutePose* targetPose)
+bool C_robotManager::moveRobotToTarget(C_AbsolutePose* targetPose)
   {
   if(threadActive)
     return false;
@@ -107,4 +113,92 @@ void C_robotManager::open_Panda_threading(void* This)
     static_cast<robotManager::C_robotManager*>(This)->roboter->Panda_Processor_MoveToPose_Slow();
     }
   std::cout << "Movement done " << std::endl;
+  }
+
+void C_robotManager::sm_BallTracking()
+  {
+  C_AbsolutePose WorldToRobot = this->roboter->Abs_WorldToRobot_Pose;
+  S_Posenvektor  WorldToObject;
+  double distanceObjectToRobot_X = 0.0;
+  double distanceObjectToRobot_Y = 0.0;
+  double distanceObjectToRobot_Z = 0.0;
+  double v0 = 0.0;
+  double height = 0.0;
+  double theta = 0.0;
+  double timeOfFlight = 0.0;
+  int aufloesung = 200;
+  double timestep = 0.0;
+  double distance = 0.0;
+  while(true)
+    {
+    switch(this->smBallTrackingStep)
+       {
+      //Versuche aktuelle Objektdaten aus der Que zu holen. Falls nicht erfolgreich, bleibe im aktuellen Schritt
+      case 1:
+        if(this->globalObjects->objectPosenQue->try_pop(this->objectPayload))
+          {
+          this->smBallTrackingStep = 2;
+          }
+        else
+          {
+          this->smBallTrackingStep = 1;
+          }
+        break;
+
+        //Berechne die aktuelle Trajektorie mit den gegebenen Objektdaten. Überprüfe ob in jedem Schritt dt ob sich X,Y,Z selbst mit Anlaufweg (15 cm in Bewegungsrichtung) innerhalb der Roboterkugel befinden
+      case 2:
+        distanceObjectToRobot_X = 0.0;
+        distanceObjectToRobot_Y = 0.0;
+        distanceObjectToRobot_Z = 0.0;
+
+        WorldToObject.X         = this->objectPayload->predPosition->X;
+        WorldToObject.Y         = this->objectPayload->predPosition->Y;
+        WorldToObject.Z         = this->objectPayload->predPosition->Z;
+
+        distanceObjectToRobot_X =  WorldToRobot.HomogenePosenMatrix[0][3] - WorldToObject.X;
+        distanceObjectToRobot_Y =  WorldToRobot.HomogenePosenMatrix[1][3] - WorldToObject.Y;
+        distanceObjectToRobot_Z =  WorldToRobot.HomogenePosenMatrix[2][3] - WorldToObject.Z;
+
+        v0 = std::sqrt((this->objectPayload->predVelocity[0]*this->objectPayload->predVelocity[0]) + (this->objectPayload->predVelocity[1]*this->objectPayload->predVelocity[1])
+                                                                                                  + (this->objectPayload->predVelocity[2]*this->objectPayload->predVelocity[2]));
+        height = WorldToObject.Z;
+
+        theta = std::tan(this->objectPayload->predVelocity[2]/this->objectPayload->predVelocity[0]);
+        distance = ((v0*v0)* std::sin(2*theta))/9.807
+        //Xt = Xt-1 + Vx*t
+        //Yt = Yt-1 + Vx*t
+        //Zt = Zt-1 + Vz*t - 0.5*g*t*t
+
+
+        //Height z at distance x = initialheight + x*tan(launchangle) - (g*x²)/2*(v0*cos
+        timeOfFlight = (2*v0*std::sin(theta))/9.807;
+        timestep = timeOfFlight/aufloesung;
+
+        for(int i =0; i <=timeOfFlight; i = i+ timestep)
+          {
+           double vx = this->objectPayload->predVelocity[0];
+           double x = WorldToObject.X + vx*i;
+
+           double vy = this->objectPayload->predVelocity[1];
+           double y = WorldToObject.Y + vy*i;
+
+           double vz = this->objectPayload->predVelocity[2] - 9.807*i;
+           double z = WorldToObject.Z + this->objectPayload->predVelocity[2]*i - 0.5*9.807*i*i;
+          }
+
+        //vx = v0x
+        //x = x0 + v0x*t
+
+        //vy = v0y - g*t
+        //y = y0+v0y*t-0.5*g*t*t
+
+
+
+        break;
+        //Bewege den Roboter zur kalkulierten Anlaufposition
+      case 3:
+        break;
+
+      }
+    }
   }

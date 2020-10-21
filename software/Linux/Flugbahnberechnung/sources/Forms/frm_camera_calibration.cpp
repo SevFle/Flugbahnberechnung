@@ -314,7 +314,7 @@ void frm_Camera_Calibration::C_frm_Camera_Calibration::on_bt_exit_clicked()
 {
   this->Taktgeber->stop();
   delete(this->GlobalObjects->watchdog);
-  this->Main->cameraManager->pipelineDone.store(true);
+  this->Main->cameraManager->pipelineDone->store(true);
   if(!this->Main->cameraManager->stopPipelineTracking()) return;
   this->close();
 }
@@ -322,7 +322,7 @@ void frm_Camera_Calibration::C_frm_Camera_Calibration::on_bt_exit_clicked()
 void C_frm_Camera_Calibration::on_num_camera_id_valueChanged(int arg1)
 {
     std::lock_guard<std::mutex> lck (*this->Main->cameraManager->getLock());
-    this->Main->cameraManager->pipelineFlush.store(true);
+    this->Main->cameraManager->pipelineFlush->store(true);
     if(method == 0)
         this->Main->cameraManager->setArrActiveCameras(arg1,0);
     else
@@ -331,7 +331,7 @@ void C_frm_Camera_Calibration::on_num_camera_id_valueChanged(int arg1)
         int arg2 = arg1+1;
         this->Main->cameraManager->setArrActiveCameras(arg2,1);
       }
-    this->Main->cameraManager->pipelineFlush.store(false);
+    this->Main->cameraManager->pipelineFlush->store(false);
 
 }
 
@@ -347,9 +347,9 @@ void C_frm_Camera_Calibration::on_rb_single_calibration_clicked()
 
 
     std::lock_guard<std::mutex> lck                   (*this->Main->cameraManager->getLock());
-    this->Main->cameraManager->pipelineFlush.store               (true);
+    this->Main->cameraManager->pipelineFlush->store               (true);
     this->Main->cameraManager->setArrActiveCameras    (0,0);
-    this->Main->cameraManager->pipelineFlush.store               (false);
+    this->Main->cameraManager->pipelineFlush->store               (false);
     this->Ui->rb_stereo_calibration->setChecked       (false);
     this->Ui->rb_single_calibration->setChecked       (true);
 
@@ -385,10 +385,10 @@ void C_frm_Camera_Calibration::on_rb_stereo_calibration_clicked()
 
     this->cameraID                            = 0;
     std::lock_guard<std::mutex> lck (*this->Main->cameraManager->getLock());
-    this->Main->cameraManager->pipelineFlush.store               (true);
+    this->Main->cameraManager->pipelineFlush->store               (true);
     this->Main->cameraManager->setArrActiveCameras    (0,0);
     this->Main->cameraManager->setArrActiveCameras    (1,1);
-    this->Main->cameraManager->pipelineFlush.store               (false);
+    this->Main->cameraManager->pipelineFlush->store               (false);
     this->Ui->rb_stereo_calibration->setChecked       (true);
     this->Ui->rb_single_calibration->setChecked       (false);
 

@@ -86,7 +86,7 @@ bool               C_frm_Camera_Positioning::eventFilter                        
 void C_frm_Camera_Positioning::on_bt_exit_clicked()
   {
   delete(this->GlobalObjects->watchdog);
-  this->Main->cameraManager->positioningDone.store(true);
+  this->Main->cameraManager->positioningDone->store(true);
   if(!this->Main->cameraManager->stopThreadCameraPositioning()) return;
   this->close();
   }

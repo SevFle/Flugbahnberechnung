@@ -160,6 +160,7 @@ void C_frm_Main::initialize(void* This)
   {
   static_cast<frm_Main::C_frm_Main*>(This)->finished.store(false);
   static_cast<frm_Main::C_frm_Main*>(This)->Main->cameraManager->openCameras();
+  static_cast<frm_Main::C_frm_Main*>(This)->Main->cameraManager->trackingManager->kalmanfilter->create(9, 3, 0, CV_32FC1);
   QString IP = static_cast<frm_Main::C_frm_Main*>(This)->Ui->txb_robot_ip->toPlainText();
   std::string IPAdresse;
   IPAdresse = IP.toStdString();
@@ -168,7 +169,7 @@ void C_frm_Main::initialize(void* This)
   }
 void C_frm_Main::on_bt_tracking_clicked()
   {
-  this->GlobalObjects->watchdog = new watchdog::C_watchdog(100, this->Main->cameraManager->pipelineDone,
+  this->GlobalObjects->watchdog = new watchdog::C_watchdog(100, *this->Main->cameraManager->pipelineDone,
                                                              this->Main->cameraManager->getCamThread(),
                                                              [&]{this->Main->cameraManager->startPipelineTracking();});
 
@@ -194,7 +195,7 @@ void C_frm_Main::on_bt_tracking_clicked()
 
 void frm_Main::C_frm_Main::on_bt_camera_calibration_clicked()
   {
-  this->GlobalObjects->watchdog = new watchdog::C_watchdog(100, this->Main->cameraManager->pipelineDone,
+  this->GlobalObjects->watchdog = new watchdog::C_watchdog(100, *this->Main->cameraManager->pipelineDone,
                                                                this->Main->cameraManager->getCamThread(),
                                                                [&]{this->Main->cameraManager->startPipelineTracking();});
   this->Main->cameraManager->getFilterFlags()->undistordActive        = true;
@@ -227,7 +228,7 @@ void frm_Main::C_frm_Main::on_bt_camera_pose_clicked()
 
 void frm_Main::C_frm_Main::on_bt_camera_positioning_clicked()
   {
-  this->GlobalObjects->watchdog = new watchdog::C_watchdog(100, this->Main->cameraManager->positioningDone,
+  this->GlobalObjects->watchdog = new watchdog::C_watchdog(100, *this->Main->cameraManager->positioningDone,
                                          this->Main->cameraManager->getCamThread(),
                                          [&]{this->Main->cameraManager->startThreadCameraPositioning();});
 

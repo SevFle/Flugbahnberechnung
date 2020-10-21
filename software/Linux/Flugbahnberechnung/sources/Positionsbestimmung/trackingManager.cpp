@@ -9,19 +9,19 @@ C_trackingManager::C_trackingManager (C_GlobalObjects* GlobalObjects)
   this->dataPlotter         = new plotter::C_plotter;
 
   this->Positionsvektor_alt = new S_Positionsvektor;
-  //onCuda::KalmanFilter2::C_kalman*    kalmanfilter;
+  this->kalmanfilter        = new kalmanFilter::C_kalmanFilter;
 
-  this->vecWorldtoCamPose = new std::vector<C_AbsolutePose>;
-  this->vecEinheitsVektor = new std::vector<C_AbsolutePose>;
-  this->vecCamToWorldPose = new std::vector<C_AbsolutePose>;
-  this->vecIstX = new std::vector<int>;
-  this->vecIstY = new std::vector<int>;
-  this->vecPixelVelocityX = new std::vector<float>;
-  this->vecPixelVelocityY = new std::vector<float>;
-  this->vecPixelVelocityZ = new std::vector<float>;
-  this->objektVektorTm1 = new S_Positionsvektor;
+  this->vecWorldtoCamPose   = new std::vector<C_AbsolutePose>;
+  this->vecEinheitsVektor   = new std::vector<C_AbsolutePose>;
+  this->vecCamToWorldPose   = new std::vector<C_AbsolutePose>;
+  this->vecIstX             = new std::vector<int>;
+  this->vecIstY             = new std::vector<int>;
+  this->vecPixelVelocityX   = new std::vector<float>;
+  this->vecPixelVelocityY   = new std::vector<float>;
+  this->vecPixelVelocityZ   = new std::vector<float>;
+  this->objektVektorTm1     = new S_Positionsvektor;
 
-  this->dTime = 0;
+  this->dTime               = 0;
 
   for (int i = 0; i < payloadSize; i++)
     {
@@ -30,34 +30,49 @@ C_trackingManager::C_trackingManager (C_GlobalObjects* GlobalObjects)
   /****************** Positionsbuffer T-1 *******************/
   for(int i = 0; i < 3; i++)
     {
-    this->objectVelocityTm1[i] = 0.0f;
-    this->objectVelocity[i] = 0.0f;
+    this->objectVelocityTm1[i]  = 0.0f;
+    this->objectVelocity[i]     = 0.0f;
     this->objectAcceleration[i] = 0.0f;
+    this->PredVelocity[i]       = 0.0;
     }
-  this->dTimestamp = new nanoseconds;
-  this->timestamp_ms = new Clock::time_point;
-  this->timestamp_ms_old = new Clock::time_point;
-  this->timer = new Clock;
+  this->dTimestamp        = new nanoseconds;
+  this->timestamp_ms      = new Clock::time_point;
+  this->timestamp_ms_old  = new Clock::time_point;
+  this->timer             = new Clock;
+  this->consecutive_found = 0;
+  this->kalmanAlive       = false;
+
+  this->PredPosition = new S_Positionsvektor;
+  this->positionPayload = nullptr;
 
   }
 C_trackingManager::~C_trackingManager ()
   {
-  delete(timer);
-  delete(timestamp_ms_old);
-  delete(timestamp_ms);
+  if(this->positionPayload != nullptr)
+    {
+    delete (this->positionPayload);
+    }
+  delete                  (PredPosition);
+  this->kalmanAlive       = false;
+  this->consecutive_found = 0;
+
+  delete                  (timer);
+  delete                  (timestamp_ms_old);
+  delete                  (timestamp_ms);
 
   for(int i = 0; i < 3; i++)
     {
+    this->PredVelocity[i]       = 0.0;
     this->objectAcceleration[i] = 0.0f;
-    this->objectVelocity[i] = 0.0f;
-    this->objectVelocityTm1[i] = 0.0f;
+    this->objectVelocity[i]     = 0.0f;
+    this->objectVelocityTm1[i]  = 0.0f;
     }
   for (int i = 0; i < payloadSize; i++)
     {
     delete (this->Richtungsvektoren[i]);
     this->Richtungsvektoren[i] = nullptr;
     }
-  this->dTime = 0;
+  this->dTime              = 0;
 
   delete (objektVektorTm1);
   delete (vecPixelVelocityZ);
@@ -108,21 +123,13 @@ void C_trackingManager::setTime                         ()
   {
   *this->timestamp_ms     = timer->now();
   *this->dTimestamp       = std::chrono::duration_cast<nanoseconds>(*this->timestamp_ms - *this->timestamp_ms_old);
-  this->dTime             = this->dTimestamp->count()/1000000;
+  this->dTime             = this->dTimestamp->count()/1000000000;
   *this->timestamp_ms_old = timer->now();
   if(this->dTime < 0)
     this->dTime = 1;
   }
 
-S_Positionsvektor *C_trackingManager::getPositionsvektor_alt() const
-  {
-  return Positionsvektor_alt;
-  }
 
-void C_trackingManager::setPositionsvektor_alt(S_Positionsvektor *value)
-  {
-  Positionsvektor_alt = value;
-    }
 
 void C_trackingManager::setRichtungsvektor(S_Positionsvektor *value, int pos)
   {
@@ -310,7 +317,7 @@ void C_trackingManager::calcPixelAcceleration()
   {
 
   }
-void C_trackingManager::calcObjectAcceleration()
+void C_trackingManager::calcObjectAcceleration        ()
   {
   float dObjectVelocity [3];
   dObjectVelocity[0] = this->objectVelocityTm1[0]-this->objectVelocity[0];
@@ -331,13 +338,24 @@ void C_trackingManager::predictPixelMovement           (int& predX, int& predY, 
   predX = ist_X +  this->dTime*pixelVelocityX;
   predY = ist_Y + this->dTime*pixelVelocityY;
   }
+void C_trackingManager::predictObjectPos                ()
+  {
+  this->kalmanfilter->predict(this->dTime);
+  this->positionPayload = new GlobalObjects::S_PositionPayload;
 
-const float& C_trackingManager::getObjectVelocity()
-  {
-  return *this->objectVelocity;
-  }
-const float& C_trackingManager::getObjectAcceleration()
-  {
-  return *this->objectAcceleration;
+  this->positionPayload->predPosition->X = this->kalmanfilter->predictedState->at<float>(0);
+  this->positionPayload->predPosition->Y = this->kalmanfilter->predictedState->at<float>(1);
+  this->positionPayload->predPosition->Z = this->kalmanfilter->predictedState->at<float>(2);
+
+  this->positionPayload->predVelocity[0] = this->kalmanfilter->predictedState->at<float>(3);
+  this->positionPayload->predVelocity[1] = this->kalmanfilter->predictedState->at<float>(4);
+  this->positionPayload->predVelocity[2] = this->kalmanfilter->predictedState->at<float>(5);
+  if(!this->globalObjects->objectPosenQue->try_push(positionPayload))
+    {
+    delete (this->positionPayload);
+    this->positionPayload = nullptr;
+    }
+
+
   }
 

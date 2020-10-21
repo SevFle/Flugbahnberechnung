@@ -15,10 +15,17 @@ C_GlobalObjects::C_GlobalObjects ()
   this->loadManager         = new LoadManager::C_LoadManager;
   this->saveManager         = new Savemanager::c_SaveManager;
   this->watchdog            = nullptr;
+  this->globalLock          = new std::mutex;
+
+  this->objectPosenQue =  new tbb::concurrent_bounded_queue<GlobalObjects::S_PositionPayload*>;
+  this->objectPosenQue->set_capacity(5);
 
   }
 C_GlobalObjects::~C_GlobalObjects ()
   {
+  delete                    (objectPosenQue);
+
+  delete                    (globalLock);
   this->watchdog            = nullptr;
   delete                    (saveManager);
   delete                    (loadManager);

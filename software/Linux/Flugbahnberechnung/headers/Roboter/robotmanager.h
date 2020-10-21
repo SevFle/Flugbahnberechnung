@@ -8,18 +8,34 @@ using namespace GlobalObjects;
 
 namespace robotManager
   {
+  struct robotConstraints
+    {
+    double X  = 60;
+    double nX = -60;
+    double Y  = 60;
+    double nY = -60;
+    double Z  = 80;
+    double nZ =-20;
+
+    };
+
   class C_robotManager
     {
   public:
     C_robotManager(C_GlobalObjects* globalObjects);
     ~C_robotManager();
 
-    Robot_Panda::C_Robot_Panda *roboter;
-    C_GlobalObjects* globalObjects;
+    Robot_Panda::C_Robot_Panda*   roboter;
+    C_GlobalObjects*              globalObjects;
     std::thread*                  robotThread;
+    GlobalObjects::S_PositionPayload* objectPayload;
+    robotConstraints*             robotConstraints;
 
 
-    bool threadActive;
+    bool                          threadActive;
+    int                           smBallTrackingStep;
+
+
     void initTCP();
     void initRobot(std::string IPAdresse);
 
@@ -28,7 +44,8 @@ namespace robotManager
 
     C_AbsolutePose calibrateRobotToWorld(C_AbsolutePose& worldToCam);
 
-    bool moveRobotToTarget_Slow(C_AbsolutePose* targetPose);
+    bool moveRobotToTarget(C_AbsolutePose* targetPose);
+    void sm_BallTracking();
     bool close_Panda_threading();
 
   private:

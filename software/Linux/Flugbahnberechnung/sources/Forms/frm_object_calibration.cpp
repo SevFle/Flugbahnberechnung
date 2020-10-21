@@ -123,7 +123,7 @@ bool               C_frm_Object_Calibration::eventFilter                        
 void C_frm_Object_Calibration::on_bt_exit_clicked()
   {
   delete(this->GlobalObjects->watchdog);
-  this->Main->cameraManager->pipelineDone.store(true);
+  this->Main->cameraManager->pipelineDone->store(true);
   if(!this->Main->cameraManager->stopPipelineTracking())
     return;
   this->Main->frm_Object_Tracking->close();
@@ -285,10 +285,10 @@ void C_frm_Object_Calibration::on_num_camera_valueChanged(int arg1)
   this->camID = arg1;
   this->get_camera_settings (*this->Main->cameraManager->vecCameras->at(this->camID));
   std::lock_guard<std::mutex> lck (*this->Main->cameraManager->getLock());
-  this->Main->cameraManager->pipelineFlush.store(true);
+  this->Main->cameraManager->pipelineFlush->store(true);
   this->Main->cameraManager->setArrActiveCameras(camID, 0);
   this->Main->cameraManager->setArrActiveCameras(camID, 1);
-  this->Main->cameraManager->pipelineFlush.store(false);
+  this->Main->cameraManager->pipelineFlush->store(false);
   }
 
 
@@ -539,11 +539,11 @@ void frm_Object_Calibration::C_frm_Object_Calibration::on_bt_tracking_clicked()
     //TODO Open Form
     //this->hide();
     this->Ui->num_camera->setEnabled(false);
-    this->Main->cameraManager->pipelineFlush.store(true);
+    this->Main->cameraManager->pipelineFlush->store(true);
     std::lock_guard<std::mutex> lck (*this->Main->cameraManager->getLock());
     this->Main->cameraManager->setArrActiveCameras(0,0);
     this->Main->cameraManager->setArrActiveCameras(1,1);
-    this->Main->cameraManager->pipelineFlush.store(false);
+    this->Main->cameraManager->pipelineFlush->store(false);
     this->Main->cameraManager->getFilterFlags()->roiAdjustmentActive    = false;
     this->Main->cameraManager->getFilterFlags()->trackingActive         = false;
     this->Main->cameraManager->getFilterFlags()->objectDetectionActive  = false;

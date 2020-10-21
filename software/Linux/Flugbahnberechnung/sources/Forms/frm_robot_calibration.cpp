@@ -235,15 +235,15 @@ C_AbsolutePose C_frm_Robot_Calibration::getPoseRobotToWorld()
 void frm_Robot_Calibration::C_frm_Robot_Calibration::on_num_camID_valueChanged(int arg1)
   {
   std::lock_guard<std::mutex> lck (*this->Main->cameraManager->getLock());
-  this->Main->cameraManager->pipelineFlush.store(true);
+  this->Main->cameraManager->pipelineFlush->store(true);
   this->Main->cameraManager->setArrActiveCameras(arg1,0);
-  this->Main->cameraManager->pipelineFlush.store(false);
+  this->Main->cameraManager->pipelineFlush->store(false);
   }
 
 void frm_Robot_Calibration::C_frm_Robot_Calibration::on_bt_exit_clicked()
   {
   this->Taktgeber->stop();
-  this->Main->cameraManager->pipelineDone.store(true);
+  this->Main->cameraManager->pipelineDone->store(true);
   if(!this->Main->cameraManager->stopPipelineTracking()) return;
   this->close();
   }
@@ -297,5 +297,5 @@ void frm_Robot_Calibration::C_frm_Robot_Calibration::on_bt_move_home_clicked()
   C_AbsolutePose target;
   target = this->Main->robotManager->roboter->Abs_Home_Pose;
   this->moving = true;
-  this->Main->robotManager->moveRobotToTarget_Slow(&target);
+  this->Main->robotManager->moveRobotToTarget(&target);
   }

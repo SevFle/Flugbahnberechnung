@@ -30,11 +30,18 @@ namespace trackingManager
     ~C_trackingManager                  ();
 
     plotter::C_plotter*                 dataPlotter;
+    kalmanFilter::C_kalmanFilter*       kalmanfilter;
+
+    int                                 consecutive_found;
+    bool                                kalmanAlive;
+
+    S_Positionsvektor*                  PredPosition;
+    double                              PredVelocity[3];
 
     private:
     C_GlobalObjects*                    globalObjects;
     S_Positionsvektor*                  Positionsvektor_alt;
-    kalmanFilter::C_kalmanFilter*       kalmanfilter;
+    GlobalObjects ::S_PositionPayload*  positionPayload;
 
     S_Positionsvektor*                   Richtungsvektoren[payloadSize];
     std::vector<C_AbsolutePose>*         vecWorldtoCamPose;
@@ -79,15 +86,10 @@ namespace trackingManager
 
     void predictPixelMovement                         (int& predX, int& predY, int pixelVelocityX, int pixelVelocityY, int ist_X, int ist_Y);
 
+    void predictObjectPos                             ();
+
     bool getAlive                                     () const;
     void setAlive                                     (bool value);
-
-    const float& getObjectVelocity();
-    const float& getObjectAcceleration();
-
-
-    S_Positionsvektor *getPositionsvektor_alt         () const;
-    void setPositionsvektor_alt                       (S_Positionsvektor *value);
 
     void setRichtungsvektor(S_Positionsvektor *value, int pos);
 
