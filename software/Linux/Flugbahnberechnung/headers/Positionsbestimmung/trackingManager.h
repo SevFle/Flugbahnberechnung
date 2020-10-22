@@ -62,18 +62,20 @@ namespace trackingManager
     double                              objectAcceleration [3];
     double                              dTime;
 
-    nanoseconds*                        dTimestamp;
+    milliseconds*                        dTimestamp;
     Clock*                              timer;
     Clock::time_point*                  timestamp_ms;
     Clock::time_point*                  timestamp_ms_old;
 
-
+    milliseconds*                       kalman_dTimestamp;
+    Clock::time_point*                  kalman_timestamp_ms;
+    Clock::time_point*                  kalman_timestamp_ms_old;
 
 
 
     public:
     void init_posen                                   ();
-    void load_posen                                   (C_AbsolutePose& cameraPose);
+    void load_posen                                   (C_AbsolutePose& cameraToWorld, C_AbsolutePose& worldToCamera);
 
     void Get_Position_ObjectTracking                  (S_Positionsvektor&             objektVektor, vector<int> WorldToCamPose_active);
     void Calc_Position_ObjectTracking                 (S_Positionsvektor&             objektVektor, vector<S_Positionsvektor>&  vec_Richtungsvektoren_World, vector<int> WorldToCamPose_active);

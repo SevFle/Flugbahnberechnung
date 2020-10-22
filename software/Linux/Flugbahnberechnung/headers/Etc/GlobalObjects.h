@@ -3,7 +3,13 @@
 #include "watchdog.h"
 #include "headers/CSV_Manager/loadmanager.h"
 #include "headers/CSV_Manager/savemanager.h"
+
+#if !defined(Q_MOC_RUN)
+#include <tbb/tbb.h>
+#include "tbb/pipeline.h"
 #include "tbb/concurrent_queue.h"
+#endif
+
 #include <vector>
 
 using namespace UM_CSV_Datei;

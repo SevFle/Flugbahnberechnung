@@ -129,7 +129,6 @@ const cv::cuda::GpuMat& C_kalmanOnCuda::correct( const cv::cuda::GpuMat& measure
 
     cv::cuda::subtract(measurement, measurementMatrix_temp, temp5);
 
-
     // x(k) = x'(k) + K(k)*temp5
     //statePost = statePre + gain*temp5;
     //cv::cuda::multiply(gain, temp5, gain_temp);

@@ -24,11 +24,11 @@
 
 
 
-#if !defined(Q_MOC_RUN)
-#include <tbb/tbb.h>
-#include "tbb/pipeline.h"
-#include "tbb/concurrent_queue.h"
-#endif
+//#if !defined(Q_MOC_RUN)
+//#include <tbb/tbb.h>
+//#include "tbb/pipeline.h"
+//#include "tbb/concurrent_queue.h"
+//#endif
 
 
 
@@ -239,8 +239,8 @@ namespace CameraManager
     void initialize                         ();
     void start_camera_thread                ();
     void loadCameras                        ();
-    void pipelineTracking                   (std::vector<Camera::C_Camera2*> vecCameras, tbb::concurrent_bounded_queue<S_pipelinePayload*> *que);
-    void threadCameraPositioning(std::vector<Camera::C_Camera2*> vecCameras, tbb::concurrent_bounded_queue<S_threadPayload*> *que);
+    void pipelineTracking                   (std::vector<Camera::C_Camera2*> vecCameras, tbb::concurrent_bounded_queue<CameraManager::S_pipelinePayload*> *que);
+    void threadCameraPositioning            (std::vector<Camera::C_Camera2*> vecCameras, tbb::concurrent_bounded_queue<CameraManager::S_threadPayload*> *que);
     static void *threadHelper                 (void* This);
     static void *pipelineHelper(void* This);
 

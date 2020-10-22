@@ -60,6 +60,9 @@ this->cameraID = 0;
 connect                                 (this->Taktgeber, &QTimer::timeout, this, &C_frm_Robot_Calibration::Taktgeber_Tick);
 this->Taktgeber->start                  (this->Taktgeber_Intervall);
 this->installEventFilter                (this);
+double tcp[4][4];
+this->GlobalObjects->loadManager->loadRobotTCPCalibration(tcp);
+this->Main->robotManager->roboter->Set_TCP_Frame(tcp);
 Q_UNUSED(ShowEvent)
 }
 

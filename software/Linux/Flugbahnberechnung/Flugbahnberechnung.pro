@@ -34,7 +34,6 @@ SOURCES += \
   sources/CSV_Manager/loadmanager.cpp \
   sources/CSV_Manager/savemanager.cpp \
   sources/CSV_Manager/CSV_Datei.cpp \
-  sources/Roboter/pidregler.cpp \
   sources/Roboter/robot.cpp \
   sources/Roboter/robotmanager.cpp \
   sources/Roboter/posen.cpp \
@@ -55,7 +54,6 @@ SOURCES += \
 HEADERS += \
 headers/Etc/mathhelper.h \
 headers/Etc/plotter.h \
-headers/Etc/App_main.h \
 headers/Etc/GlobalObjects.h \
 headers/Etc/watchdog.h \
 headers/Etc/object.h \

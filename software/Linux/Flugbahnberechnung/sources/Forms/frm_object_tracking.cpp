@@ -213,6 +213,7 @@ void frm_Object_Tracking::C_frm_Object_Tracking::on_bt_start_clicked()
     this->Main->cameraManager->setArrActiveCameras(1,1);
     this->Main->cameraManager->pipelineFlush->store(false);
     this->Main->cameraManager->startTracking();
+    this->Main->robotManager->start_smTracking();
     }
   else
     {

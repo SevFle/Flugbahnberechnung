@@ -113,7 +113,7 @@ void C_CameraManager::initialize()
   {
   this->frameWidth = 1280;
   this->frameHeight = 720;
-  this->initZoneWidth = 200;
+  this->initZoneWidth = 300;
   this->initZoneHeight = this->frameHeight -1;
   this->transferZoneWidth = 100;
   }
@@ -188,7 +188,7 @@ void C_CameraManager::loadCameras              ()
     this->globalObjects->loadManager->loadCameraCalibration(this->vecCameras->at(i));
     this->globalObjects->loadManager->loadCameraSettings(this->vecCameras->at(i));
     this->globalObjects->loadManager->loadCameraCos(this->vecCameras->at(i));
-    this->trackingManager->load_posen(*this->vecCameras->at(i)->CameraToWorld);
+    this->trackingManager->load_posen(*this->vecCameras->at(i)->CameraToWorld, *this->vecCameras->at(i)->WorldToCamera);
     this->vecCameras->at(i)->initRectifyMap();
     }
   this->trackingManager->init_posen();
@@ -265,7 +265,6 @@ void C_CameraManager::mvTemp2VecCamera (std::vector<Camera::C_Camera2*> vecCamer
     this->vecCameras->at(i) = std::move (vecCamerastemp[i]);
   }
 }
-
 bool C_CameraManager::scanChAruco(cv::Mat &image, Camera::C_Camera2 &camera, cv::Mat &Pose)
   {
   if(image.type() != 16)
@@ -655,8 +654,6 @@ void C_CameraManager::calibrate_stereo_camera_aruco(int current_camera_id, int n
 
   this->calculate_camera_pose(current_camera_id, current_camera_id+1, &vec_M10_calibrate, &vec_M20_calibrate);
   }
-
-
 void C_CameraManager::calculate_camera_pose    (int camera1, int camera2, std::vector<cv::Mat>* M10, std::vector<cv::Mat>* M20)
   {
 //  this->version1(camera1, camera2, M10, M20);   //OWN MAT INVERSE, POSEN INVERSE
@@ -667,7 +664,6 @@ void C_CameraManager::calculate_camera_pose    (int camera1, int camera2, std::v
   this->globalObjects->saveManager->saveCameraCos(*this->vecCameras->at(camera2));
 
   }
-
 void C_CameraManager::calculate_camera_pose    (int camera1, int camera2, cv::Mat* M10, cv::Mat* M20)
   {
   //M12 = M10*M02
@@ -809,7 +805,6 @@ cv::Mat C_CameraManager::inverseMat(cv::Mat& Matrix)
 
   return value;
   }
-
 void C_CameraManager::version1(int camera1, int camera2, std::vector<cv::Mat>* M10, std::vector<cv::Mat>* M20)
   {
   //OWN MAT INVERSE, POSEN INVERSE
@@ -1099,17 +1094,12 @@ void C_CameraManager::version3(int camera1, int camera2, std::vector<cv::Mat>* M
   std::cout << "Pose_Kamera2_Debug: "  << endl << Pose_Kamera2_Debug << std::endl << std::endl;
   /********************************* DEBUG *******************************/
   }
-
-
-
-
-
-void C_CameraManager::threadCameraPositioning(std::vector<Camera::C_Camera2*> vecCameras, tbb::concurrent_bounded_queue<S_threadPayload*>* que)
+void C_CameraManager::threadCameraPositioning(std::vector<Camera::C_Camera2*> vecCameras, tbb::concurrent_bounded_queue<CameraManager::S_threadPayload*>* que)
   {
  std::cout << "**INFO** Thread " <<   std::this_thread::get_id() << " alive!" << std::endl;
-  while(!this->positioningDone)
+  while(*this->positioningDone == false)
     {
-      auto tData = new S_threadPayload;
+      S_threadPayload* tData = new S_threadPayload;
       for(auto it = std::begin(vecCameras); it < std::end(vecCameras); it++)
         {
         bool err = (*it)->grabImg();
@@ -1122,7 +1112,7 @@ void C_CameraManager::threadCameraPositioning(std::vector<Camera::C_Camera2*> ve
           }
         else
           {
-          auto img = new cv::Mat;
+          cv::Mat* img = new cv::Mat;
           err = (*it)->retrieveImg(*img);
           if(!err)
             {
@@ -1149,7 +1139,7 @@ void C_CameraManager::threadCameraPositioning(std::vector<Camera::C_Camera2*> ve
         this->tData = nullptr;
         }
 
-    this->globalObjects->watchdog->pet();
+    //this->globalObjects->watchdog->pet();
   }//while
   std::cout << "**INFO** Thread " <<   std::this_thread::get_id() << " dying!" << std::endl;
   }//thread
@@ -1157,12 +1147,14 @@ void *C_CameraManager::threadHelper(void* This)
   {
   static_cast<CameraManager::C_CameraManager*>(This)->threadCameraPositioning(*static_cast<CameraManager::C_CameraManager*>(This)->vecCameras,
                                   static_cast<CameraManager::C_CameraManager*>(This)->threadQue);
+  return 0;
   }
 
 void *C_CameraManager::pipelineHelper(void* This)
   {
   static_cast<CameraManager::C_CameraManager*>(This)->pipelineTracking(*static_cast<CameraManager::C_CameraManager*>(This)->vecCameras,
                                                                       static_cast<CameraManager::C_CameraManager*>(This)->pipelineQue);
+  return 0;
   }
 
 bool C_CameraManager::pollPipeline               (CameraManager::S_pipelinePayload* arg1)
@@ -1203,8 +1195,6 @@ void C_CameraManager::stopTracking()
   this->arrActiveCameras[1] = 1;
   this->pipelineFlush->store(false);
   }
-
-
 //MAIN PIPELINE DER KAMERAVERFOLGUNG
 
 //STEP 1: Steuert die Pipeline durch erzwingen eines Bufferflushes oder eine Anweisung zur Terminierung der derzeitigen Ausführung
@@ -1233,14 +1223,14 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
   tbb::parallel_pipeline(3, tbb::make_filter<void, S_pipelinePayload*>(tbb::filter::serial_in_order, [&](tbb::flow_control& fc)->S_pipelinePayload*
     {
     //Flush ist aktiv, wenn die aktuell verwendeten Kameras gewechselt werden
-    if(this->pipelineFlush)
+    if(*this->pipelineFlush == true)
       {
       //std::this_thread::sleep_for (std::chrono::milliseconds (100));
       return nullptr;
       }
 
     //Flowcontrol steuert die Pipeline und beendet sie, falls pipelineDone true sein sollte
-    if(pipelineDone)
+    if(*this->pipelineDone == true)
       {
       std::cout << "**INFO** Pipeline stopped! " << std::endl;
       fc.stop();
@@ -1610,14 +1600,8 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
         {
         this->trackingManager->predictObjectPos                 ();
         this->trackingManager->kalmanfilter->update             (pData->objektVektor.X, pData->objektVektor.Y, pData->objektVektor.Z);
-
-        std::lock_guard<std::mutex> lockGuard(*this->globalObjects->globalLock);
-        this->globalObjects->predPosition = this->trackingManager->PredPosition;
-        this->globalObjects->predVelocity[0]     = this->trackingManager->PredVelocity[0];
-        this->globalObjects->predVelocity[1]     = this->trackingManager->PredVelocity[1];
-        this->globalObjects->predVelocity[2]     = this->trackingManager->PredVelocity[2];
         }
-      if(!this->trackingManager->kalmanAlive)
+      if(!this->trackingManager->kalmanAlive && pData->objektVektor.X !=0.0 && pData->objektVektor.Y !=0.0 && pData->objektVektor.Z !=0.0)
         {
         this->trackingManager->consecutive_found++;
         }
@@ -1634,6 +1618,7 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
       pData->objektVektor.X = 0;
       pData->objektVektor.Y = 0;
       pData->objektVektor.Z = 0;
+      this->trackingManager->consecutive_found = 0;
 
       }
     pData->end = Clock::now();
@@ -1641,26 +1626,6 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
     return pData;
     }
   )&
-  //STEP  : PROCESS FOUND DATA WITH KALMANFILTER, PREDICT TRAJECTORY ISSUE MOVE COMMAND IF APPLICABLE
-  tbb::make_filter<S_pipelinePayload*, S_pipelinePayload*>(tbb::filter::serial_in_order, [&] (S_pipelinePayload *pData)->S_pipelinePayload*
-  {
-    if(pData == nullptr)
-       return pData;
-
-    pData->start = Clock::now();
-    if(!this->trackingManager->kalmanAlive)
-      {
-      pData->end = Clock::now();
-      pData->executionTime[4] = std::chrono::duration_cast<milliseconds>(pData->end - pData->start);
-      return pData;
-      }
-    else
-      {
-
-      }
-    }
-  )&
-
   //STEP 7: FINAL PUSH TO QUE
   tbb::make_filter<S_pipelinePayload*,void>(tbb::filter::serial_in_order, [&] (S_pipelinePayload *pData)
     {

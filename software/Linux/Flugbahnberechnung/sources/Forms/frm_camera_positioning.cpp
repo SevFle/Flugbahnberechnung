@@ -160,6 +160,10 @@ void C_frm_Camera_Positioning::Taktgeber_Tick()
     delete (tData);
     this->tData = nullptr;
      }
+  else
+    {
+    this->tData = nullptr;
+    }
   }
 
 
@@ -270,18 +274,16 @@ void C_frm_Camera_Positioning::on_bt_apply_clicked()
       }
 
     this->Main->cameraManager->mvVecCamera2Temp(camera_list);
-
-    for (int i = 0; i < GlobalObjects->absCameras; i++)
-      {
-      this->GlobalObjects->loadManager->loadCameraCalibration   (this->Main->cameraManager->vecCameras->at(i));
-      this->GlobalObjects->loadManager->loadCameraSettings      (this->Main->cameraManager->vecCameras->at(i));
-      }
     this->GlobalObjects->saveManager->saveCameraPositioning   (*this->Main->cameraManager->vecCameras, GlobalObjects->absCameras);
     for(int i = 0; i < GlobalObjects->absCameras; i ++)
     {
      this->Main->cameraManager->vecCameras->at(i)->setCameraID(i);
     }
-
+    for (int i = 0; i < GlobalObjects->absCameras; i++)
+      {
+      this->GlobalObjects->loadManager->loadCameraCalibration   (this->Main->cameraManager->vecCameras->at(i));
+      this->GlobalObjects->loadManager->loadCameraSettings      (this->Main->cameraManager->vecCameras->at(i));
+      }
     this->Ui->bt_apply->setEnabled(true);
 
 }

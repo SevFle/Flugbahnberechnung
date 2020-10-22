@@ -29,6 +29,8 @@ namespace LoadManager
     void              loadCameraSettings      (Camera::C_Camera2* Camera);
 
     double*           loadRobotTCP            (double (&tcp)[4][4]);
+    double*           loadRobotTCPCalibration (double (&tcp)[4][4]);
+
     void              loadRobotCos            (Robot_Panda::C_Robot_Panda& robot);
     void              loadRobotHomePose       (C_AbsolutePose* HomePose);
     void              loadPID                 (Robot_Panda::C_Robot_Panda& robot);

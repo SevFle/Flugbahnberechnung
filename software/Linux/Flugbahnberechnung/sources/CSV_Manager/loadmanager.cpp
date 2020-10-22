@@ -178,8 +178,7 @@ void C_LoadManager::loadCameraCalibration (Camera::C_Camera2* Camera)
 
 bool C_LoadManager::loadCameraPositioning   (std::vector<Camera::C_Camera2*> &vecCameras, int absCameras)
   {
-  string Dateiname = "test";
-  //string                                                  Dateiname = "../Parameter/Camera_Positioning.csv";
+  string                                                  Dateiname = "../Parameter/Camera_Positioning.csv";
   string                                                  Dateityp;
   int                                                     id;
   int                                                     Camera_count;
@@ -269,7 +268,7 @@ void C_LoadManager::loadCameraCos (Camera::C_Camera2* Camera)
     this->csv_parameter_datei->Lesen (CameraToWorld.HomogenePosenMatrix[1][3]);
     this->csv_parameter_datei->Lesen (CameraToWorld.HomogenePosenMatrix[2][3]);
 
-
+    *Camera->CameraToWorld = CameraToWorld;
     CameraToWorld.InversHomogenousPose(CameraToWorld.HomogenePosenMatrix, WorldToCamera.HomogenePosenMatrix);
 
     *Camera->WorldToCamera = WorldToCamera;
@@ -289,7 +288,7 @@ double* C_LoadManager::loadRobotTCP(double (&tcp)[4][4])
   string  Dateiname;
   string  Dateityp;
 
-    Dateiname   = "../Parameter/Flange_To_EndEffector_Pose.csv";
+    Dateiname   = "../Parameter/Flange_To_EndEffector_Pose_No_Gripper_default.csv";
     Dateityp    = "";
 
     this->csv_parameter_datei->Oeffnen(Dateiname, Enum_CSV_Access::Read);
@@ -313,6 +312,61 @@ double* C_LoadManager::loadRobotTCP(double (&tcp)[4][4])
         this->csv_parameter_datei->Lesen(tcp[1][3],      1000.0);
         this->csv_parameter_datei->Lesen(tcp[2][3],      1000.0);
         this->csv_parameter_datei->Lesen(tcp[3][3]);
+
+        this->csv_parameter_datei->Schliessen();
+        }
+      else
+        {
+        // Standartwerte
+        tcp[0][0]      =  1.0000;
+        tcp[1][0]      =  0.0000;
+        tcp[2][0]      =  0.0000;
+        tcp[3][0]      =  0.0000;
+        tcp[0][1]      =  0.0000;
+        tcp[1][1]      =  1.0000;
+        tcp[2][1]      =  0.0000;
+        tcp[3][1]      =  0.0000;
+        tcp[0][2]      =  0.0000;
+        tcp[1][2]      =  0.0000;
+        tcp[2][2]      =  1.0000;
+        tcp[3][2]      =  0.0000;
+        tcp[0][3]      =  0.0000;
+        tcp[1][3]      =  0.0000;
+        tcp[2][3]      =  0.0000;
+        tcp[3][3]      =  1.0000;
+        }
+    }
+
+double* C_LoadManager::loadRobotTCPCalibration(double (&tcp)[4][4])
+  {
+  string  Dateiname;
+  string  Dateityp;
+
+    Dateiname   = "../Parameter/Flange_To_EndEffector_Pose_World_Calibration_Tool.csv";
+    Dateityp    = "";
+
+    this->csv_parameter_datei->Oeffnen(Dateiname, Enum_CSV_Access::Read);
+
+    if (this->csv_parameter_datei->IsOpen())
+      {
+      this->csv_parameter_datei->Lesen(Dateityp);
+        this->csv_parameter_datei->Lesen(tcp[0][0]);
+        this->csv_parameter_datei->Lesen(tcp[1][0]);
+        this->csv_parameter_datei->Lesen(tcp[2][0]);
+        this->csv_parameter_datei->Lesen(tcp[3][0]);
+        this->csv_parameter_datei->Lesen(tcp[0][1]);
+        this->csv_parameter_datei->Lesen(tcp[1][1]);
+        this->csv_parameter_datei->Lesen(tcp[2][1]);
+        this->csv_parameter_datei->Lesen(tcp[3][1]);
+        this->csv_parameter_datei->Lesen(tcp[0][2]);
+        this->csv_parameter_datei->Lesen(tcp[1][2]);
+        this->csv_parameter_datei->Lesen(tcp[2][2]);
+        this->csv_parameter_datei->Lesen(tcp[3][2]);
+        this->csv_parameter_datei->Lesen(tcp[0][3],      1000.0);
+        this->csv_parameter_datei->Lesen(tcp[1][3],      1000.0);
+        this->csv_parameter_datei->Lesen(tcp[2][3],      1000.0);
+        this->csv_parameter_datei->Lesen(tcp[3][3]);
+        std::cout << "**INFO** TCP wurde auf Kalibriertool eingerichtet" << std::endl;
 
         this->csv_parameter_datei->Schliessen();
         }

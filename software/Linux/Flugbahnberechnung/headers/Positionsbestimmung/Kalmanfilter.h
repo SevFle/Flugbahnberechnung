@@ -26,6 +26,7 @@ namespace kalmanFilter
     cv::Mat* errorCovPre;        //!< priori error estimate covariance matrix (P'(k)): P'(k)=A*P(k-1)*At + Q)*/
     cv::Mat* gain;               //!< Kalman gain matrix (K(k)): K(k)=P'(k)*Ht*inv(H*P'(k)*Ht+R)
     cv::Mat* errorCovPost;       //!< posteriori error estimate covariance matrix (P(k)): P(k)=(I-K(k)*H)*P'(k)
+    cv::Mat* controllvector;
 
 
     cv::Mat* predictedState;       //!< predicted state a priori
@@ -33,6 +34,8 @@ namespace kalmanFilter
 private:
     cv::cuda::GpuMat* gpuState;
     cv::cuda::GpuMat* gpuMeasurement;
+    cv::cuda::GpuMat* gpuControllvector;
+
     void init();
   public:
     void reset();

@@ -35,9 +35,14 @@ C_trackingManager::C_trackingManager (C_GlobalObjects* GlobalObjects)
     this->objectAcceleration[i] = 0.0f;
     this->PredVelocity[i]       = 0.0;
     }
-  this->dTimestamp        = new nanoseconds;
+  this->dTimestamp        = new milliseconds;
   this->timestamp_ms      = new Clock::time_point;
   this->timestamp_ms_old  = new Clock::time_point;
+
+  this->kalman_dTimestamp        = new milliseconds;
+  this->kalman_timestamp_ms      = new Clock::time_point;
+  this->kalman_timestamp_ms_old  = new Clock::time_point;
+
   this->timer             = new Clock;
   this->consecutive_found = 0;
   this->kalmanAlive       = false;
@@ -56,7 +61,15 @@ C_trackingManager::~C_trackingManager ()
   this->kalmanAlive       = false;
   this->consecutive_found = 0;
 
+
+
   delete                  (timer);
+
+  delete                  (kalman_dTimestamp);
+  delete                  (kalman_timestamp_ms_old);
+  delete                  (kalman_timestamp_ms);
+
+  delete                  (dTimestamp);
   delete                  (timestamp_ms_old);
   delete                  (timestamp_ms);
 
@@ -110,20 +123,20 @@ void C_trackingManager::init_posen                     ()
   this->vecPixelVelocityZ->resize(globalObjects->absCameras);
 
   }
-void C_trackingManager::load_posen                     (C_AbsolutePose& cameraPose)
+void C_trackingManager::load_posen                     (C_AbsolutePose& cameraToWorld, C_AbsolutePose& worldToCamera)
   {
-  C_AbsolutePose cameraPose_invers;
-  cameraPose.InversHomogenousPose(cameraPose, cameraPose_invers.HomogenePosenMatrix);
 
-  this->vecWorldtoCamPose->push_back(cameraPose_invers);
-  this->vecCamToWorldPose->push_back(cameraPose);
+  this->vecWorldtoCamPose->push_back(worldToCamera);
+  this->vecCamToWorldPose->push_back(cameraToWorld);
   }
 
 void C_trackingManager::setTime                         ()
   {
   *this->timestamp_ms     = timer->now();
-  *this->dTimestamp       = std::chrono::duration_cast<nanoseconds>(*this->timestamp_ms - *this->timestamp_ms_old);
-  this->dTime             = this->dTimestamp->count()/1000000000;
+  *this->dTimestamp       = std::chrono::duration_cast<milliseconds>(*this->timestamp_ms - *this->timestamp_ms_old);
+  this->dTime             = this->dTimestamp->count();
+  std::cout << "Timestamp ms" << this->dTime << std::endl;
+
   *this->timestamp_ms_old = timer->now();
   if(this->dTime < 0)
     this->dTime = 1;
