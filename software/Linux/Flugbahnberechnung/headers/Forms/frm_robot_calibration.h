@@ -58,6 +58,8 @@ namespace frm_Robot_Calibration
     void on_bt_save_pose_clicked();
     void on_bt_set_home_clicked();
     void on_bt_move_home_clicked();
+    void on_rb_no_tool_clicked();
+    void on_rb_calib_tool_clicked();
     };
 
   }

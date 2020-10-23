@@ -29,7 +29,9 @@ namespace robotManager
     C_GlobalObjects*                    globalObjects;
     std::thread*                        robotThread;
     GlobalObjects::S_PositionPayload*   objectPayload;
-    robotManager::robotConstraints*     robotConstraints;
+    robotManager::robotConstraints*     outerConstraints;
+    robotManager::robotConstraints*     innerConstraints;
+
     posen::S_Positionsvektor*           objectEntry;
     posen::S_Positionsvektor*           objectExit;
     std::atomic<bool>*                  state_machine_running;

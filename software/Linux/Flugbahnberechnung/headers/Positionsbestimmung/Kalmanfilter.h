@@ -41,7 +41,7 @@ private:
     void reset();
     void create(int dynamParams, int measureParams, int controlParams, int type);
     void predict(float dT);
-    void update(float x, float y, float z);
+    void correct(float x, float y, float z);
     void initFirstPosition(float x, float y, float z, float vx, float vy, float vz);
 
     private:

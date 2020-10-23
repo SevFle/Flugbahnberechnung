@@ -60,9 +60,7 @@ this->cameraID = 0;
 connect                                 (this->Taktgeber, &QTimer::timeout, this, &C_frm_Robot_Calibration::Taktgeber_Tick);
 this->Taktgeber->start                  (this->Taktgeber_Intervall);
 this->installEventFilter                (this);
-double tcp[4][4];
-this->GlobalObjects->loadManager->loadRobotTCPCalibration(tcp);
-this->Main->robotManager->roboter->Set_TCP_Frame(tcp);
+this->on_rb_no_tool_clicked();
 Q_UNUSED(ShowEvent)
 }
 
@@ -301,4 +299,24 @@ void frm_Robot_Calibration::C_frm_Robot_Calibration::on_bt_move_home_clicked()
   target = this->Main->robotManager->roboter->Abs_Home_Pose;
   this->moving = true;
   this->Main->robotManager->moveRobotToTarget(&target);
+  }
+
+void frm_Robot_Calibration::C_frm_Robot_Calibration::on_rb_no_tool_clicked()
+  {
+  this->ui->rb_no_tool->setChecked(true);
+  this->ui->rb_calib_tool->setChecked(false);
+
+  double tcp[4][4];
+  this->GlobalObjects->loadManager->loadRobotTCP(tcp);
+  this->Main->robotManager->roboter->Set_TCP_Frame(tcp);
+  }
+
+void frm_Robot_Calibration::C_frm_Robot_Calibration::on_rb_calib_tool_clicked()
+  {
+  this->ui->rb_calib_tool->setChecked(true);
+  this->ui->rb_no_tool->setChecked(false);
+
+  double tcp[4][4];
+  this->GlobalObjects->loadManager->loadRobotTCPCalibration(tcp);
+  this->Main->robotManager->roboter->Set_TCP_Frame(tcp);
   }

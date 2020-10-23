@@ -1,4 +1,4 @@
-#include "headers/Roboter/robotmanager.h"
+ #include "headers/Roboter/robotmanager.h"
 
 using namespace robotManager;
 
@@ -10,7 +10,8 @@ C_robotManager::C_robotManager(C_GlobalObjects* Globalobjects)
   this->threadActive        = false;
   this->smBallTrackingStep  = 0;
   this->objectPayload       = nullptr;
-  this->robotConstraints    = new robotManager::robotConstraints;
+  this->outerConstraints    = new robotManager::robotConstraints;
+  this->innerConstraints    = new robotManager::robotConstraints;
   this->objectEntry         = new posen::S_Positionsvektor;
   this->objectExit          = new posen::S_Positionsvektor;
   this->state_machine_running = new std::atomic<bool>(false);
@@ -22,7 +23,8 @@ C_robotManager::~C_robotManager()
   delete                    (state_machine_running);
   delete                    (objectExit);
   delete                    (objectEntry);
-  delete                    (robotConstraints);
+  delete                    (innerConstraints);
+  delete                    (outerConstraints);
   if(this->objectPayload != nullptr)
     delete                  (this->objectPayload);
 
@@ -50,6 +52,16 @@ void C_robotManager::initRobot(std::string IPAdresse)
   this->globalObjects->loadManager->loadRobotHomePose(&HomePose);
   this->globalObjects->loadManager->loadPID(*this->roboter);
   this->roboter->Abs_Home_Pose = HomePose;
+
+  this->outerConstraints->X   =   0.75f;
+  this->outerConstraints->nX  =  -0.30f;
+  this->outerConstraints->Y   =   0.60f;
+  this->outerConstraints->nY  =  -0.60f;
+  this->outerConstraints->Z   =   0.80f;
+  this->outerConstraints->nZ  =  -0.13f;
+
+  this->innerConstraints->X = 0.0;
+
   }
 void C_robotManager::getAbsoluteHomogenousBaseToTCP(posen::C_RelativePose* TcpPose)
   {
@@ -138,7 +150,7 @@ void C_robotManager::sm_BallTracking()
   C_AbsolutePose WorldToRobot = this->roboter->Abs_WorldToRobot_Pose;
   S_Posenvektor  WorldToObject;
 
-  S_Posenvektor  waitForHit;
+  S_Posenvektor  waitForHitWorld;
 
   robotManager::robotConstraints ConstraintsInWorld;
 
@@ -161,12 +173,12 @@ void C_robotManager::sm_BallTracking()
        {
       //Berechne Robot Bewegungsraum zu Weltkoordinaten
       case 1:
-        ConstraintsInWorld.X  = this->roboter->Abs_WorldToRobot_Pose.px() + this->robotConstraints->X;
-        ConstraintsInWorld.nX = this->roboter->Abs_WorldToRobot_Pose.px() - this->robotConstraints->nX;
-        ConstraintsInWorld.Y  = this->roboter->Abs_WorldToRobot_Pose.py() + this->robotConstraints->Y;
-        ConstraintsInWorld.nY = this->roboter->Abs_WorldToRobot_Pose.py() - this->robotConstraints->nY;
-        ConstraintsInWorld.Z  = this->roboter->Abs_WorldToRobot_Pose.pz() + this->robotConstraints->Z;
-        ConstraintsInWorld.nZ = this->roboter->Abs_WorldToRobot_Pose.pz() - this->robotConstraints->nZ;
+        ConstraintsInWorld.X  = this->roboter->Abs_WorldToRobot_Pose.px() + this->outerConstraints->X;
+        ConstraintsInWorld.nX = this->roboter->Abs_WorldToRobot_Pose.px() - this->outerConstraints->nX;
+        ConstraintsInWorld.Y  = this->roboter->Abs_WorldToRobot_Pose.py() + this->outerConstraints->Y;
+        ConstraintsInWorld.nY = this->roboter->Abs_WorldToRobot_Pose.py() - this->outerConstraints->nY;
+        ConstraintsInWorld.Z  = this->roboter->Abs_WorldToRobot_Pose.pz() + this->outerConstraints->Z;
+        ConstraintsInWorld.nZ = this->roboter->Abs_WorldToRobot_Pose.pz() - this->outerConstraints->nZ;
 
         std::cout << "Robot Constraints in World X: " << ConstraintsInWorld.X << std::endl;
         std::cout << "Robot Constraints in World nX: " << ConstraintsInWorld.nX << std::endl;
@@ -230,9 +242,9 @@ void C_robotManager::sm_BallTracking()
           double z = WorldToObject.Z + this->objectPayload->predVelocity[2]*i - 0.5*9.807*i*i;
 
           //Wenn die Objekttrajektorie die äußeren Begrenzung des Roboterkäfigs erreicht, setzte diesen Punkt als Entry
-          if(x > ConstraintsInWorld.nX && x < robotConstraints->Y &&
-             y > ConstraintsInWorld.nY && y < robotConstraints->Y &&
-             z > ConstraintsInWorld.nZ && z < robotConstraints->Z && !inRange)
+          if(x > ConstraintsInWorld.nX && x < outerConstraints->Y &&
+             y > ConstraintsInWorld.nY && y < outerConstraints->Y &&
+             z > ConstraintsInWorld.nZ && z < outerConstraints->Z && !inRange)
             {
             this->objectEntry->X = x;
             this->objectEntry->X = x;
@@ -240,28 +252,28 @@ void C_robotManager::sm_BallTracking()
             inRange = true;
             }
           //Wenn die Objekttrajektorie die äußeren Begrenzung des Roboterkäfigs verlässt, setzte diesen Punkt als exit. Kalkuliere den Mittelpunkt der Geraden zwischen Entry(X,Y,Z) und Exit(X,Y,Z)
-          else if  (x < ConstraintsInWorld.nX && x > robotConstraints->Y &&
-                    y < ConstraintsInWorld.nY && y > robotConstraints->Y &&
-                    z < ConstraintsInWorld.nZ && z > robotConstraints->Z && inRange)
+          else if  (x < ConstraintsInWorld.nX && x > outerConstraints->Y &&
+                    y < ConstraintsInWorld.nY && y > outerConstraints->Y &&
+                    z < ConstraintsInWorld.nZ && z > outerConstraints->Z && inRange)
             {
             this->objectExit->X = x;
             this->objectExit->X = x;
             this->objectExit->X = x;
             inRange = false;
 
-            waitForHit.X = (this->objectEntry->X+this->objectExit->X)/2;
-            waitForHit.Y = (this->objectEntry->Y+this->objectExit->Y)/2;
-            waitForHit.Z = (this->objectEntry->Z+this->objectExit->Z)/2;
+            waitForHitWorld.X = (this->objectEntry->X+this->objectExit->X)/2;
+            waitForHitWorld.Y = (this->objectEntry->Y+this->objectExit->Y)/2;
+            waitForHitWorld.Z = (this->objectEntry->Z+this->objectExit->Z)/2;
             std::cout << "################## Robot preparing for hit ##############################" << ConstraintsInWorld.X << std::endl;
-            std::cout << "Waiting at X: " << waitForHit.X << std::endl;
-            std::cout << "Waiting at Y: " << waitForHit.Y << std::endl;
-            std::cout << "Waiting at Z: " << waitForHit.Z << std::endl;
+            std::cout << "Waiting at X: " << waitForHitWorld.X << std::endl;
+            std::cout << "Waiting at Y: " << waitForHitWorld.Y << std::endl;
+            std::cout << "Waiting at Z: " << waitForHitWorld.Z << std::endl;
 
-            this->smBallTrackingStep = 3;
+            this->smBallTrackingStep = 4;
             }
            else
             {
-            this->smBallTrackingStep = 2;
+            this->smBallTrackingStep = 3;
             }
           }
 
@@ -280,10 +292,64 @@ void C_robotManager::sm_BallTracking()
 
 
         break;
-        //Bewege den Roboter zur kalkulierten Anlaufposition
+        //Überprüfe auf welcher Seite des Roboter das Objekt landen wird.
       case 4:
+        //Transformiere die WartePosition von Welt- zu Robotkoordinatensystem
+
+        //Wenn Objekt vor dem Robot ist (-0.40 < Y < 0.27)
+        if(waitForHitWorld.Y > -0.40 && waitForHitWorld.Y < 0.27)
+          {
+
+          }
+
+        //Wenn Ball zwischen der linken seite vom Robot ist (Y+)
+        if(waitForHitWorld.Y >= 0.27)
+          {
+
+          }
+
+        //Wenn Ball zwischen der rechten seite vom Robot ist (Y-)
+        if(waitForHitWorld.Y <= -0.40)
+          {
+
+          }
+
+
 
         break;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
       }
     }

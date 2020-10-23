@@ -51,31 +51,31 @@ void C_kalmanFilter::create(int dynamParams, int measureParams, int controlParam
   CV_Assert( type == CV_32F || type == CV_64F );
 
   this->kalmanOnCuda            = new kalmanOnCuda::C_kalmanOnCuda(dynamParams, measureParams, controlParams, type);
-  controlParams                 = std::max(controlParams, 0);
+  controlParams                 = std::max        (controlParams, 0);
 
-  *this->statePre               = cv::Mat::zeros(dynamParams, 1, type);
-  *this->statePost              = cv::Mat::zeros(dynamParams, 1, type);
+  *this->statePre               = cv::Mat::zeros  (dynamParams, 1, type);
+  *this->statePost              = cv::Mat::zeros  (dynamParams, 1, type);
 
-  *this->transitionMatrix       = cv::Mat::eye(dynamParams, dynamParams, type);
-  *this->processNoiseCov        = cv::Mat::eye(dynamParams, dynamParams, type);
+  *this->transitionMatrix       = cv::Mat::eye    (dynamParams, dynamParams, type);
+  *this->processNoiseCov        = cv::Mat::eye    (dynamParams, dynamParams, type);
 
-  *this->measurementMatrix      = cv::Mat::zeros(measureParams, dynamParams, type);
-  *this->measurementNoiseCov    = cv::Mat::eye(measureParams, measureParams, type);
-  *this->measurement            = cv::Mat::zeros(measureParams, 1, type);
+  *this->measurementMatrix      = cv::Mat::zeros  (measureParams, dynamParams, type);
+  *this->measurementNoiseCov    = cv::Mat::eye    (measureParams, measureParams, type);
+  *this->measurement            = cv::Mat::zeros  (measureParams, 1, type);
 
-  *this->errorCovPre            = cv::Mat::zeros(dynamParams, dynamParams, type);
-  *this->errorCovPost           = cv::Mat::zeros(dynamParams, dynamParams, type);
+  *this->errorCovPre            = cv::Mat::zeros  (dynamParams, dynamParams, type);
+  *this->errorCovPost           = cv::Mat::zeros  (dynamParams, dynamParams, type);
 
-  *this->gain                   = cv::Mat::zeros(dynamParams, measureParams, type);
+  *this->gain                   = cv::Mat::zeros  (dynamParams, measureParams, type);
   if( controlParams > 0 )
     {
-    *this->controlMatrix        = cv::Mat::zeros(dynamParams, controlParams, type);
-    *this->controllvector       = cv::Mat::zeros(controlParams,1, type);
+    *this->controlMatrix        = cv::Mat::zeros  (dynamParams, controlParams, type);
+    *this->controllvector       = cv::Mat::zeros  (controlParams,1, type);
     }
   else
       controlMatrix->release();
 
-  *this->predictedState         = cv::Mat::zeros(dynamParams, 1, type);
+  *this->predictedState         = cv::Mat::zeros  (dynamParams, 1, type);
   *this->gpuState               = cv::cuda::GpuMat(dynamParams, 1, type);
 
 
@@ -103,23 +103,23 @@ void C_kalmanFilter::init()
   {
   std::cout << "##################### KALMAN INIT PHASE ######################" << std::endl;
   cv::setIdentity(*this->transitionMatrix);
-  this->kalmanOnCuda->transitionMatrix.upload(*this->transitionMatrix);
+  this->kalmanOnCuda->transitionMatrix->upload(*this->transitionMatrix);
   std::cout << "Kalmanfilter->transitionMatrix [A]: " << std::endl << *this->transitionMatrix <<std::endl;
 
   cv::setIdentity(*this->measurementMatrix);
-  this->kalmanOnCuda->measurementMatrix.upload(*this->measurementMatrix);
+  this->kalmanOnCuda->measurementMatrix->upload(*this->measurementMatrix);
   std::cout << "Kalmanfilter->measurementMatrix [H]: " << std::endl << *this->measurementMatrix <<std::endl;
 
   cv::setIdentity(*this->processNoiseCov, cv::Scalar(1e-2));
-  this->kalmanOnCuda->processNoiseCov.upload(*this->processNoiseCov);
+  this->kalmanOnCuda->processNoiseCov->upload(*this->processNoiseCov);
   std::cout << "Kalmanfilter->processNoiseCov [Q]: " << std::endl << *this->processNoiseCov <<std::endl;
 
   cv::setIdentity(*this->measurementNoiseCov, cv::Scalar(1e-2));
-  this->kalmanOnCuda->measurementNoiseCov.upload(*this->measurementNoiseCov);
+  this->kalmanOnCuda->measurementNoiseCov->upload(*this->measurementNoiseCov);
   std::cout << "Kalmanfilter->measurementNoiseCov [R]: " << std::endl << *this->measurementNoiseCov <<std::endl;
 
   cv::setIdentity(*this->gain);
-  this->kalmanOnCuda->gain.upload(*this->gain);
+  this->kalmanOnCuda->gain->upload(*this->gain);
   std::cout << "Kalmanfilter->gain [K]: " << std::endl << *this->gain <<std::endl;
 
   for(int i = 0; i < 6; i++)
@@ -139,31 +139,40 @@ void C_kalmanFilter::reset()
 void C_kalmanFilter::predict(float dT)
   {
   double dtSeconds = dT/1000;
-  std::cout << "##################### KALMAN PREDICT PHASE ######################" << std::endl;
-  this->transitionMatrix->at<float>(3) = dtSeconds;
-  this->transitionMatrix->at<float>(10) = dtSeconds;
-  this->transitionMatrix->at<float>(17) = dtSeconds;
-  this->kalmanOnCuda->transitionMatrix.upload(*this->transitionMatrix);
-  std::cout << "Kalmanfilter->transitionMatrix [A] at " << dtSeconds << ": " << std::endl << *this->transitionMatrix <<std::endl;
+  if(dtSeconds > 1.0)
+    {
+    std::cout << "dT to high, skipping" << std::endl;
+    }
+  else
+    {
+    std::cout << "##################### KALMAN PREDICT PHASE ######################" << std::endl;
+    this->transitionMatrix->at<float>(3) = dtSeconds;
+    this->transitionMatrix->at<float>(10) = dtSeconds;
+    this->transitionMatrix->at<float>(17) = dtSeconds;
+    this->kalmanOnCuda->transitionMatrix->upload(*this->transitionMatrix);
+    std::cout << "Kalmanfilter->transitionMatrix [A] at " << dtSeconds << ": " << std::endl << *this->transitionMatrix <<std::endl;
 
-  this->controlMatrix->at<float>(12) = 0.5*(dtSeconds*dtSeconds);
-  this->controlMatrix->at<float>(30) = dtSeconds;
-  this->kalmanOnCuda->controlMatrix.upload(*this->controlMatrix);
+    this->controlMatrix->at<float>(12) = 0.5*(dtSeconds*dtSeconds);
+    this->controlMatrix->at<float>(30) = dtSeconds;
+    this->kalmanOnCuda->controlMatrix->upload(*this->controlMatrix);
 
-  std::cout << "Kalmanfilter->controlMatrix [B] at " << dtSeconds << ": " << std::endl << *this->controlMatrix <<std::endl;
+    std::cout << "Kalmanfilter->controlMatrix [B] at " << dtSeconds << ": " << std::endl << *this->controlMatrix <<std::endl;
 
-  *this->gpuState = this->kalmanOnCuda->predict(*gpuControllvector);
-  this->gpuState->download(*this->predictedState);
-  std::cout << "Kalmanfilter->Prediction at " << dtSeconds << ": " << std::endl << *this->predictedState <<std::endl;
+    *this->gpuState = this->kalmanOnCuda->predict(*gpuControllvector);
+    this->gpuState->download(*this->predictedState);
+    std::cout << "Kalmanfilter->Prediction at " << dtSeconds << ": " << std::endl << *this->predictedState <<std::endl;
+    }
 
 
   }
-void C_kalmanFilter::update(float x, float y, float z)
+void C_kalmanFilter::correct(float x, float y, float z)
   {
-  std::cout << "##################### KALMAN UPDATE PHASE ######################" << std::endl;
+  std::cout << "##################### KALMAN CORRECTION PHASE ######################" << std::endl;
   this->measurement->at<float>(0) = x;
   this->measurement->at<float>(1) = y;
   this->measurement->at<float>(2) = z;
+  std::cout << "Kalmanfilter->measurement "<< std::endl << *this->measurement <<std::endl;
+
   this->gpuMeasurement->upload          (*this->measurement);
   this->kalmanOnCuda->correct           (*this->gpuMeasurement);
   }
@@ -176,11 +185,9 @@ void C_kalmanFilter::initFirstPosition(float x, float y, float z, float vx, floa
   this->statePost->at<float>(3)         = vx;
   this->statePost->at<float>(4)         = vy;
   this->statePost->at<float>(5)         = vz;
-//  this->statePost->at<float>(6)         = 0;
-//  this->statePost->at<float>(7)         = 0;
-//  this->statePost->at<float>(8)         = gravity;
-
+  this->kalmanOnCuda->statePost->upload(*this->statePost);
   cv::setIdentity(*this->errorCovPre, cv::Scalar(1e-1));
-  this->kalmanOnCuda->errorCovPre.upload(*this->errorCovPre);
+  this->kalmanOnCuda->errorCovPre->upload(*this->errorCovPre);
+
   }
 
