@@ -97,7 +97,6 @@ void C_kalmanOnCuda::init(int DP, int MP, int CP, int type)
   temp = cv::Mat::zeros(MP, DP, type);
   this->measurementMatrix->upload(temp);
   this->measurementMatrix_temp->upload(temp);
-  this->temp2->upload(temp);
 
   temp = cv::Mat::eye(MP, MP, type);
   this->measurementNoiseCov->upload(temp);
@@ -120,14 +119,17 @@ void C_kalmanOnCuda::init(int DP, int MP, int CP, int type)
       this->controlMatrix->release();
 
   this->temp1->create(DP, DP, type);
+  this->temp2->create(MP, DP, type);
   this->temp3->create(MP, MP, type);
   this->temp4->create(MP, DP, type);
   this->temp5->create(MP, 1, type);
   }
 
-const cv::cuda::GpuMat& C_kalmanOnCuda::predict(const cv::cuda::GpuMat& control)
+const cv::cuda::GpuMat& C_kalmanOnCuda::predict(bool test, const cv::cuda::GpuMat& control)
   {
-  cv::Mat temp;
+  if(test)
+    {
+    cv::Mat temp;
   // update the state: x'(k) = A*x(k)
   //statePre = transitionMatrix*statePost;
   cv::cuda::gemm(*transitionMatrix, *statePost, 1, cv::cuda::GpuMat() , 0 , *statePre);
@@ -163,19 +165,45 @@ const cv::cuda::GpuMat& C_kalmanOnCuda::predict(const cv::cuda::GpuMat& control)
 
 
 
+
+
   // handle the case when there will be measurement before the next predict->
   statePre->copyTo(*statePost);
   errorCovPre->copyTo(*errorCovPost);
 
   return *statePre;
+    }
+  else
+    {
+    cv::cuda::gemm(*measurementMatrix, *errorCovPre, 1,  cv::cuda::GpuMat() , 0, *this->temp2);
+    return *temp2;
+    }
   }
 
-const cv::cuda::GpuMat& C_kalmanOnCuda::correct( const cv::cuda::GpuMat& measurement )
+cv::cuda::GpuMat& C_kalmanOnCuda::correct( const cv::cuda::GpuMat& measurement )
   {
+  cv::cuda::GpuMat gpuTemp(3,6,CV_32FC1);
+  cv::Mat zeroes = cv::Mat::zeros(3,6,CV_32FC1);
+  gpuTemp.upload(zeroes);
+  cv::Mat textout;
+
+  measurementMatrix->download(textout);
+  std::cout << "measurementMatrix" << std::endl << textout << std::endl;
+  errorCovPre->download(textout);
+  std::cout << "errorCovPre" << std::endl << textout << std::endl;
+  gpuTemp.download(textout);
+  std::cout << "gpuTemp" << std::endl << textout << std::endl;
+
+  cv::cuda::GpuMat measureTemp(6,6,CV_32FC1);
+  cv::cuda::GpuMat errortemp(6,6,CV_32FC1);
+  cv::cuda::GpuMat tem2Temp(6,6,CV_32FC1);
+
+  cv::cuda::gemm(measureTemp, errortemp, 1, gpuTemp, 0, tem2Temp);
+
   // temp2 = H*P'(k)
      // cv::cuda::multiply(measurementMatrix,errorCovPre, temp2);
-      cv::cuda::gemm(*measurementMatrix, *errorCovPre, 1, cv::Mat(), 0, *temp2);
-      //cv::cuda::gemm(measurementMatrix, errorCovPre, 1, cv::Mat() , 0 , temp2);
+      //cv::cuda::gemm(*measurementMatrix, *errorCovPre, 1, gpuTemp, 0, *temp2);
+      //cv::cuda::gemm(*measurementMatrix, *errorCovPre, 1, cv::cuda::GpuMat() , 0 , *temp2);
       // temp3 = temp2*Ht + R
       //gemm(temp2, measurementMatrix, 1, measurementNoiseCov, 1, temp3, GEMM_2_T);
       cv::cuda::gemm(*temp2, *measurementMatrix, 1, *measurementNoiseCov, 1, *temp3, cv::GEMM_2_T);

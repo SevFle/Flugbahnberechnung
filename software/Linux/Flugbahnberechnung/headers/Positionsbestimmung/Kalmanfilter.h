@@ -31,7 +31,6 @@ namespace kalmanFilter
 
     cv::Mat* predictedState;       //!< predicted state a priori
     cv::Mat* measurement;
-private:
     cv::cuda::GpuMat* gpuState;
     cv::cuda::GpuMat* gpuMeasurement;
     cv::cuda::GpuMat* gpuControllvector;

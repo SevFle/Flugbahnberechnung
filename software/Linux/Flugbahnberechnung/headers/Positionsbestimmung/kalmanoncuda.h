@@ -14,9 +14,6 @@ namespace kalmanOnCuda
     C_kalmanOnCuda(int dynamParams, int measureParams, int controlParams, int type);
     ~C_kalmanOnCuda();
 
-    void init( int dynamParams, int measureParams, int controlParams = 0, int type = CV_32FC1 );
-    const cv::cuda::GpuMat& predict( const cv::cuda::GpuMat& control = cv::cuda::GpuMat() );
-    const cv::cuda::GpuMat& correct( const cv::cuda::GpuMat& measurement );
 
     cv::cuda::GpuMat* statePre;           //!< predicted state (x'(k)): x(k)=A*x(k-1)+B*u(k)
     cv::cuda::GpuMat* statePost;          //!< corrected state (x(k)): x(k)=x'(k)+K(k)*(z(k)-H*x'(k))
@@ -39,6 +36,11 @@ namespace kalmanOnCuda
     cv::cuda::GpuMat* controlMatrix_temp;
     cv::cuda::GpuMat* measurementMatrix_temp;
     cv::cuda::GpuMat* gain_temp;
+
+    void init( int dynamParams, int measureParams, int controlParams = 0, int type = CV_32FC1 );
+    const cv::cuda::GpuMat& predict(bool test, const cv::cuda::GpuMat& control = cv::cuda::GpuMat());
+    cv::cuda::GpuMat& correct( const cv::cuda::GpuMat& measurement );
+
     };
   }
 

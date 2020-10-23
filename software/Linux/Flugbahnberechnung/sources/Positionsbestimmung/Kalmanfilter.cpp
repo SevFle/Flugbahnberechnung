@@ -158,7 +158,7 @@ void C_kalmanFilter::predict(float dT)
 
     std::cout << "Kalmanfilter->controlMatrix [B] at " << dtSeconds << ": " << std::endl << *this->controlMatrix <<std::endl;
 
-    *this->gpuState = this->kalmanOnCuda->predict(*gpuControllvector);
+    *this->gpuState = this->kalmanOnCuda->predict(true, *gpuControllvector);
     this->gpuState->download(*this->predictedState);
     std::cout << "Kalmanfilter->Prediction at " << dtSeconds << ": " << std::endl << *this->predictedState <<std::endl;
     }
@@ -174,7 +174,8 @@ void C_kalmanFilter::correct(float x, float y, float z)
   std::cout << "Kalmanfilter->measurement "<< std::endl << *this->measurement <<std::endl;
 
   this->gpuMeasurement->upload          (*this->measurement);
-  this->kalmanOnCuda->correct           (*this->gpuMeasurement);
+  //this->kalmanOnCuda->correct           (*this->gpuMeasurement);
+  *this->gpuState = this->kalmanOnCuda->predict(false);
   }
 void C_kalmanFilter::initFirstPosition(float x, float y, float z, float vx, float vy, float vz)
   {
