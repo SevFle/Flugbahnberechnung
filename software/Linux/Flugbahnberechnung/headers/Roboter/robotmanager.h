@@ -50,12 +50,13 @@ namespace robotManager
 
     void start_smTracking                   ();
 
-    C_AbsolutePose calibrateRobotToWorld    (C_AbsolutePose& worldToCam);
+    C_AbsolutePose calibrateRobotBaseToWorld    (C_AbsolutePose& worldToCam);
 
 
   private:
     static void open_Panda_threading        (void *This);
     static void threadHelper                (void* This);
+    void boundingBoxToWorld                 ();
 
 
     /************************************************* GETTER SETTER *******************************************************************/

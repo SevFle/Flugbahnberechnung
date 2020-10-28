@@ -11,7 +11,7 @@ C_frm_Robot_Calibration::C_frm_Robot_Calibration(C_GlobalObjects* GlobalObjects,
   this->Main = Main;
   this->Taktgeber = new QTimer;
   this->robotTcpPose = new C_RelativePose;
-  this->robotToWorldPose = new C_AbsolutePose;
+  this->robotBaseToWorldPose = new C_AbsolutePose;
   this->camPose = new cv::Mat(cv::Mat_<double>(4,4));
   this->pData = nullptr;
 
@@ -39,7 +39,7 @@ C_frm_Robot_Calibration::~C_frm_Robot_Calibration()
     this->pData = nullptr;
     }
   delete (camPose);
-  delete (robotToWorldPose);
+  delete (robotBaseToWorldPose);
   delete (robotTcpPose);
   delete (Taktgeber);
   this->Main = nullptr;
@@ -119,7 +119,7 @@ void C_frm_Robot_Calibration::Taktgeber_Tick()
     if(this->Main->cameraManager->scanChAruco(temp, *Main->cameraManager->vecCameras->at(this->ui->num_camID->value()), *this->camPose))
       {
       this->writeCamPose();
-      this->writeRobotToWorld();
+      this->writeRobotBaseToWorld();
       }
     else
       {
@@ -196,11 +196,11 @@ void C_frm_Robot_Calibration::writeRobotTcpPose()
     }
   }
 
-void C_frm_Robot_Calibration::writeRobotToWorld()
+void C_frm_Robot_Calibration::writeRobotBaseToWorld()
   {
   if(!this->moving)
     {
-    C_AbsolutePose RobotToWorld = this->getPoseRobotToWorld();
+    C_AbsolutePose RobotToWorld = this->getPoseRobotBaseToWorld();
     this->ui->txb_nx_robot_world->setText(QString::number(RobotToWorld.HomogenePosenMatrix[0][0]));
     this->ui->txb_ny_robot_world->setText(QString::number(RobotToWorld.HomogenePosenMatrix[1][0]));
     this->ui->txb_nz_robot_world->setText(QString::number(RobotToWorld.HomogenePosenMatrix[2][0]));
@@ -218,7 +218,8 @@ void C_frm_Robot_Calibration::writeRobotToWorld()
     this->ui->txb_pz_robot_world->setText(QString::number(RobotToWorld.HomogenePosenMatrix[2][3]));
     }
   }
-C_AbsolutePose C_frm_Robot_Calibration::getPoseRobotToWorld()
+C_AbsolutePose C_frm_Robot_Calibration::getPoseRobotBaseToWorld
+()
   {
   C_RelativePose camToBoard;
   for(int i = 0;i < 4; i++)
@@ -227,10 +228,10 @@ C_AbsolutePose C_frm_Robot_Calibration::getPoseRobotToWorld()
       camToBoard.HomogenePosenMatrix[i][j] = this->camPose->at<double>(i,j);
       }
   *this->GlobalObjects->camToBoard = camToBoard;
-  *this->robotToWorldPose = this->Main->robotManager->calibrateRobotToWorld(*this->Main->cameraManager->vecCameras->at(this->ui->num_camID->value())->WorldToCamera);
+  *this->robotBaseToWorldPose = this->Main->robotManager->calibrateRobotBaseToWorld(*this->Main->cameraManager->vecCameras->at(this->ui->num_camID->value())->WorldToCamera);
 
 
-  return *this->robotToWorldPose;
+  return *this->robotBaseToWorldPose;
  }
 
 void frm_Robot_Calibration::C_frm_Robot_Calibration::on_num_camID_valueChanged(int arg1)
@@ -258,25 +259,25 @@ void frm_Robot_Calibration::C_frm_Robot_Calibration::on_bt_save_pose_clicked()
       camToBoard.HomogenePosenMatrix[i][j] = this->camPose->at<double>(i,j);
       }
   *this->GlobalObjects->camToBoard = camToBoard;
-  this->Main->robotManager->calibrateRobotToWorld(*this->Main->cameraManager->vecCameras->at(this->ui->num_camID->value())->CameraToWorld);
+  this->Main->robotManager->calibrateRobotBaseToWorld(*this->Main->cameraManager->vecCameras->at(this->ui->num_camID->value())->CameraToWorld);
 
 
-  *this->robotToWorldPose = this->Main->robotManager->roboter->Abs_RobotToWorld_Pose;
-  this->ui->txb_nx_robot_world->setText(QString::number(this->robotToWorldPose->HomogenePosenMatrix[0][0]));
-  this->ui->txb_ny_robot_world->setText(QString::number(this->robotToWorldPose->HomogenePosenMatrix[1][0]));
-  this->ui->txb_nz_robot_world->setText(QString::number(this->robotToWorldPose->HomogenePosenMatrix[2][0]));
+  *this->robotBaseToWorldPose = this->Main->robotManager->roboter->Abs_RobotToWorld_Pose;
+  this->ui->txb_nx_robot_world->setText(QString::number(this->robotBaseToWorldPose->HomogenePosenMatrix[0][0]));
+  this->ui->txb_ny_robot_world->setText(QString::number(this->robotBaseToWorldPose->HomogenePosenMatrix[1][0]));
+  this->ui->txb_nz_robot_world->setText(QString::number(this->robotBaseToWorldPose->HomogenePosenMatrix[2][0]));
 
-  this->ui->txb_ox_robot_world->setText(QString::number(this->robotToWorldPose->HomogenePosenMatrix[0][1]));
-  this->ui->txb_oy_robot_world->setText(QString::number(this->robotToWorldPose->HomogenePosenMatrix[1][1]));
-  this->ui->txb_oz_robot_world->setText(QString::number(this->robotToWorldPose->HomogenePosenMatrix[2][1]));
+  this->ui->txb_ox_robot_world->setText(QString::number(this->robotBaseToWorldPose->HomogenePosenMatrix[0][1]));
+  this->ui->txb_oy_robot_world->setText(QString::number(this->robotBaseToWorldPose->HomogenePosenMatrix[1][1]));
+  this->ui->txb_oz_robot_world->setText(QString::number(this->robotBaseToWorldPose->HomogenePosenMatrix[2][1]));
 
-  this->ui->txb_ax_robot_world->setText(QString::number(this->robotToWorldPose->HomogenePosenMatrix[0][2]));
-  this->ui->txb_ay_robot_world->setText(QString::number(this->robotToWorldPose->HomogenePosenMatrix[1][2]));
-  this->ui->txb_az_robot_world->setText(QString::number(this->robotToWorldPose->HomogenePosenMatrix[2][2]));
+  this->ui->txb_ax_robot_world->setText(QString::number(this->robotBaseToWorldPose->HomogenePosenMatrix[0][2]));
+  this->ui->txb_ay_robot_world->setText(QString::number(this->robotBaseToWorldPose->HomogenePosenMatrix[1][2]));
+  this->ui->txb_az_robot_world->setText(QString::number(this->robotBaseToWorldPose->HomogenePosenMatrix[2][2]));
 
-  this->ui->txb_px_robot_world->setText(QString::number(this->robotToWorldPose->HomogenePosenMatrix[0][3]));
-  this->ui->txb_py_robot_world->setText(QString::number(this->robotToWorldPose->HomogenePosenMatrix[1][3]));
-  this->ui->txb_pz_robot_world->setText(QString::number(this->robotToWorldPose->HomogenePosenMatrix[2][3]));
+  this->ui->txb_px_robot_world->setText(QString::number(this->robotBaseToWorldPose->HomogenePosenMatrix[0][3]));
+  this->ui->txb_py_robot_world->setText(QString::number(this->robotBaseToWorldPose->HomogenePosenMatrix[1][3]));
+  this->ui->txb_pz_robot_world->setText(QString::number(this->robotBaseToWorldPose->HomogenePosenMatrix[2][3]));
   }
 
 void frm_Robot_Calibration::C_frm_Robot_Calibration::on_bt_set_home_clicked()

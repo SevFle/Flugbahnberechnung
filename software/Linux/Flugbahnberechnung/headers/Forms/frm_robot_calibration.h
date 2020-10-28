@@ -24,7 +24,7 @@ namespace frm_Robot_Calibration
     QTimer*                           Taktgeber;
     QTimer*                           RobotUpdate;
     cv::Mat*                          camPose;
-    C_AbsolutePose*                   robotToWorldPose;
+    C_AbsolutePose*                   robotBaseToWorldPose;
     C_RelativePose*                   robotTcpPose;
     CameraManager::S_pipelinePayload* pData;
 
@@ -44,8 +44,8 @@ namespace frm_Robot_Calibration
   private:
     void writeCamPose();
     void writeRobotTcpPose();
-    void writeRobotToWorld();
-    C_AbsolutePose getPoseRobotToWorld();
+    void writeRobotBaseToWorld();
+    C_AbsolutePose getPoseRobotBaseToWorld();
 
   private slots:
     void Taktgeber_Tick               ();

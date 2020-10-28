@@ -77,7 +77,7 @@ void C_robotManager::getAbsoluteHomogenousBaseToWorld(posen::C_AbsolutePose* Bas
   *BasePose = this->roboter->Abs_RobotToWorld_Pose;
   }
 
-C_AbsolutePose C_robotManager::calibrateRobotToWorld(C_AbsolutePose& worldToCam)
+C_AbsolutePose C_robotManager::calibrateRobotBaseToWorld(C_AbsolutePose& worldToCam)
   {
   C_RelativePose robotBaseToTCP;
   C_RelativePose TCPToRobotBase;
@@ -151,6 +151,7 @@ void C_robotManager::sm_BallTracking()
   S_Posenvektor  WorldToObject;
 
   S_Posenvektor  waitForHitWorld;
+  C_AbsolutePose waitForHitRobot;
 
   robotManager::robotConstraints ConstraintsInWorld;
 
@@ -187,8 +188,8 @@ void C_robotManager::sm_BallTracking()
         std::cout << "Robot Constraints in World Z: " << ConstraintsInWorld.Z << std::endl;
         std::cout << "Robot Constraints in World nZ: " << ConstraintsInWorld.nZ << std::endl;
 
-
-        break;
+        this->smBallTrackingStep = 2;
+      break;
       //Versuche aktuelle Objektdaten aus der Que zu holen. Falls nicht erfolgreich, bleibe im aktuellen Schritt
       case 2:
         if(this->globalObjects->objectPosenQue->try_pop(this->objectPayload))
@@ -216,7 +217,7 @@ void C_robotManager::sm_BallTracking()
         distanceObjectToRobot_Z =  WorldToRobot.HomogenePosenMatrix[2][3] - WorldToObject.Z;
 
         v0 = std::sqrt((this->objectPayload->predVelocity[0]*this->objectPayload->predVelocity[0]) + (this->objectPayload->predVelocity[1]*this->objectPayload->predVelocity[1])
-                                                                                                  + (this->objectPayload->predVelocity[2]*this->objectPayload->predVelocity[2]));
+                                                                                                   + (this->objectPayload->predVelocity[2]*this->objectPayload->predVelocity[2]));
         height = WorldToObject.Z;
 
         theta = std::tan(this->objectPayload->predVelocity[2]/this->objectPayload->predVelocity[0]);
@@ -224,7 +225,6 @@ void C_robotManager::sm_BallTracking()
         //Xt = Xt-1 + Vx*t
         //Yt = Yt-1 + Vx*t
         //Zt = Zt-1 + Vz*t - 0.5*g*t*t
-
 
         //Height z at distance x = initialheight + x*tan(launchangle) - (g*x²)/2*(v0*cos
         timeOfFlight = (2*v0*std::sin(theta))/9.807;
@@ -251,7 +251,8 @@ void C_robotManager::sm_BallTracking()
             this->objectEntry->X = x;
             inRange = true;
             }
-          //Wenn die Objekttrajektorie die äußeren Begrenzung des Roboterkäfigs verlässt, setzte diesen Punkt als exit. Kalkuliere den Mittelpunkt der Geraden zwischen Entry(X,Y,Z) und Exit(X,Y,Z)
+          //Wenn die Objekttrajektorie die äußeren Begrenzung des Roboterkäfigs verlässt, setzte diesen Punkt als exit.
+          //Kalkuliere den Mittelpunkt der Geraden zwischen Entry(X,Y,Z) und Exit(X,Y,Z) und setze diesen als Wartepunkt für den Roboter
           else if  (x < ConstraintsInWorld.nX && x > outerConstraints->Y &&
                     y < ConstraintsInWorld.nY && y > outerConstraints->Y &&
                     z < ConstraintsInWorld.nZ && z > outerConstraints->Z && inRange)
@@ -264,6 +265,7 @@ void C_robotManager::sm_BallTracking()
             waitForHitWorld.X = (this->objectEntry->X+this->objectExit->X)/2;
             waitForHitWorld.Y = (this->objectEntry->Y+this->objectExit->Y)/2;
             waitForHitWorld.Z = (this->objectEntry->Z+this->objectExit->Z)/2;
+
             std::cout << "################## Robot preparing for hit ##############################" << ConstraintsInWorld.X << std::endl;
             std::cout << "Waiting at X: " << waitForHitWorld.X << std::endl;
             std::cout << "Waiting at Y: " << waitForHitWorld.Y << std::endl;
@@ -276,10 +278,6 @@ void C_robotManager::sm_BallTracking()
             this->smBallTrackingStep = 3;
             }
           }
-
-
-
-
         //vx = v0x
         //x = x0 + v0x*t
 
@@ -288,14 +286,12 @@ void C_robotManager::sm_BallTracking()
 
         //vz = v0z - g*t
         //z = z0+v0z*t-0.5*g*t*t
-
-
-
         break;
-        //Überprüfe auf welcher Seite des Roboter das Objekt landen wird.
       case 4:
         //Transformiere die WartePosition von Welt- zu Robotkoordinatensystem
 
+
+        //Überprüfe auf welcher Seite des Roboter das Objekt landen wird.
         //Wenn Objekt vor dem Robot ist (-0.40 < Y < 0.27)
         if(waitForHitWorld.Y > -0.40 && waitForHitWorld.Y < 0.27)
           {
