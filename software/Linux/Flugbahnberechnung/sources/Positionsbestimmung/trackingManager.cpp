@@ -363,7 +363,7 @@ void C_trackingManager::correctKalman                   (float x, float y, float
 void C_trackingManager::processKalman                   (float x, float y, float z)
   {
   //Predict state
-  this->kalmanfilter->predict(this->dTime);
+  this->kalmanfilter->processKalman(this->dTime, x,y,z);
   this->positionPayload = new GlobalObjects::S_PositionPayload;
 
   this->positionPayload->predPosition->X = this->kalmanfilter->predictedState->at<float>(0);
@@ -379,7 +379,7 @@ void C_trackingManager::processKalman                   (float x, float y, float
     this->positionPayload = nullptr;
     }
   //Correct state
-  this->kalmanfilter->correct(x,y,z);
+  //this->kalmanfilter->correct(x,y,z);
 
 
   }

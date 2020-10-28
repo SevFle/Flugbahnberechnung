@@ -163,7 +163,7 @@
       <string/>
      </property>
     </widget>
-    <widget class="QSpinBox" name="num_cam_7">
+    <widget class="QSpinBox" name="num_cam_8">
      <property name="geometry">
       <rect>
        <x>1820</x>
@@ -293,7 +293,7 @@
       <string/>
      </property>
     </widget>
-    <widget class="QSpinBox" name="num_cam_8">
+    <widget class="QSpinBox" name="num_cam_9">
      <property name="geometry">
       <rect>
        <x>1820</x>
@@ -306,7 +306,7 @@
       <number>9</number>
      </property>
     </widget>
-    <widget class="QSpinBox" name="num_cam_9">
+    <widget class="QSpinBox" name="num_cam_7">
      <property name="geometry">
       <rect>
        <x>1410</x>

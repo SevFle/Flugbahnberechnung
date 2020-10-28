@@ -158,7 +158,7 @@ void C_kalmanFilter::predict(float dT)
 
     std::cout << "Kalmanfilter->controlMatrix [B] at " << dtSeconds << ": " << std::endl << *this->controlMatrix <<std::endl;
 
-    *this->gpuState = this->kalmanOnCuda->predict(true, *gpuControllvector);
+    *this->gpuState = this->kalmanOnCuda->predict(*gpuControllvector);
     this->gpuState->download(*this->predictedState);
     std::cout << "Kalmanfilter->Prediction at " << dtSeconds << ": " << std::endl << *this->predictedState <<std::endl;
     }
@@ -191,3 +191,37 @@ void C_kalmanFilter::initFirstPosition(float x, float y, float z, float vx, floa
 
   }
 
+void C_kalmanFilter::processKalman(float dt, float x, float y, float z)
+  {
+  this->measurement->at<float>(0) = x;
+  this->measurement->at<float>(1) = y;
+  this->measurement->at<float>(2) = z;
+  std::cout << "Kalmanfilter->measurement "<< std::endl << *this->measurement <<std::endl;
+
+  this->gpuMeasurement->upload          (*this->measurement);
+
+  double dtSeconds = dt/1000;
+  if(dtSeconds > 1.0)
+    {
+    std::cout << "dT to high, skipping" << std::endl;
+    }
+  else
+    {
+    this->transitionMatrix->at<float>(3) = dtSeconds;
+    this->transitionMatrix->at<float>(10) = dtSeconds;
+    this->transitionMatrix->at<float>(17) = dtSeconds;
+    this->kalmanOnCuda->transitionMatrix->upload(*this->transitionMatrix);
+    std::cout << "Kalmanfilter->transitionMatrix [A] at " << dtSeconds << ": " << std::endl << *this->transitionMatrix <<std::endl;
+
+    this->controlMatrix->at<float>(12) = 0.5*(dtSeconds*dtSeconds);
+    this->controlMatrix->at<float>(30) = dtSeconds;
+    this->kalmanOnCuda->controlMatrix->upload(*this->controlMatrix);
+
+    std::cout << "Kalmanfilter->controlMatrix [B] at " << dtSeconds << ": " << std::endl << *this->controlMatrix <<std::endl;
+    this->kalmanOnCuda->processKalman(*gpuControllvector, *gpuMeasurement);
+
+    this->kalmanOnCuda->statePost->download(*this->predictedState);
+    std::cout << "Kalmanfilter->Prediction at " << dtSeconds << ": " << std::endl << *this->predictedState <<std::endl;
+    }
+
+  }

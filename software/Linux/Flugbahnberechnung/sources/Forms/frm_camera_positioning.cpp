@@ -256,7 +256,6 @@ void C_frm_Camera_Positioning::on_bt_apply_clicked()
         camera_list.push_back (this->Ui->num_cam_9->value());
 
 
-
         this->Ui->num_cam_0->setValue(0);
         this->Ui->num_cam_1->setValue(1);
         this->Ui->num_cam_2->setValue(2);
@@ -265,8 +264,8 @@ void C_frm_Camera_Positioning::on_bt_apply_clicked()
         this->Ui->num_cam_5->setValue(5);
         this->Ui->num_cam_6->setValue(6);
         this->Ui->num_cam_7->setValue(7);
-        this->Ui->num_cam_8->setValue(6);
-        this->Ui->num_cam_9->setValue(7);
+        this->Ui->num_cam_8->setValue(8);
+        this->Ui->num_cam_9->setValue(9);
 
       break;
 

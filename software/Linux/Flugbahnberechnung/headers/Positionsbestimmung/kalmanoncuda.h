@@ -5,7 +5,7 @@
 #include <opencv2/video/tracking.hpp>
 #include <opencv4/opencv2/core.hpp>
 
-#define print(string, matrix) std::cout << string << ": " << std::endl << matrix << std::endl;
+#define printmatrix(string, matrix) std::cout << string << ": " << std::endl << matrix << std::endl;
 
 namespace kalmanOnCuda
   {

@@ -42,6 +42,7 @@ namespace kalmanFilter
     void predict(float dT);
     void correct(float x, float y, float z);
     void initFirstPosition(float x, float y, float z, float vx, float vy, float vz);
+    void processKalman(float dt, float x, float y, float z);
 
     private:
 

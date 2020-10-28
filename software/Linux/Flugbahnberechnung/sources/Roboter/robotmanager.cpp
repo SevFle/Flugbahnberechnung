@@ -299,7 +299,7 @@ void C_robotManager::sm_BallTracking()
         //Transformiere die WartePosition von Welt- zu Robotkoordinatensystem
 
         waitForHitWorld.InversHomogenousPose(waitForHitWorld, waitForHitWorld_inv.HomogenePosenMatrix);
-        temp = waitForHitWorld_inv.operator*()
+        //temp = waitForHitWorld_inv.operator*()
 
 
         //Überprüfe auf welcher Seite des Roboter das Objekt landen wird.
