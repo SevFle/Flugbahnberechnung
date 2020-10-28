@@ -174,8 +174,7 @@ void C_kalmanFilter::correct(float x, float y, float z)
   std::cout << "Kalmanfilter->measurement "<< std::endl << *this->measurement <<std::endl;
 
   this->gpuMeasurement->upload          (*this->measurement);
-  //this->kalmanOnCuda->correct           (*this->gpuMeasurement);
-  *this->gpuState = this->kalmanOnCuda->predict(false);
+  this->kalmanOnCuda->correct           (*this->gpuMeasurement);
   }
 void C_kalmanFilter::initFirstPosition(float x, float y, float z, float vx, float vy, float vz)
   {

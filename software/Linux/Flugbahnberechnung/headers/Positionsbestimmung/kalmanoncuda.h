@@ -5,6 +5,8 @@
 #include <opencv2/video/tracking.hpp>
 #include <opencv4/opencv2/core.hpp>
 
+#define print(string, matrix) std::cout << string << ": " << std::endl << matrix << std::endl;
+
 namespace kalmanOnCuda
   {
   class C_kalmanOnCuda
@@ -38,8 +40,9 @@ namespace kalmanOnCuda
     cv::cuda::GpuMat* gain_temp;
 
     void init( int dynamParams, int measureParams, int controlParams = 0, int type = CV_32FC1 );
-    const cv::cuda::GpuMat& predict(bool test, const cv::cuda::GpuMat& control = cv::cuda::GpuMat());
-    cv::cuda::GpuMat& correct( const cv::cuda::GpuMat& measurement );
+    const cv::cuda::GpuMat& predict(const cv::cuda::GpuMat& control = cv::cuda::GpuMat());
+    cv::cuda::GpuMat& correct( const cv::cuda::GpuMat& measurement  = cv::cuda::GpuMat());
+    void processKalman(const cv::cuda::GpuMat& control = cv::cuda::GpuMat(), const cv::cuda::GpuMat& measurement = cv::cuda::GpuMat());
 
     };
   }

@@ -78,7 +78,7 @@ C_kalmanOnCuda::~C_kalmanOnCuda()
   }
 
 
-void C_kalmanOnCuda::init(int DP, int MP, int CP, int type)
+void              C_kalmanOnCuda::init                              (int DP, int MP, int CP, int type)
   {
   CV_Assert( DP > 0 && MP > 0 );
   CV_Assert( type == CV_32F || type == CV_64F );
@@ -124,131 +124,200 @@ void C_kalmanOnCuda::init(int DP, int MP, int CP, int type)
   this->temp4->create(MP, DP, type);
   this->temp5->create(MP, 1, type);
   }
-
-const cv::cuda::GpuMat& C_kalmanOnCuda::predict(bool test, const cv::cuda::GpuMat& control)
+const             cv::cuda::GpuMat& C_kalmanOnCuda::predict         (const cv::cuda::GpuMat& control)
   {
-  if(test)
-    {
-    cv::Mat temp;
-  // update the state: x'(k) = A*x(k)
+  cv::Mat temp;
+  std::cout <<  "statePre = transitionMatrix*statePost [x'(k) = A*x(k)]" << std::endl;
+  //update the state: x'(k) = A*x(k)
   //statePre = transitionMatrix*statePost;
+  transitionMatrix->download(temp);
+  print("transitionMatrix", temp);
+  statePost->download(temp);
+  print("statePost", temp);
+
+
   cv::cuda::gemm(*transitionMatrix, *statePost, 1, cv::cuda::GpuMat() , 0 , *statePre);
 
-      statePre->download(temp);
-      std::cout << "statePre " << temp << std::endl;
+  statePre->download(temp);
+  print("statePre", temp);
+
 
   if( !control.empty() )
     {
     // x'(k) = x'(k) + B*u(k)
     //statePre += controlMatrix*control;
+    std::cout <<  "controlMatrix_temp = controlMatrix*control [B*u(k)]" << std::endl;
+
+    controlMatrix->download(temp);
+    print("controlMatrix", temp);
+    control.download(temp);
+    print("control", temp);
+
     cv::cuda::gemm(*controlMatrix, control, 1, cv::cuda::GpuMat() , 0 , *controlMatrix_temp);
     //cv::cuda::multiply(controlMatrix,control, controlMatrix_temp);
-        controlMatrix_temp->download(temp);
-        std::cout << "controlMatrix_temp " << temp << std::endl;
+    controlMatrix_temp->download(temp);
+    print("controlMatrix_temp", temp);
+
+    std::cout <<  "statePre = statePre + controlMatrix_temp [x'(k) = x'(k) + controlMatrix_temp]" << std::endl;
+    statePre->download(temp);
+    print("statePre", temp);
 
     cv::cuda::add(*statePre, *controlMatrix_temp, *statePre);
-        statePre->download(temp);
-        std::cout << "statePre " << temp << std::endl;
+    statePre->download(temp);
+    print("statePre + controllMatrix_temp", temp);
     }
+
+  std::cout <<  "update error covariance matrices: temp1 = A*P(k) [temp1 = transitionMatrix*errorCovPost]" << std::endl;
   // update error covariance matrices: temp1 = A*P(k)
   //temp1 = transitionMatrix*errorCovPost;
+  transitionMatrix->download(temp);
+  print("transitionMatrix", temp);
+  errorCovPost->download(temp);
+  print("errorCovPost", temp);
   cv::cuda::multiply(*transitionMatrix,*errorCovPost, *temp1);
-      temp1->download(temp);
-      std::cout << "temp1 " << temp << std::endl;
+  temp1->download(temp);
+  print("temp1", temp);
 
 
+  std::cout <<  "P'(k) = temp1*At + Q" << std::endl;
   // P'(k) = temp1*At + Q
+  temp1->download(temp);
+  print("temp1", temp);
+  transitionMatrix->download(temp);
+  print("transitionMatrix", temp);
+  processNoiseCov->download(temp);
+  print("processNoiseCov", temp);
+
   //gemm(temp1, transitionMatrix, 1, processNoiseCov, 1, errorCovPre, GEMM_2_T);
   cv::cuda::gemm(*temp1, *transitionMatrix, 1, *processNoiseCov, 1, *errorCovPre, cv::GEMM_2_T);
-      errorCovPre->download(temp);
-      std::cout << "errorCovPre " << temp << std::endl;
-
-
-
-
-
+  errorCovPre->download(temp);
+  print("errorCovPre", temp);
   // handle the case when there will be measurement before the next predict->
   statePre->copyTo(*statePost);
   errorCovPre->copyTo(*errorCovPost);
-
   return *statePre;
-    }
-  else
-    {
-    cv::cuda::gemm(*measurementMatrix, *errorCovPre, 1,  cv::cuda::GpuMat() , 0, *this->temp2);
-    return *temp2;
-    }
   }
-
-cv::cuda::GpuMat& C_kalmanOnCuda::correct( const cv::cuda::GpuMat& measurement )
+cv::cuda::GpuMat& C_kalmanOnCuda::correct                           ( const cv::cuda::GpuMat& measurement )
   {
-  cv::cuda::GpuMat gpuTemp(3,6,CV_32FC1);
-  cv::Mat zeroes = cv::Mat::zeros(3,6,CV_32FC1);
-  gpuTemp.upload(zeroes);
-  cv::Mat textout;
+  cv::Mat temp;
 
-  measurementMatrix->download(textout);
-  std::cout << "measurementMatrix" << std::endl << textout << std::endl;
-  errorCovPre->download(textout);
-  std::cout << "errorCovPre" << std::endl << textout << std::endl;
-  gpuTemp.download(textout);
-  std::cout << "gpuTemp" << std::endl << textout << std::endl;
-
-  cv::cuda::GpuMat measureTemp(6,6,CV_32FC1);
-  cv::cuda::GpuMat errortemp(6,6,CV_32FC1);
-  cv::cuda::GpuMat tem2Temp(6,6,CV_32FC1);
-
-  cv::cuda::gemm(measureTemp, errortemp, 1, gpuTemp, 0, tem2Temp);
-
+  std::cout <<  "temp2 = H*P'(k)" << std::endl;
   // temp2 = H*P'(k)
-     // cv::cuda::multiply(measurementMatrix,errorCovPre, temp2);
-      //cv::cuda::gemm(*measurementMatrix, *errorCovPre, 1, gpuTemp, 0, *temp2);
-      //cv::cuda::gemm(*measurementMatrix, *errorCovPre, 1, cv::cuda::GpuMat() , 0 , *temp2);
-      // temp3 = temp2*Ht + R
-      //gemm(temp2, measurementMatrix, 1, measurementNoiseCov, 1, temp3, GEMM_2_T);
-      cv::cuda::gemm(*temp2, *measurementMatrix, 1, *measurementNoiseCov, 1, *temp3, cv::GEMM_2_T);
+  measurementMatrix->download(temp);
+  print("measurementMatrix", temp);
+  errorCovPre->download(temp);
+  print("errorCovPre", temp);
+  cv::cuda::gemm(*measurementMatrix, *errorCovPre, 1, cv::cuda::GpuMat() , 0 , *temp2);
+  temp2->download(temp);
+  print("temp2", temp);
 
-      // temp4 = inv(temp3)*temp2 = Kt(k)
-      cv::Mat cputemp4;
-      cv::Mat cputemp2;
-      cv::Mat cputemp3;
+  std::cout <<  "temp3 = temp2*Ht + R" << std::endl;
+  // temp3 = temp2*Ht + R
+  //gemm(temp2, measurementMatrix, 1, measurementNoiseCov, 1, temp3, GEMM_2_T);
+  temp2->download(temp);
+  print("temp2", temp);
+  measurementMatrix->download(temp);
+  print("measurementMatrix", temp);
+  measurementNoiseCov->download(temp);
+  print("measurementNoiseCov", temp);
 
-      temp3->download(cputemp3);
-      temp2->download(cputemp2);
-      temp4->download(cputemp4);
+  cv::cuda::gemm(*temp2, *measurementMatrix, 1, *measurementNoiseCov, 1, *temp3, cv::GEMM_2_T);
+  temp3->download(temp);
+  print("temp3", temp);
 
-      cv::solve(cputemp3, cputemp2, cputemp4, cv::DECOMP_SVD);
+  std::cout <<  "temp4 = inv(temp3)*temp2 = Kt(k)" << std::endl;
+  // temp4 = inv(temp3)*temp2 = Kt(k)
+  cv::Mat cputemp4;
+  cv::Mat cputemp2;
+  cv::Mat cputemp3;
 
-      temp4->upload(cputemp4);
+  temp3->download(cputemp3);
+  temp2->download(cputemp2);
+  temp4->download(cputemp4);
 
-      // K(k)
-      //gain = temp4.t();
-      cv::cuda::transpose(*temp4, *gain);
+  print("cputemp3", cputemp3);
+  print("cputemp2", cputemp2);
 
-      // temp5 = z(k) - H*x'(k)
-      //temp5 = measurement - measurementMatrix*statePre;
-      //cv::cuda::multiply(measurementMatrix,statePre, temp1);
-      //cv::multiply(measurementMatrix, statePre, measurementMatrix_temp);
-      cv::cuda::gemm(*measurementMatrix, *statePre, 1, cv::Mat() , 0 , *measurementMatrix_temp);
+  cv::solve(cputemp3, cputemp2, cputemp4, cv::DECOMP_SVD);
+  print("cputemp4", cputemp4);
 
-      cv::cuda::subtract(measurement, *measurementMatrix_temp, *temp5);
+  temp4->upload(cputemp4);
+
+  std::cout <<  "gain = temp4.t()" << std::endl;
+
+  // K(k)
+  //gain = temp4.t();
+  cv::cuda::transpose(*temp4, *gain);
+
+  gain->download(temp);
+  print("gain", temp);
+
+  std::cout <<  "measurementMatrix_temp = measurementMatrix*statePre [measurementMatrix_temp = H*x'(k)]" << std::endl;
+  // temp5 = z(k) - H*x'(k)
+  //temp5 = measurement - measurementMatrix*statePre;
+  measurementMatrix->download(temp);
+  print("measurementMatrix", temp);
+  statePre->download(temp);
+  print("statePre", temp);
+
+  cv::cuda::gemm(*measurementMatrix, *statePre, 1, cv::Mat() , 0 , *measurementMatrix_temp);
+  measurementMatrix_temp->download(temp);
+  print("measurementMatrix_temp", temp);
+
+  std::cout <<  "temp5 = measurement - measurementMatrix_temp [temp5 = z(k) - measurementMatrix_temp]" << std::endl;
+  measurement.download(temp);
+  print("measurement", temp);
+
+  cv::cuda::subtract(measurement, *measurementMatrix_temp, *temp5);
+  temp5->download(temp);
+  print("temp5", temp);
 
 
-      // x(k) = x'(k) + K(k)*temp5
-      //statePost = statePre + gain*temp5;
-      //cv::cuda::multiply(gain, temp5, gain_temp);
-      cv::cuda::gemm(*gain, *temp5, 1, cv::Mat() , 0 , *gain_temp);
 
-      cv::cuda::add(*statePre, *gain_temp, *statePost);
+  // x(k) = x'(k) + K(k)*temp5
+  //statePost = statePre + gain*temp5;
+  //cv::cuda::multiply(gain, temp5, gain_temp);
+  std::cout <<  "gain_temp = gain*temp5 [gain_temp = K(k)*temp5]" << std::endl;
+  gain->download(temp);
+  print("gain", temp);
+  temp5->download(temp);
+  print("temp5", temp);
 
-      // P(k) = P'(k) - K(k)*temp2
-      //errorCovPost = errorCovPre - gain*temp2;
-      //cv::cuda::multiply(gain, temp2, gain_temp);
-      cv::cuda::gemm(*gain, *temp2, 1, cv::Mat() , 0 , *gain_temp);
+  cv::cuda::gemm(*gain, *temp5, 1, cv::Mat() , 0 , *gain_temp);
+  gain_temp->download(temp);
+  print("gain_temp", temp);
 
-      cv::cuda::subtract(*errorCovPre, *gain_temp, *errorCovPost);
+  std::cout <<  "statePost = statePre + gain_temp [x(k) = x'(k) + gain_temp]" << std::endl;
+  statePre->download(temp);
+  print("statePre", temp);
 
-      return *statePost;
+  cv::cuda::add(*statePre, *gain_temp, *statePost);
+  statePost->download(temp);
+  print("statePost", temp);
+
+
+  // P(k) = P'(k) - K(k)*temp2
+  //errorCovPost = errorCovPre - gain*temp2;
+  //cv::cuda::multiply(gain, temp2, gain_temp);
+  std::cout <<  "gain_temp =  K(k)*temp2 [gain_temp = K(k)*temp2]" << std::endl;
+  gain->download(temp);
+  print("gain", temp);
+  temp2->download(temp);
+  print("temp2", temp);
+  cv::cuda::gemm(*gain, *temp2, 1, cv::Mat() , 0 , *gain_temp);
+  gain_temp->download(temp);
+  print("gain_temp", temp);
+
+  std::cout <<  "errorCovPost = errorCovPre - gain_temp [P(k) = P'(k) - gain_temp]" << std::endl;
+  errorCovPre->download(temp);
+  print("errorCovPre", temp);
+  cv::cuda::subtract(*errorCovPre, *gain_temp, *errorCovPost);
+  errorCovPost->download(temp);
+  print("errorCovPost", temp);
+
+  return *statePost;
   }
+void              C_kalmanOnCuda::processKalman                     (const cv::cuda::GpuMat &control, const cv::cuda::GpuMat &measurement)
+  {
 
-
+  }

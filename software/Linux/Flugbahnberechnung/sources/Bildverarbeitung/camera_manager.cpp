@@ -1598,8 +1598,8 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
         }
       if(this->trackingManager->kalmanAlive)
         {
-        this->trackingManager->predictObjectPos                 ();
-        this->trackingManager->kalmanfilter->correct             (pData->objektVektor.X, pData->objektVektor.Y, pData->objektVektor.Z);
+        this->trackingManager->predictKalman                     ();
+        this->trackingManager->correctKalman                     (pData->objektVektor.X, pData->objektVektor.Y, pData->objektVektor.Z);
         }
       if(!this->trackingManager->kalmanAlive && pData->objektVektor.X !=0.0 && pData->objektVektor.Y !=0.0 && pData->objektVektor.Z !=0.0)
         {

@@ -88,12 +88,14 @@ namespace trackingManager
 
     void predictPixelMovement                         (int& predX, int& predY, int pixelVelocityX, int pixelVelocityY, int ist_X, int ist_Y);
 
-    void predictObjectPos                             ();
+    void predictKalman                                ();
+    void processKalman                                (float x, float y, float z);
+    void correctKalman                                (float x, float y, float z);
 
     bool getAlive                                     () const;
     void setAlive                                     (bool value);
 
-    void setRichtungsvektor(S_Positionsvektor *value, int pos);
+    void setRichtungsvektor                           (S_Positionsvektor *value, int pos);
 
     void smTracking                                   ();
     int getSmState                                    () const;
