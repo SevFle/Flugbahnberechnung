@@ -148,10 +148,17 @@ void C_robotManager::threadHelper                (void* This)
 void C_robotManager::sm_BallTracking()
   {
   C_AbsolutePose WorldToRobot = this->roboter->Abs_WorldToRobot_Pose;
+  C_AbsolutePose RobotToObject;
+
   S_Posenvektor  WorldToObject;
 
-  S_Posenvektor  waitForHitWorld;
+  C_AbsolutePose waitForHitWorld;
+  C_RelativePose waitForHitWorld_inv;
+
   C_AbsolutePose waitForHitRobot;
+  C_AbsolutePose waitForHitRobot_TCP;
+  C_AbsolutePose temp;
+
 
   robotManager::robotConstraints ConstraintsInWorld;
 
@@ -212,6 +219,7 @@ void C_robotManager::sm_BallTracking()
         WorldToObject.Y         = this->objectPayload->predPosition->Y;
         WorldToObject.Z         = this->objectPayload->predPosition->Z;
 
+
         distanceObjectToRobot_X =  WorldToRobot.HomogenePosenMatrix[0][3] - WorldToObject.X;
         distanceObjectToRobot_Y =  WorldToRobot.HomogenePosenMatrix[1][3] - WorldToObject.Y;
         distanceObjectToRobot_Z =  WorldToRobot.HomogenePosenMatrix[2][3] - WorldToObject.Z;
@@ -262,14 +270,14 @@ void C_robotManager::sm_BallTracking()
             this->objectExit->X = x;
             inRange = false;
 
-            waitForHitWorld.X = (this->objectEntry->X+this->objectExit->X)/2;
-            waitForHitWorld.Y = (this->objectEntry->Y+this->objectExit->Y)/2;
-            waitForHitWorld.Z = (this->objectEntry->Z+this->objectExit->Z)/2;
+            waitForHitWorld.px((this->objectEntry->X+this->objectExit->X)/2);
+            waitForHitWorld.py((this->objectEntry->Y+this->objectExit->Y)/2);
+            waitForHitWorld.pz((this->objectEntry->Z+this->objectExit->Z)/2);
 
             std::cout << "################## Robot preparing for hit ##############################" << ConstraintsInWorld.X << std::endl;
-            std::cout << "Waiting at X: " << waitForHitWorld.X << std::endl;
-            std::cout << "Waiting at Y: " << waitForHitWorld.Y << std::endl;
-            std::cout << "Waiting at Z: " << waitForHitWorld.Z << std::endl;
+            std::cout << "Waiting at X: " << waitForHitWorld.px() << std::endl;
+            std::cout << "Waiting at Y: " << waitForHitWorld.py() << std::endl;
+            std::cout << "Waiting at Z: " << waitForHitWorld.pz() << std::endl;
 
             this->smBallTrackingStep = 4;
             }
@@ -290,22 +298,25 @@ void C_robotManager::sm_BallTracking()
       case 4:
         //Transformiere die WartePosition von Welt- zu Robotkoordinatensystem
 
+        waitForHitWorld.InversHomogenousPose(waitForHitWorld, waitForHitWorld_inv.HomogenePosenMatrix);
+        temp = waitForHitWorld_inv.operator*()
+
 
         //Überprüfe auf welcher Seite des Roboter das Objekt landen wird.
         //Wenn Objekt vor dem Robot ist (-0.40 < Y < 0.27)
-        if(waitForHitWorld.Y > -0.40 && waitForHitWorld.Y < 0.27)
+        if(waitForHitRobot.py() > -0.40 && waitForHitRobot.py() < 0.27)
           {
 
           }
 
         //Wenn Ball zwischen der linken seite vom Robot ist (Y+)
-        if(waitForHitWorld.Y >= 0.27)
+        if(waitForHitRobot.py() >= 0.27)
           {
 
           }
 
         //Wenn Ball zwischen der rechten seite vom Robot ist (Y-)
-        if(waitForHitWorld.Y <= -0.40)
+        if(waitForHitRobot.py() <= -0.40)
           {
 
           }
