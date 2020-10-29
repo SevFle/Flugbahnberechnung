@@ -218,8 +218,7 @@ void C_frm_Robot_Calibration::writeRobotBaseToWorld()
     this->ui->txb_pz_robot_world->setText(QString::number(RobotToWorld.HomogenePosenMatrix[2][3]));
     }
   }
-C_AbsolutePose C_frm_Robot_Calibration::getPoseRobotBaseToWorld
-()
+C_AbsolutePose C_frm_Robot_Calibration::getPoseRobotBaseToWorld()
   {
   C_RelativePose camToBoard;
   for(int i = 0;i < 4; i++)

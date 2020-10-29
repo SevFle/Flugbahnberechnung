@@ -568,10 +568,6 @@ void C_CameraManager::calibrate_stereo_camera_aruco(int current_camera_id, int n
 
 
 
-    /******************************************** IDEEEEEEEEEEE******************************/
-//    Jedes tag hat ein einzigartiges COS und gibt rvec+tvec im bezug zum Kamerakoordinatensystem zurück. Reicht nicht für M10 weil jeder vektor anders ist,
-//        aber für M12 wäre der Bezug relativ
-
       if(veccharucoCorners.size() > 0 && veccharucoIds.size() > 0)
         {
         cv::Mat                                   stdDeviationsIntrinsics, stdDeviationsExtrinsics,  	perViewErrors;
@@ -581,6 +577,10 @@ void C_CameraManager::calibrate_stereo_camera_aruco(int current_camera_id, int n
         //This function calibrates a camera using a set of corners of a Charuco Board.
         //The function receives a list of detected corners and its identifiers from several views of the Board.
         //The function returns the final re-projection error.
+//        reprojectionError = cv::aruco::calibrateCameraCharuco(veccharucoCorners, veccharucoIds, board, imgSize, cameraMatrix, distCoeffs, vecRvec, vectvec,
+//        stdDeviationsIntrinsics, stdDeviationsExtrinsics, perViewErrors, 0,
+//        cv::TermCriteria(cv::TermCriteria::COUNT+cv::TermCriteria::EPS, 1000, DBL_EPSILON));
+
         reprojectionError = cv::aruco::calibrateCameraCharuco(veccharucoCorners, veccharucoIds, board, imgSize, cameraMatrix, distCoeffs, vecRvec, vectvec,
         stdDeviationsIntrinsics, stdDeviationsExtrinsics, perViewErrors, 0,
         cv::TermCriteria(cv::TermCriteria::COUNT+cv::TermCriteria::EPS, 1000, DBL_EPSILON));
@@ -656,89 +656,59 @@ void C_CameraManager::calibrate_stereo_camera_aruco(int current_camera_id, int n
   }
 void C_CameraManager::calculate_camera_pose    (int camera1, int camera2, std::vector<cv::Mat>* M10, std::vector<cv::Mat>* M20)
   {
-//  this->version1(camera1, camera2, M10, M20);   //OWN MAT INVERSE, POSEN INVERSE
+  this->version1(camera1, camera2, M10, M20);   //OWN MAT INVERSE, POSEN INVERSE
 
-  this->version2(camera1, camera2, M10, M20);    //MAT INVERSE, POSEN INVERSE
+  //this->version2(camera1, camera2, M10, M20);    //MAT INVERSE, POSEN INVERSE
 
 //  this->version3(camera1, camera2, M10, M20);    //OWN MAT INVERSE, OWN POSEN INVERSE
   this->globalObjects->saveManager->saveCameraCos(*this->vecCameras->at(camera2));
 
   }
-void C_CameraManager::calculate_camera_pose    (int camera1, int camera2, cv::Mat* M10, cv::Mat* M20)
+cv::Mat C_CameraManager::calculate_camera_pose    (int camera1, int camera2, cv::Mat* M10, cv::Mat* M20)
   {
-  //M12 = M10*M02
-  cv::Mat M12(cv::Mat_<double>(4,4));
-  cv::Mat M02(cv::Mat_<double>(4,4));
+    cv::Mat M12(cv::Mat_<double>(4,4));
+    cv::Mat M01(cv::Mat_<double>(4,4));
+    cv::Mat M02(cv::Mat_<double>(4,4));
 
-  //clear Matrix
-    for(int i = 0; i < 4; i++)
-      for(int j = 0; j < 4; j++)
-        {
-        M12.at<double>(i,j)=0;
-        }
+    M01 = M10->inv();
+    M02 = M20->inv();
 
-    M02 = M20->inv(cv::DECOMP_LU);
+    M12 = *M10 * M02;
+    return M12;
+  }//calculate_camera_pose
+void C_CameraManager::calculate_camera_pose    (int camera1, int camera2, cv::Mat* M12)
+  {
+    cv::Mat M01(cv::Mat_<double>(4,4));
+    cv::Mat M02(cv::Mat_<double>(4,4));
+    cv::Mat PoseWorldToCamera0(cv::Mat_<double>(4,4));
+    cv::Mat PoseWorldToCamera1(cv::Mat_<double>(4,4));
+    cv::Mat PoseCamera0ToWorld(cv::Mat_<double>(4,4));
+    cv::Mat PoseCamera1ToWorld(cv::Mat_<double>(4,4));
 
-    //M12 = M10*M02;
     for(int i=0;i<4;i++)
-      for(int j=0;j<4;j++)
-          for(int k=0;k<4;k++)
-              {
-              M12.at<double>(i,j)+=M10->at<double>(i,k)* M02.at<double>(k,j);
-              }
-    std::cout << "M02: " << M02 << std::endl;
-    std::cout << "M12: " << M12 << std::endl;
-
-    for(int i = 0; i < 4; i++)
-      for(int j = 0; j < 4; j++)
+        for(int j=0;j<4;j++)
         {
-        this->relPose->HomogenePosenMatrix[i][j] = M12.at<double>(i,j);
+        PoseWorldToCamera0.at<double>(i,j) = this->vecCameras->at(camera1)->WorldToCamera->HomogenePosenMatrix[i][j];
         }
 
-    /************************************TEST AREA**********************************/
-    cv::Mat PoseC1(cv::Mat_<double>(4,4));
-    cv::Mat PoseC1_inv(cv::Mat_<double>(4,4));
-    cv::Mat PoseC2(cv::Mat_<double>(4,4));
 
-    for(int i = 0; i < 4; i++)
-      for(int j = 0; j < 4; j++)
-        {
-        PoseC1.at<double>(i,j) = this->vecCameras->at(camera1)->CameraToWorld->HomogenePosenMatrix[i][j];
-        PoseC2.at<double>(i,j) = 0.0;
-        }
+    PoseWorldToCamera1 = PoseWorldToCamera0 * *M12;
+    printmatrix("PoseWorldToCamera1", PoseWorldToCamera1);
 
-    std::cout << "Pose Kamera 1: " << PoseC1 << std::endl;
-    PoseC1_inv = PoseC1.inv(cv::DECOMP_LU);
+    PoseCamera1ToWorld = PoseWorldToCamera1.inv();
 
-
-    //Pose2 = Pose1 * M12;
+    printmatrix("PoseCamera1ToWorld", PoseCamera1ToWorld);
     for(int i=0;i<4;i++)
-      for(int j=0;j<4;j++)
-          for(int k=0;k<4;k++)
-              {
-              PoseC2.at<double>(i,j)+=PoseC1.at<double>(i,k)* M12.at<double>(k,j);
-              }
-
-    std::cout << "Pose Kamera 2: " << PoseC2 << std::endl;
-
-    /************************************TEST AREA**********************************/
-
-
-
-//    posen::C_AbsolutePose poseCamera2;
-//    poseCamera2 = this->vecCameras->at(camera1)->getCameraPose()->operator*(*this->relPose);
-
-//    this->vecCameras->at(camera2)->setCameraPose(&poseCamera2);
-    for(int i = 0; i < 4; i++)
-      for(int j = 0; j < 4; j++)
+        for(int j=0;j<4;j++)
         {
-        this->absPose->HomogenePosenMatrix[i][j] = M12.at<double>(i,j);
+        this->vecCameras->at(camera2)->CameraToWorld->HomogenePosenMatrix[i][j] = PoseCamera1ToWorld.at<double>(i,j);
+        this->vecCameras->at(camera2)->WorldToCamera->HomogenePosenMatrix[i][j] = PoseWorldToCamera1.at<double>(i,j);
         }
 
-    this->vecCameras->at(camera2)->CameraToWorld = this->absPose;
     this->globalObjects->saveManager->saveCameraCos(*this->vecCameras->at(camera2));
 
-  }//calculate_camera_pose
+  }
+
 cv::Mat C_CameraManager::inverseMat(cv::Mat& Matrix)
   {
 
@@ -807,88 +777,38 @@ cv::Mat C_CameraManager::inverseMat(cv::Mat& Matrix)
   }
 void C_CameraManager::version1(int camera1, int camera2, std::vector<cv::Mat>* M10, std::vector<cv::Mat>* M20)
   {
-  //OWN MAT INVERSE, POSEN INVERSE
-  std::cout << "Version 1: OWN MAT INVERSE, POSEN INVERSE" << std::endl << std::endl;
+    cv::Mat M12(cv::Mat_<double>(4,4));
+    cv::Mat M01(cv::Mat_<double>(4,4));
+    cv::Mat M02(cv::Mat_<double>(4,4));
+    cv::Mat PoseWorldToCamera0(cv::Mat_<double>(4,4));
+    cv::Mat PoseWorldToCamera1(cv::Mat_<double>(4,4));
+    cv::Mat PoseCamera0ToWorld(cv::Mat_<double>(4,4));
+    cv::Mat PoseCamera1ToWorld(cv::Mat_<double>(4,4));
 
-  int dimension = M20->size();
-  std::vector<cv::Mat> vecM12;
-  cv::Mat M12_averaged(cv::Mat_<double>(4,4));
-
-
-  //Berechne für jede Position in den M10/M20 Vektoren die dazugehörigen M12 Wert.
-  for(auto itM10 = std::begin(*M10),  itM20 = std::begin(*M20); itM10 < std::end(*M10); itM10++, itM20++)
-    {
-    //M12 = M10*M02
-    cv::Mat M12                 (cv::Mat_<double>(4,4));
-    cv::Mat M02                 (cv::Mat_<double>(4,4));
-
-    cv::Mat row                 = cv::Mat::zeros(1, 4, CV_64F);  // 3 cols, 1 row
-    (*itM10).push_back(row);
-    (*itM10).at<double>(3,3)  =   1.0;
-    (*itM20).push_back(row);
-    (*itM20).at<double>(3,3)  =   1.0;
-
-    cv::Mat M20Copy (cv::Mat_<double>(4,4));
-    (*itM20).copyTo(M20Copy);
-
-    M02 = this->inverseMat(M20Copy);
-
-    //clear Matrix
-    for(int i = 0; i < 4; i++)
-      for(int j = 0; j < 4; j++)
-        {
-        M12.at<double>(i,j)=0;
-        }
-    //M12 = M10*M02;
     for(int i=0;i<4;i++)
-      for(int j=0;j<4;j++)
-          for(int k=0;k<4;k++)
-              {
-              M12.at<double>(i,j)+=(*itM10).at<double>(i,k)* M02.at<double>(k,j);
-              }
-    std::cout << "M12: " << endl << M12 << std::endl << std::endl;
-
-    vecM12.push_back(M12);
-    }
-
-  //Zwischenberechnung! Berechne den Durchschnitt der M12 Matrizen. !
-  for(auto it = std::begin(vecM12); it < std::end(vecM12); it++)
-    {
-      M12_averaged += (*it);
-    }
-  for(int i =0; i < 4; i++)
-    for(int j = 0; j < 4; j++)
-      {
-      M12_averaged.at<double>(i,j) /= dimension;
-      this->relPose->HomogenePosenMatrix[i][j] = M12_averaged.at<double>(i,j);
-      }
-  std::cout << "M12_averaged divided by " << dimension << ": " << endl << M12_averaged << std::endl << std::endl;
-
-  C_AbsolutePose Kamera1_inverse;
-  this->absPose->InversHomogenousPose(*this->vecCameras->at(camera1)->CameraToWorld, Kamera1_inverse.HomogenePosenMatrix);
-
-  for (int i = 0; i < 4; i++)
-    for (int j = 0; j < 4; j++)
-      for (int k = 0; k < 4; k++)
+        for(int j=0;j<4;j++)
         {
-        //this->relPose ist die Pose von Kamera1 zu Kamera 2 (M12)
-        this->vecCameras->at(camera2)->CameraToWorld->HomogenePosenMatrix[i][j] += Kamera1_inverse.HomogenePosenMatrix[i][k] * this->relPose->HomogenePosenMatrix[k][j];
+        PoseWorldToCamera0.at<double>(i,j) = this->vecCameras->at(camera1)->WorldToCamera->HomogenePosenMatrix[i][j];
         }
 
-  /********************************* DEBUG *******************************/
+    M01 = M10->at(0).inv();
+    M02 = M20->at(0).inv();
 
-  cv::Mat Pose_Kamera1_Debug(cv::Mat_<double>(4,4));
-  cv::Mat Pose_Kamera2_Debug(cv::Mat_<double>(4,4));
+    M12 = M10->at(0) * M02;
+    printmatrix("M12", M12);
 
-  for(int i =0; i < 4; i++)
-    for(int j = 0; j < 4; j++)
-      {
-      Pose_Kamera1_Debug.at<double>(i,j)       = this->vecCameras->at(camera1)->CameraToWorld->HomogenePosenMatrix[i][j];
-      Pose_Kamera2_Debug.at<double>(i,j)       = this->vecCameras->at(camera2)->CameraToWorld->HomogenePosenMatrix[i][j];
-      }
-  std::cout << "Pose_Kamera1_Debug: "  << endl << Pose_Kamera1_Debug << std::endl << std::endl;
-  std::cout << "Pose_Kamera2_Debug: "  << endl << Pose_Kamera2_Debug << std::endl << std::endl;
-  /********************************* DEBUG *******************************/
+    PoseWorldToCamera1 = PoseWorldToCamera0 * M12;
+    printmatrix("PoseWorldToCamera1", PoseWorldToCamera1);
+
+    PoseCamera1ToWorld = PoseWorldToCamera1.inv();
+
+    printmatrix("PoseCamera1ToWorld", PoseCamera1ToWorld);
+    for(int i=0;i<4;i++)
+        for(int j=0;j<4;j++)
+        {
+        this->vecCameras->at(camera2)->CameraToWorld->HomogenePosenMatrix[i][j] = PoseCamera1ToWorld.at<double>(i,j);
+        }
+
   }
 void C_CameraManager::version2(int camera1, int camera2, std::vector<cv::Mat>* M10, std::vector<cv::Mat>* M20)
   {
@@ -945,10 +865,10 @@ void C_CameraManager::version2(int camera1, int camera2, std::vector<cv::Mat>* M
   M12_averaged.at<double>(3,3) =1.0;
 
   std::cout << "M12_averaged divided by " << dimension << ": " << endl << M12_averaged << std::endl << std::endl;
-  cv::Mat PoseKamera1(cv::Mat_<double>(4,4));
-  cv::Mat PoseKamera1_inverse(cv::Mat_<double>(4,4));
-  cv::Mat PoseKamera2(cv::Mat_<double>(4,4));
-  cv::Mat PoseKamera2_inverse(cv::Mat_<double>(4,4));
+  cv::Mat PoseKamera1                 (cv::Mat_<double>(4,4));
+  cv::Mat PoseKamera1_inverse         (cv::Mat_<double>(4,4));
+  cv::Mat PoseKamera2                 (cv::Mat_<double>(4,4));
+  cv::Mat PoseKamera2_inverse         (cv::Mat_<double>(4,4));
   for(int i =0; i < 4; i++)
     for(int j = 0; j < 4; j++)
       {
@@ -975,8 +895,8 @@ void C_CameraManager::version2(int camera1, int camera2, std::vector<cv::Mat>* M
 
   /********************************* DEBUG *******************************/
 
-  cv::Mat Pose_Kamera1_Debug(cv::Mat_<double>(4,4));
-  cv::Mat Pose_Kamera2_Debug(cv::Mat_<double>(4,4));
+  cv::Mat Pose_Kamera1_Debug    (cv::Mat_<double>(4,4));
+  cv::Mat Pose_Kamera2_Debug    (cv::Mat_<double>(4,4));
 
   for(int i =0; i < 4; i++)
     for(int j = 0; j < 4; j++)
@@ -1332,38 +1252,41 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
         {
         cv::cuda::GpuMat temp;
         this->ImageFilter->gpufUnidstord(it, temp, *vecCameras[pData->cameraID[i]]->getXMap(), *vecCameras[pData->cameraID[i]]->getYMap());
-        switch (*roistatus)
-          {
-          case initZone:
-            for(int i = 0; i < payloadSize; i++)
-              {
-              cv::Rect initRoi;
-              initRoi.y = 1;
-              initRoi.height = initZoneHeight-1;
-              initRoi.width = initZoneWidth;
-              if(pData->cameraID[i] == 0 || pData->cameraID[i] %2 ==0)
-                  initRoi.x = frameWidth-initZoneWidth-1;
-              else
-                  initRoi.x = 1;
-              this->vecCameras->at(pData->cameraID[i])->setRoi(&initRoi);
-              }
-           break;
-          case objectLost:
-            for(int i = 0; i < payloadSize; i++)
+        if(this->filterFlags->roiAdjustmentActive == true)
             {
-            this->vecCameras->at(pData->cameraID[i])->filterValues->setOffset(0, 0);
-            this->vecCameras->at(pData->cameraID[i])->filterValues->setOffset(1, 0);
-            cv::Rect roi;
-            roi.x = 1;
-            roi.y = 1;
-            roi.width = this->frameWidth-1;
-            roi.height = this->frameHeight-1;
-            this->vecCameras->at(pData->cameraID[i])->setRoi(&roi);
+            switch (*roistatus)
+              {
+              case initZone:
+                for(int i = 0; i < payloadSize; i++)
+                  {
+                  cv::Rect initRoi;
+                  initRoi.y = 1;
+                  initRoi.height = initZoneHeight-1;
+                  initRoi.width = initZoneWidth;
+                  if(pData->cameraID[i] == 0 || pData->cameraID[i] %2 ==0)
+                      initRoi.x = frameWidth-initZoneWidth-1;
+                  else
+                      initRoi.x = 1;
+                  this->vecCameras->at(pData->cameraID[i])->setRoi(&initRoi);
+                  }
+               break;
+              case objectLost:
+                for(int i = 0; i < payloadSize; i++)
+                {
+                this->vecCameras->at(pData->cameraID[i])->filterValues->setOffset(0, 0);
+                this->vecCameras->at(pData->cameraID[i])->filterValues->setOffset(1, 0);
+                cv::Rect roi;
+                roi.x = 1;
+                roi.y = 1;
+                roi.width = this->frameWidth-1;
+                roi.height = this->frameHeight-1;
+                this->vecCameras->at(pData->cameraID[i])->setRoi(&roi);
+                }
+              break;
+          case objectFound:
+                //DO NOTHING - Wird von Step CALCULATE OBJECT POSITION angepasst
+              break;
             }
-          break;
-      case objectFound:
-            //DO NOTHING - Wird von Step CALCULATE OBJECT POSITION angepasst
-          break;
         }//switch
       this->ImageFilter->gpuROI(temp, pData->gpuUndistortedImg[i], *vecCameras[pData->cameraID[i]]->getRoi());
       i++;
@@ -1539,23 +1462,23 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
         this->trackingManager->setRichtungsvektor(&pData->Richtungsvektoren[i], i);
         }
       this->trackingManager->Get_Position_ObjectTracking    (pData->objektVektor, WorldToCamPose_active);
-      this->trackingManager->calcObjectVeloctiy             (pData->objektVektor);
+      this->trackingManager->calcObjectVeloctiy             (pData->objektVektor, pData->objectVelocity);
       for(int i =0; i < payloadSize; i++)
         {
         this->trackingManager->calcPixelVeloctiy              (pData->ist_X[i], pData->ist_Y[i], pData->cameraID[i], pData->pred_X[i], pData->pred_Y[i]);
         }
-      if(pData->ist_X[0] < (this->frameWidth/2) + this->transferZoneWidth && pData->ist_X[1] > (this->frameWidth/2) - this->transferZoneWidth&& !this->switchCamBackward)
-        {
-        this->switchCamBackward->store(true);
-        }
-      if(pData->ist_X[0] < (this->frameWidth/2) - this->transferZoneWidth && pData->ist_X[1] > (this->frameWidth/2) + this->transferZoneWidth&& !this->switchCamForward)
-        {
-        this->switchCamForward->store(true);
-        }
+//      if(pData->ist_X[0] < (this->frameWidth/2) + this->transferZoneWidth && pData->ist_X[1] > (this->frameWidth/2) - this->transferZoneWidth&& !this->switchCamBackward)
+//        {
+//        this->switchCamBackward->store(true);
+//        }
+//      if(pData->ist_X[0] < (this->frameWidth/2) - this->transferZoneWidth && pData->ist_X[1] > (this->frameWidth/2) + this->transferZoneWidth&& !this->switchCamForward)
+//        {
+//        this->switchCamForward->store(true);
+//        }
 
      //Überprüfe ob das verfolgte Objekt sich dem Rand des derzeitigen Kamerapaares nähert. Falls true wird das nächste Kamerapaar in arrActiveCameras geladen;
       //Erhöhe die Kameras um 1
-      if(pData->ist_X[0] > 0 && pData->ist_X[0] < transferZoneWidth && pData->ist_X[1] > this->frameWidth - transferZoneWidth && pData->ist_X[1] < frameWidth && this->switchCamForward)
+      if(pData->ist_X[0] > 0 && pData->ist_X[0] < transferZoneWidth && pData->ist_X[1] > this->frameWidth - transferZoneWidth && pData->ist_X[1] < frameWidth /*&& this->switchCamForward*/)
         {
         if(pData->cameraID[0] != this->globalObjects->absCameras - payloadSize)
           {
@@ -1570,7 +1493,7 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
           }
         }
       //Verringere die Kameras um 1
-      if(pData->ist_X[0] > this->frameWidth - transferZoneWidth && pData->ist_X[0] < frameWidth && pData->ist_X[1] > 0 && pData->ist_X[1] < transferZoneWidth && this->switchCamBackward)
+      if(pData->ist_X[0] > this->frameWidth - transferZoneWidth && pData->ist_X[0] < frameWidth && pData->ist_X[1] > 0 && pData->ist_X[1] < transferZoneWidth /*&& this->switchCamBackward*/)
         {
         if(pData->cameraID[0] !=0)
           {
@@ -1590,7 +1513,7 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
         }
 
       //Setze die erste Position des erfassten Objektes falls es 5 mal hintereinander gefunden wurde;
-      if(this->trackingManager->consecutive_found > 5)
+      if(this->trackingManager->consecutive_found > 2)
         {
         this->trackingManager->kalmanfilter->initFirstPosition  (pData->objektVektor.X, pData->objektVektor.Y, pData->objektVektor.Z, pData->objectVelocity[0], pData->objectVelocity[1], pData->objectVelocity[2]);
         this->trackingManager->kalmanAlive                      = true;
@@ -1620,6 +1543,7 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
       pData->objektVektor.Y = 0;
       pData->objektVektor.Z = 0;
       this->trackingManager->consecutive_found = 0;
+      this->trackingManager->setTime();
 
       }
     pData->end = Clock::now();

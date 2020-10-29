@@ -6,7 +6,7 @@ using namespace UM_CSV_Datei;
 
 C_LoadManager::C_LoadManager()
   {
-  this->csv_parameter_datei = new UM_CSV_Datei::C_CSV_Parameter_Datei();
+  this->csv_parameter_datei = new UM_CSV_Datei::C_CSV_Parameter_Datei;
   }
 C_LoadManager::~C_LoadManager()
   {
@@ -241,44 +241,62 @@ bool C_LoadManager::loadCameraPositioning   (std::vector<Camera::C_Camera2*> &ve
 
 void C_LoadManager::loadCameraCos (Camera::C_Camera2* Camera)
   {
-  int camerID = Camera->getCameraID();
   C_AbsolutePose CameraToWorld;
   C_AbsolutePose WorldToCamera;
 
-  string Dateiname = "../Parameter/Pose_world_to_camera" + to_string (camerID) + ".csv";
-  string Dateityp;
+  string Dateiname = "../Parameter/Pose_camera_to_world" + to_string (Camera->getCameraID()) + ".csv";
+
+  string Dateityp = "";
+  double nx, ny, nz, ox, oy, oz, ax, ay, az, px, py, pz;
 
   this->csv_parameter_datei->Oeffnen (Dateiname,Enum_CSV_Access::Read);
   if (this->csv_parameter_datei->IsOpen())
     {
     this->csv_parameter_datei->Lesen (Dateityp);
-    this->csv_parameter_datei->Lesen (CameraToWorld.HomogenePosenMatrix[0][0]);
-    this->csv_parameter_datei->Lesen (CameraToWorld.HomogenePosenMatrix[1][0]);
-    this->csv_parameter_datei->Lesen (CameraToWorld.HomogenePosenMatrix[2][0]);
+    this->csv_parameter_datei->Lesen (nx);
+    this->csv_parameter_datei->Lesen (ny);
+    this->csv_parameter_datei->Lesen (nz);
 
-    this->csv_parameter_datei->Lesen (CameraToWorld.HomogenePosenMatrix[0][1]);
-    this->csv_parameter_datei->Lesen (CameraToWorld.HomogenePosenMatrix[1][1]);
-    this->csv_parameter_datei->Lesen (CameraToWorld.HomogenePosenMatrix[2][1]);
+    this->csv_parameter_datei->Lesen (ox);
+    this->csv_parameter_datei->Lesen (oy);
+    this->csv_parameter_datei->Lesen (oz);
 
-    this->csv_parameter_datei->Lesen (CameraToWorld.HomogenePosenMatrix[0][2]);
-    this->csv_parameter_datei->Lesen (CameraToWorld.HomogenePosenMatrix[1][2]);
-    this->csv_parameter_datei->Lesen (CameraToWorld.HomogenePosenMatrix[2][2]);
+    this->csv_parameter_datei->Lesen (ax);
+    this->csv_parameter_datei->Lesen (ay);
+    this->csv_parameter_datei->Lesen (az);
 
-    this->csv_parameter_datei->Lesen (CameraToWorld.HomogenePosenMatrix[0][3]);
-    this->csv_parameter_datei->Lesen (CameraToWorld.HomogenePosenMatrix[1][3]);
-    this->csv_parameter_datei->Lesen (CameraToWorld.HomogenePosenMatrix[2][3]);
+    this->csv_parameter_datei->Lesen (px);
+    this->csv_parameter_datei->Lesen (py);
+    this->csv_parameter_datei->Lesen (pz);
+
+    CameraToWorld.nx(nx);
+    CameraToWorld.ny(ny);
+    CameraToWorld.nz(nz);
+
+    CameraToWorld.ox(ox);
+    CameraToWorld.oy(oy);
+    CameraToWorld.oz(oz);
+
+    CameraToWorld.ax(ax);
+    CameraToWorld.ay(ay);
+    CameraToWorld.az(az);
+
+    CameraToWorld.px(px);
+    CameraToWorld.py(py);
+    CameraToWorld.pz(pz);
+
 
     *Camera->CameraToWorld = CameraToWorld;
     CameraToWorld.InversHomogenousPose(CameraToWorld.HomogenePosenMatrix, WorldToCamera.HomogenePosenMatrix);
 
     *Camera->WorldToCamera = WorldToCamera;
 
-    std::cout << "**INFO** Kameraposition fuer Kamera " << std::to_string(camerID) << " wurde geladen" << std::endl;
+    std::cout << "**INFO** Kameraposition fuer Kamera " << std::to_string(Camera->getCameraID()) << " wurde geladen" << std::endl;
 
     }
   else
     {
-    std::cout << "**ERROR** Kameraposition fuer Kamera " << std::to_string(camerID) << " wurde nicht geladen" << std::endl;
+    std::cout << "**ERROR** Kameraposition fuer Kamera " << std::to_string(Camera->getCameraID()) << " wurde nicht geladen" << std::endl;
     }
   this->csv_parameter_datei->Schliessen();
   }

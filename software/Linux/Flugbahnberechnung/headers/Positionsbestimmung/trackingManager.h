@@ -81,7 +81,7 @@ namespace trackingManager
     void Calc_Position_ObjectTracking                 (S_Positionsvektor&             objektVektor, vector<S_Positionsvektor>&  vec_Richtungsvektoren_World, vector<int> WorldToCamPose_active);
     void Calc_RichtungsvektorenToWorld                (std::vector<S_Positionsvektor>& vec_Richtungsvektoren_World, vector<int> WorldToCamPose_active);
     void calcPixelVeloctiy                            (int ist_X, int ist_Y, int camID, int& pred_X, int& pred_Y);
-    void calcObjectVeloctiy                           (S_Positionsvektor&             objektVektor);
+    void calcObjectVeloctiy                           (S_Positionsvektor&             objektVektor, float (&objectVelocity)[3]);
 
     void calcPixelAcceleration                        ();
     void calcObjectAcceleration                       ();

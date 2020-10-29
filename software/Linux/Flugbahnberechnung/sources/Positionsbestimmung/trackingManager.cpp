@@ -129,7 +129,6 @@ void C_trackingManager::setTime                         ()
   *this->timestamp_ms     = timer->now();
   *this->dTimestamp       = std::chrono::duration_cast<milliseconds>(*this->timestamp_ms - *this->timestamp_ms_old);
   this->dTime             = this->dTimestamp->count();
-  std::cout << "Timestamp ms" << this->dTime << std::endl;
 
   *this->timestamp_ms_old = timer->now();
   if(this->dTime < 0)
@@ -294,7 +293,7 @@ void C_trackingManager::calcPixelVeloctiy               (int ist_X, int ist_Y, i
   this->vecPixelVelocityY->at(camID) = velY;
   this->predictPixelMovement(pred_X, pred_Y, this->vecPixelVelocityX->at(camID), this->vecPixelVelocityY->at(camID), ist_X, ist_Y);
   }
-void C_trackingManager::calcObjectVeloctiy              (S_Positionsvektor&             objektVektor)
+void C_trackingManager::calcObjectVeloctiy(S_Positionsvektor &objektVektor, float (&objectVelocity)[3])
   {
   //Aktualisere dt mit der aktuellen Zeit. dt ist die Zeitspanne zwischen jetzt und dem letzten Aufrufen der Funktion
   this->setTime(); //[ms]
@@ -306,10 +305,18 @@ void C_trackingManager::calcObjectVeloctiy              (S_Positionsvektor&     
   this->objectVelocity[0] = dObjektVektor.X/this->dTime; //[m/ms]
   this->objectVelocity[1] = dObjektVektor.Y/this->dTime; //[m/ms]
   this->objectVelocity[2] = dObjektVektor.Z/this->dTime; //[m/ms]
+  objectVelocity[0] = this->objectVelocity[0];
+  objectVelocity[1] = this->objectVelocity[1];
+  objectVelocity[2] = this->objectVelocity[2];
+
   this->calcObjectAcceleration();
   this->objektVektorTm1->X = objektVektor.X;
   this->objektVektorTm1->Y = objektVektor.Y;
   this->objektVektorTm1->Z = objektVektor.Z;
+
+  std::cout << std::endl << "Velocity X: " << objectVelocity[0] << std::endl;
+  std::cout << std::endl << "Velocity Y: " << objectVelocity[1] << std::endl;
+  std::cout << std::endl << "Velocity Z: " << objectVelocity[2] << std::endl;
 
   }
 void C_trackingManager::calcPixelAcceleration           ()
@@ -363,6 +370,10 @@ void C_trackingManager::correctKalman                   (float x, float y, float
 void C_trackingManager::processKalman                   (float x, float y, float z)
   {
   //Predict state
+  std::cout << "############################# PROCESS KALMAN ##################################"<< std::endl;
+
+  std::cout << "Timestamp ms" << this->dTime << std::endl;
+
   this->kalmanfilter->processKalman(this->dTime, x,y,z);
   this->positionPayload = new GlobalObjects::S_PositionPayload;
 

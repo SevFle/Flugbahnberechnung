@@ -199,6 +199,7 @@ void frm_Main::C_frm_Main::on_bt_camera_calibration_clicked()
                                                                this->Main->cameraManager->getCamThread(),
                                                                [&]{this->Main->cameraManager->startPipelineTracking();});
   this->Main->cameraManager->getFilterFlags()->undistordActive        = true;
+  this->Main->cameraManager->setRoiStatus(roiStatus::objectFound);
   this->Main->cameraManager->getFilterFlags()->openActive             = false;
   this->Main->cameraManager->getFilterFlags()->filterActive           = false;
   this->Main->cameraManager->getFilterFlags()->objectDetectionActive  = false;

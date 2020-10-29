@@ -27,6 +27,10 @@ private:
   QTimer*                           Taktgeber;
   cv::Mat*                          imgBuffer[2];
   cv::Mat*                          mPose;
+  cv::Mat*                          Camera0ToWorld;
+  cv::Mat*                          Camera1ToWorld;
+  cv::Mat*                          Camera0ToCamera1;
+
 
   int                               Taktgeber_Intervall;
   int                               Zaehler;
@@ -37,6 +41,10 @@ private:
   int                               cameraID;
   int                               sm_calibration_state;
   int                               usrInputAbsPhoto;
+  double rms;
+  double intrinsic[3][3];
+  double distcoeffs[1][5];
+
   std::atomic<bool>                 finished;
 
 

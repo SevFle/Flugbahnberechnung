@@ -223,8 +223,10 @@ namespace CameraManager
 
 
 
-    void calculate_camera_pose    (int camera1, int camera2, cv::Mat* M10, cv::Mat* M20);
+    cv::Mat calculate_camera_pose    (int camera1, int camera2, cv::Mat* M10, cv::Mat* M20);
     void calculate_camera_pose    (int camera1, int camera2, std::vector<cv::Mat>* M10, std::vector<cv::Mat>* M20);
+    void calculate_camera_pose    (int camera1, int camera2, cv::Mat* M12);
+
 
 
     void getDeviceList            ();
