@@ -274,7 +274,7 @@ bool C_CameraManager::scanChAruco(cv::Mat &image, Camera::C_Camera2 &camera, cv:
   cv::Ptr<cv::aruco::DetectorParameters>    params = cv::aruco::DetectorParameters::create();
 
   cv::Ptr<cv::aruco::Dictionary>            dictionary = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_4X4_50);// (cv::aruco::DICT_6X6_250)
-  cv::Ptr<cv::aruco::CharucoBoard>          board = cv::aruco::CharucoBoard::create(5, 8, 0.05f, 0.03745f, dictionary);
+  cv::Ptr<cv::aruco::CharucoBoard>          board = cv::aruco::CharucoBoard::create(5, 8, 0.050f, 0.03764f, dictionary);
 
   cv::Size                                  imgSize;
   std::vector<int>                        markerIds;
@@ -670,30 +670,33 @@ cv::Mat C_CameraManager::calculate_camera_pose    (int camera1, int camera2, cv:
     cv::Mat M01(cv::Mat_<double>(4,4));
     cv::Mat M02(cv::Mat_<double>(4,4));
 
-    M01 = M10->inv();
     M02 = M20->inv();
 
-    M12 = *M10 * M02;
+    cv::multiply(*M10, M02, M12, 1);
     return M12;
   }//calculate_camera_pose
 void C_CameraManager::calculate_camera_pose    (int camera1, int camera2, cv::Mat* M12)
   {
     cv::Mat M01(cv::Mat_<double>(4,4));
     cv::Mat M02(cv::Mat_<double>(4,4));
-    cv::Mat PoseWorldToCamera0(cv::Mat_<double>(4,4));
     cv::Mat PoseWorldToCamera1(cv::Mat_<double>(4,4));
-    cv::Mat PoseCamera0ToWorld(cv::Mat_<double>(4,4));
+    cv::Mat PoseWorldToCamera2(cv::Mat_<double>(4,4));
     cv::Mat PoseCamera1ToWorld(cv::Mat_<double>(4,4));
+    cv::Mat PoseCamera2ToWorld(cv::Mat_<double>(4,4));
 
     for(int i=0;i<4;i++)
         for(int j=0;j<4;j++)
         {
-        PoseWorldToCamera0.at<double>(i,j) = this->vecCameras->at(camera1)->WorldToCamera->HomogenePosenMatrix[i][j];
+        PoseWorldToCamera1.at<double>(i,j) = this->vecCameras->at(camera1)->WorldToCamera->HomogenePosenMatrix[i][j];
+        PoseCamera1ToWorld.at<double>(i,j) = this->vecCameras->at(camera1)->CameraToWorld->HomogenePosenMatrix[i][j];
+
         }
-
-
-    PoseWorldToCamera1 = PoseWorldToCamera0 * *M12;
     printmatrix("PoseWorldToCamera1", PoseWorldToCamera1);
+    printmatrix("PoseCamera1ToWorld", PoseCamera1ToWorld);
+
+    cv::multiply(PoseWorldToCamera1, *M12, PoseWorldToCamera2,1);
+
+    printmatrix("PoseWorldToCamera2", PoseWorldToCamera2);
 
     PoseCamera1ToWorld = PoseWorldToCamera1.inv();
 
@@ -701,8 +704,8 @@ void C_CameraManager::calculate_camera_pose    (int camera1, int camera2, cv::Ma
     for(int i=0;i<4;i++)
         for(int j=0;j<4;j++)
         {
-        this->vecCameras->at(camera2)->CameraToWorld->HomogenePosenMatrix[i][j] = PoseCamera1ToWorld.at<double>(i,j);
-        this->vecCameras->at(camera2)->WorldToCamera->HomogenePosenMatrix[i][j] = PoseWorldToCamera1.at<double>(i,j);
+        this->vecCameras->at(camera2)->CameraToWorld->HomogenePosenMatrix[i][j] = PoseCamera2ToWorld.at<double>(i,j);
+        this->vecCameras->at(camera2)->WorldToCamera->HomogenePosenMatrix[i][j] = PoseWorldToCamera2.at<double>(i,j);
         }
 
     this->globalObjects->saveManager->saveCameraCos(*this->vecCameras->at(camera2));

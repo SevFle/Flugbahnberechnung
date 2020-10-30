@@ -117,7 +117,7 @@ void c_SaveManager::saveCameraCalibration (Camera::C_Camera2 &Camera)
     std::cout << "**ERROR** Kalibrierung fuer Kamera " << std::to_string(Camera.getCameraID()) << " wurde nicht gespeichert" << std::endl;
     }
   }
-void c_SaveManager::saveCameraSettings    (Camera::C_Camera2 &Camera)
+void c_SaveManager::saveCameraSettings        (Camera::C_Camera2 &Camera)
   {
   string Dateiname = "../Parameter/Camera_setting" + to_string (Camera.getCameraID()) + ".csv";
   string Dateityp  = "Value of the individual setting";
@@ -166,8 +166,7 @@ void c_SaveManager::saveCameraSettings    (Camera::C_Camera2 &Camera)
     }
   }
 
-
-void c_SaveManager::saveRobotCos           (Robot_Panda::C_Robot_Panda& robot)
+void c_SaveManager::saveRobotCos              (Robot_Panda::C_Robot_Panda& robot)
   {
   string Dateiname = "../Parameter/RobotToWorld_Pose.csv";
   string Dateityp = "Pose Robot to World";;
@@ -210,8 +209,6 @@ void c_SaveManager::saveRobotCos           (Robot_Panda::C_Robot_Panda& robot)
  else
  {}
   }
-
-
 void c_SaveManager::saveRobotHomePose         (C_AbsolutePose* HomePose)
   {
   string Dateiname = "../Parameter/RobotHome_Pose.csv";
@@ -250,7 +247,93 @@ void c_SaveManager::saveRobotHomePose         (C_AbsolutePose* HomePose)
     this->csv_parameter_datei->Schreiben ("py",py,"[m]");
     this->csv_parameter_datei->Schreiben ("pz",pz,"[m]");
     this->csv_parameter_datei->Schliessen();
-    std::cout << "**INFO** Pose fuer Roboter wurde gespeichert" << std::endl;
+    std::cout << "**INFO** Home Pose fuer Roboter wurde gespeichert" << std::endl;
+ }
+ else
+ {}
+  }
+void c_SaveManager::saveRobotInterWaitingPose (C_AbsolutePose *InterWaiting_Pose)
+  {
+  string Dateiname = "../Parameter/RobotInterWaiting_Pose.csv";
+  string Dateityp = "Pose Robot TCP Home";;
+  double nx, ny, nz, ox, oy, oz, ax, ay, az, px, py, pz;
+
+  nx = InterWaiting_Pose->nx();
+  ny = InterWaiting_Pose->ny();
+  nz = InterWaiting_Pose->nz();
+
+  ox = InterWaiting_Pose->ox();
+  oy = InterWaiting_Pose->oy();
+  oz = InterWaiting_Pose->oz();
+
+  ax = InterWaiting_Pose->ax();
+  ay = InterWaiting_Pose->ay();
+  az = InterWaiting_Pose->az();
+
+  px = InterWaiting_Pose->px();
+  py = InterWaiting_Pose->py();
+  pz = InterWaiting_Pose->pz();
+ this->csv_parameter_datei->Oeffnen (Dateiname, Enum_CSV_Access::Write);
+ if(this->csv_parameter_datei->IsOpen())
+ {
+    this->csv_parameter_datei->Schreiben ("Dateityp",Dateityp,"[1]");
+    this->csv_parameter_datei->Schreiben ("nx",nx,"[1]");
+    this->csv_parameter_datei->Schreiben ("ny",ny,"[1]");
+    this->csv_parameter_datei->Schreiben ("nz",nz,"[1]");
+    this->csv_parameter_datei->Schreiben ("ox",ox,"[1]");
+    this->csv_parameter_datei->Schreiben ("oy",oy,"[1]");
+    this->csv_parameter_datei->Schreiben ("oz",oz,"[1]");
+    this->csv_parameter_datei->Schreiben ("ax",ax,"[1]");
+    this->csv_parameter_datei->Schreiben ("ay",ay,"[1]");
+    this->csv_parameter_datei->Schreiben ("az",az,"[1]");
+    this->csv_parameter_datei->Schreiben ("px",px,"[m]");
+    this->csv_parameter_datei->Schreiben ("py",py,"[m]");
+    this->csv_parameter_datei->Schreiben ("pz",pz,"[m]");
+    this->csv_parameter_datei->Schliessen();
+    std::cout << "**INFO** InterWaiting Pose fuer Roboter wurde gespeichert" << std::endl;
+ }
+ else
+ {}
+  }
+void c_SaveManager::saveRobotReadyPose        (C_AbsolutePose *ReadyPose)
+{
+  string Dateiname = "../Parameter/RobotReady_Pose.csv";
+  string Dateityp = "Pose Robot TCP Home";;
+  double nx, ny, nz, ox, oy, oz, ax, ay, az, px, py, pz;
+
+  nx = ReadyPose->nx();
+  ny = ReadyPose->ny();
+  nz = ReadyPose->nz();
+
+  ox = ReadyPose->ox();
+  oy = ReadyPose->oy();
+  oz = ReadyPose->oz();
+
+  ax = ReadyPose->ax();
+  ay = ReadyPose->ay();
+  az = ReadyPose->az();
+
+  px = ReadyPose->px();
+  py = ReadyPose->py();
+  pz = ReadyPose->pz();
+ this->csv_parameter_datei->Oeffnen (Dateiname, Enum_CSV_Access::Write);
+ if(this->csv_parameter_datei->IsOpen())
+ {
+    this->csv_parameter_datei->Schreiben ("Dateityp",Dateityp,"[1]");
+    this->csv_parameter_datei->Schreiben ("nx",nx,"[1]");
+    this->csv_parameter_datei->Schreiben ("ny",ny,"[1]");
+    this->csv_parameter_datei->Schreiben ("nz",nz,"[1]");
+    this->csv_parameter_datei->Schreiben ("ox",ox,"[1]");
+    this->csv_parameter_datei->Schreiben ("oy",oy,"[1]");
+    this->csv_parameter_datei->Schreiben ("oz",oz,"[1]");
+    this->csv_parameter_datei->Schreiben ("ax",ax,"[1]");
+    this->csv_parameter_datei->Schreiben ("ay",ay,"[1]");
+    this->csv_parameter_datei->Schreiben ("az",az,"[1]");
+    this->csv_parameter_datei->Schreiben ("px",px,"[m]");
+    this->csv_parameter_datei->Schreiben ("py",py,"[m]");
+    this->csv_parameter_datei->Schreiben ("pz",pz,"[m]");
+    this->csv_parameter_datei->Schliessen();
+    std::cout << "**INFO** Ready Pose fuer Roboter wurde gespeichert" << std::endl;
  }
  else
  {}

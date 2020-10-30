@@ -61,6 +61,7 @@ connect                                 (this->Taktgeber, &QTimer::timeout, this
 this->Taktgeber->start                  (this->Taktgeber_Intervall);
 this->installEventFilter                (this);
 this->on_rb_no_tool_clicked();
+this->initUi();
 Q_UNUSED(ShowEvent)
 }
 
@@ -151,8 +152,43 @@ void C_frm_Robot_Calibration::Taktgeber_Tick()
     {
     this->moving = false;
     this->Main->robotManager->close_Panda_threading();
+      this->ui->bt_move_home->setEnabled(true);
+      this->ui->bt_save_pose->setEnabled(true);
+      this->ui->bt_set_constraint->setEnabled(true);
+      this->ui->bt_set_home->setEnabled(true);
+      this->ui->dspb_Panda_Vel_max->setEnabled(true);
+      this->ui->dspb_Panda_Acc_max->setEnabled(true);
+      this->ui->dspb_Panda_Omega_max->setEnabled(true);
+      this->ui->dspb_Panda_Alpha_max->setEnabled(true);
     }
   }//void C_frm_Robot_Calibration::Taktgeber_Tick()
+
+void C_frm_Robot_Calibration::initUi()
+  {
+  this->ui->txb_constraint_x->setText(QString::number(this->Main->robotManager->outerConstraints->X));
+  this->ui->txb_constraint_nx->setText(QString::number(this->Main->robotManager->outerConstraints->nX));
+  this->ui->txb_constraint_y->setText(QString::number(this->Main->robotManager->outerConstraints->Y));
+  this->ui->txb_constraint_ny->setText(QString::number(this->Main->robotManager->outerConstraints->nY));
+  this->ui->txb_constraint_z->setText(QString::number(this->Main->robotManager->outerConstraints->Z));
+  this->ui->txb_constraint_nz->setText(QString::number(this->Main->robotManager->outerConstraints->nZ));
+
+    C_AbsolutePose RobotHome = this->Main->robotManager->roboter->Abs_Home_Pose;
+    this->ui->txb_nx_home->setText(QString::number(RobotHome.HomogenePosenMatrix[0][0]));
+    this->ui->txb_ny_home->setText(QString::number(RobotHome.HomogenePosenMatrix[1][0]));
+    this->ui->txb_nz_home->setText(QString::number(RobotHome.HomogenePosenMatrix[2][0]));
+
+    this->ui->txb_ox_home->setText(QString::number(RobotHome.HomogenePosenMatrix[0][1]));
+    this->ui->txb_oy_home->setText(QString::number(RobotHome.HomogenePosenMatrix[1][1]));
+    this->ui->txb_oz_home->setText(QString::number(RobotHome.HomogenePosenMatrix[2][1]));
+
+    this->ui->txb_ax_home->setText(QString::number(RobotHome.HomogenePosenMatrix[0][2]));
+    this->ui->txb_ay_home->setText(QString::number(RobotHome.HomogenePosenMatrix[1][2]));
+    this->ui->txb_az_home->setText(QString::number(RobotHome.HomogenePosenMatrix[2][2]));
+
+    this->ui->txb_px_home->setText(QString::number(RobotHome.HomogenePosenMatrix[0][3]));
+    this->ui->txb_py_home->setText(QString::number(RobotHome.HomogenePosenMatrix[1][3]));
+    this->ui->txb_pz_home->setText(QString::number(RobotHome.HomogenePosenMatrix[2][3]));
+  }
 
 void C_frm_Robot_Calibration::writeCamPose()
   {
@@ -252,39 +288,115 @@ void frm_Robot_Calibration::C_frm_Robot_Calibration::on_bt_exit_clicked()
 void frm_Robot_Calibration::C_frm_Robot_Calibration::on_bt_save_pose_clicked()
   {
   C_RelativePose camToBoard;
+  C_AbsolutePose WorldToRobot;
+  C_AbsolutePose RobotToWorld;
+
   for(int i = 0;i < 4; i++)
     for(int j=0; j < 4; j++)
       {
       camToBoard.HomogenePosenMatrix[i][j] = this->camPose->at<double>(i,j);
       }
   *this->GlobalObjects->camToBoard = camToBoard;
-  this->Main->robotManager->calibrateRobotBaseToWorld(*this->Main->cameraManager->vecCameras->at(this->ui->num_camID->value())->CameraToWorld);
+  WorldToRobot =  this->Main->robotManager->calibrateRobotBaseToWorld(*this->Main->cameraManager->vecCameras->at(this->ui->num_camID->value())->CameraToWorld);
+  RobotToWorld.InversHomogenousPose(WorldToRobot, RobotToWorld.HomogenePosenMatrix);
 
+  this->Main->robotManager->roboter->Abs_RobotToWorld_Pose = RobotToWorld;
+  this->Main->robotManager->roboter->Abs_WorldToRobot_Pose = WorldToRobot;
 
-  *this->robotBaseToWorldPose = this->Main->robotManager->roboter->Abs_RobotToWorld_Pose;
-  this->ui->txb_nx_robot_world->setText(QString::number(this->robotBaseToWorldPose->HomogenePosenMatrix[0][0]));
-  this->ui->txb_ny_robot_world->setText(QString::number(this->robotBaseToWorldPose->HomogenePosenMatrix[1][0]));
-  this->ui->txb_nz_robot_world->setText(QString::number(this->robotBaseToWorldPose->HomogenePosenMatrix[2][0]));
+  this->ui->txb_nx_robot_world->setText(QString::number(RobotToWorld.HomogenePosenMatrix[0][0]));
+  this->ui->txb_ny_robot_world->setText(QString::number(RobotToWorld.HomogenePosenMatrix[1][0]));
+  this->ui->txb_nz_robot_world->setText(QString::number(RobotToWorld.HomogenePosenMatrix[2][0]));
 
-  this->ui->txb_ox_robot_world->setText(QString::number(this->robotBaseToWorldPose->HomogenePosenMatrix[0][1]));
-  this->ui->txb_oy_robot_world->setText(QString::number(this->robotBaseToWorldPose->HomogenePosenMatrix[1][1]));
-  this->ui->txb_oz_robot_world->setText(QString::number(this->robotBaseToWorldPose->HomogenePosenMatrix[2][1]));
+  this->ui->txb_ox_robot_world->setText(QString::number(RobotToWorld.HomogenePosenMatrix[0][1]));
+  this->ui->txb_oy_robot_world->setText(QString::number(RobotToWorld.HomogenePosenMatrix[1][1]));
+  this->ui->txb_oz_robot_world->setText(QString::number(RobotToWorld.HomogenePosenMatrix[2][1]));
 
-  this->ui->txb_ax_robot_world->setText(QString::number(this->robotBaseToWorldPose->HomogenePosenMatrix[0][2]));
-  this->ui->txb_ay_robot_world->setText(QString::number(this->robotBaseToWorldPose->HomogenePosenMatrix[1][2]));
-  this->ui->txb_az_robot_world->setText(QString::number(this->robotBaseToWorldPose->HomogenePosenMatrix[2][2]));
+  this->ui->txb_ax_robot_world->setText(QString::number(RobotToWorld.HomogenePosenMatrix[0][2]));
+  this->ui->txb_ay_robot_world->setText(QString::number(RobotToWorld.HomogenePosenMatrix[1][2]));
+  this->ui->txb_az_robot_world->setText(QString::number(RobotToWorld.HomogenePosenMatrix[2][2]));
 
-  this->ui->txb_px_robot_world->setText(QString::number(this->robotBaseToWorldPose->HomogenePosenMatrix[0][3]));
-  this->ui->txb_py_robot_world->setText(QString::number(this->robotBaseToWorldPose->HomogenePosenMatrix[1][3]));
-  this->ui->txb_pz_robot_world->setText(QString::number(this->robotBaseToWorldPose->HomogenePosenMatrix[2][3]));
+  this->ui->txb_px_robot_world->setText(QString::number(RobotToWorld.HomogenePosenMatrix[0][3]));
+  this->ui->txb_py_robot_world->setText(QString::number(RobotToWorld.HomogenePosenMatrix[1][3]));
+  this->ui->txb_pz_robot_world->setText(QString::number(RobotToWorld.HomogenePosenMatrix[2][3]));
+
+  this->GlobalObjects->saveManager->saveRobotCos(*this->Main->robotManager->roboter);
   }
 
 void frm_Robot_Calibration::C_frm_Robot_Calibration::on_bt_set_home_clicked()
 {
-C_AbsolutePose HomePose;
-this->Main->robotManager->roboter->Get_Current_TCP_Pose(HomePose);
-this->Main->robotManager->roboter->Abs_Home_Pose = HomePose;
-this->GlobalObjects->saveManager->saveRobotHomePose(&HomePose);
+C_AbsolutePose Pose;
+this->Main->robotManager->roboter->Get_Current_TCP_Pose(Pose);
+
+if(this->ui->rb_home_Pose->isChecked())
+  {
+  this->Main->robotManager->roboter->Abs_Home_Pose = Pose;
+  this->GlobalObjects->saveManager->saveRobotHomePose(&Pose);
+    this->ui->grpb_home_pose->setTitle("Home Pose");
+
+    C_AbsolutePose RobotHome = this->Main->robotManager->roboter->Abs_Home_Pose;
+    this->ui->txb_nx_home->setText(QString::number(RobotHome.HomogenePosenMatrix[0][0]));
+    this->ui->txb_ny_home->setText(QString::number(RobotHome.HomogenePosenMatrix[1][0]));
+    this->ui->txb_nz_home->setText(QString::number(RobotHome.HomogenePosenMatrix[2][0]));
+
+    this->ui->txb_ox_home->setText(QString::number(RobotHome.HomogenePosenMatrix[0][1]));
+    this->ui->txb_oy_home->setText(QString::number(RobotHome.HomogenePosenMatrix[1][1]));
+    this->ui->txb_oz_home->setText(QString::number(RobotHome.HomogenePosenMatrix[2][1]));
+
+    this->ui->txb_ax_home->setText(QString::number(RobotHome.HomogenePosenMatrix[0][2]));
+    this->ui->txb_ay_home->setText(QString::number(RobotHome.HomogenePosenMatrix[1][2]));
+    this->ui->txb_az_home->setText(QString::number(RobotHome.HomogenePosenMatrix[2][2]));
+
+    this->ui->txb_px_home->setText(QString::number(RobotHome.HomogenePosenMatrix[0][3]));
+    this->ui->txb_py_home->setText(QString::number(RobotHome.HomogenePosenMatrix[1][3]));
+    this->ui->txb_pz_home->setText(QString::number(RobotHome.HomogenePosenMatrix[2][3]));
+
+  }
+else if(this->ui->rb_inter_waiting_Pose->isChecked())
+  {
+  this->Main->robotManager->roboter->Abs_inter_waiting_Pose = Pose;
+  this->GlobalObjects->saveManager->saveRobotInterWaitingPose(&Pose);
+    this->ui->grpb_home_pose->setTitle("Inter Pose");
+
+    C_AbsolutePose RobotHome = this->Main->robotManager->roboter->Abs_inter_waiting_Pose;
+    this->ui->txb_nx_home->setText(QString::number(RobotHome.HomogenePosenMatrix[0][0]));
+    this->ui->txb_ny_home->setText(QString::number(RobotHome.HomogenePosenMatrix[1][0]));
+    this->ui->txb_nz_home->setText(QString::number(RobotHome.HomogenePosenMatrix[2][0]));
+
+    this->ui->txb_ox_home->setText(QString::number(RobotHome.HomogenePosenMatrix[0][1]));
+    this->ui->txb_oy_home->setText(QString::number(RobotHome.HomogenePosenMatrix[1][1]));
+    this->ui->txb_oz_home->setText(QString::number(RobotHome.HomogenePosenMatrix[2][1]));
+
+    this->ui->txb_ax_home->setText(QString::number(RobotHome.HomogenePosenMatrix[0][2]));
+    this->ui->txb_ay_home->setText(QString::number(RobotHome.HomogenePosenMatrix[1][2]));
+    this->ui->txb_az_home->setText(QString::number(RobotHome.HomogenePosenMatrix[2][2]));
+
+    this->ui->txb_px_home->setText(QString::number(RobotHome.HomogenePosenMatrix[0][3]));
+    this->ui->txb_py_home->setText(QString::number(RobotHome.HomogenePosenMatrix[1][3]));
+    this->ui->txb_pz_home->setText(QString::number(RobotHome.HomogenePosenMatrix[2][3]));
+
+  }
+else if(this->ui->rb_waiting_Pose->isChecked())
+  {
+  this->Main->robotManager->roboter->Abs_waiting_Pose = Pose;
+  this->GlobalObjects->saveManager->saveRobotReadyPose(&Pose);
+    this->ui->grpb_home_pose->setTitle("Ready Pose");
+      C_AbsolutePose RobotHome = this->Main->robotManager->roboter->Abs_waiting_Pose;
+      this->ui->txb_nx_home->setText(QString::number(RobotHome.HomogenePosenMatrix[0][0]));
+      this->ui->txb_ny_home->setText(QString::number(RobotHome.HomogenePosenMatrix[1][0]));
+      this->ui->txb_nz_home->setText(QString::number(RobotHome.HomogenePosenMatrix[2][0]));
+
+      this->ui->txb_ox_home->setText(QString::number(RobotHome.HomogenePosenMatrix[0][1]));
+      this->ui->txb_oy_home->setText(QString::number(RobotHome.HomogenePosenMatrix[1][1]));
+      this->ui->txb_oz_home->setText(QString::number(RobotHome.HomogenePosenMatrix[2][1]));
+
+      this->ui->txb_ax_home->setText(QString::number(RobotHome.HomogenePosenMatrix[0][2]));
+      this->ui->txb_ay_home->setText(QString::number(RobotHome.HomogenePosenMatrix[1][2]));
+      this->ui->txb_az_home->setText(QString::number(RobotHome.HomogenePosenMatrix[2][2]));
+
+      this->ui->txb_px_home->setText(QString::number(RobotHome.HomogenePosenMatrix[0][3]));
+      this->ui->txb_py_home->setText(QString::number(RobotHome.HomogenePosenMatrix[1][3]));
+      this->ui->txb_pz_home->setText(QString::number(RobotHome.HomogenePosenMatrix[2][3]));
+  }
 }
 
 void frm_Robot_Calibration::C_frm_Robot_Calibration::on_bt_move_home_clicked()
@@ -295,8 +407,32 @@ void frm_Robot_Calibration::C_frm_Robot_Calibration::on_bt_move_home_clicked()
   double Panda_Alpha_max = abs(this->ui->dspb_Panda_Alpha_max->value());
   this->Main->robotManager->roboter->Set_Panda_Vel_Acc_max(Panda_Vel_max, Panda_Acc_max, Panda_Omega_max, Panda_Alpha_max);
 
+  this->ui->bt_move_home->setEnabled(false);
+  this->ui->bt_save_pose->setEnabled(false);
+  this->ui->bt_set_constraint->setEnabled(false);
+  this->ui->bt_set_home->setEnabled(false);
+  this->ui->dspb_Panda_Vel_max->setEnabled(false);
+  this->ui->dspb_Panda_Acc_max->setEnabled(false);
+  this->ui->dspb_Panda_Omega_max->setEnabled(false);
+  this->ui->dspb_Panda_Alpha_max->setEnabled(false);
+
   C_AbsolutePose target;
-  target = this->Main->robotManager->roboter->Abs_Home_Pose;
+  if(this->ui->rb_home_Pose->isChecked())
+    {
+    target = this->Main->robotManager->roboter->Abs_Home_Pose;
+    }
+  else if(this->ui->rb_inter_waiting_Pose->isChecked())
+    {
+    target = this->Main->robotManager->roboter->Abs_inter_waiting_Pose;
+    }
+  else if(this->ui->rb_waiting_Pose->isChecked())
+    {
+    target = this->Main->robotManager->roboter->Abs_waiting_Pose;
+    }
+  else
+    {
+    this->Main->robotManager->roboter->Get_Current_TCP_Pose(target);
+    }
   this->moving = true;
   this->Main->robotManager->moveRobotToTarget(&target);
   }
@@ -319,4 +455,120 @@ void frm_Robot_Calibration::C_frm_Robot_Calibration::on_rb_calib_tool_clicked()
   double tcp[4][4];
   this->GlobalObjects->loadManager->loadRobotTCPCalibration(tcp);
   this->Main->robotManager->roboter->Set_TCP_Frame(tcp);
+  }
+
+void frm_Robot_Calibration::C_frm_Robot_Calibration::on_rb_home_Pose_clicked()
+  {
+  this->ui->rb_home_Pose->setChecked(true);
+  this->ui->rb_inter_waiting_Pose->setChecked(false);
+  this->ui->rb_waiting_Pose->setChecked(false);
+    this->ui->grpb_home_pose->setTitle("Home Pose");
+
+    C_AbsolutePose RobotHome = this->Main->robotManager->roboter->Abs_Home_Pose;
+    this->ui->txb_nx_home->setText(QString::number(RobotHome.HomogenePosenMatrix[0][0]));
+    this->ui->txb_ny_home->setText(QString::number(RobotHome.HomogenePosenMatrix[1][0]));
+    this->ui->txb_nz_home->setText(QString::number(RobotHome.HomogenePosenMatrix[2][0]));
+
+    this->ui->txb_ox_home->setText(QString::number(RobotHome.HomogenePosenMatrix[0][1]));
+    this->ui->txb_oy_home->setText(QString::number(RobotHome.HomogenePosenMatrix[1][1]));
+    this->ui->txb_oz_home->setText(QString::number(RobotHome.HomogenePosenMatrix[2][1]));
+
+    this->ui->txb_ax_home->setText(QString::number(RobotHome.HomogenePosenMatrix[0][2]));
+    this->ui->txb_ay_home->setText(QString::number(RobotHome.HomogenePosenMatrix[1][2]));
+    this->ui->txb_az_home->setText(QString::number(RobotHome.HomogenePosenMatrix[2][2]));
+
+    this->ui->txb_px_home->setText(QString::number(RobotHome.HomogenePosenMatrix[0][3]));
+    this->ui->txb_py_home->setText(QString::number(RobotHome.HomogenePosenMatrix[1][3]));
+    this->ui->txb_pz_home->setText(QString::number(RobotHome.HomogenePosenMatrix[2][3]));
+
+  }
+
+void frm_Robot_Calibration::C_frm_Robot_Calibration::on_rb_inter_waiting_Pose_clicked()
+  {
+  this->ui->rb_home_Pose->setChecked(false);
+  this->ui->rb_inter_waiting_Pose->setChecked(true);
+  this->ui->rb_waiting_Pose->setChecked(false);
+    this->ui->grpb_home_pose->setTitle("Inter Pose");
+
+    C_AbsolutePose RobotHome = this->Main->robotManager->roboter->Abs_inter_waiting_Pose;
+    this->ui->txb_nx_home->setText(QString::number(RobotHome.HomogenePosenMatrix[0][0]));
+    this->ui->txb_ny_home->setText(QString::number(RobotHome.HomogenePosenMatrix[1][0]));
+    this->ui->txb_nz_home->setText(QString::number(RobotHome.HomogenePosenMatrix[2][0]));
+
+    this->ui->txb_ox_home->setText(QString::number(RobotHome.HomogenePosenMatrix[0][1]));
+    this->ui->txb_oy_home->setText(QString::number(RobotHome.HomogenePosenMatrix[1][1]));
+    this->ui->txb_oz_home->setText(QString::number(RobotHome.HomogenePosenMatrix[2][1]));
+
+    this->ui->txb_ax_home->setText(QString::number(RobotHome.HomogenePosenMatrix[0][2]));
+    this->ui->txb_ay_home->setText(QString::number(RobotHome.HomogenePosenMatrix[1][2]));
+    this->ui->txb_az_home->setText(QString::number(RobotHome.HomogenePosenMatrix[2][2]));
+
+    this->ui->txb_px_home->setText(QString::number(RobotHome.HomogenePosenMatrix[0][3]));
+    this->ui->txb_py_home->setText(QString::number(RobotHome.HomogenePosenMatrix[1][3]));
+    this->ui->txb_pz_home->setText(QString::number(RobotHome.HomogenePosenMatrix[2][3]));
+
+  }
+
+void frm_Robot_Calibration::C_frm_Robot_Calibration::on_rb_waiting_Pose_clicked()
+  {
+  this->ui->rb_home_Pose->setChecked(false);
+  this->ui->rb_inter_waiting_Pose->setChecked(false);
+  this->ui->rb_waiting_Pose->setChecked(true);
+  this->ui->grpb_home_pose->setTitle("Ready Pose");
+    C_AbsolutePose RobotHome = this->Main->robotManager->roboter->Abs_waiting_Pose;
+    this->ui->txb_nx_home->setText(QString::number(RobotHome.HomogenePosenMatrix[0][0]));
+    this->ui->txb_ny_home->setText(QString::number(RobotHome.HomogenePosenMatrix[1][0]));
+    this->ui->txb_nz_home->setText(QString::number(RobotHome.HomogenePosenMatrix[2][0]));
+
+    this->ui->txb_ox_home->setText(QString::number(RobotHome.HomogenePosenMatrix[0][1]));
+    this->ui->txb_oy_home->setText(QString::number(RobotHome.HomogenePosenMatrix[1][1]));
+    this->ui->txb_oz_home->setText(QString::number(RobotHome.HomogenePosenMatrix[2][1]));
+
+    this->ui->txb_ax_home->setText(QString::number(RobotHome.HomogenePosenMatrix[0][2]));
+    this->ui->txb_ay_home->setText(QString::number(RobotHome.HomogenePosenMatrix[1][2]));
+    this->ui->txb_az_home->setText(QString::number(RobotHome.HomogenePosenMatrix[2][2]));
+
+    this->ui->txb_px_home->setText(QString::number(RobotHome.HomogenePosenMatrix[0][3]));
+    this->ui->txb_py_home->setText(QString::number(RobotHome.HomogenePosenMatrix[1][3]));
+    this->ui->txb_pz_home->setText(QString::number(RobotHome.HomogenePosenMatrix[2][3]));
+
+  }
+
+void frm_Robot_Calibration::C_frm_Robot_Calibration::on_bt_set_constraint_clicked()
+  {
+  C_AbsolutePose pose;
+  this->Main->robotManager->roboter->Get_Current_TCP_Pose(pose);
+  if(this->ui->rb_constraint_x->isChecked())
+    {
+    this->Main->robotManager->outerConstraints->X = pose.px();
+    }
+  else if(this->ui->rb_constraint_nx->isChecked())
+    {
+    this->Main->robotManager->outerConstraints->nX = pose.px();
+    }
+
+  else if(this->ui->rb_constraint_y->isChecked())
+    {
+    this->Main->robotManager->outerConstraints->Y = pose.py();
+    }
+  else if(this->ui->rb_constraint_ny->isChecked())
+    {
+    this->Main->robotManager->outerConstraints->nY = pose.py();
+    }
+
+  else if(this->ui->rb_constraint_z->isChecked())
+    {
+    this->Main->robotManager->outerConstraints->Z = pose.pz();
+    }
+  else if(this->ui->rb_constraint_nz->isChecked())
+    {
+    this->Main->robotManager->outerConstraints->nZ = pose.pz();
+    }
+  this->ui->txb_constraint_x->  setText(QString::number(this->Main->robotManager->outerConstraints->X));
+  this->ui->txb_constraint_nx-> setText(QString::number(this->Main->robotManager->outerConstraints->nX));
+  this->ui->txb_constraint_y->  setText(QString::number(this->Main->robotManager->outerConstraints->Y));
+  this->ui->txb_constraint_ny-> setText(QString::number(this->Main->robotManager->outerConstraints->nY));
+  this->ui->txb_constraint_z->  setText(QString::number(this->Main->robotManager->outerConstraints->Z));
+  this->ui->txb_constraint_nz-> setText(QString::number(this->Main->robotManager->outerConstraints->nZ));
+
   }

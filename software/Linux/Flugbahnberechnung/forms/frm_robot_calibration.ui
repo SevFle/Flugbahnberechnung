@@ -276,7 +276,7 @@
      </rect>
     </property>
     <property name="title">
-     <string>Pose Robot TCP zu Base</string>
+     <string>Pose Robot Base zu TCP </string>
     </property>
     <widget class="QTextEdit" name="txb_px_robot">
      <property name="geometry">
@@ -610,27 +610,27 @@
    <widget class="QPushButton" name="bt_set_home">
     <property name="geometry">
      <rect>
-      <x>180</x>
-      <y>730</y>
+      <x>10</x>
+      <y>330</y>
       <width>141</width>
       <height>71</height>
      </rect>
     </property>
     <property name="text">
-     <string>Set home</string>
+     <string>Set Pose</string>
     </property>
    </widget>
    <widget class="QPushButton" name="bt_move_home">
     <property name="geometry">
      <rect>
-      <x>350</x>
-      <y>730</y>
+      <x>10</x>
+      <y>400</y>
       <width>141</width>
       <height>71</height>
      </rect>
     </property>
     <property name="text">
-     <string>Move to home</string>
+     <string>Move to Pose</string>
     </property>
    </widget>
    <widget class="QGroupBox" name="grpb_home_pose">
@@ -791,7 +791,7 @@
       <bool>true</bool>
      </property>
     </widget>
-    <widget class="QTextEdit" name="txb_pz_cam_2">
+    <widget class="QTextEdit" name="txb_pz_home">
      <property name="geometry">
       <rect>
        <x>430</x>
@@ -808,8 +808,8 @@
    <widget class="QDoubleSpinBox" name="dspb_Panda_Vel_max">
     <property name="geometry">
      <rect>
-      <x>290</x>
-      <y>334</y>
+      <x>160</x>
+      <y>494</y>
       <width>91</width>
       <height>26</height>
      </rect>
@@ -830,8 +830,8 @@
    <widget class="QDoubleSpinBox" name="dspb_Panda_Omega_max">
     <property name="geometry">
      <rect>
-      <x>290</x>
-      <y>434</y>
+      <x>160</x>
+      <y>594</y>
       <width>91</width>
       <height>26</height>
      </rect>
@@ -852,8 +852,8 @@
    <widget class="QDoubleSpinBox" name="dspb_Panda_Acc_max">
     <property name="geometry">
      <rect>
-      <x>290</x>
-      <y>384</y>
+      <x>160</x>
+      <y>544</y>
       <width>91</width>
       <height>26</height>
      </rect>
@@ -874,8 +874,8 @@
    <widget class="QLabel" name="lbl_Panda_Alpha_max">
     <property name="geometry">
      <rect>
-      <x>140</x>
-      <y>480</y>
+      <x>10</x>
+      <y>640</y>
       <width>191</width>
       <height>31</height>
      </rect>
@@ -887,8 +887,8 @@
    <widget class="QDoubleSpinBox" name="dspb_Panda_Alpha_max">
     <property name="geometry">
      <rect>
-      <x>290</x>
-      <y>484</y>
+      <x>160</x>
+      <y>644</y>
       <width>91</width>
       <height>26</height>
      </rect>
@@ -909,8 +909,8 @@
    <widget class="QLabel" name="lbl_Panda_Vel_max">
     <property name="geometry">
      <rect>
-      <x>140</x>
-      <y>330</y>
+      <x>10</x>
+      <y>490</y>
       <width>181</width>
       <height>31</height>
      </rect>
@@ -922,8 +922,8 @@
    <widget class="QLabel" name="lbl_Panda_Acc_max">
     <property name="geometry">
      <rect>
-      <x>140</x>
-      <y>380</y>
+      <x>10</x>
+      <y>540</y>
       <width>191</width>
       <height>31</height>
      </rect>
@@ -935,8 +935,8 @@
    <widget class="QLabel" name="lbl_Panda_Omega_max">
     <property name="geometry">
      <rect>
-      <x>140</x>
-      <y>430</y>
+      <x>10</x>
+      <y>590</y>
       <width>181</width>
       <height>31</height>
      </rect>
@@ -968,6 +968,9 @@
      </property>
      <property name="text">
       <string>Kein Tool</string>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
      </property>
     </widget>
     <widget class="QRadioButton" name="rb_calib_tool">
@@ -1007,6 +1010,9 @@
      </property>
      <property name="text">
       <string>set X</string>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
      </property>
     </widget>
     <widget class="QRadioButton" name="rb_constraint_nx">
@@ -1147,6 +1153,61 @@
     <property name="text">
      <string>Set Constraint</string>
     </property>
+   </widget>
+   <widget class="QGroupBox" name="groupBox_set_Pose">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>200</y>
+      <width>171</width>
+      <height>121</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>Roboterpose</string>
+    </property>
+    <widget class="QRadioButton" name="rb_home_Pose">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>30</y>
+       <width>112</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Home Pose</string>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QRadioButton" name="rb_inter_waiting_Pose">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>60</y>
+       <width>112</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Inter Pose</string>
+     </property>
+    </widget>
+    <widget class="QRadioButton" name="rb_waiting_Pose">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>90</y>
+       <width>112</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Ready Pose</string>
+     </property>
+    </widget>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">

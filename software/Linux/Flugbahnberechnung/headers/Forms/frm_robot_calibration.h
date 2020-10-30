@@ -46,10 +46,11 @@ namespace frm_Robot_Calibration
     void writeRobotTcpPose();
     void writeRobotBaseToWorld();
     C_AbsolutePose getPoseRobotBaseToWorld();
+    void initUi                       ();
+
 
   private slots:
     void Taktgeber_Tick               ();
-
 
 
 
@@ -60,7 +61,11 @@ namespace frm_Robot_Calibration
     void on_bt_move_home_clicked();
     void on_rb_no_tool_clicked();
     void on_rb_calib_tool_clicked();
-    };
+    void on_rb_home_Pose_clicked();
+    void on_rb_inter_waiting_Pose_clicked();
+    void on_rb_waiting_Pose_clicked();
+    void on_bt_set_constraint_clicked();
+  };
 
   }
 

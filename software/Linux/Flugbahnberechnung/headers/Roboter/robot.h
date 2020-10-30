@@ -233,6 +233,9 @@ namespace Robot_Panda
     C_AbsolutePose                    Abs_WorldToRobot_Pose;
     C_AbsolutePose                    Abs_RobotToWorld_Pose;
     C_AbsolutePose                    Abs_Home_Pose;
+    C_AbsolutePose                    Abs_waiting_Pose;
+    C_AbsolutePose                    Abs_inter_waiting_Pose;
+
     std::vector<C_AbsolutePose>       vectorOf_Abs_Camera_Calibration_Poses;
     int                               Camera_Calibration_PoseID;
     double                            Panda_Vel_max;

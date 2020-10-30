@@ -13,7 +13,6 @@ C_frm_Camera_Calibration::C_frm_Camera_Calibration(C_GlobalObjects* GlobalObject
     this->Taktgeber = new QTimer;
     this->imgBuffer[0] = new cv::Mat;
     this->imgBuffer[1] = new cv::Mat;
-    this->mPose = new cv::Mat(cv::Mat_<double>(4,4));
     this->Camera0ToWorld = new cv::Mat(cv::Mat_<double>(4,4));
     this->Camera1ToWorld = new cv::Mat(cv::Mat_<double>(4,4));
     this->Camera0ToCamera1 = new cv::Mat(cv::Mat_<double>(4,4));
@@ -49,7 +48,6 @@ C_frm_Camera_Calibration::~C_frm_Camera_Calibration()
   delete (Camera1ToWorld);
   delete (Camera0ToWorld);
 
-  delete (mPose);
   delete(imgBuffer[1]);
   delete (imgBuffer[0]);
   delete (Taktgeber);
@@ -80,7 +78,6 @@ this->Ui->num_TimerIntervall->setValue  (this->Taktgeber_Intervall);
 this->on_rb_single_calibration_clicked  ();
 this->Ui->num_camera_id->setMaximum     (GlobalObjects->absCameras-1);
 this->Ui->grpb_2_output->setVisible     (false);
-this->Ui->lbl_stereo_camera_current_cam->setVisible(false);
 
 Q_UNUSED(ShowEvent)
 }
@@ -146,15 +143,18 @@ void C_frm_Camera_Calibration::Taktgeber_Tick()
     this->Ui->txb_fps->setText(QString::number(pData->fps));
     this->Ui->txb_frametime->   setText(QString::number(pData->frametime.count()));
     this->Ui->txb_quebuffer->   setText(QString::number(pData->queBuffer));
+   cv::Mat temp1, temp2, temp;
+
 
     switch (method)
       {
       case 0:
-        if(this->Main->cameraManager->scanChAruco(this->pData->cpuSrcImg[0], *Main->cameraManager->vecCameras->at(this->Ui->num_camera_id->value()), *this->Camera0ToWorld))
+        this->pData->gpuUndistortedImg[0].download(temp);
+        if(this->Main->cameraManager->scanChAruco(temp, *Main->cameraManager->vecCameras->at(this->Ui->num_camera_id->value()), *this->Camera0ToWorld))
           {
-          this->Main->frm_Main->FillMat2Lbl(this->pData->cpuSrcImg[0], this->Ui->lbl_img_single_calibration);
+          this->Main->frm_Main->FillMat2Lbl(temp, this->Ui->lbl_img_single_calibration);
           //imgBuffer dient zur speicherung von Bildern im Kalibrrierungsprozess
-          this->pData->cpuSrcImg[0].copyTo(*this->imgBuffer[0]);
+          temp.copyTo(*this->imgBuffer[0]);
           this->Ui->txb_nx->setText(QString::number(this->Camera0ToWorld->at<double>(0,0)));
           this->Ui->txb_ny->setText(QString::number(this->Camera0ToWorld->at<double>(1,0)));
           this->Ui->txb_nz->setText(QString::number(this->Camera0ToWorld->at<double>(2,0)));
@@ -194,7 +194,6 @@ void C_frm_Camera_Calibration::Taktgeber_Tick()
           }
         break;
       case 1:
-        cv::Mat temp1, temp2;
         this->pData->gpuUndistortedImg[0].download(temp1);
         this->pData->gpuUndistortedImg[1].download(temp2);
         temp1.copyTo(*this->imgBuffer[0]);
@@ -409,7 +408,6 @@ void C_frm_Camera_Calibration::on_rb_single_calibration_clicked()
     this->Ui->txb_edge_width->setVisible              (true);
     this->Ui->txb_edge_height->setVisible             (true);
     this->Ui->txb_edge_length->setVisible             (true);
-    this->Ui->lbl_stereo_camera_current_cam->setVisible(false);
     this->Ui->lbl_stereo_camera_current_cam->setText("");
 
    this->Ui->lbl_img_single_calibration->setVisible   (true);
@@ -425,7 +423,7 @@ void C_frm_Camera_Calibration::on_rb_stereo_calibration_clicked()
     this->Ui->grpb_2_output->setTitle(QString("Pose Kamera " + QString::number(this->Ui->num_camera_id->value() + 1)));
     this->Ui->grpb_2_output->setVisible(true);
 
-
+    this->Ui->bt_start->setText("Kalibrieren");
     this->Ui->label_5->setVisible                     (false);
     this->Ui->label_6->setVisible                     (false);
     this->Ui->label_7->setVisible                     (false);
@@ -448,8 +446,7 @@ void C_frm_Camera_Calibration::on_rb_stereo_calibration_clicked()
     this->Ui->lbl_img_single_calibration->setVisible  (false);
     this->Ui->lbl_img_stereo_left->setVisible         (true);
     this->Ui->lbl_img_stereo_right->setVisible        (true);
-    this->Ui->lbl_stereo_camera_current_cam->setVisible(true);
-    this->Ui->lbl_stereo_camera_current_cam->setText("");
+    this->Ui->lbl_stereo_camera_current_cam->setText("Stereo");
 
 
 }
@@ -564,10 +561,12 @@ void C_frm_Camera_Calibration::sm_Single_camera_calibration ()
 void C_frm_Camera_Calibration::sm_Stereo_camera_calibration ()
   {
   this->Main->cameraManager->calculate_camera_pose(this->Ui->num_camera_id->value(), this->Ui->num_camera_id->value()+1, this->Camera0ToCamera1);
-  std::string text;
-  text = "Kamera " + std::to_string(this->Ui->num_camera_id->value()) + "gegen " + std::to_string(this->Ui->num_camera_id->value()+1) + "kalibriert";
   QString Qtext;
-  Qtext.fromStdString(text);
+  int camID = this->Ui->num_camera_id->value() +1;
+  Qtext = "Kamera ";
+  Qtext.append((char)camID);
+  Qtext +=  "Pose gespeichert.";
+
   this->Ui->lbl_stereo_camera_current_cam->setText(Qtext);
   }
 
@@ -595,13 +594,15 @@ void frm_Camera_Calibration::C_frm_Camera_Calibration::on_num_TimerIntervall_val
 void frm_Camera_Calibration::C_frm_Camera_Calibration::on_bt_pose_estimation_clicked()
   {
   C_AbsolutePose CameraPose;
-  std::cout << "Pose cam 0 " << std::endl << this->mPose << std::endl;
+  std::cout << "Pose cam 0 " << std::endl << this->Camera0ToWorld << std::endl;
   for(int i=0;i<4;i++)
     for(int j=0;j<4;j++)
       {
-      CameraPose.HomogenePosenMatrix[i][j] = this->mPose->at<double>(i,j);
+      CameraPose.HomogenePosenMatrix[i][j] = this->Camera0ToWorld->at<double>(i,j);
       }
   *this->Main->cameraManager->vecCameras->at(0)->CameraToWorld = CameraPose;
+  CameraPose.InversHomogenousPose(*this->Main->cameraManager->vecCameras->at(this->Ui->num_camera_id->value())->CameraToWorld,
+                                  this->Main->cameraManager->vecCameras->at(this->Ui->num_camera_id->value())->WorldToCamera->HomogenePosenMatrix);
   this->GlobalObjects->saveManager->saveCameraCos(*this->Main->cameraManager->vecCameras->at(0));
   std::cout << "Camera 0 to world saved, world set." << std::endl;
   }

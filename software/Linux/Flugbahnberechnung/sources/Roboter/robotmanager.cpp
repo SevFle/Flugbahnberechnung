@@ -16,9 +16,15 @@ C_robotManager::C_robotManager(C_GlobalObjects* Globalobjects)
   this->objectExit          = new posen::S_Positionsvektor;
   this->state_machine_running = new std::atomic<bool>(false);
   this->smThread            = nullptr;
+  this->Pose_waiting        = new posen::C_AbsolutePose;
+  this->Pose_inter_waiting  = new posen::C_AbsolutePose;
+
   }
 C_robotManager::~C_robotManager()
   {
+  delete                    (Pose_inter_waiting);
+  delete                    (Pose_waiting);
+
   this->smThread            = nullptr;
   delete                    (state_machine_running);
   delete                    (objectExit);
@@ -49,9 +55,11 @@ void C_robotManager::initRobot(std::string IPAdresse)
   strcpy(char_array, IPAdresse.c_str());
   this->roboter = new Robot_Panda::C_Robot_Panda(char_array, false);
   C_AbsolutePose HomePose;
-  this->globalObjects->loadManager->loadRobotHomePose(&HomePose);
+  this->globalObjects->loadManager->loadRobotHomePose(&this->roboter->Abs_Home_Pose);
+  this->globalObjects->loadManager->loadRobotInterWaitingPose(&this->roboter->Abs_inter_waiting_Pose);
+  this->globalObjects->loadManager->loadRobotReadyPose(&this->roboter->Abs_waiting_Pose);
+
   this->globalObjects->loadManager->loadPID(*this->roboter);
-  this->roboter->Abs_Home_Pose = HomePose;
 
   this->outerConstraints->X   =   0.75f;
   this->outerConstraints->nX  =  -0.30f;
@@ -92,7 +100,6 @@ C_AbsolutePose C_robotManager::calibrateRobotBaseToWorld(C_AbsolutePose& worldTo
     for (int j = 0; j < 4; j++)
       for (int k = 0; k < 4; k++)
         {
-        //this->relPose ist die Pose von Kamera1 zu Kamera 2 (M12)
         WorldToBoard.HomogenePosenMatrix[i][j] += worldToCam.HomogenePosenMatrix[i][k] * globalObjects->camToBoard->HomogenePosenMatrix[k][j];
         }
 
@@ -197,20 +204,68 @@ void C_robotManager::sm_BallTracking()
 
         this->smBallTrackingStep = 2;
       break;
-      //Versuche aktuelle Objektdaten aus der Que zu holen. Falls nicht erfolgreich, bleibe im aktuellen Schritt
+
+        //Fahre Roboter zur HomePosition
       case 2:
-        if(this->globalObjects->objectPosenQue->try_pop(this->objectPayload))
+        this->moveRobotToTarget(&this->roboter->Abs_Home_Pose);
+        this->smBallTrackingStep = 3;
+        break;
+      case 3:
+        if(this->roboter->Is_MotionDone())
           {
-          this->smBallTrackingStep = 3;
+          this->smBallTrackingStep = 4;
           }
         else
           {
-          this->smBallTrackingStep = 2;
+          this->smBallTrackingStep = 3;
+          }
+        break;
+    case 4:
+      this->moveRobotToTarget(&this->roboter->Abs_inter_waiting_Pose);
+      this->smBallTrackingStep = 5;
+      break;
+    case 5:
+      if(this->roboter->Is_MotionDone())
+        {
+        this->smBallTrackingStep = 6;
+        }
+      else
+        {
+        this->smBallTrackingStep = 5;
+        }
+      break;
+    case 7:
+      this->moveRobotToTarget(&this->roboter->Abs_inter_waiting_Pose);
+      this->smBallTrackingStep = 8;
+      break;
+    case 8:
+      if(this->roboter->Is_MotionDone())
+        {
+        this->smBallTrackingStep = 9;
+        }
+      else
+        {
+        this->smBallTrackingStep = 8;
+        }
+      break;
+    case 9:
+        //Signal Robot Ready
+        break;
+
+      //Versuche aktuelle Objektdaten aus der Que zu holen. Falls nicht erfolgreich, bleibe im aktuellen Schritt
+      case 10:
+        if(this->globalObjects->objectPosenQue->try_pop(this->objectPayload))
+          {
+          this->smBallTrackingStep = 11;
+          }
+        else
+          {
+          this->smBallTrackingStep = 10;
           }
         break;
 
         //Berechne die aktuelle Trajektorie mit den gegebenen Objektdaten. Überprüfe ob in jedem Schritt dt ob sich X,Y,Z selbst mit Anlaufweg (15 cm in Bewegungsrichtung) innerhalb der Roboterkugel befinden
-      case 3:
+      case 11:
         distanceObjectToRobot_X = 0.0;
         distanceObjectToRobot_Y = 0.0;
         distanceObjectToRobot_Z = 0.0;
@@ -279,11 +334,11 @@ void C_robotManager::sm_BallTracking()
             std::cout << "Waiting at Y: " << waitForHitWorld.py() << std::endl;
             std::cout << "Waiting at Z: " << waitForHitWorld.pz() << std::endl;
 
-            this->smBallTrackingStep = 4;
+            this->smBallTrackingStep = 12;
             }
            else
             {
-            this->smBallTrackingStep = 3;
+            this->smBallTrackingStep = 11;
             }
           }
         //vx = v0x
@@ -295,7 +350,7 @@ void C_robotManager::sm_BallTracking()
         //vz = v0z - g*t
         //z = z0+v0z*t-0.5*g*t*t
         break;
-      case 4:
+      case 12:
         //Transformiere die WartePosition von Welt- zu Robotkoordinatensystem
 
         waitForHitWorld.InversHomogenousPose(waitForHitWorld, waitForHitWorld_inv.HomogenePosenMatrix);

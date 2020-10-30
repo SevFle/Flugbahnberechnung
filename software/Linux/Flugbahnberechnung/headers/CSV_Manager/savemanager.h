@@ -19,14 +19,17 @@ namespace Savemanager
 
 
 
-    void saveCameraCalibration    (Camera::C_Camera2 &Camera);
-    void saveCameraPositioning    (std::vector<Camera::C_Camera2*>& vecCameras, int absCameras) const;
-    void saveCameraCos            (Camera::C_Camera2 &Camera);
-    void saveCameraSettings       (Camera::C_Camera2 &Camera);
+    void saveCameraCalibration      (Camera::C_Camera2 &Camera);
+    void saveCameraPositioning      (std::vector<Camera::C_Camera2*>& vecCameras, int absCameras) const;
+    void saveCameraCos              (Camera::C_Camera2 &Camera);
+    void saveCameraSettings         (Camera::C_Camera2 &Camera);
 
-    void saveRobotCos            (Robot_Panda::C_Robot_Panda& robot);
-    void saveRobotHomePose         (C_AbsolutePose* HomePose);
-    void savePID                   (Robot_Panda::C_Robot_Panda& robot);
+    void saveRobotCos               (Robot_Panda::C_Robot_Panda& robot);
+    void saveRobotHomePose          (C_AbsolutePose* HomePose);
+    void saveRobotInterWaitingPose  (C_AbsolutePose* InterWaitingPose);
+    void saveRobotReadyPose         (C_AbsolutePose* ReadyPose);
+
+    void savePID                    (Robot_Panda::C_Robot_Panda& robot);
 
 
     };

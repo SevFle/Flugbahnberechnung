@@ -1527,16 +1527,11 @@ aufnehmen</string>
    <widget class="QLabel" name="lbl_stereo_camera_current_cam">
     <property name="geometry">
      <rect>
-      <x>160</x>
+      <x>170</x>
       <y>740</y>
-      <width>281</width>
-      <height>71</height>
+      <width>421</width>
+      <height>81</height>
      </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>12</pointsize>
-     </font>
     </property>
     <property name="text">
      <string>TextLabel</string>

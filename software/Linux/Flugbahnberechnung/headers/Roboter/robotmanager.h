@@ -32,6 +32,9 @@ namespace robotManager
     robotManager::robotConstraints*     outerConstraints;
     robotManager::robotConstraints*     innerConstraints;
 
+    C_AbsolutePose*                     Pose_waiting;
+    C_AbsolutePose*                     Pose_inter_waiting;
+
     posen::S_Positionsvektor*           objectEntry;
     posen::S_Positionsvektor*           objectExit;
     std::atomic<bool>*                  state_machine_running;

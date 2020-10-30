@@ -14,7 +14,7 @@ C_LoadManager::~C_LoadManager()
   }
 
 
-void C_LoadManager::loadCameraSettings (Camera::C_Camera2 *Camera)
+void C_LoadManager::loadCameraSettings              (Camera::C_Camera2 *Camera)
   {
   int cameraID = Camera->getCameraID();
   string Dateiname      = "../Parameter/Camera_setting" + to_string (cameraID) + ".csv";
@@ -124,7 +124,7 @@ void C_LoadManager::loadCameraSettings (Camera::C_Camera2 *Camera)
 
   }
 
-void C_LoadManager::loadCameraCalibration (Camera::C_Camera2* Camera)
+void C_LoadManager::loadCameraCalibration           (Camera::C_Camera2* Camera)
   {
   int cameraID      = Camera->getCameraID();
   string Dateiname  = "../Parameter/Camera_Calibration_Parameter_CameraID_" + to_string (cameraID) + ".csv";
@@ -176,7 +176,7 @@ void C_LoadManager::loadCameraCalibration (Camera::C_Camera2* Camera)
   Camera->setCalibrationParameter(DistCoeffs,Intrinsic);
   }
 
-bool C_LoadManager::loadCameraPositioning   (std::vector<Camera::C_Camera2*> &vecCameras, int absCameras)
+bool C_LoadManager::loadCameraPositioning           (std::vector<Camera::C_Camera2*> &vecCameras, int absCameras)
   {
   string                                                  Dateiname = "../Parameter/Camera_Positioning.csv";
   string                                                  Dateityp;
@@ -239,7 +239,7 @@ bool C_LoadManager::loadCameraPositioning   (std::vector<Camera::C_Camera2*> &ve
   return false;
   }
 
-void C_LoadManager::loadCameraCos (Camera::C_Camera2* Camera)
+void C_LoadManager::loadCameraCos                   (Camera::C_Camera2* Camera)
   {
   C_AbsolutePose CameraToWorld;
   C_AbsolutePose WorldToCamera;
@@ -301,7 +301,7 @@ void C_LoadManager::loadCameraCos (Camera::C_Camera2* Camera)
   this->csv_parameter_datei->Schliessen();
   }
 
-double* C_LoadManager::loadRobotTCP(double (&tcp)[4][4])
+double* C_LoadManager::loadRobotTCP                 (double (&tcp)[4][4])
   {
   string  Dateiname;
   string  Dateityp;
@@ -354,8 +354,7 @@ double* C_LoadManager::loadRobotTCP(double (&tcp)[4][4])
         tcp[3][3]      =  1.0000;
         }
     }
-
-double* C_LoadManager::loadRobotTCPCalibration(double (&tcp)[4][4])
+double* C_LoadManager::loadRobotTCPCalibration      (double (&tcp)[4][4])
   {
   string  Dateiname;
   string  Dateityp;
@@ -410,7 +409,7 @@ double* C_LoadManager::loadRobotTCPCalibration(double (&tcp)[4][4])
         }
     }
 
-void C_LoadManager::loadRobotCos    (Robot_Panda::C_Robot_Panda& robot)
+void C_LoadManager::loadRobotCos                    (Robot_Panda::C_Robot_Panda& robot)
   {
   double         Abs_Pose[4][4];
   C_AbsolutePose WorldToRobot;
@@ -447,8 +446,7 @@ void C_LoadManager::loadRobotCos    (Robot_Panda::C_Robot_Panda& robot)
 
     }
   }
-
-void C_LoadManager::loadRobotHomePose(C_AbsolutePose *HomePose)
+void C_LoadManager::loadRobotHomePose               (C_AbsolutePose *HomePose)
   {
   string Dateiname = "../Parameter/RobotHome_Pose.csv";
   string Dateityp = "Pose Robot TCP Home";;
@@ -476,8 +474,64 @@ void C_LoadManager::loadRobotHomePose(C_AbsolutePose *HomePose)
 
     }
   }
+void C_LoadManager::loadRobotInterWaitingPose       (C_AbsolutePose *InterWaitingPose)
+  {
+  string Dateiname = "../Parameter/RobotInterWaiting_Pose.csv";
+  string Dateityp = "Pose Robot TCP Home";;
 
-void C_LoadManager::loadPID(Robot_Panda::C_Robot_Panda &robot)
+  this->csv_parameter_datei->Oeffnen(Dateiname, Enum_CSV_Access::Read);
+
+  if (this->csv_parameter_datei->IsOpen())
+    {
+    this->csv_parameter_datei->Lesen(Dateityp);
+
+    this->csv_parameter_datei->Lesen(InterWaitingPose->HomogenePosenMatrix[0][0]);
+    this->csv_parameter_datei->Lesen(InterWaitingPose->HomogenePosenMatrix[1][0]);
+    this->csv_parameter_datei->Lesen(InterWaitingPose->HomogenePosenMatrix[2][0]);
+    this->csv_parameter_datei->Lesen(InterWaitingPose->HomogenePosenMatrix[0][1]);
+    this->csv_parameter_datei->Lesen(InterWaitingPose->HomogenePosenMatrix[1][1]);
+    this->csv_parameter_datei->Lesen(InterWaitingPose->HomogenePosenMatrix[2][1]);
+    this->csv_parameter_datei->Lesen(InterWaitingPose->HomogenePosenMatrix[0][2]);
+    this->csv_parameter_datei->Lesen(InterWaitingPose->HomogenePosenMatrix[1][2]);
+    this->csv_parameter_datei->Lesen(InterWaitingPose->HomogenePosenMatrix[2][2]);
+    this->csv_parameter_datei->Lesen(InterWaitingPose->HomogenePosenMatrix[0][3]);
+    this->csv_parameter_datei->Lesen(InterWaitingPose->HomogenePosenMatrix[1][3]);
+    this->csv_parameter_datei->Lesen(InterWaitingPose->HomogenePosenMatrix[2][3]);
+    this->csv_parameter_datei->Schliessen();
+      std::cout << "Home Pose loaded" << std::endl;
+
+    }
+  }
+void C_LoadManager::loadRobotReadyPose              (C_AbsolutePose *ReadyPose)
+  {
+  string Dateiname = "../Parameter/RobotReady_Pose.csv";
+  string Dateityp = "Pose Robot TCP Home";;
+
+  this->csv_parameter_datei->Oeffnen(Dateiname, Enum_CSV_Access::Read);
+
+  if (this->csv_parameter_datei->IsOpen())
+    {
+    this->csv_parameter_datei->Lesen(Dateityp);
+
+    this->csv_parameter_datei->Lesen(ReadyPose->HomogenePosenMatrix[0][0]);
+    this->csv_parameter_datei->Lesen(ReadyPose->HomogenePosenMatrix[1][0]);
+    this->csv_parameter_datei->Lesen(ReadyPose->HomogenePosenMatrix[2][0]);
+    this->csv_parameter_datei->Lesen(ReadyPose->HomogenePosenMatrix[0][1]);
+    this->csv_parameter_datei->Lesen(ReadyPose->HomogenePosenMatrix[1][1]);
+    this->csv_parameter_datei->Lesen(ReadyPose->HomogenePosenMatrix[2][1]);
+    this->csv_parameter_datei->Lesen(ReadyPose->HomogenePosenMatrix[0][2]);
+    this->csv_parameter_datei->Lesen(ReadyPose->HomogenePosenMatrix[1][2]);
+    this->csv_parameter_datei->Lesen(ReadyPose->HomogenePosenMatrix[2][2]);
+    this->csv_parameter_datei->Lesen(ReadyPose->HomogenePosenMatrix[0][3]);
+    this->csv_parameter_datei->Lesen(ReadyPose->HomogenePosenMatrix[1][3]);
+    this->csv_parameter_datei->Lesen(ReadyPose->HomogenePosenMatrix[2][3]);
+    this->csv_parameter_datei->Schliessen();
+      std::cout << "Home Pose loaded" << std::endl;
+
+    }
+  }
+
+void C_LoadManager::loadPID                         (Robot_Panda::C_Robot_Panda &robot)
   {
   double  Kp;
   double  Tn;
