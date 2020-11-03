@@ -564,7 +564,7 @@ void C_frm_Camera_Calibration::sm_Stereo_camera_calibration ()
   QString Qtext;
   int camID = this->Ui->num_camera_id->value() +1;
   Qtext = "Kamera ";
-  Qtext.append((char)camID);
+  Qtext.append(camID);
   Qtext +=  "Pose gespeichert.";
 
   this->Ui->lbl_stereo_camera_current_cam->setText(Qtext);

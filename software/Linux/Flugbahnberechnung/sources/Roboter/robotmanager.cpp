@@ -91,27 +91,46 @@ C_AbsolutePose C_robotManager::calibrateRobotBaseToWorld(C_AbsolutePose& worldTo
   C_RelativePose TCPToRobotBase;
   C_AbsolutePose WorldToRobotBase;
   C_AbsolutePose WorldToBoard;
-
+  C_RelativePose BoardToTCP_Rotation;
+  C_AbsolutePose BoardRotated;
 
   this->getAbsoluteHomogenousBaseToTCP  (&robotBaseToTCP);
   robotBaseToTCP.InversHomogenousPose   (robotBaseToTCP.HomogenePosenMatrix, TCPToRobotBase.HomogenePosenMatrix);
 
-  for (int i = 0; i < 4; i++)
-    for (int j = 0; j < 4; j++)
-      for (int k = 0; k < 4; k++)
-        {
-        WorldToBoard.HomogenePosenMatrix[i][j] += worldToCam.HomogenePosenMatrix[i][k] * globalObjects->camToBoard->HomogenePosenMatrix[k][j];
-        }
 
-  for (int i = 0; i < 4; i++)
-    for (int j = 0; j < 4; j++)
-      for (int k = 0; k < 4; k++)
+  WorldToBoard      = worldToCam.operator*(*globalObjects->camToBoard);
+
+  if(WorldToBoard.nx() >= 0.99)
+  {
+   std::cout << "hello";
+  }
+  for (int i = 0; i < 3; i++)
+    {
+    for (int j = 0; j < 3; j++)
+      {
+      for (int k = 0; k < 3; k++)
         {
-        //this->relPose ist die Pose von Kamera1 zu Kamera 2 (M12)
-        WorldToRobotBase.HomogenePosenMatrix[i][j] += WorldToBoard.HomogenePosenMatrix[i][k] * TCPToRobotBase.HomogenePosenMatrix[k][j];
+        BoardToTCP_Rotation.HomogenePosenMatrix[i][j] += WorldToBoard.HomogenePosenMatrix[i][k] * robotBaseToTCP.HomogenePosenMatrix[k][j];
         }
+      }
+    }
+  for (int i = 0; i < 3; i++)
+    {
+    for (int j = 0; j < 3; j++)
+      {
+      for (int k = 0; k < 3; k++)
+        {
+        BoardRotated.HomogenePosenMatrix[i][j] += WorldToBoard.HomogenePosenMatrix[i][k] * BoardToTCP_Rotation.HomogenePosenMatrix[k][j];
+        }
+      }
+    }
+  BoardRotated.px(WorldToBoard.px());
+  BoardRotated.py(WorldToBoard.py());
+  BoardRotated.pz(WorldToBoard.pz());
+
+  WorldToRobotBase  = BoardRotated.operator*(TCPToRobotBase);
+
   return WorldToRobotBase;
-
   }
 
 bool C_robotManager::moveRobotToTarget(C_AbsolutePose* targetPose)

@@ -113,7 +113,7 @@ void C_CameraManager::initialize()
   {
   this->frameWidth = 1280;
   this->frameHeight = 720;
-  this->initZoneWidth = 300;
+  this->initZoneWidth = this->frameWidth/2;
   this->initZoneHeight = this->frameHeight -1;
   this->transferZoneWidth = 100;
   }
@@ -670,43 +670,30 @@ cv::Mat C_CameraManager::calculate_camera_pose    (int camera1, int camera2, cv:
     cv::Mat M01(cv::Mat_<double>(4,4));
     cv::Mat M02(cv::Mat_<double>(4,4));
 
-    M02 = M20->inv();
+    M02 = M20->inv(cv::DECOMP_LU);
 
-    cv::multiply(*M10, M02, M12, 1);
+    for(int i=0;i<4;i++)
+      for(int j=0;j<4;j++)
+          for(int k=0;k<4;k++)
+              {
+              M12.at<double>(i,j)+=M10->at<double>(i,k)* M02.at<double>(k,j);
+              }
+
     return M12;
   }//calculate_camera_pose
 void C_CameraManager::calculate_camera_pose    (int camera1, int camera2, cv::Mat* M12)
   {
-    cv::Mat M01(cv::Mat_<double>(4,4));
-    cv::Mat M02(cv::Mat_<double>(4,4));
-    cv::Mat PoseWorldToCamera1(cv::Mat_<double>(4,4));
-    cv::Mat PoseWorldToCamera2(cv::Mat_<double>(4,4));
-    cv::Mat PoseCamera1ToWorld(cv::Mat_<double>(4,4));
-    cv::Mat PoseCamera2ToWorld(cv::Mat_<double>(4,4));
+    C_RelativePose relCamera1ToCamera2;
 
     for(int i=0;i<4;i++)
         for(int j=0;j<4;j++)
         {
-        PoseWorldToCamera1.at<double>(i,j) = this->vecCameras->at(camera1)->WorldToCamera->HomogenePosenMatrix[i][j];
-        PoseCamera1ToWorld.at<double>(i,j) = this->vecCameras->at(camera1)->CameraToWorld->HomogenePosenMatrix[i][j];
-
+        relCamera1ToCamera2.HomogenePosenMatrix[i][j] = M12->at<double>(i,j);
         }
-    printmatrix("PoseWorldToCamera1", PoseWorldToCamera1);
-    printmatrix("PoseCamera1ToWorld", PoseCamera1ToWorld);
 
-    cv::multiply(PoseWorldToCamera1, *M12, PoseWorldToCamera2,1);
-
-    printmatrix("PoseWorldToCamera2", PoseWorldToCamera2);
-
-    PoseCamera1ToWorld = PoseWorldToCamera1.inv();
-
-    printmatrix("PoseCamera1ToWorld", PoseCamera1ToWorld);
-    for(int i=0;i<4;i++)
-        for(int j=0;j<4;j++)
-        {
-        this->vecCameras->at(camera2)->CameraToWorld->HomogenePosenMatrix[i][j] = PoseCamera2ToWorld.at<double>(i,j);
-        this->vecCameras->at(camera2)->WorldToCamera->HomogenePosenMatrix[i][j] = PoseWorldToCamera2.at<double>(i,j);
-        }
+    //M02 = M01*M12
+    *this->vecCameras->at(camera2)->WorldToCamera = this->vecCameras->at(camera1)->WorldToCamera->operator*(relCamera1ToCamera2);
+     this->vecCameras->at(camera2)->WorldToCamera->InversHomogenousPose(*this->vecCameras->at(camera2)->WorldToCamera, this->vecCameras->at(camera2)->CameraToWorld->HomogenePosenMatrix);
 
     this->globalObjects->saveManager->saveCameraCos(*this->vecCameras->at(camera2));
 

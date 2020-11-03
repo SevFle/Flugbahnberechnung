@@ -24,7 +24,7 @@ namespace frm_Robot_Calibration
     QTimer*                           Taktgeber;
     QTimer*                           RobotUpdate;
     cv::Mat*                          camPose;
-    C_AbsolutePose*                   robotBaseToWorldPose;
+    C_AbsolutePose*                   pose_WorldToRobotBase;
     C_RelativePose*                   robotTcpPose;
     CameraManager::S_pipelinePayload* pData;
 
@@ -48,6 +48,8 @@ namespace frm_Robot_Calibration
     C_AbsolutePose getPoseRobotBaseToWorld();
     void initUi                       ();
 
+    void disableUi                      ();
+    void enableUi                       ();
 
   private slots:
     void Taktgeber_Tick               ();
@@ -65,6 +67,7 @@ namespace frm_Robot_Calibration
     void on_rb_inter_waiting_Pose_clicked();
     void on_rb_waiting_Pose_clicked();
     void on_bt_set_constraint_clicked();
+    void on_bt_set_robot_horizontal_clicked();
   };
 
   }
