@@ -555,7 +555,7 @@ void C_LoadManager::loadPID                         (Robot_Panda::C_Robot_Panda 
   string  Dateityp;
   double  Taktzeit;
 
-    Dateiname   = "../../../Parameter/PID_Parameter_PandaID.csv";
+    Dateiname   = "../../../Parameter/PID_Parameter_Panda.csv";
     Dateityp    = "";
 
     this->csv_parameter_datei->Oeffnen(Dateiname, Enum_CSV_Access::Read);

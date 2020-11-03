@@ -12,7 +12,7 @@ c_SaveManager::~c_SaveManager()
   delete (csv_parameter_datei);
   }
 
-void c_SaveManager::saveCameraCos         (Camera::C_Camera2 &Camera)
+void c_SaveManager::saveCameraCos             (Camera::C_Camera2 &Camera)
   {
   string Dateiname = "../Parameter/Pose_camera_to_world" + to_string (Camera.getCameraID()) + ".csv";
   string Dateityp = "Value of the individual setting";;
@@ -55,7 +55,7 @@ void c_SaveManager::saveCameraCos         (Camera::C_Camera2 &Camera)
  else
  {}
   }
-void c_SaveManager::saveCameraPositioning (std::vector<Camera::C_Camera2*>& vecCameras, int absCameras) const
+void c_SaveManager::saveCameraPositioning     (std::vector<Camera::C_Camera2*>& vecCameras, int absCameras) const
   {
   string Dateiname = "../Parameter/Camera_Positioning.csv";
   string Dateityp  = "Correct Camera position in vector corresponding to their ID";
@@ -80,7 +80,7 @@ void c_SaveManager::saveCameraPositioning (std::vector<Camera::C_Camera2*>& vecC
 
 
   }
-void c_SaveManager::saveCameraCalibration (Camera::C_Camera2 &Camera)
+void c_SaveManager::saveCameraCalibration     (Camera::C_Camera2 &Camera)
   {
   int    cameraID = Camera.getCameraID();
   string Dateiname = "../Parameter/Camera_Calibration_Parameter_CameraID_" + to_string (cameraID) + ".csv";
@@ -337,4 +337,71 @@ void c_SaveManager::saveRobotReadyPose        (C_AbsolutePose *ReadyPose)
  }
  else
  {}
+  }
+void c_SaveManager::savePIDParameter          (Robot_Panda::C_Robot_Panda& robot)
+  {
+  double  Kp;
+  double  Tn;
+  double  Tv;
+  bool    P_Enabled;
+  bool    I_Enabled;
+  bool    D_Enabled;
+  double  Kp_OT_trans;
+  double  Tn_OT_trans;
+  double  Tv_OT_trans;
+  bool    P_OT_Enabled_trans;
+  bool    I_OT_Enabled_trans;
+  bool    D_OT_Enabled_trans;
+  double  Kp_OT_rot;
+  double  Tn_OT_rot;
+  double  Tv_OT_rot;
+  bool    P_OT_Enabled_rot;
+  bool    I_OT_Enabled_rot;
+  bool    D_OT_Enabled_rot;
+  string  Dateiname;
+  string  Dateityp;
+  double  Taktzeit = 0.001;
+
+
+
+    robot.PID_Regler_X_CamCalib->Get_PID_Parameter    (P_Enabled,          I_Enabled,          D_Enabled,          Kp,          Tn,          Tv ,          Taktzeit);
+//    robot.PID_Regler_Y_CamCalib->Get_PID_Parameter    (P_Enabled,          I_Enabled,          D_Enabled,          Kp,          Tn,          Tv ,       Taktzeit);       // identisch zu PID_Regler_X_CamCalib
+//    robot.PID_Regler_Z_CamCalib->Get_PID_Parameter    (P_Enabled,          I_Enabled,          D_Enabled,          Kp,          Tn,          Tv ,       Taktzeit);       // identisch zu PID_Regler_X_CamCalib
+//    robot.PID_Regler_RX_CamCalib->Get_PID_Parameter   (P_Enabled,          I_Enabled,          D_Enabled,          Kp,          Tn,          Tv ,       Taktzeit);       // identisch zu PID_Regler_X_CamCalib
+//    robot.PID_Regler_RY_CamCalib->Get_PID_Parameter   (P_Enabled,          I_Enabled,          D_Enabled,          Kp,          Tn,          Tv ,       Taktzeit);       // identisch zu PID_Regler_X_CamCalib
+//    robot.PID_Regler_RZ_CamCalib->Get_PID_Parameter   (P_Enabled,          I_Enabled,          D_Enabled,          Kp,          Tn,          Tv ,       Taktzeit);       // identisch zu PID_Regler_X_CamCalib
+    robot.PID_Regler_X_OT->Get_PID_Parameter          (P_OT_Enabled_trans, I_OT_Enabled_trans, D_OT_Enabled_trans, Kp_OT_trans, Tn_OT_trans, Tv_OT_trans,  Taktzeit);
+//    robot.PID_Regler_Y_OT->Get_PID_Parameter          (P_OT_Enabled_trans, I_OT_Enabled_trans, D_OT_Enabled_trans, Kp_OT_trans, Tn_OT_trans, Tv_OT_trans,  Taktzeit);    // identisch zu PID_Regler_X_OT
+//    robot.PID_Regler_Z_OT->Get_PID_Parameter          (P_OT_Enabled_trans, I_OT_Enabled_trans, D_OT_Enabled_trans, Kp_OT_trans, Tn_OT_trans, Tv_OT_trans,  Taktzeit);    // identisch zu PID_Regler_X_OT
+    robot.PID_Regler_RX_OT->Get_PID_Parameter         (P_OT_Enabled_rot,   I_OT_Enabled_rot,   D_OT_Enabled_rot,   Kp_OT_rot,   Tn_OT_rot,   Tv_OT_rot,    Taktzeit);      // identisch zu PID_Regler_X_OT
+//    robot.PID_Regler_RY_OT->Get_PID_Parameter         (P_OT_Enabled_rot,   I_OT_Enabled_rot,   D_OT_Enabled_rot,   Kp_OT_rot,   Tn_OT_rot,   Tv_OT_rot,    Taktzeit);    // identisch zu PID_Regler_RX_OT
+//    robot.PID_Regler_RZ_OT->Get_PID_Parameter         (P_OT_Enabled_rot,   I_OT_Enabled_rot,   D_OT_Enabled_rot,   Kp_OT_rot,   Tn_OT_rot,   Tv_OT_rot,    Taktzeit);    // identisch zu PID_Regler_RX_OT
+
+    Dateiname   = "../../../Parameter/PID_Parameter_Panda.csv";
+    Dateityp    = "PID parameter for trapezoid motion and object tracking";
+
+    this->csv_parameter_datei->Oeffnen(Dateiname, Enum_CSV_Access::Write);
+
+    this->csv_parameter_datei->Schreiben("Dateityp",            Dateityp,                         "[1]");
+    this->csv_parameter_datei->Schreiben("Kp",                  Kp,                               "[1]");
+    this->csv_parameter_datei->Schreiben("Tn",                  Tn,                               "[s]");
+    this->csv_parameter_datei->Schreiben("Tv",                  Tv,                               "[s]");
+    this->csv_parameter_datei->Schreiben("P_Enabled",           P_Enabled,                        "[1]");
+    this->csv_parameter_datei->Schreiben("I_Enabled",           I_Enabled,                        "[1]");
+    this->csv_parameter_datei->Schreiben("D_Enabled",           D_Enabled,                        "[1]");
+    this->csv_parameter_datei->Schreiben("Kp_OT_trans",         Kp_OT_trans,                      "[1]");
+    this->csv_parameter_datei->Schreiben("Tn_OT_trans",         Tn_OT_trans,                      "[s]");
+    this->csv_parameter_datei->Schreiben("Tv_OT_trans",         Tv_OT_trans,                      "[s]");
+    this->csv_parameter_datei->Schreiben("P_OT_Enabled_trans",  P_OT_Enabled_trans,               "[1]");
+    this->csv_parameter_datei->Schreiben("I_OT_Enabled_trans",  I_OT_Enabled_trans,               "[1]");
+    this->csv_parameter_datei->Schreiben("D_OT_Enabled_trans",  D_OT_Enabled_trans,               "[1]");
+    this->csv_parameter_datei->Schreiben("Kp_OT_rot",           Kp_OT_rot,                        "[1]");
+    this->csv_parameter_datei->Schreiben("Tn_OT_rot",           Tn_OT_rot,                        "[s]");
+    this->csv_parameter_datei->Schreiben("Tv_OT_rot",           Tv_OT_rot,                        "[s]");
+    this->csv_parameter_datei->Schreiben("P_OT_Enabled_rot",    P_OT_Enabled_rot,                 "[1]");
+    this->csv_parameter_datei->Schreiben("I_OT_Enabled_rot",    I_OT_Enabled_rot,                 "[1]");
+    this->csv_parameter_datei->Schreiben("D_OT_Enabled_rot",    D_OT_Enabled_rot,                 "[1]");
+    this->csv_parameter_datei->Schreiben("Taktzeit",            Taktzeit,                         "[s]");
+
+    this->csv_parameter_datei->Schliessen();
   }

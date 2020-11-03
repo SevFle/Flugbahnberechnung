@@ -29,9 +29,7 @@ namespace Savemanager
     void saveRobotInterWaitingPose  (C_AbsolutePose* InterWaitingPose);
     void saveRobotReadyPose         (C_AbsolutePose* ReadyPose);
 
-    void savePID                    (Robot_Panda::C_Robot_Panda& robot);
-
-
+    void savePIDParameter          (Robot_Panda::C_Robot_Panda& robot);
     };
 
   }
