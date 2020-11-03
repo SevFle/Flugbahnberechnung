@@ -156,28 +156,23 @@ void C_frm_Robot_Calibration::Taktgeber_Tick()
   }//void C_frm_Robot_Calibration::Taktgeber_Tick()
 void C_frm_Robot_Calibration::disableUi()
   {
-    this->ui->bt_move_home->setEnabled(false);
-    this->ui->bt_save_pose->setEnabled(false);
-    this->ui->bt_set_constraint->setEnabled(false);
-    this->ui->bt_set_home->setEnabled(false);
-    this->ui->dspb_Panda_Vel_max->setEnabled(false);
-    this->ui->dspb_Panda_Acc_max->setEnabled(false);
-    this->ui->dspb_Panda_Omega_max->setEnabled(false);
-    this->ui->dspb_Panda_Alpha_max->setEnabled(false);
-    this->ui->bt_set_robot_horizontal->setEnabled(false);
+  this->ui->grp_tcp_tool->setEnabled(false);
+  this->ui->grpb_PID->setEnabled(false);
+  this->ui->grpb_constraints->setEnabled(false);
+  this->ui->grpb_move_horizontal->setEnabled(false);
+  this->ui->grpb_posen->setEnabled(false);
+  this->ui->grpb_rotation_board_to_world->setEnabled(false);
+
+
   }
 void C_frm_Robot_Calibration::enableUi()
   {
-  this->Main->robotManager->close_Panda_threading();
-  this->ui->bt_move_home->setEnabled(true);
-  this->ui->bt_save_pose->setEnabled(true);
-  this->ui->bt_set_constraint->setEnabled(true);
-  this->ui->bt_set_home->setEnabled(true);
-  this->ui->dspb_Panda_Vel_max->setEnabled(true);
-  this->ui->dspb_Panda_Acc_max->setEnabled(true);
-  this->ui->dspb_Panda_Omega_max->setEnabled(true);
-  this->ui->dspb_Panda_Alpha_max->setEnabled(true);
-  this->ui->bt_set_robot_horizontal->setEnabled(true);
+    this->ui->grp_tcp_tool->setEnabled(true);
+    this->ui->grpb_PID->setEnabled(true);
+    this->ui->grpb_constraints->setEnabled(true);
+    this->ui->grpb_move_horizontal->setEnabled(true);
+    this->ui->grpb_posen->setEnabled(true);
+    this->ui->grpb_rotation_board_to_world->setEnabled(true);
 
   }
 void C_frm_Robot_Calibration::initUi()
@@ -274,13 +269,19 @@ void C_frm_Robot_Calibration::writeRobotBaseToWorld()
 C_AbsolutePose C_frm_Robot_Calibration::getPoseRobotBaseToWorld()
   {
   C_RelativePose camToBoard;
+  C_RelativePose BoardToTCP;
+
+  BoardToTCP.nx(this->ui->num_nx_boardToTCP->value());
+  BoardToTCP.oy(this->ui->num_oy_boardToTCP->value());
+  BoardToTCP.az(this->ui->num_az_boardToTCP->value());
+
   for(int i = 0;i < 4; i++)
     for(int j=0; j < 4; j++)
       {
       camToBoard.HomogenePosenMatrix[i][j] = this->camPose->at<double>(i,j);
       }
   *this->GlobalObjects->camToBoard = camToBoard;
-  *this->pose_WorldToRobotBase = this->Main->robotManager->calibrateRobotBaseToWorld(*this->Main->cameraManager->vecCameras->at(this->ui->num_camID->value())->WorldToCamera);
+  *this->pose_WorldToRobotBase = this->Main->robotManager->calibrateRobotBaseToWorld(*this->Main->cameraManager->vecCameras->at(this->ui->num_camID->value())->WorldToCamera, BoardToTCP);
 
 
   return *this->pose_WorldToRobotBase;
@@ -307,6 +308,12 @@ void frm_Robot_Calibration::C_frm_Robot_Calibration::on_bt_save_pose_clicked()
   C_RelativePose camToBoard;
   C_AbsolutePose WorldToRobot;
   C_AbsolutePose RobotToWorld;
+  C_RelativePose BoardToTCP;
+
+  BoardToTCP.nx(this->ui->num_nx_boardToTCP->value());
+  BoardToTCP.oy(this->ui->num_oy_boardToTCP->value());
+  BoardToTCP.az(this->ui->num_az_boardToTCP->value());
+
 
   for(int i = 0;i < 4; i++)
     for(int j=0; j < 4; j++)
@@ -314,7 +321,7 @@ void frm_Robot_Calibration::C_frm_Robot_Calibration::on_bt_save_pose_clicked()
       camToBoard.HomogenePosenMatrix[i][j] = this->camPose->at<double>(i,j);
       }
   *this->GlobalObjects->camToBoard = camToBoard;
-  WorldToRobot =  this->Main->robotManager->calibrateRobotBaseToWorld(*this->Main->cameraManager->vecCameras->at(this->ui->num_camID->value())->CameraToWorld);
+  WorldToRobot =  this->Main->robotManager->calibrateRobotBaseToWorld(*this->Main->cameraManager->vecCameras->at(this->ui->num_camID->value())->CameraToWorld, BoardToTCP);
   RobotToWorld.InversHomogenousPose(WorldToRobot, RobotToWorld.HomogenePosenMatrix);
 
   this->Main->robotManager->roboter->Abs_RobotToWorld_Pose = RobotToWorld;
@@ -587,7 +594,8 @@ void frm_Robot_Calibration::C_frm_Robot_Calibration::on_bt_set_constraint_clicke
 void frm_Robot_Calibration::C_frm_Robot_Calibration::on_bt_set_robot_horizontal_clicked()
   {
   C_AbsolutePose Horizontal;
-
+  if(this->ui->rb_rel_pose->isChecked())
+  {
   Horizontal.px(this->robotTcpPose->HomogenePosenMatrix[0][3]);
   Horizontal.py(this->robotTcpPose->HomogenePosenMatrix[1][3]);
   Horizontal.pz(this->robotTcpPose->HomogenePosenMatrix[2][3]);
@@ -600,6 +608,23 @@ void frm_Robot_Calibration::C_frm_Robot_Calibration::on_bt_set_robot_horizontal_
   Horizontal.ax(0.0);
   Horizontal.ay(0.0);
   Horizontal.az(-0.99);
+  }
+  else if(this->ui->rb_x_zero_pose->isChecked())
+  {
+  Horizontal.px(this->robotTcpPose->HomogenePosenMatrix[0][3]);
+  Horizontal.py(0.0);
+  Horizontal.pz(this->robotTcpPose->HomogenePosenMatrix[2][3]);
+  Horizontal.nx(0.99);
+  Horizontal.ny(0.0);
+  Horizontal.nz(0.0);
+  Horizontal.ox(0.0);
+  Horizontal.oy(-0.99);
+  Horizontal.oz(0.0);
+  Horizontal.ax(0.0);
+  Horizontal.ay(0.0);
+  Horizontal.az(-0.99);
+  }
+
 
   double Panda_Vel_max   = abs(this->ui->dspb_Panda_Vel_max->value());
   double Panda_Acc_max   = abs(this->ui->dspb_Panda_Acc_max->value());
@@ -610,4 +635,14 @@ void frm_Robot_Calibration::C_frm_Robot_Calibration::on_bt_set_robot_horizontal_
   this->moving = true;
   this->Main->robotManager->moveRobotToTarget(&Horizontal);
 
+  }
+
+void frm_Robot_Calibration::C_frm_Robot_Calibration::on_rb_rel_pose_clicked()
+  {
+  this->ui->rb_x_zero_pose->setChecked(false);
+  }
+
+void frm_Robot_Calibration::C_frm_Robot_Calibration::on_rb_x_zero_pose_clicked()
+  {
+  this->ui->rb_rel_pose->setChecked(false);
   }

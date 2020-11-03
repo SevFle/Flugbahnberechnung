@@ -42,6 +42,7 @@ namespace robotManager
 
 
     bool                                threadActive;
+    bool                                robotReady;
     int                                 smBallTrackingStep;
 
 
@@ -53,7 +54,7 @@ namespace robotManager
 
     void start_smTracking                   ();
 
-    C_AbsolutePose calibrateRobotBaseToWorld    (C_AbsolutePose& worldToCam);
+    C_AbsolutePose calibrateRobotBaseToWorld    (C_AbsolutePose& worldToCam,  C_RelativePose& BoardToTCP);
 
 
   private:

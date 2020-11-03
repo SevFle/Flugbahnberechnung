@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1799</width>
+    <width>1780</width>
     <height>1035</height>
    </rect>
   </property>
@@ -17,7 +17,7 @@
    <widget class="QTextEdit" name="txb_zaehler">
     <property name="geometry">
      <rect>
-      <x>1640</x>
+      <x>1510</x>
       <y>860</y>
       <width>141</width>
       <height>41</height>
@@ -32,7 +32,7 @@
    <widget class="QPushButton" name="bt_exit">
     <property name="geometry">
      <rect>
-      <x>1640</x>
+      <x>1510</x>
       <y>900</y>
       <width>141</width>
       <height>71</height>
@@ -42,23 +42,10 @@
      <string>Exit</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="bt_save_pose">
-    <property name="geometry">
-     <rect>
-      <x>490</x>
-      <y>820</y>
-      <width>151</width>
-      <height>71</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Save Base calibration</string>
-    </property>
-   </widget>
    <widget class="QLabel" name="lbl_camera_img">
     <property name="geometry">
      <rect>
-      <x>1180</x>
+      <x>1190</x>
       <y>10</y>
       <width>561</width>
       <height>581</height>
@@ -71,7 +58,7 @@
    <widget class="QSpinBox" name="num_camID">
     <property name="geometry">
      <rect>
-      <x>1710</x>
+      <x>1580</x>
       <y>820</y>
       <width>71</width>
       <height>31</height>
@@ -81,7 +68,7 @@
    <widget class="QLabel" name="lbl_camID">
     <property name="geometry">
      <rect>
-      <x>1630</x>
+      <x>1500</x>
       <y>830</y>
       <width>71</width>
       <height>17</height>
@@ -607,40 +594,14 @@
      </property>
     </widget>
    </widget>
-   <widget class="QPushButton" name="bt_set_home">
-    <property name="geometry">
-     <rect>
-      <x>660</x>
-      <y>820</y>
-      <width>141</width>
-      <height>71</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Set Pose</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="bt_move_home">
-    <property name="geometry">
-     <rect>
-      <x>660</x>
-      <y>900</y>
-      <width>141</width>
-      <height>71</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Move to Pose</string>
-    </property>
-   </widget>
    <widget class="QGroupBox" name="grpb_home_pose">
     <property name="enabled">
      <bool>true</bool>
     </property>
     <property name="geometry">
      <rect>
-      <x>70</x>
-      <y>620</y>
+      <x>20</x>
+      <y>200</y>
       <width>571</width>
       <height>191</height>
      </rect>
@@ -805,13 +766,13 @@
      </property>
     </widget>
    </widget>
-   <widget class="QGroupBox" name="groupBox">
+   <widget class="QGroupBox" name="grp_tcp_tool">
     <property name="geometry">
      <rect>
-      <x>840</x>
-      <y>680</y>
-      <width>171</width>
-      <height>111</height>
+      <x>490</x>
+      <y>780</y>
+      <width>181</width>
+      <height>201</height>
      </rect>
     </property>
     <property name="title">
@@ -846,13 +807,26 @@
       <string>Kalibriertool</string>
      </property>
     </widget>
+    <widget class="QPushButton" name="bt_save_pose">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>120</y>
+       <width>151</width>
+       <height>71</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Speicher Weltpose</string>
+     </property>
+    </widget>
    </widget>
-   <widget class="QGroupBox" name="groupBox_2">
+   <widget class="QGroupBox" name="grpb_constraints">
     <property name="geometry">
      <rect>
-      <x>1020</x>
-      <y>680</y>
-      <width>601</width>
+      <x>600</x>
+      <y>660</y>
+      <width>891</width>
       <height>111</height>
      </rect>
     </property>
@@ -1000,31 +974,31 @@
       </rect>
      </property>
     </widget>
+    <widget class="QPushButton" name="bt_set_constraint">
+     <property name="geometry">
+      <rect>
+       <x>650</x>
+       <y>30</y>
+       <width>151</width>
+       <height>71</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Set Constraint</string>
+     </property>
+    </widget>
    </widget>
-   <widget class="QPushButton" name="bt_set_constraint">
+   <widget class="QGroupBox" name="grpb_posen">
     <property name="geometry">
      <rect>
-      <x>1630</x>
-      <y>720</y>
-      <width>151</width>
-      <height>71</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Set Constraint</string>
-    </property>
-   </widget>
-   <widget class="QGroupBox" name="groupBox_set_Pose">
-    <property name="geometry">
-     <rect>
-      <x>660</x>
-      <y>670</y>
-      <width>171</width>
-      <height>121</height>
+      <x>200</x>
+      <y>780</y>
+      <width>281</width>
+      <height>201</height>
      </rect>
     </property>
     <property name="title">
-     <string>Roboterpose</string>
+     <string>Fahre zu Pose</string>
     </property>
     <widget class="QRadioButton" name="rb_home_Pose">
      <property name="geometry">
@@ -1068,27 +1042,40 @@
       <string>Ready Pose</string>
      </property>
     </widget>
+    <widget class="QPushButton" name="bt_move_home">
+     <property name="geometry">
+      <rect>
+       <x>130</x>
+       <y>120</y>
+       <width>141</width>
+       <height>71</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Fahre zur Pose</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="bt_set_home">
+     <property name="geometry">
+      <rect>
+       <x>130</x>
+       <y>30</y>
+       <width>141</width>
+       <height>71</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Set Pose</string>
+     </property>
+    </widget>
    </widget>
-   <widget class="QPushButton" name="bt_set_robot_horizontal">
+   <widget class="QGroupBox" name="grpb_PID">
     <property name="geometry">
      <rect>
-      <x>490</x>
-      <y>900</y>
-      <width>151</width>
-      <height>71</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Drive horizontally</string>
-    </property>
-   </widget>
-   <widget class="QGroupBox" name="groupBox_3">
-    <property name="geometry">
-     <rect>
-      <x>810</x>
-      <y>790</y>
+      <x>680</x>
+      <y>780</y>
       <width>811</width>
-      <height>181</height>
+      <height>201</height>
      </rect>
     </property>
     <property name="title">
@@ -1575,13 +1562,270 @@ p, li { white-space: pre-wrap; }
      </property>
     </widget>
    </widget>
+   <widget class="QGroupBox" name="grpb_move_horizontal">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>780</y>
+      <width>181</width>
+      <height>201</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>Fahre in die Waagerechte</string>
+    </property>
+    <widget class="QRadioButton" name="rb_rel_pose">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>30</y>
+       <width>131</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>rel. zur aktuellen Pose</string>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QRadioButton" name="rb_x_zero_pose">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>60</y>
+       <width>112</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Y = 0 Pose</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="bt_set_robot_horizontal">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>120</y>
+       <width>151</width>
+       <height>71</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Fahre zur Pose</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QGroupBox" name="grpb_rotation_board_to_world">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>590</y>
+      <width>431</width>
+      <height>171</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>Drehung des Boardes zum TCP</string>
+    </property>
+    <widget class="QTextEdit" name="txb_ox_boardToTCP">
+     <property name="geometry">
+      <rect>
+       <x>150</x>
+       <y>40</y>
+       <width>121</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="readOnly">
+      <bool>false</bool>
+     </property>
+     <property name="markdown">
+      <string>0.0
+
+</string>
+     </property>
+    </widget>
+    <widget class="QTextEdit" name="txb_ax_boardToTCP">
+     <property name="geometry">
+      <rect>
+       <x>290</x>
+       <y>40</y>
+       <width>121</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="readOnly">
+      <bool>false</bool>
+     </property>
+     <property name="markdown">
+      <string>0.0
+
+</string>
+     </property>
+    </widget>
+    <widget class="QTextEdit" name="txb_ny_boardToTCP">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>80</y>
+       <width>121</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="readOnly">
+      <bool>false</bool>
+     </property>
+     <property name="markdown">
+      <string>0.0
+
+</string>
+     </property>
+    </widget>
+    <widget class="QTextEdit" name="txb_ay_boardToTCP">
+     <property name="geometry">
+      <rect>
+       <x>290</x>
+       <y>80</y>
+       <width>121</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="readOnly">
+      <bool>false</bool>
+     </property>
+     <property name="markdown">
+      <string>0.0
+
+</string>
+     </property>
+     <property name="placeholderText">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QTextEdit" name="txb_nz_boardToTCP">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>120</y>
+       <width>121</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="readOnly">
+      <bool>false</bool>
+     </property>
+     <property name="markdown">
+      <string>0.0
+
+</string>
+     </property>
+    </widget>
+    <widget class="QTextEdit" name="txb_oz_boardToTCP">
+     <property name="geometry">
+      <rect>
+       <x>150</x>
+       <y>120</y>
+       <width>121</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="readOnly">
+      <bool>false</bool>
+     </property>
+     <property name="markdown">
+      <string>0.0
+
+</string>
+     </property>
+    </widget>
+    <widget class="QDoubleSpinBox" name="num_az_boardToTCP">
+     <property name="geometry">
+      <rect>
+       <x>290</x>
+       <y>120</y>
+       <width>121</width>
+       <height>26</height>
+      </rect>
+     </property>
+     <property name="decimals">
+      <number>3</number>
+     </property>
+     <property name="minimum">
+      <double>-0.999000000000000</double>
+     </property>
+     <property name="maximum">
+      <double>0.999000000000000</double>
+     </property>
+     <property name="stepType">
+      <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
+     </property>
+     <property name="value">
+      <double>-0.999000000000000</double>
+     </property>
+    </widget>
+    <widget class="QDoubleSpinBox" name="num_oy_boardToTCP">
+     <property name="geometry">
+      <rect>
+       <x>150</x>
+       <y>80</y>
+       <width>121</width>
+       <height>26</height>
+      </rect>
+     </property>
+     <property name="decimals">
+      <number>3</number>
+     </property>
+     <property name="minimum">
+      <double>-0.999000000000000</double>
+     </property>
+     <property name="maximum">
+      <double>0.999000000000000</double>
+     </property>
+     <property name="stepType">
+      <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
+     </property>
+     <property name="value">
+      <double>-0.999000000000000</double>
+     </property>
+    </widget>
+    <widget class="QDoubleSpinBox" name="num_nx_boardToTCP">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>40</y>
+       <width>121</width>
+       <height>26</height>
+      </rect>
+     </property>
+     <property name="decimals">
+      <number>3</number>
+     </property>
+     <property name="minimum">
+      <double>-0.999000000000000</double>
+     </property>
+     <property name="maximum">
+      <double>0.999000000000000</double>
+     </property>
+     <property name="stepType">
+      <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
+     </property>
+     <property name="value">
+      <double>-0.999000000000000</double>
+     </property>
+    </widget>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1799</width>
+     <width>1780</width>
      <height>22</height>
     </rect>
    </property>

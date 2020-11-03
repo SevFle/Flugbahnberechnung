@@ -220,6 +220,7 @@ namespace posen
     double X;
     double Y;
     double Z;
+    double length;
     };
 
   struct S_Orientierungsvektor

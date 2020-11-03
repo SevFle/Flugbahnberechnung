@@ -68,6 +68,8 @@ namespace frm_Robot_Calibration
     void on_rb_waiting_Pose_clicked();
     void on_bt_set_constraint_clicked();
     void on_bt_set_robot_horizontal_clicked();
+    void on_rb_rel_pose_clicked();
+    void on_rb_x_zero_pose_clicked();
   };
 
   }

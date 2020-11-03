@@ -85,52 +85,42 @@ void C_robotManager::getAbsoluteHomogenousBaseToWorld(posen::C_AbsolutePose* Bas
   *BasePose = this->roboter->Abs_RobotToWorld_Pose;
   }
 
-C_AbsolutePose C_robotManager::calibrateRobotBaseToWorld(C_AbsolutePose& worldToCam)
+C_AbsolutePose C_robotManager::calibrateRobotBaseToWorld(C_AbsolutePose& worldToCam, C_RelativePose& BoardToTCP)
   {
-  C_RelativePose robotBaseToTCP;
-  C_RelativePose TCPToRobotBase;
-  C_AbsolutePose WorldToRobotBase;
-  C_AbsolutePose WorldToBoard;
-  C_RelativePose BoardToTCP_Rotation;
-  C_AbsolutePose BoardRotated;
-
-  this->getAbsoluteHomogenousBaseToTCP  (&robotBaseToTCP);
-  robotBaseToTCP.InversHomogenousPose   (robotBaseToTCP.HomogenePosenMatrix, TCPToRobotBase.HomogenePosenMatrix);
+    C_RelativePose robotBaseToTCP;
+    C_RelativePose TCPToRobotBase;
+    C_AbsolutePose WorldToRobotBase;
+    C_AbsolutePose WorldToBoard;
+    C_AbsolutePose BoardToTCP_temp;
 
 
-  WorldToBoard      = worldToCam.operator*(*globalObjects->camToBoard);
+    this->getAbsoluteHomogenousBaseToTCP  (&robotBaseToTCP);
+    robotBaseToTCP.InversHomogenousPose   (robotBaseToTCP.HomogenePosenMatrix, TCPToRobotBase.HomogenePosenMatrix);
 
-  if(WorldToBoard.nx() >= 0.99)
-  {
-   std::cout << "hello";
-  }
-  for (int i = 0; i < 3; i++)
-    {
-    for (int j = 0; j < 3; j++)
-      {
-      for (int k = 0; k < 3; k++)
-        {
-        BoardToTCP_Rotation.HomogenePosenMatrix[i][j] += WorldToBoard.HomogenePosenMatrix[i][k] * robotBaseToTCP.HomogenePosenMatrix[k][j];
-        }
-      }
-    }
-  for (int i = 0; i < 3; i++)
-    {
-    for (int j = 0; j < 3; j++)
-      {
-      for (int k = 0; k < 3; k++)
-        {
-        BoardRotated.HomogenePosenMatrix[i][j] += WorldToBoard.HomogenePosenMatrix[i][k] * BoardToTCP_Rotation.HomogenePosenMatrix[k][j];
-        }
-      }
-    }
-  BoardRotated.px(WorldToBoard.px());
-  BoardRotated.py(WorldToBoard.py());
-  BoardRotated.pz(WorldToBoard.pz());
+    //Berechne die Absolute Pose des Boards im Weltkoordinatensystem
+    for (int i = 0; i < 4; i++)
+      for (int j = 0; j < 4; j++)
+        for (int k = 0; k < 4; k++)
+          {
+          WorldToBoard.HomogenePosenMatrix[i][j] += worldToCam.HomogenePosenMatrix[i][k] * globalObjects->camToBoard->HomogenePosenMatrix[k][j];
+          }
+    //Rotiere die Pose des Boards in die Pose des TCP
+    for (int i = 0; i < 4; i++)
+      for (int j = 0; j < 4; j++)
+        for (int k = 0; k < 4; k++)
+          {
+          BoardToTCP_temp.HomogenePosenMatrix[i][j] += WorldToBoard.HomogenePosenMatrix[i][k] * BoardToTCP.HomogenePosenMatrix[k][j];
+          }
 
-  WorldToRobotBase  = BoardRotated.operator*(TCPToRobotBase);
+    for (int i = 0; i < 4; i++)
+      for (int j = 0; j < 4; j++)
+        for (int k = 0; k < 4; k++)
+          {
+          //this->relPose ist die Pose von Kamera1 zu Kamera 2 (M12)
+          WorldToRobotBase.HomogenePosenMatrix[i][j] += BoardToTCP_temp.HomogenePosenMatrix[i][k] * TCPToRobotBase.HomogenePosenMatrix[k][j];
+          }
+    return WorldToRobotBase;
 
-  return WorldToRobotBase;
   }
 
 bool C_robotManager::moveRobotToTarget(C_AbsolutePose* targetPose)
@@ -173,6 +163,7 @@ void C_robotManager::threadHelper                (void* This)
 
 void C_robotManager::sm_BallTracking()
   {
+  C_RelativePose tcpPose;
   C_AbsolutePose WorldToRobot = this->roboter->Abs_WorldToRobot_Pose;
   C_AbsolutePose RobotToObject;
 
@@ -184,7 +175,7 @@ void C_robotManager::sm_BallTracking()
   C_AbsolutePose waitForHitRobot;
   C_AbsolutePose waitForHitRobot_TCP;
   C_AbsolutePose temp;
-
+  posen::S_Positionsvektor deltaHome, deltaIntermediate, deltaReady, deltaMin;
 
   robotManager::robotConstraints ConstraintsInWorld;
 
@@ -207,6 +198,7 @@ void C_robotManager::sm_BallTracking()
        {
       //Berechne Robot Bewegungsraum zu Weltkoordinaten
       case 1:
+        //Transformiere die Roboter Boundingbox ins Weltkoordinatensystem
         ConstraintsInWorld.X  = this->roboter->Abs_WorldToRobot_Pose.px() + this->outerConstraints->X;
         ConstraintsInWorld.nX = this->roboter->Abs_WorldToRobot_Pose.px() - this->outerConstraints->nX;
         ConstraintsInWorld.Y  = this->roboter->Abs_WorldToRobot_Pose.py() + this->outerConstraints->Y;
@@ -220,6 +212,48 @@ void C_robotManager::sm_BallTracking()
         std::cout << "Robot Constraints in World nY: " << ConstraintsInWorld.nY << std::endl;
         std::cout << "Robot Constraints in World Z: " << ConstraintsInWorld.Z << std::endl;
         std::cout << "Robot Constraints in World nZ: " << ConstraintsInWorld.nZ << std::endl;
+
+
+        //Berechne die Distanz zu den drei vorgespeicherten Posen und vergleiche die Distanz. Die kürzeste Strecke wird angefahren
+        //
+        this->getAbsoluteHomogenousBaseToTCP(&tcpPose);
+        deltaHome.X = tcpPose.px() - this->roboter->Abs_Home_Pose.px();
+        deltaHome.Y = tcpPose.py() - this->roboter->Abs_Home_Pose.py();
+        deltaHome.Z = tcpPose.pz() - this->roboter->Abs_Home_Pose.pz();
+        deltaHome.length = std::sqrt((deltaHome.X*deltaHome.X) + (deltaHome.Y*deltaHome.Y) + (deltaHome.Z*deltaHome.Z));
+
+        deltaIntermediate.X = tcpPose.px() - this->roboter->Abs_inter_waiting_Pose.px();
+        deltaIntermediate.Y = tcpPose.py() - this->roboter->Abs_inter_waiting_Pose.py();
+        deltaIntermediate.Z = tcpPose.pz() - this->roboter->Abs_inter_waiting_Pose.pz();
+        deltaIntermediate.length = std::sqrt((deltaIntermediate.X*deltaIntermediate.X) + (deltaIntermediate.Y*deltaIntermediate.Y) + (deltaIntermediate.Z*deltaIntermediate.Z));
+
+        deltaReady.X = tcpPose.px() - this->roboter->Abs_waiting_Pose.px();
+        deltaReady.Y = tcpPose.py() - this->roboter->Abs_waiting_Pose.py();
+        deltaReady.Z = tcpPose.pz() - this->roboter->Abs_waiting_Pose.pz();
+        deltaReady.length = std::sqrt((deltaReady.X*deltaReady.X) + (deltaReady.Y*deltaReady.Y) + (deltaReady.Z*deltaReady.Z));
+
+        deltaMin.length = std::min({deltaHome.length, deltaIntermediate.length, deltaReady.length});
+
+        if(deltaMin.length == deltaHome.length)
+          {
+          this->smBallTrackingStep = 2;
+          break;
+          }
+        else if(deltaMin.length == deltaIntermediate.length)
+          {
+          this->smBallTrackingStep = 4;
+          break;
+          }
+        else if(deltaMin.length == deltaReady.length)
+          {
+          this->smBallTrackingStep = 7;
+          break;
+          }
+        else
+          {
+          std::cout << "No vaild Pose found, Moving to Home" << std::endl;
+          }
+
 
         this->smBallTrackingStep = 2;
       break;
