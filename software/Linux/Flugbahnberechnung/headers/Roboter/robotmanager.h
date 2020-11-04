@@ -70,4 +70,6 @@ namespace robotManager
     };
   }
 
+
+
 #endif // C_ROBOTMANAGER_H

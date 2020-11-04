@@ -77,7 +77,7 @@ this->installEventFilter                (this);
 this->Ui->num_TimerIntervall->setValue  (this->Taktgeber_Intervall);
 this->on_rb_single_calibration_clicked  ();
 this->Ui->num_camera_id->setMaximum     (GlobalObjects->absCameras-1);
-this->Ui->grpb_2_output->setVisible     (false);
+this->Ui->grpb_Camera_1->setVisible     (false);
 
 Q_UNUSED(ShowEvent)
 }
@@ -154,7 +154,7 @@ void C_frm_Camera_Calibration::Taktgeber_Tick()
           {
           this->Main->frm_Main->FillMat2Lbl(temp, this->Ui->lbl_img_single_calibration);
           //imgBuffer dient zur speicherung von Bildern im Kalibrrierungsprozess
-          temp.copyTo(*this->imgBuffer[0]);
+          this->pData->cpuSrcImg[0].copyTo(*this->imgBuffer[0]);
           this->Ui->txb_nx->setText(QString::number(this->Camera0ToWorld->at<double>(0,0)));
           this->Ui->txb_ny->setText(QString::number(this->Camera0ToWorld->at<double>(1,0)));
           this->Ui->txb_nz->setText(QString::number(this->Camera0ToWorld->at<double>(2,0)));
@@ -173,9 +173,9 @@ void C_frm_Camera_Calibration::Taktgeber_Tick()
           }
         else
           {
-            this->Main->frm_Main->FillMat2Lbl(this->pData->cpuSrcImg[0], this->Ui->lbl_img_single_calibration);
+            this->Main->frm_Main->FillMat2Lbl(temp, this->Ui->lbl_img_single_calibration);
             //imgBuffer dient zur speicherung von Bildern im Kalibrrierungsprozess
-            this->pData->cpuSrcImg[0].copyTo(*this->imgBuffer[0]);
+            temp.copyTo(*this->imgBuffer[0]);
             this->Ui->txb_nx->setText(QString::number(0));
             this->Ui->txb_ny->setText(QString::number(0));
             this->Ui->txb_nz->setText(QString::number(0));
@@ -386,8 +386,8 @@ void C_frm_Camera_Calibration::on_rb_single_calibration_clicked()
     this->Ui->num_camera_id->setSingleStep            (1);
     this->Ui->num_camera_id->setMaximum               (GlobalObjects->absCameras-1);
     this->cameraID                                    = 0;
-    this->Ui->grpb_1_output->setTitle(QString("Pose Kamera " + QString::number(this->Ui->num_camera_id->value())));
-    this->Ui->grpb_2_output->setVisible(false);
+    this->Ui->grpb_Camera_0->setTitle(QString("Pose Kamera " + QString::number(this->Ui->num_camera_id->value())));
+    this->Ui->grpb_Camera_1->setVisible(false);
 
 
     std::lock_guard<std::mutex> lck                   (*this->Main->cameraManager->getLock());
@@ -408,9 +408,14 @@ void C_frm_Camera_Calibration::on_rb_single_calibration_clicked()
     this->Ui->txb_edge_width->setVisible              (true);
     this->Ui->txb_edge_height->setVisible             (true);
     this->Ui->txb_edge_length->setVisible             (true);
+    this->Ui->txb_usrInput_images->setVisible         (true);
+
     this->Ui->lbl_stereo_camera_current_cam->setText("");
 
    this->Ui->lbl_img_single_calibration->setVisible   (true);
+    this->Ui->grpb_cameraMatrix->setVisible(true);
+    this->Ui->grpb_betraegeDerVektoren->setVisible(false);
+    this->Ui->grpb_last_pose->setVisible(false);
 }
 
 void C_frm_Camera_Calibration::on_rb_stereo_calibration_clicked()
@@ -419,9 +424,9 @@ void C_frm_Camera_Calibration::on_rb_stereo_calibration_clicked()
     this->Ui->num_camera_id->setValue                 (0);
     this->Ui->num_camera_id->setSingleStep            (1);
     this->Ui->num_camera_id->setMaximum               (GlobalObjects->absCameras-2);
-    this->Ui->grpb_1_output->setTitle(QString("Pose Kamera " + QString::number(this->Ui->num_camera_id->value())));
-    this->Ui->grpb_2_output->setTitle(QString("Pose Kamera " + QString::number(this->Ui->num_camera_id->value() + 1)));
-    this->Ui->grpb_2_output->setVisible(true);
+    this->Ui->grpb_Camera_0->setTitle(QString("Pose Kamera " + QString::number(this->Ui->num_camera_id->value())));
+    this->Ui->grpb_Camera_1->setTitle(QString("Pose Kamera " + QString::number(this->Ui->num_camera_id->value() + 1)));
+    this->Ui->grpb_Camera_1->setVisible(true);
 
     this->Ui->bt_start->setText("Kalibrieren");
     this->Ui->label_5->setVisible                     (false);
@@ -447,7 +452,10 @@ void C_frm_Camera_Calibration::on_rb_stereo_calibration_clicked()
     this->Ui->lbl_img_stereo_left->setVisible         (true);
     this->Ui->lbl_img_stereo_right->setVisible        (true);
     this->Ui->lbl_stereo_camera_current_cam->setText("Stereo");
-
+    this->Ui->grpb_cameraMatrix->setVisible(false);
+    this->Ui->grpb_betraegeDerVektoren->setVisible(true);
+    this->Ui->grpb_last_pose->setVisible(true);
+    this->writeSavedCamPose();
 
 }
 
@@ -564,12 +572,73 @@ void C_frm_Camera_Calibration::sm_Stereo_camera_calibration ()
   QString Qtext;
   int camID = this->Ui->num_camera_id->value() +1;
   Qtext = "Kamera ";
-  Qtext.append(camID);
-  Qtext +=  "Pose gespeichert.";
-
+  Qtext.append(QString::fromStdString(std::to_string(camID)));
+  Qtext +=  " Pose gespeichert.";
+  this->writeAbsoluteAmount();
   this->Ui->lbl_stereo_camera_current_cam->setText(Qtext);
+  this->writeSavedCamPose();
   }
+void C_frm_Camera_Calibration::writeSavedCamPose()
+  {
+  C_AbsolutePose KameraPose;
+  KameraPose = *this->Main->cameraManager->vecCameras->at(this->Ui->num_camera_id->value()+1)->CameraToWorld;
 
+  this->Ui->txb_nx_camera1_pose->setText(QString::number(KameraPose.HomogenePosenMatrix[0][0]));
+  this->Ui->txb_ny_camera1_pose->setText(QString::number(KameraPose.HomogenePosenMatrix[1][0]));
+  this->Ui->txb_nz_camera1_pose->setText(QString::number(KameraPose.HomogenePosenMatrix[2][0]));
+
+  this->Ui->txb_ox_camera1_pose->setText(QString::number(KameraPose.HomogenePosenMatrix[0][1]));
+  this->Ui->txb_oy_camera1_pose->setText(QString::number(KameraPose.HomogenePosenMatrix[1][1]));
+  this->Ui->txb_oz_camera1_pose->setText(QString::number(KameraPose.HomogenePosenMatrix[2][1]));
+
+  this->Ui->txb_ax_camera1_pose->setText(QString::number(KameraPose.HomogenePosenMatrix[0][2]));
+  this->Ui->txb_ay_camera1_pose->setText(QString::number(KameraPose.HomogenePosenMatrix[1][2]));
+  this->Ui->txb_az_camera1_pose->setText(QString::number(KameraPose.HomogenePosenMatrix[2][2]));
+
+  this->Ui->txb_px_camera1_pose->setText(QString::number(KameraPose.HomogenePosenMatrix[0][3]));
+  this->Ui->txb_py_camera1_pose->setText(QString::number(KameraPose.HomogenePosenMatrix[1][3]));
+  this->Ui->txb_pz_camera1_pose->setText(QString::number(KameraPose.HomogenePosenMatrix[2][3]));
+}
+void C_frm_Camera_Calibration::writeAbsoluteAmount()
+  {
+   double spalte_n, spalte_o, spalte_a;
+   double zeile_x, zeile_y, zeile_z;
+
+   spalte_n = std::pow(this->Main->cameraManager->vecCameras->at(this->Ui->num_camera_id->value()+1)->CameraToWorld->nx(), 2);
+   spalte_n += std::pow(this->Main->cameraManager->vecCameras->at(this->Ui->num_camera_id->value()+1)->CameraToWorld->ny(), 2);
+   spalte_n += std::pow(this->Main->cameraManager->vecCameras->at(this->Ui->num_camera_id->value()+1)->CameraToWorld->nz(), 2);
+
+   spalte_o = std::pow(this->Main->cameraManager->vecCameras->at(this->Ui->num_camera_id->value()+1)->CameraToWorld->ox(), 2);
+   spalte_o += std::pow(this->Main->cameraManager->vecCameras->at(this->Ui->num_camera_id->value()+1)->CameraToWorld->oy(), 2);
+   spalte_o += std::pow(this->Main->cameraManager->vecCameras->at(this->Ui->num_camera_id->value()+1)->CameraToWorld->oz(), 2);
+
+   spalte_a = std::pow(this->Main->cameraManager->vecCameras->at(this->Ui->num_camera_id->value()+1)->CameraToWorld->ax(), 2);
+   spalte_a += std::pow(this->Main->cameraManager->vecCameras->at(this->Ui->num_camera_id->value()+1)->CameraToWorld->ay(), 2);
+   spalte_a += std::pow(this->Main->cameraManager->vecCameras->at(this->Ui->num_camera_id->value()+1)->CameraToWorld->az(), 2);
+
+   zeile_x = std::pow(this->Main->cameraManager->vecCameras->at(this->Ui->num_camera_id->value()+1)->CameraToWorld->nx(), 2);
+   zeile_x += std::pow(this->Main->cameraManager->vecCameras->at(this->Ui->num_camera_id->value()+1)->CameraToWorld->ox(), 2);
+   zeile_x += std::pow(this->Main->cameraManager->vecCameras->at(this->Ui->num_camera_id->value()+1)->CameraToWorld->ax(), 2);
+
+   zeile_y = std::pow(this->Main->cameraManager->vecCameras->at(this->Ui->num_camera_id->value()+1)->CameraToWorld->ny(), 2);
+   zeile_y += std::pow(this->Main->cameraManager->vecCameras->at(this->Ui->num_camera_id->value()+1)->CameraToWorld->oy(), 2);
+   zeile_y += std::pow(this->Main->cameraManager->vecCameras->at(this->Ui->num_camera_id->value()+1)->CameraToWorld->ay(), 2);
+
+   zeile_z = std::pow(this->Main->cameraManager->vecCameras->at(this->Ui->num_camera_id->value()+1)->CameraToWorld->nz(), 2);
+   zeile_z += std::pow(this->Main->cameraManager->vecCameras->at(this->Ui->num_camera_id->value()+1)->CameraToWorld->oz(), 2);
+   zeile_z += std::pow(this->Main->cameraManager->vecCameras->at(this->Ui->num_camera_id->value()+1)->CameraToWorld->az(), 2);
+
+
+
+   this->Ui->txb_spalte_x->setText(QString::number(spalte_n));
+   this->Ui->txb_spalte_y->setText(QString::number(spalte_o));
+   this->Ui->txb_spalte_z->setText(QString::number(spalte_a));
+
+   this->Ui->txb_zeile_x->setText(QString::number(zeile_x));
+   this->Ui->txb_zeile_y->setText(QString::number(zeile_y));
+   this->Ui->txb_zeile_z->setText(QString::number(zeile_z));
+
+  }
 void C_frm_Camera_Calibration::ShowTable()
   {
   switch(method)

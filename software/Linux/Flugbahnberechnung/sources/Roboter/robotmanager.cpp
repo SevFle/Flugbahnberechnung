@@ -91,7 +91,21 @@ C_AbsolutePose C_robotManager::calibrateRobotBaseToWorld(C_AbsolutePose& worldTo
     C_RelativePose TCPToRobotBase;
     C_AbsolutePose WorldToRobotBase;
     C_AbsolutePose WorldToBoard;
-    C_AbsolutePose BoardToTCP_temp;
+    C_AbsolutePose WorldToTCP;
+
+    for (int i = 0; i < 4; i++)
+      {
+      for (int j = 0; j < 4; j++)
+        {
+        robotBaseToTCP.HomogenePosenMatrix[i][j]    = 0.0;
+        TCPToRobotBase.HomogenePosenMatrix[i][j]    = 0.0;
+        WorldToRobotBase.HomogenePosenMatrix[i][j]  = 0.0;
+        WorldToBoard.HomogenePosenMatrix[i][j]      = 0.0;
+        WorldToTCP.HomogenePosenMatrix[i][j]        = 0.0;
+        }
+      }
+
+
 
 
     this->getAbsoluteHomogenousBaseToTCP  (&robotBaseToTCP);
@@ -109,7 +123,7 @@ C_AbsolutePose C_robotManager::calibrateRobotBaseToWorld(C_AbsolutePose& worldTo
       for (int j = 0; j < 4; j++)
         for (int k = 0; k < 4; k++)
           {
-          BoardToTCP_temp.HomogenePosenMatrix[i][j] += WorldToBoard.HomogenePosenMatrix[i][k] * BoardToTCP.HomogenePosenMatrix[k][j];
+          WorldToTCP.HomogenePosenMatrix[i][j] += WorldToBoard.HomogenePosenMatrix[i][k] * BoardToTCP.HomogenePosenMatrix[k][j];
           }
 
     for (int i = 0; i < 4; i++)
@@ -117,7 +131,7 @@ C_AbsolutePose C_robotManager::calibrateRobotBaseToWorld(C_AbsolutePose& worldTo
         for (int k = 0; k < 4; k++)
           {
           //this->relPose ist die Pose von Kamera1 zu Kamera 2 (M12)
-          WorldToRobotBase.HomogenePosenMatrix[i][j] += BoardToTCP_temp.HomogenePosenMatrix[i][k] * TCPToRobotBase.HomogenePosenMatrix[k][j];
+          WorldToRobotBase.HomogenePosenMatrix[i][j] += WorldToTCP.HomogenePosenMatrix[i][k] * TCPToRobotBase.HomogenePosenMatrix[k][j];
           }
     return WorldToRobotBase;
 
@@ -136,6 +150,7 @@ bool C_robotManager::moveRobotToTarget(C_AbsolutePose* targetPose)
 bool C_robotManager::close_Panda_threading()
   {
   this->robotThread->join();
+  delete robotThread;
   this->threadActive = false;
   this->roboter->SM_Panda_Processor_Move_Robot_Slow_Enabled = false;
   return true;

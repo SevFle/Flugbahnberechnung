@@ -122,12 +122,15 @@ void C_kalmanFilter::init()
   this->kalmanOnCuda->gain->upload(*this->gain);
   std::cout << "Kalmanfilter->gain [K]: " << std::endl << *this->gain <<std::endl;
 
-  for(int i = 0; i < 6; i++)
+  if(controllvector)
     {
-    this->controllvector->at<float>(i) = -9.807f;
+    for(int i = 0; i < 6; i++)
+      {
+      this->controllvector->at<float>(i) = -9.807f;
+      }
+    this->gpuControllvector->upload(*this->controllvector);
+    std::cout << "Kalmanfilter->controllvector [u]: " << std::endl << *this->controllvector <<std::endl;
     }
-  this->gpuControllvector->upload(*this->controllvector);
-  std::cout << "Kalmanfilter->controllvector [u]: " << std::endl << *this->controllvector <<std::endl;
   }
 
 void C_kalmanFilter::reset()

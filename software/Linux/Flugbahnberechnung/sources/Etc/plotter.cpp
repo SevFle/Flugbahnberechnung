@@ -4,12 +4,12 @@ using namespace plotter;
 
 C_plotter::C_plotter()
   {
-  this->graph = new QtDataVisualization::Q3DScatter;
-  this->seriesReal  = new QtDataVisualization::QScatter3DSeries;
-  this->dataReal    = new QtDataVisualization::QScatterDataArray;
+  this->graph            = new QtDataVisualization::Q3DScatter;
+  this->seriesReal       = new QtDataVisualization::QScatter3DSeries;
+  this->dataReal         = new QtDataVisualization::QScatterDataArray;
   this->seriesPredicted  = new QtDataVisualization::QScatter3DSeries;
   this->dataPredicted    = new QtDataVisualization::QScatterDataArray;
-  seriesType    = new plotter::series;
+  seriesType             = new plotter::series;
   init();
   }
 C_plotter::~C_plotter()
@@ -20,7 +20,7 @@ C_plotter::~C_plotter()
   delete (dataReal);
   delete (seriesReal);
 
-  delete (graph);
+  //delete (graph);  //Wird durch den Destructor des frm_Object_Tracking::container bereits deletet
   }
 
 void C_plotter::init()

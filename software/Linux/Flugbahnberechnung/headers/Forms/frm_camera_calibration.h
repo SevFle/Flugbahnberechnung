@@ -57,7 +57,8 @@ private slots:
   static void camera_calibration_thread (void *This);
   void sm_Single_camera_calibration     ();
   void sm_Stereo_camera_calibration     ();
-
+  void writeAbsoluteAmount();
+  void writeSavedCamPose();
 
   void on_bt_start_clicked              ();
   void on_bt_exit_clicked               ();

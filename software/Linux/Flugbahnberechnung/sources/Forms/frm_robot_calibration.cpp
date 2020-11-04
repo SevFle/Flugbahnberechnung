@@ -12,7 +12,7 @@ C_frm_Robot_Calibration::C_frm_Robot_Calibration(C_GlobalObjects* GlobalObjects,
   this->Taktgeber = new QTimer;
   this->robotTcpPose = new C_RelativePose;
   this->pose_WorldToRobotBase = new C_AbsolutePose;
-  this->camPose = new cv::Mat(cv::Mat_<double>(4,4));
+  this->Abs_CamToBoard = new cv::Mat(cv::Mat_<double>(4,4));
   this->pData = nullptr;
 
   this->Taktgeber_Intervall = 0;
@@ -38,7 +38,7 @@ C_frm_Robot_Calibration::~C_frm_Robot_Calibration()
     {
     this->pData = nullptr;
     }
-  delete (camPose);
+  delete (Abs_CamToBoard);
   delete (pose_WorldToRobotBase);
   delete (robotTcpPose);
   delete (Taktgeber);
@@ -117,17 +117,17 @@ void C_frm_Robot_Calibration::Taktgeber_Tick()
     {
     cv::Mat temp;
     pData->gpuUndistortedImg[0].download(temp);
-    if(this->Main->cameraManager->scanChAruco(temp, *Main->cameraManager->vecCameras->at(this->ui->num_camID->value()), *this->camPose))
+    if(this->Main->cameraManager->scanChAruco(temp, *Main->cameraManager->vecCameras->at(this->ui->num_camID->value()), *this->Abs_CamToBoard))
       {
       this->writeCamPose();
-      this->writeRobotBaseToWorld();
+      this->writeRobotBaseToWorldPose();
       }
     else
       {
       for(int i =0; i < 4; i ++)
         for(int j = 0; j < 4; j++)
           {
-          this->camPose->at<double>(i,j) = 0.0;
+          this->Abs_CamToBoard->at<double>(i,j) = 0.0;
           }
       writeCamPose();
       }
@@ -143,7 +143,7 @@ void C_frm_Robot_Calibration::Taktgeber_Tick()
     for(int i =0; i < 4; i ++)
       for(int j = 0; j < 4; j++)
         {
-        this->camPose->at<double>(i,j) = 0.0;
+        this->Abs_CamToBoard->at<double>(i,j) = 0.0;
         }
     writeCamPose();
     writeRobotTcpPose();
@@ -152,6 +152,7 @@ void C_frm_Robot_Calibration::Taktgeber_Tick()
     {
     this->enableUi();
     this->moving = false;
+    this->Main->robotManager->close_Panda_threading();
     }
   }//void C_frm_Robot_Calibration::Taktgeber_Tick()
 void C_frm_Robot_Calibration::disableUi()
@@ -200,25 +201,28 @@ void C_frm_Robot_Calibration::initUi()
     this->ui->txb_px_home->setText(QString::number(RobotHome.HomogenePosenMatrix[0][3]));
     this->ui->txb_py_home->setText(QString::number(RobotHome.HomogenePosenMatrix[1][3]));
     this->ui->txb_pz_home->setText(QString::number(RobotHome.HomogenePosenMatrix[2][3]));
+
+    this->writeWorldToCamPose();
+    this->on_rb_home_Pose_clicked();
   }
 
 void C_frm_Robot_Calibration::writeCamPose()
   {
-  this->ui->txb_nx_cam->setText(QString::number(this->camPose->at<double>(0,0)));
-  this->ui->txb_ny_cam->setText(QString::number(this->camPose->at<double>(1,0)));
-  this->ui->txb_nz_cam->setText(QString::number(this->camPose->at<double>(2,0)));
+  this->ui->txb_nx_cam->setText(QString::number(this->Abs_CamToBoard->at<double>(0,0)));
+  this->ui->txb_ny_cam->setText(QString::number(this->Abs_CamToBoard->at<double>(1,0)));
+  this->ui->txb_nz_cam->setText(QString::number(this->Abs_CamToBoard->at<double>(2,0)));
 
-  this->ui->txb_ox_cam->setText(QString::number(this->camPose->at<double>(0,1)));
-  this->ui->txb_oy_cam->setText(QString::number(this->camPose->at<double>(1,1)));
-  this->ui->txb_oz_cam->setText(QString::number(this->camPose->at<double>(2,1)));
+  this->ui->txb_ox_cam->setText(QString::number(this->Abs_CamToBoard->at<double>(0,1)));
+  this->ui->txb_oy_cam->setText(QString::number(this->Abs_CamToBoard->at<double>(1,1)));
+  this->ui->txb_oz_cam->setText(QString::number(this->Abs_CamToBoard->at<double>(2,1)));
 
-  this->ui->txb_ax_cam->setText(QString::number(this->camPose->at<double>(0,2)));
-  this->ui->txb_ay_cam->setText(QString::number(this->camPose->at<double>(1,2)));
-  this->ui->txb_az_cam->setText(QString::number(this->camPose->at<double>(2,2)));
+  this->ui->txb_ax_cam->setText(QString::number(this->Abs_CamToBoard->at<double>(0,2)));
+  this->ui->txb_ay_cam->setText(QString::number(this->Abs_CamToBoard->at<double>(1,2)));
+  this->ui->txb_az_cam->setText(QString::number(this->Abs_CamToBoard->at<double>(2,2)));
 
-  this->ui->txb_px_cam->setText(QString::number(this->camPose->at<double>(0,3)));
-  this->ui->txb_py_cam->setText(QString::number(this->camPose->at<double>(1,3)));
-  this->ui->txb_pz_cam->setText(QString::number(this->camPose->at<double>(2,3)));
+  this->ui->txb_px_cam->setText(QString::number(this->Abs_CamToBoard->at<double>(0,3)));
+  this->ui->txb_py_cam->setText(QString::number(this->Abs_CamToBoard->at<double>(1,3)));
+  this->ui->txb_pz_cam->setText(QString::number(this->Abs_CamToBoard->at<double>(2,3)));
 
   }
 void C_frm_Robot_Calibration::writeRobotTcpPose()
@@ -243,8 +247,25 @@ void C_frm_Robot_Calibration::writeRobotTcpPose()
     this->ui->txb_pz_robot->setText(QString::number(this->robotTcpPose->HomogenePosenMatrix[2][3]));
     }
   }
+void C_frm_Robot_Calibration::writeWorldToBoardPose(C_AbsolutePose& WorldToBoard)
+  {
+    this->ui->txb_nx_worldToBoard->setText(QString::number(WorldToBoard.HomogenePosenMatrix[0][0]));
+    this->ui->txb_ny_worldToBoard->setText(QString::number(WorldToBoard.HomogenePosenMatrix[1][0]));
+    this->ui->txb_nz_worldToBoard->setText(QString::number(WorldToBoard.HomogenePosenMatrix[2][0]));
 
-void C_frm_Robot_Calibration::writeRobotBaseToWorld()
+    this->ui->txb_ox_worldToBoard->setText(QString::number(WorldToBoard.HomogenePosenMatrix[0][1]));
+    this->ui->txb_oy_worldToBoard->setText(QString::number(WorldToBoard.HomogenePosenMatrix[1][1]));
+    this->ui->txb_oz_worldToBoard->setText(QString::number(WorldToBoard.HomogenePosenMatrix[2][1]));
+
+    this->ui->txb_ax_worldToBoard->setText(QString::number(WorldToBoard.HomogenePosenMatrix[0][2]));
+    this->ui->txb_ay_worldToBoard->setText(QString::number(WorldToBoard.HomogenePosenMatrix[1][2]));
+    this->ui->txb_az_worldToBoard->setText(QString::number(WorldToBoard.HomogenePosenMatrix[2][2]));
+
+    this->ui->txb_px_worldToBoard->setText(QString::number(WorldToBoard.HomogenePosenMatrix[0][3]));
+    this->ui->txb_py_worldToBoard->setText(QString::number(WorldToBoard.HomogenePosenMatrix[1][3]));
+    this->ui->txb_pz_worldToBoard->setText(QString::number(WorldToBoard.HomogenePosenMatrix[2][3]));
+  }
+void C_frm_Robot_Calibration::writeRobotBaseToWorldPose()
   {
   if(!this->moving)
     {
@@ -266,20 +287,62 @@ void C_frm_Robot_Calibration::writeRobotBaseToWorld()
     this->ui->txb_pz_robot_world->setText(QString::number(RobotToWorld.HomogenePosenMatrix[2][3]));
     }
   }
+void C_frm_Robot_Calibration::writeWorldToCamPose()
+  {
+  C_AbsolutePose WorldToCam = *this->Main->cameraManager->vecCameras->at(this->ui->num_camID->value())->WorldToCamera;
+
+  this->ui->txb_nx_worldToCam->setText(QString::number(WorldToCam.HomogenePosenMatrix[0][0]));
+  this->ui->txb_ny_worldToCam->setText(QString::number(WorldToCam.HomogenePosenMatrix[1][0]));
+  this->ui->txb_nz_worldToCam->setText(QString::number(WorldToCam.HomogenePosenMatrix[2][0]));
+
+  this->ui->txb_ox_worldToCam->setText(QString::number(WorldToCam.HomogenePosenMatrix[0][1]));
+  this->ui->txb_oy_worldToCam->setText(QString::number(WorldToCam.HomogenePosenMatrix[1][1]));
+  this->ui->txb_oz_worldToCam->setText(QString::number(WorldToCam.HomogenePosenMatrix[2][1]));
+
+  this->ui->txb_ax_worldToCam->setText(QString::number(WorldToCam.HomogenePosenMatrix[0][2]));
+  this->ui->txb_ay_worldToCam->setText(QString::number(WorldToCam.HomogenePosenMatrix[1][2]));
+  this->ui->txb_az_worldToCam->setText(QString::number(WorldToCam.HomogenePosenMatrix[2][2]));
+
+  this->ui->txb_px_worldToCam->setText(QString::number(WorldToCam.HomogenePosenMatrix[0][3]));
+  this->ui->txb_py_worldToCam->setText(QString::number(WorldToCam.HomogenePosenMatrix[1][3]));
+  this->ui->txb_pz_worldToCam->setText(QString::number(WorldToCam.HomogenePosenMatrix[2][3]));
+  }
+
 C_AbsolutePose C_frm_Robot_Calibration::getPoseRobotBaseToWorld()
   {
   C_RelativePose camToBoard;
   C_RelativePose BoardToTCP;
+  C_AbsolutePose WorldToBoard;
+
 
   BoardToTCP.nx(this->ui->num_nx_boardToTCP->value());
   BoardToTCP.oy(this->ui->num_oy_boardToTCP->value());
   BoardToTCP.az(this->ui->num_az_boardToTCP->value());
 
+  for (int i = 0; i < 4; i++)
+    {
+    for (int j = 0; j < 4; j++)
+      {
+      camToBoard.HomogenePosenMatrix[i][j] = 0.0;
+      WorldToBoard.HomogenePosenMatrix[i][j] = 0.0;
+      }
+    }
+
   for(int i = 0;i < 4; i++)
     for(int j=0; j < 4; j++)
       {
-      camToBoard.HomogenePosenMatrix[i][j] = this->camPose->at<double>(i,j);
+      camToBoard.HomogenePosenMatrix[i][j] = this->Abs_CamToBoard->at<double>(i,j);
       }
+
+  //Berechne die Absolute Pose des Boards im Weltkoordinatensystem
+  for (int i = 0; i < 4; i++)
+    for (int j = 0; j < 4; j++)
+      for (int k = 0; k < 4; k++)
+        {
+        WorldToBoard.HomogenePosenMatrix[i][j] += this->Main->cameraManager->vecCameras->at(this->ui->num_camID->value())->WorldToCamera->HomogenePosenMatrix[i][k] *
+                                                  camToBoard.HomogenePosenMatrix[k][j];
+        }
+  this->writeWorldToBoardPose(WorldToBoard);
   *this->GlobalObjects->camToBoard = camToBoard;
   *this->pose_WorldToRobotBase = this->Main->robotManager->calibrateRobotBaseToWorld(*this->Main->cameraManager->vecCameras->at(this->ui->num_camID->value())->WorldToCamera, BoardToTCP);
 
@@ -293,6 +356,7 @@ void frm_Robot_Calibration::C_frm_Robot_Calibration::on_num_camID_valueChanged(i
   this->Main->cameraManager->pipelineFlush->store(true);
   this->Main->cameraManager->setArrActiveCameras(arg1,0);
   this->Main->cameraManager->pipelineFlush->store(false);
+  this->writeWorldToCamPose();
   }
 
 void frm_Robot_Calibration::C_frm_Robot_Calibration::on_bt_exit_clicked()
@@ -318,7 +382,7 @@ void frm_Robot_Calibration::C_frm_Robot_Calibration::on_bt_save_pose_clicked()
   for(int i = 0;i < 4; i++)
     for(int j=0; j < 4; j++)
       {
-      camToBoard.HomogenePosenMatrix[i][j] = this->camPose->at<double>(i,j);
+      camToBoard.HomogenePosenMatrix[i][j] = this->Abs_CamToBoard->at<double>(i,j);
       }
   *this->GlobalObjects->camToBoard = camToBoard;
   WorldToRobot =  this->Main->robotManager->calibrateRobotBaseToWorld(*this->Main->cameraManager->vecCameras->at(this->ui->num_camID->value())->CameraToWorld, BoardToTCP);

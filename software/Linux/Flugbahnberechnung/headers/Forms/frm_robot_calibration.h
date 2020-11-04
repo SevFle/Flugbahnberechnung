@@ -23,7 +23,7 @@ namespace frm_Robot_Calibration
     Main::C_Main*                     Main;
     QTimer*                           Taktgeber;
     QTimer*                           RobotUpdate;
-    cv::Mat*                          camPose;
+    cv::Mat*                          Abs_CamToBoard;
     C_AbsolutePose*                   pose_WorldToRobotBase;
     C_RelativePose*                   robotTcpPose;
     CameraManager::S_pipelinePayload* pData;
@@ -43,8 +43,10 @@ namespace frm_Robot_Calibration
 
   private:
     void writeCamPose();
+    void writeWorldToCamPose();
     void writeRobotTcpPose();
-    void writeRobotBaseToWorld();
+    void writeRobotBaseToWorldPose();
+    void writeWorldToBoardPose(C_AbsolutePose& WorldToBoard);
     C_AbsolutePose getPoseRobotBaseToWorld();
     void initUi                       ();
 

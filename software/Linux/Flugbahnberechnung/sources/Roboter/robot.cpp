@@ -1861,10 +1861,11 @@ CartesianVelocities          C_Robot_Panda::CartesianPose_Callback_Function_abs_
   CartesianVelocities Vel_Output = {{Stell_Werte[0], Stell_Werte[1], Stell_Werte[2], Stell_Werte[3], Stell_Werte[4], Stell_Werte[5]}};
 
   // Ausstiegsbedingung festlegen
-  double Epsilon_T_vel   = 0.001;
-  double Epsilon_R_Vel   = 0.001;
-  double Epsilon_T_pos   = 0.001;
-  double Epsilon_R_pos   = 0.01;
+  //TODO Epsilon erhöhen
+  double Epsilon_T_vel   = 0.005;
+  double Epsilon_R_Vel   = 0.005;
+  double Epsilon_T_pos   = 0.005;
+  double Epsilon_R_pos   = 0.02;
   double vx_d            = Robot_State.O_dP_EE_d[0];
   double vy_d            = Robot_State.O_dP_EE_d[1];
   double vz_d            = Robot_State.O_dP_EE_d[2];

@@ -667,10 +667,15 @@ void C_CameraManager::calculate_camera_pose    (int camera1, int camera2, std::v
 cv::Mat C_CameraManager::calculate_camera_pose    (int camera1, int camera2, cv::Mat* M10, cv::Mat* M20)
   {
     cv::Mat M12(cv::Mat_<double>(4,4));
-    cv::Mat M01(cv::Mat_<double>(4,4));
     cv::Mat M02(cv::Mat_<double>(4,4));
 
     M02 = M20->inv(cv::DECOMP_LU);
+
+    for(int i=0;i<4;i++)
+      for(int j=0;j<4;j++)
+      {
+      M12.at<double>(i,j)=0.0;
+      }
 
     for(int i=0;i<4;i++)
       for(int j=0;j<4;j++)
@@ -696,7 +701,6 @@ void C_CameraManager::calculate_camera_pose    (int camera1, int camera2, cv::Ma
      this->vecCameras->at(camera2)->WorldToCamera->InversHomogenousPose(*this->vecCameras->at(camera2)->WorldToCamera, this->vecCameras->at(camera2)->CameraToWorld->HomogenePosenMatrix);
 
     this->globalObjects->saveManager->saveCameraCos(*this->vecCameras->at(camera2));
-
   }
 
 cv::Mat C_CameraManager::inverseMat(cv::Mat& Matrix)

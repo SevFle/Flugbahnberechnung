@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1884</width>
-    <height>1042</height>
+    <width>1917</width>
+    <height>1025</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -288,7 +288,7 @@
       <x>650</x>
       <y>10</y>
       <width>601</width>
-      <height>611</height>
+      <height>491</height>
      </rect>
     </property>
     <property name="text">
@@ -301,7 +301,7 @@
       <x>1250</x>
       <y>10</y>
       <width>601</width>
-      <height>611</height>
+      <height>491</height>
      </rect>
     </property>
     <property name="text">
@@ -823,7 +823,7 @@
      </font>
     </property>
    </widget>
-   <widget class="QGroupBox" name="grpb_1_output">
+   <widget class="QGroupBox" name="grpb_Camera_0">
     <property name="enabled">
      <bool>true</bool>
     </property>
@@ -831,7 +831,7 @@
      <rect>
       <x>620</x>
       <y>630</y>
-      <width>571</width>
+      <width>561</width>
       <height>191</height>
      </rect>
     </property>
@@ -995,15 +995,15 @@
      </property>
     </widget>
    </widget>
-   <widget class="QGroupBox" name="grpb_2_output">
+   <widget class="QGroupBox" name="grpb_Camera_1">
     <property name="enabled">
      <bool>true</bool>
     </property>
     <property name="geometry">
      <rect>
-      <x>1200</x>
+      <x>1190</x>
       <y>630</y>
-      <width>571</width>
+      <width>561</width>
       <height>191</height>
      </rect>
     </property>
@@ -1184,7 +1184,7 @@
 aufnehmen</string>
     </property>
    </widget>
-   <widget class="QGroupBox" name="groupBox_3">
+   <widget class="QGroupBox" name="grpb_cameraMatrix">
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -1194,7 +1194,7 @@ aufnehmen</string>
      </rect>
     </property>
     <property name="title">
-     <string>Output</string>
+     <string>KameraMatrix</string>
     </property>
     <widget class="QTextEdit" name="txb_rms">
      <property name="geometry">
@@ -1360,12 +1360,12 @@ aufnehmen</string>
      <rect>
       <x>780</x>
       <y>820</y>
-      <width>571</width>
+      <width>561</width>
       <height>191</height>
      </rect>
     </property>
     <property name="title">
-     <string>Pose</string>
+     <string>Pose Camera Links zu Rechts</string>
     </property>
     <widget class="QTextEdit" name="txb_px_3">
      <property name="geometry">
@@ -1537,6 +1537,367 @@ aufnehmen</string>
      <string>TextLabel</string>
     </property>
    </widget>
+   <widget class="QGroupBox" name="grpb_betraegeDerVektoren">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>550</y>
+      <width>411</width>
+      <height>181</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>Beträge der Spalten-/Zeilenvektoren</string>
+    </property>
+    <widget class="QTextEdit" name="txb_spalte_x">
+     <property name="geometry">
+      <rect>
+       <x>90</x>
+       <y>30</y>
+       <width>101</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="readOnly">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>40</y>
+       <width>67</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Spalte n</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_2">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>80</y>
+       <width>67</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Spalte o</string>
+     </property>
+    </widget>
+    <widget class="QTextEdit" name="txb_spalte_y">
+     <property name="geometry">
+      <rect>
+       <x>90</x>
+       <y>70</y>
+       <width>101</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="readOnly">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_3">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>120</y>
+       <width>67</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Spalte a</string>
+     </property>
+    </widget>
+    <widget class="QTextEdit" name="txb_spalte_z">
+     <property name="geometry">
+      <rect>
+       <x>90</x>
+       <y>110</y>
+       <width>101</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="readOnly">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_9">
+     <property name="geometry">
+      <rect>
+       <x>210</x>
+       <y>40</y>
+       <width>67</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Zeile X</string>
+     </property>
+    </widget>
+    <widget class="QTextEdit" name="txb_zeile_x">
+     <property name="geometry">
+      <rect>
+       <x>290</x>
+       <y>30</y>
+       <width>101</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="readOnly">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_10">
+     <property name="geometry">
+      <rect>
+       <x>210</x>
+       <y>80</y>
+       <width>67</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Zeile Y</string>
+     </property>
+    </widget>
+    <widget class="QTextEdit" name="txb_zeile_y">
+     <property name="geometry">
+      <rect>
+       <x>290</x>
+       <y>70</y>
+       <width>101</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="readOnly">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_11">
+     <property name="geometry">
+      <rect>
+       <x>210</x>
+       <y>120</y>
+       <width>67</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Zeile Z</string>
+     </property>
+    </widget>
+    <widget class="QTextEdit" name="txb_zeile_z">
+     <property name="geometry">
+      <rect>
+       <x>290</x>
+       <y>110</y>
+       <width>101</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="readOnly">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QGroupBox" name="grpb_last_pose">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>1350</x>
+      <y>820</y>
+      <width>561</width>
+      <height>191</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>Pose Kamera 1 zu Welt</string>
+    </property>
+    <widget class="QTextEdit" name="txb_px_camera1_pose">
+     <property name="geometry">
+      <rect>
+       <x>430</x>
+       <y>40</y>
+       <width>121</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="readOnly">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QTextEdit" name="txb_nx_camera1_pose">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>40</y>
+       <width>121</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="readOnly">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QTextEdit" name="txb_ox_camera1_pose">
+     <property name="geometry">
+      <rect>
+       <x>150</x>
+       <y>40</y>
+       <width>121</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="readOnly">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QTextEdit" name="txb_ax_camera1_pose">
+     <property name="geometry">
+      <rect>
+       <x>290</x>
+       <y>40</y>
+       <width>121</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="readOnly">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QTextEdit" name="txb_ny_camera1_pose">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>80</y>
+       <width>121</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="readOnly">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QTextEdit" name="txb_oy_camera1_pose">
+     <property name="geometry">
+      <rect>
+       <x>150</x>
+       <y>80</y>
+       <width>121</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="readOnly">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QTextEdit" name="txb_ay_camera1_pose">
+     <property name="geometry">
+      <rect>
+       <x>290</x>
+       <y>80</y>
+       <width>121</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="readOnly">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QTextEdit" name="txb_py_camera1_pose">
+     <property name="geometry">
+      <rect>
+       <x>430</x>
+       <y>80</y>
+       <width>121</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="readOnly">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QTextEdit" name="txb_nz_camera1_pose">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>120</y>
+       <width>121</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="readOnly">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QTextEdit" name="txb_oz_camera1_pose">
+     <property name="geometry">
+      <rect>
+       <x>150</x>
+       <y>120</y>
+       <width>121</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="readOnly">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QTextEdit" name="txb_az_camera1_pose">
+     <property name="geometry">
+      <rect>
+       <x>290</x>
+       <y>120</y>
+       <width>121</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="readOnly">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QTextEdit" name="txb_pz_camera1_pose">
+     <property name="geometry">
+      <rect>
+       <x>430</x>
+       <y>120</y>
+       <width>121</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="readOnly">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </widget>
+   <zorder>lbl_img_single_calibration</zorder>
+   <zorder>txb_zaehler</zorder>
+   <zorder>bt_exit</zorder>
+   <zorder>groupBox</zorder>
+   <zorder>groupBox_2</zorder>
+   <zorder>lbl_img_stereo_left</zorder>
+   <zorder>lbl_img_stereo_right</zorder>
+   <zorder>bt_start</zorder>
+   <zorder>lbl_calibration_running</zorder>
+   <zorder>bt_photo</zorder>
+   <zorder>groupBox_4</zorder>
+   <zorder>num_camera_id</zorder>
+   <zorder>grpb_Camera_0</zorder>
+   <zorder>grpb_Camera_1</zorder>
+   <zorder>bt_pose_estimation</zorder>
+   <zorder>grpb_cameraMatrix</zorder>
+   <zorder>grpb_2_m12</zorder>
+   <zorder>lbl_stereo_camera_current_cam</zorder>
+   <zorder>grpb_betraegeDerVektoren</zorder>
+   <zorder>grpb_last_pose</zorder>
   </widget>
  </widget>
  <resources/>
