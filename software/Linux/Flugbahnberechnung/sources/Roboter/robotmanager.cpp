@@ -205,6 +205,12 @@ void C_robotManager::sm_BallTracking()
   double timestep = 0.0;
   double distance = 0.0;
 
+  double Panda_Vel_max   = 0;
+  double Panda_Acc_max   = 0;
+  double Panda_Omega_max = 0;
+  double Panda_Alpha_max = 0;
+
+
   bool inRange = false;
   std::cout << "Robot preparing in World " << std::endl;
   while(*this->state_machine_running == true)
@@ -212,7 +218,7 @@ void C_robotManager::sm_BallTracking()
     switch(this->smBallTrackingStep)
        {
       //Berechne Robot Bewegungsraum zu Weltkoordinaten
-      case 1:
+      case 0:
         //Transformiere die Roboter Boundingbox ins Weltkoordinatensystem
         ConstraintsInWorld.X  = this->roboter->Abs_WorldToRobot_Pose.px() + this->outerConstraints->X;
         ConstraintsInWorld.nX = this->roboter->Abs_WorldToRobot_Pose.px() - this->outerConstraints->nX;
@@ -227,6 +233,13 @@ void C_robotManager::sm_BallTracking()
         std::cout << "Robot Constraints in World nY: " << ConstraintsInWorld.nY << std::endl;
         std::cout << "Robot Constraints in World Z: " << ConstraintsInWorld.Z << std::endl;
         std::cout << "Robot Constraints in World nZ: " << ConstraintsInWorld.nZ << std::endl;
+
+        Panda_Vel_max   = abs(1.7);
+        Panda_Acc_max   = abs(4);
+        Panda_Omega_max = abs(1.7);
+        Panda_Alpha_max = abs(4);
+        this->roboter->Set_Panda_Vel_Acc_max(Panda_Vel_max, Panda_Acc_max, Panda_Omega_max, Panda_Alpha_max);
+
 
 
         //Berechne die Distanz zu den drei vorgespeicherten Posen und vergleiche die Distanz. Die kürzeste Strecke wird angefahren
@@ -281,6 +294,7 @@ void C_robotManager::sm_BallTracking()
       case 3:
         if(this->roboter->Is_MotionDone())
           {
+          this->close_Panda_threading();
           this->smBallTrackingStep = 4;
           }
         else
@@ -295,6 +309,7 @@ void C_robotManager::sm_BallTracking()
     case 5:
       if(this->roboter->Is_MotionDone())
         {
+        this->close_Panda_threading();
         this->smBallTrackingStep = 6;
         }
       else
@@ -302,18 +317,19 @@ void C_robotManager::sm_BallTracking()
         this->smBallTrackingStep = 5;
         }
       break;
-    case 7:
-      this->moveRobotToTarget(&this->roboter->Abs_inter_waiting_Pose);
-      this->smBallTrackingStep = 8;
+    case 6:
+      this->moveRobotToTarget(&this->roboter->Abs_waiting_Pose);
+      this->smBallTrackingStep = 7;
       break;
-    case 8:
+    case 7:
       if(this->roboter->Is_MotionDone())
         {
+        this->close_Panda_threading();
         this->smBallTrackingStep = 9;
         }
       else
         {
-        this->smBallTrackingStep = 8;
+        this->smBallTrackingStep = 7;
         }
       break;
     case 9:

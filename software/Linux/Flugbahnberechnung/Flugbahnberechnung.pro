@@ -20,8 +20,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DESTDIR     = $$system(pwd)
 #OBJECTS_DIR = $$DESTDIR/Obj
 # C++ flags
-#QMAKE_CXXFLAGS_RELEASE =-03
-#CONFIG += -O0
+QMAKE_CXXFLAGS_RELEASE =-03
 
 SOURCES += \
   sources/Etc/mathhelper.cpp \
@@ -114,136 +113,28 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 
 
+############################## CUDA INCLUDES ############################################
+CUDA_SOURCES +=
+
 
 ############################## CUDA NVCC ############################################
-#CUDA_SOURCES += cuda/CudaKernels.cu
-#PROJECT_DIR = $$system(pwd)
-#OBJECTS_DIR = $$PROJECT_DIR/Obj
-#DESTDIR = ../bin
-#CUDA_DIR = /usr/local/cuda-10.1
-#CUDA_ARCH = sm_75
-#NVCCFLAGS = --compiler-options -fno-strict-aliasing -use_fast_math --ptxas-options=-v
-#INCLUDEPATH += $$CUDA_DIR/include
-#QMAKE_LIBDIR += $$CUDA_DIR/lib64
-#LIBS += -lcudart -lcutil_x86_64
-## join the includes in a line
-#CUDA_INC = $$join(INCLUDEPATH,' -I','-I',' ')
+CUDA_DIR = /usr/local/cuda
 
-#cuda.input = CUDA_SOURCES
-#cuda.output = ${OBJECTS_DIR}${QMAKE_FILE_BASE}.o
-
-#cuda.commands = $$CUDA_DIR/bin/nvcc -m64 -g -G -arch=$$CUDA_ARCH -c $$NVCCFLAGS $$CUDA_INC $$LIBS  ${QMAKE_FILE_NAME} -o ${QMAKE_FILE_OUT}
-
-#cuda.dependency_type = TYPE_C # there was a typo here. Thanks workmate!
-#cuda.depend_command = $$CUDA_DIR/bin/nvcc -g -G -M $$CUDA_INC $$NVCCFLAGS   ${QMAKE_FILE_NAME}
-## Tell Qt that we want add more stuff to the Makefile
-#QMAKE_EXTRA_UNIX_COMPILERS += cuda
-
-
-## File(s) containing my CUDA code
-#CUDA_SOURCES += cuda/CudaKernels.cu
-
-## Location of CUDA on my system (Arch Linux)
-#CUDA_DIR = /usr/local/cuda-10.1
-
-#INCLUDEPATH += $$CUDA_DIR/include
-#QMAKE_LIBDIR += $$CUDA_DIR/lib64
-#LIBS += -lcudart -lcuda
-
-## Compute capability of my GPU
-#CUDA_ARCH = sm_75 # 75 RTX 2070 / GTX 1650          # 61 GTX 1080
-
-#NVCCFLAGS     = --compiler-options -fno-strict-aliasing -use_fast_math --ptxas-options=-v
-
-#CUDA_INC = $$join(INCLUDEPATH,' -I','-I',' ')
-#cuda.commands = $$CUDA_DIR/bin/nvcc -m64 -O3 -arch=$$CUDA_ARCH -c $$NVCCFLAGS \
-#                $$CUDA_INC $$LIBS  ${QMAKE_FILE_NAME} -o ${QMAKE_FILE_OUT} \
-#                2>&1 | sed -r \"s/\\(([0-9]+)\\)/:\\1/g\" 1>&2
-#cuda.dependency_type = TYPE_C
-
-#cuda.depend_command = $$CUDA_DIR/bin/nvcc -O3 -M $$CUDA_INC $$NVCCFLAGS ${QMAKE_FILE_NAME}| sed \"s/^.*: //\"
-#cuda.input = CUDA_SOURCES
-#cuda.output = $${OBJECTS_DIR}/${QMAKE_FILE_BASE}$${QMAKE_EXT_OBJ}
-
-#QMAKE_EXTRA_COMPILERS += cuda
-#DEFINES += PROJECT_PATH=\\"$_PRO_FILE_PWD_\\"
-##----------------------------------------------------------------
-##-------------------------Cuda setup-----------------------------
-##----------------------------------------------------------------
-
-#CUDA_SOURCES += \
-#          cuda/CudaKernels.cu
-
-## Path to cuda toolkit install (System specific)
-#CUDA_DIR = /usr/local/cuda-10.1
-#INCLUDEPATH += $CUDA_DIR/include
-#INCLUDEPATH += $CUDA_DIR/samples/common/inc
-
-## Cuda libs dir
-#QMAKE_LIBDIR += $CUDA_DIR/lib64
-
-### note: for dynamic parallelism you need libcudadevrt
-#LIBS += -lcudart -lcudadevrt -lcuda
-
-## GPU ARCH
-## This gets passed as the gpu-architecture flag to nvcc compiler
-## specifying particular architectures enable certain features, limited to the compute capability
-## of the GPU. compute capabilities listed here http://en.wikipedia.org/wiki/CUDA
-#CUDA_ARCH = 75
-
-## Join the includes in a line
-#CUDA_INC = $join(INCLUDEPATH,' -I','-I',' ') -I$_PRO_FILE_PWD_
-
-## Flags used by the CUDA compiler
-#NVCCFLAGS = 	--compiler-options -fno-strict-aliasing \
-#    --ptxas-options=-v \
-#    -rdc=true \
-#    -prec-div=true -ftz=false -prec-sqrt=true -fmad=true
-
-## Flags used by both the CUDA compiler and linker
-#NVCCFLAG_COMMON = -m64 -arch=sm_$CUDA_ARCH
-#CONFIG(debug, debug|release) {
-#  #DEBUG
-#  NVCCFLAG_COMMON += -g -G
-#} else {
-#  #RELEASE
-#  NVCCFLAG_COMMON += -O2
-#}
-
-##------------------------- Cuda intermediat compiler
-## Prepare intermediat cuda compiler
-#cudaIntr.input = CUDA_SOURCES
-##cudaIntr.output = ${OBJECTS_DIR}${QMAKE_FILE_BASE}_cuda.o
-#cudaIntr.output = ${QMAKE_FILE_BASE}_cuda.o
-
-#cudaIntr.commands = 	$CUDA_DIR/bin/nvcc $NVCCFLAG_COMMON \
-#      -dc $NVCCFLAGS $CUDA_INC $LIBS \
-#      ${QMAKE_FILE_NAME} -o ${QMAKE_FILE_OUT}
-
-##Set our variable out. These obj files need to be used to create the link obj file and used in our final gcc compilation
-#cudaIntr.variable_out = CUDA_OBJ
-#cudaIntr.variable_out += OBJECTS
-
-## Tell Qt that we want add more stuff to the Makefile
-#QMAKE_EXTRA_UNIX_COMPILERS += cudaIntr
-
-##------------------------- Cuda linker (required for dynamic parallelism)
-## Prepare the linking compiler step
-#cuda.input = CUDA_OBJ
-#cuda.output = link.o
-#cuda.CONFIG += combine	# Generate 1 output file
-
-## Tweak arch according to your hw's compute capability
-#cuda.commands = $CUDA_DIR/bin/nvcc $NVCCFLAG_COMMON \
-#    -dlink *_cuda.o -o link.o
-#cuda.dependency_type = TYPE_C
-#cuda.depend_command = 	$CUDA_DIR/bin/nvcc -g -G \
-#      -M $CUDA_INC $NVCCFLAGS ${QMAKE_FILE_NAME}
-
-## Tell Qt that we want add more stuff to the Makefile
-#QMAKE_EXTRA_UNIX_COMPILERS += cuda
-
-
+INCLUDEPATH  += $$CUDA_DIR/include
+QMAKE_LIBDIR += $$CUDA_DIR/lib64
+LIBS += -lcudart -lcuda
+CUDA_ARCH = sm_75
+# Here are some NVCC flags I've always used by default.
+NVCCFLAGS     = --compiler-options -fno-strict-aliasing -use_fast_math --ptxas-options=-v
+CUDA_INC = $$join(INCLUDEPATH,' -I','-I',' ')
+cuda.commands = $$CUDA_DIR/bin/nvcc -m64 -O3 -arch=$$CUDA_ARCH -c $$NVCCFLAGS \
+                $$CUDA_INC $$LIBS  ${QMAKE_FILE_NAME} -o ${QMAKE_FILE_OUT} \
+                2>&1 | sed -r \"s/\\(([0-9]+)\\)/:\\1/g\" 1>&2
+cuda.dependency_type = TYPE_C
+cuda.depend_command = $$CUDA_DIR/bin/nvcc -O3 -M $$CUDA_INC $$NVCCFLAGS ${QMAKE_FILE_NAME}| sed \"s/^.*: //\"
+cuda.input = CUDA_SOURCES
+cuda.output = $${OBJECTS_DIR}/${QMAKE_FILE_BASE}$${QMAKE_EXT_OBJ}
+QMAKE_EXTRA_COMPILERS += cuda ```
 
 
 

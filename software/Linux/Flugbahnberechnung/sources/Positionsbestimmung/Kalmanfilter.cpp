@@ -149,6 +149,9 @@ void C_kalmanFilter::predict(float dT)
   else
     {
     std::cout << "##################### KALMAN PREDICT PHASE ######################" << std::endl;
+//    A =
+//    1 0 0 0 0 t 0 0,5(t*t) 0
+//    0 1 0 t 0 0 0 0 0,5(t*t)
     this->transitionMatrix->at<float>(3) = dtSeconds;
     this->transitionMatrix->at<float>(10) = dtSeconds;
     this->transitionMatrix->at<float>(17) = dtSeconds;
