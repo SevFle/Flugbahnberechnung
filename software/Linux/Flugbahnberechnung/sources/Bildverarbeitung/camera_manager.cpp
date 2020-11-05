@@ -265,7 +265,7 @@ void C_CameraManager::mvTemp2VecCamera (std::vector<Camera::C_Camera2*> vecCamer
     this->vecCameras->at(i) = std::move (vecCamerastemp[i]);
   }
 }
-bool C_CameraManager::scanChAruco(cv::Mat &image, Camera::C_Camera2 &camera, cv::Mat &Pose)
+bool C_CameraManager::scanChAruco(cv::Mat &image, Camera::C_Camera2 &camera, C_AbsolutePose &Pose)
   {
   if(image.type() != 16)
     return false;
@@ -321,14 +321,16 @@ bool C_CameraManager::scanChAruco(cv::Mat &image, Camera::C_Camera2 &camera, cv:
         cv::Mat row = cv::Mat::zeros(1, 4, CV_64F);  // 3 cols, 1 row
         cv::Rodrigues(rvecBoardAxis, rvecAxisRodL);
 
-        //Hconcat kombiniert zwei Matrizen
-        cv::hconcat(rvecAxisRodL, tvecBoardAxis, M10);
+        Pose.clear();
 
-        M10.push_back(row);
-        M10.at<double>(3,3) =   1.0;
-
-        M10.copyTo(Pose);
-
+        for(int i = 0; i < 3; i++)
+          for(int j = 0; j < 3; j++)
+            {
+            Pose.HomogenePosenMatrix[i][j] = rvecAxisRodL.at<double>(i,j);
+            }
+        Pose.px(tvecBoardAxis.val[0]);
+        Pose.py(tvecBoardAxis.val[1]);
+        Pose.pz(tvecBoardAxis.val[2]);
         return true;
         }
       }
@@ -664,37 +666,24 @@ void C_CameraManager::calculate_camera_pose    (int camera1, int camera2, std::v
   this->globalObjects->saveManager->saveCameraCos(*this->vecCameras->at(camera2));
 
   }
-cv::Mat C_CameraManager::calculate_camera_pose    (int camera1, int camera2, cv::Mat* M10, cv::Mat* M20)
+C_AbsolutePose C_CameraManager::calculate_camera_pose    (int camera1, int camera2, C_AbsolutePose& P10, C_AbsolutePose& P20)
   {
-    cv::Mat M12(cv::Mat_<double>(4,4));
-    cv::Mat M02(cv::Mat_<double>(4,4));
-
-    M02 = M20->inv(cv::DECOMP_LU);
-
-    for(int i=0;i<4;i++)
-      for(int j=0;j<4;j++)
-      {
-      M12.at<double>(i,j)=0.0;
-      }
-
-    for(int i=0;i<4;i++)
-      for(int j=0;j<4;j++)
-          for(int k=0;k<4;k++)
-              {
-              M12.at<double>(i,j)+=M10->at<double>(i,k)* M02.at<double>(k,j);
-              }
-
-    return M12;
+    C_AbsolutePose P12;
+    C_RelativePose P02;
+    P02.InversHomogenousPose(P20, P02.HomogenePosenMatrix);
+    P12 = P10.operator*(P02);
+    return P12;
   }//calculate_camera_pose
-void C_CameraManager::calculate_camera_pose    (int camera1, int camera2, cv::Mat* M12)
+void C_CameraManager::calculate_camera_pose    (int camera1, int camera2, C_AbsolutePose& P12)
   {
     C_RelativePose relCamera1ToCamera2;
 
     for(int i=0;i<4;i++)
-        for(int j=0;j<4;j++)
+      for(int j=0;j<4;j++)
         {
-        relCamera1ToCamera2.HomogenePosenMatrix[i][j] = M12->at<double>(i,j);
+        relCamera1ToCamera2.HomogenePosenMatrix[i][j] = P12.HomogenePosenMatrix[i][j];
         }
+
 
     //M02 = M01*M12
     *this->vecCameras->at(camera2)->WorldToCamera = this->vecCameras->at(camera1)->WorldToCamera->operator*(relCamera1ToCamera2);

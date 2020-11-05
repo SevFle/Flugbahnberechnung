@@ -804,7 +804,25 @@ void C_AbsolutePose::InversHomogenousPose (double (&HomogenePoseMatrix_In)[4][4]
   HomogenePoseMatrix_Out[1][3] = det_A31;
   HomogenePoseMatrix_Out[2][3] = -det_A32;
   }
+void C_AbsolutePose::clear()
+  {
+  for(int i=0; i< 4; i++)
+    {
+    for(int j=0; j< 4; j++)
+      {
+      this->HomogenePosenMatrix[i][j] = 0.0;
+      this->HomogenePosenMatrixTempPuffer_1[i][j] = 0.0;
+      this->HomogenePosenMatrixTempPuffer_2[i][j] = 0.0;
+      this->HomogenePosenMatrixTempPuffer_3[i][j] = 0.0;
+      }
+    }
 
+  this->HomogenePosenMatrix[3][3] = 1;
+  this->HomogenePosenMatrixTempPuffer_1[3][3] = 1;
+  this->HomogenePosenMatrixTempPuffer_2[3][3] = 1;
+  this->HomogenePosenMatrixTempPuffer_3[3][3] = 1;
+
+  }
 /*********************************************Private Methoden*********************************************/
 void C_AbsolutePose::BerechneExtrinsischRPY (double Euler_Psi, double Euler_Phi, double Euler_Chi)
   {
@@ -1538,7 +1556,24 @@ void C_RelativePose::InversHomogenousPose (double (&HomogenePoseMatrix_In)[4][4]
   HomogenePoseMatrix_Out[1][3] = det_A31;
   HomogenePoseMatrix_Out[2][3] = -det_A32;
   }
+void C_RelativePose::clear()
+  {
+  for(int i=0; i< 4; i++)
+    {
+    for(int j=0; j< 4; j++)
+      {
+      this->HomogenePosenMatrix[i][j] = 0.0;
+      this->HomogenePosenMatrixTempPuffer_1[i][j] = 0.0;
+      this->HomogenePosenMatrixTempPuffer_2[i][j] = 0.0;
+      this->HomogenePosenMatrixTempPuffer_3[i][j] = 0.0;
+      }
+    }
 
+  this->HomogenePosenMatrix[3][3] = 1;
+  this->HomogenePosenMatrixTempPuffer_1[3][3] = 1;
+  this->HomogenePosenMatrixTempPuffer_2[3][3] = 1;
+  this->HomogenePosenMatrixTempPuffer_3[3][3] = 1;
+  }
 /*********************************************Private Methoden*********************************************/
 void C_RelativePose::BerechneExtrinsischRPY (double Euler_Psi, double Euler_Phi, double Euler_Chi)
   {

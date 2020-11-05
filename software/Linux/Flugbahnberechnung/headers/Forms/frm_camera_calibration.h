@@ -26,9 +26,9 @@ private:
   CameraManager::S_pipelinePayload* pData;
   QTimer*                           Taktgeber;
   cv::Mat*                          imgBuffer[2];
-  cv::Mat*                          Camera0ToWorld;
-  cv::Mat*                          Camera1ToWorld;
-  cv::Mat*                          Camera0ToCamera1;
+  C_AbsolutePose*                          Camera0ToWorld;
+  C_AbsolutePose*                          Camera1ToWorld;
+  C_AbsolutePose*                          Camera0ToCamera1;
 
 
   int                               Taktgeber_Intervall;

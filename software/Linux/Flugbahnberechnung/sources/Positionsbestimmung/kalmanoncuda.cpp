@@ -25,6 +25,7 @@ C_kalmanOnCuda::C_kalmanOnCuda()
   this->measurementMatrix_temp  = new cv::cuda::GpuMat;
   this->gain_temp               = new cv::cuda::GpuMat;
 
+
   }
 C_kalmanOnCuda::C_kalmanOnCuda(int dynamParams, int measureParams, int controlParams, int type)
   {

@@ -223,9 +223,9 @@ namespace CameraManager
 
 
 
-    cv::Mat calculate_camera_pose    (int camera1, int camera2, cv::Mat* M10, cv::Mat* M20);
+    C_AbsolutePose calculate_camera_pose    (int camera1, int camera2, C_AbsolutePose& P10, C_AbsolutePose& P20);
     void calculate_camera_pose    (int camera1, int camera2, std::vector<cv::Mat>* M10, std::vector<cv::Mat>* M20);
-    void calculate_camera_pose    (int camera1, int camera2, cv::Mat* M12);
+    void calculate_camera_pose    (int camera1, int camera2, C_AbsolutePose& P12);
 
 
 
@@ -255,7 +255,7 @@ namespace CameraManager
 
     /******************************************************* Getter-Setter Klassenmethoden***************************************************************/
   public:
-    bool scanChAruco(cv::Mat& image, Camera::C_Camera2& camera, cv::Mat& Pose);
+    bool scanChAruco(cv::Mat& image, Camera::C_Camera2& camera, C_AbsolutePose& Pose);
 
     std::vector<cv::Mat*> getVecImgShow    () const;
     void setVecImgShow                      (const std::vector<cv::Mat*> &value);

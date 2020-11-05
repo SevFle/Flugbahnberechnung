@@ -284,7 +284,8 @@ namespace posen
     void InversHomogenousPose (C_AbsolutePose& HomogenePose_In, double (&HomogenePoseMatrix_Out)[4][4]);
     void InversHomogenousPose (C_RelativePose& HomogenePose_In, double (&HomogenePoseMatrix_Out)[4][4]);
     void InversHomogenousPose (double (&HomogenePoseMatrix_In)[4][4], double (&HomogenePoseMatrix_Out)[4][4]);
-
+    //Methode zur Vollständigen Löschung aller Matrizen
+    void clear();
     // Get und Set- Methoden zum befllen der Posenmatrix
     double nx (void)
       {
@@ -477,7 +478,7 @@ namespace posen
     void InversHomogenousPose (C_AbsolutePose& HomogenePose_In, double (&HomogenePoseMatrix_Out)[4][4]);
     void InversHomogenousPose (C_RelativePose& HomogenePose_In, double (&HomogenePoseMatrix_Out)[4][4]);
     void InversHomogenousPose (double (&HomogenePoseMatrix_In)[4][4], double (&HomogenePoseMatrix_Out)[4][4]);
-
+    void clear();
     // Get und Set- Methoden zum befllen der Posenmatrix
     double nx (void)
       {

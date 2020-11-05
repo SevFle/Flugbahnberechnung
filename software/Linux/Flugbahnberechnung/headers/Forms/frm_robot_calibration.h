@@ -23,7 +23,7 @@ namespace frm_Robot_Calibration
     Main::C_Main*                     Main;
     QTimer*                           Taktgeber;
     QTimer*                           RobotUpdate;
-    cv::Mat*                          Abs_CamToBoard;
+    C_AbsolutePose*                   pose_CamToBoard;
     C_AbsolutePose*                   pose_WorldToRobotBase;
     C_RelativePose*                   robotTcpPose;
     CameraManager::S_pipelinePayload* pData;

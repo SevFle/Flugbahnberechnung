@@ -1,6 +1,7 @@
 ﻿#ifndef __Kalmanfilter_H
 #define __Kalmanfilter_H
 #include "headers/Positionsbestimmung/kalmanoncuda.h"
+#include "cuda/cudaKalman.cuh"
 
 #define gravity -9.807
 
@@ -14,6 +15,7 @@ namespace kalmanFilter
 
     private:
     kalmanOnCuda::C_kalmanOnCuda* kalmanOnCuda;
+    cudaKalman::C_cudaKalman*     testkalman;
 
   public:
     cv::Mat* statePre;           //!< predicted state (x'(k)): x(k)=A*x(k-1)+B*u(k)
@@ -34,6 +36,8 @@ namespace kalmanFilter
     cv::cuda::GpuMat* gpuState;
     cv::cuda::GpuMat* gpuMeasurement;
     cv::cuda::GpuMat* gpuControllvector;
+
+
 
     void init();
   public:

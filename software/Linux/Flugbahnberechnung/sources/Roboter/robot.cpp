@@ -1642,8 +1642,8 @@ C_Robot_Panda::C_Robot_Panda                                                    
   this->enum_ObjectTracking_alt                             = E_ObjectTracking::Object_Not_Found;
   this->ControlFrameToObject_Pos_Abs                        = 0.0;
   this->ControlFrameToTCP_Pos_Abs                           = 0.0;
-  this->Lichtstrahl_Einheitsvektor                          = {0.0, 0.0, 0.0};
-  this->ControlFrameToTCP_Pos                               = {0.0, 0.0, 0.0};
+  this->Lichtstrahl_Einheitsvektor                          = {0.0, 0.0, 0.0, 0.0};
+  this->ControlFrameToTCP_Pos                               = {0.0, 0.0, 0.0, 0.0};
 
   this->Abs_WorldToRobot_Pose                               = this->Abs_WorldToRobot_Pose.Nullpose;
   this->vectorOf_Abs_Camera_Calibration_Poses.clear();
@@ -1666,8 +1666,8 @@ C_Robot_Panda::~C_Robot_Panda                                                   
   this->vectorOf_Abs_Camera_Calibration_Poses.clear();
   this->Abs_WorldToRobot_Pose                               = this->Abs_WorldToRobot_Pose.Nullpose;
 
-  this->ControlFrameToTCP_Pos                               = {0.0, 0.0, 0.0};
-  this->Lichtstrahl_Einheitsvektor                          = {0.0, 0.0, 0.0};
+  this->ControlFrameToTCP_Pos                               = {0.0, 0.0, 0.0, 0.0};
+  this->Lichtstrahl_Einheitsvektor                          = {0.0, 0.0, 0.0, 0.0};
   this->ControlFrameToTCP_Pos_Abs                           = 0.0;
   this->ControlFrameToObject_Pos_Abs                        = 0.0;
   this->enum_ObjectTracking_alt                             = E_ObjectTracking::Object_Not_Found;
@@ -1987,7 +1987,7 @@ CartesianVelocities          C_Robot_Panda::CartesianVel_Callback_Function_Objec
     // Hier werden im Fehlerfall Dummywerte gesetzt, um Abstürze bei weiterer Berechnung (Division durch 0) zu vermeiden.
     // Die Error-Abfrage erfolgt nochmals bei setzten der kartesischen Geschwindigkeiten am Ende der Funktion.
     Error                    = true;
-    ControlFrameToObject_Pos = {1.0, 1.0, 1.0};
+    ControlFrameToObject_Pos = {1.0, 1.0, 1.0, 0.0};
     }
 
   // Bestimmung des Annäherungsvektors des TCP / Kamera bezogen auf das Regel-KS

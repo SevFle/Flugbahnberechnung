@@ -93,18 +93,11 @@ C_AbsolutePose C_robotManager::calibrateRobotBaseToWorld(C_AbsolutePose& worldTo
     C_AbsolutePose WorldToBoard;
     C_AbsolutePose WorldToTCP;
 
-    for (int i = 0; i < 4; i++)
-      {
-      for (int j = 0; j < 4; j++)
-        {
-        robotBaseToTCP.HomogenePosenMatrix[i][j]    = 0.0;
-        TCPToRobotBase.HomogenePosenMatrix[i][j]    = 0.0;
-        WorldToRobotBase.HomogenePosenMatrix[i][j]  = 0.0;
-        WorldToBoard.HomogenePosenMatrix[i][j]      = 0.0;
-        WorldToTCP.HomogenePosenMatrix[i][j]        = 0.0;
-        }
-      }
-
+    robotBaseToTCP.clear();
+    TCPToRobotBase.clear();
+    WorldToRobotBase.clear();
+    WorldToBoard.clear();
+    WorldToTCP.clear();
 
 
 

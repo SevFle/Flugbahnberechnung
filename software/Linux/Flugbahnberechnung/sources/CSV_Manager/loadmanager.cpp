@@ -243,6 +243,8 @@ void C_LoadManager::loadCameraCos                   (Camera::C_Camera2* Camera)
   {
   C_AbsolutePose CameraToWorld;
   C_AbsolutePose WorldToCamera;
+  CameraToWorld.clear();
+  WorldToCamera.clear();
 
   string Dateiname = "../Parameter/Pose_camera_to_world" + to_string (Camera->getCameraID()) + ".csv";
 
@@ -411,7 +413,6 @@ double* C_LoadManager::loadRobotTCPCalibration      (double (&tcp)[4][4])
 
 void C_LoadManager::loadRobotCos                    (Robot_Panda::C_Robot_Panda& robot)
   {
-  double         Abs_Pose[4][4];
   C_AbsolutePose WorldToRobot;
   C_AbsolutePose RobotToWorld;
   string         Dateiname;

@@ -57,15 +57,6 @@ void C_object::save_trajectory()
 {
 
 }
-
-
-int C_object::get_ID_Cam_Links()
-{
-}
-int C_object::get_ID_Cam_Rechts()
-{
-}
-
 double C_object::get_pose_x(int vec_position)
 {
 return this->vec_pose_x[vec_position];

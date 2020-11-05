@@ -39,6 +39,7 @@ namespace kalmanOnCuda
     cv::cuda::GpuMat* measurementMatrix_temp;
     cv::cuda::GpuMat* gain_temp;
 
+
     void init( int dynamParams, int measureParams, int controlParams = 0, int type = CV_32FC1 );
     const cv::cuda::GpuMat& predict(const cv::cuda::GpuMat& control = cv::cuda::GpuMat());
     cv::cuda::GpuMat& correct( const cv::cuda::GpuMat& measurement  = cv::cuda::GpuMat());
