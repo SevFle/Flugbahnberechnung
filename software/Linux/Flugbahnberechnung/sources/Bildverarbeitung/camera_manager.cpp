@@ -1235,6 +1235,7 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
         {
         cv::cuda::GpuMat temp;
         this->ImageFilter->gpufUnidstord(it, temp, *vecCameras[pData->cameraID[i]]->getXMap(), *vecCameras[pData->cameraID[i]]->getYMap());
+        temp.download(pData->cpuUndistortedImg[i]);
         if(this->filterFlags->roiAdjustmentActive == true)
             {
             switch (*roistatus)
@@ -1337,7 +1338,6 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
           temp2.copyTo(temp1);
           }
         temp1.download(pData->cpuGrayImg[i]);
-        (*it).download(pData->cpuUndistortedImg[i]);
         pData->cpuSrcImg[i].copyTo(pData->cpuFinal[i]);
         cv::rectangle(pData->cpuFinal[i], *vecCameras[pData->cameraID[i]]->getRoi(), cv::Scalar(0,255,0), 2, cv::LINE_8, 0);
 

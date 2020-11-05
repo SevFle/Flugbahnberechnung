@@ -6,11 +6,11 @@ C_Camera2::C_Camera2                        ()
   {
   this->cap = new cv::VideoCapture;
   this->cpuSrc = new cv::Mat;
-  this->distCoeffs = new cv::Mat(cv::Mat_<double>(1,5));
-  this->intrinsic = new cv::Mat(cv::Mat_<double>(3,3));
+  this->distCoeffs = new cv::Mat(1,5,CV_64FC1);
+  this->intrinsic = new cv::Mat(3,3,CV_64FC1);
   this->gpuSrc = new cv::cuda::GpuMat;
-  this->xMap = new cv::cuda::GpuMat(CV_32FC1);
-  this->yMap = new cv::cuda::GpuMat(CV_32FC1);
+  this->xMap = new cv::cuda::GpuMat;
+  this->yMap = new cv::cuda::GpuMat;
   this->roi = new cv::Rect;
   this->pipeline = new std::string;
   this->CameraToWorld = new C_AbsolutePose;
@@ -102,7 +102,11 @@ void C_Camera2::initRectifyMap              ()
   {
   cv::Mat cpuXMap;
   cv::Mat cpuYMap;
-  initUndistortRectifyMap (*intrinsic,*distCoeffs,cv::Mat(),*intrinsic,cv::Size (frameWidth,frameHeight), CV_32FC1,cpuXMap,cpuYMap);
+  cv::Size Framesize;
+  Framesize.height = frameHeight;
+  Framesize.width = frameWidth;
+
+  initUndistortRectifyMap (*intrinsic,*distCoeffs,cv::Mat(),*intrinsic,Framesize, CV_32FC1,cpuXMap,cpuYMap);
 
   this->xMap->upload (cpuXMap);
   this->yMap->upload (cpuYMap);
