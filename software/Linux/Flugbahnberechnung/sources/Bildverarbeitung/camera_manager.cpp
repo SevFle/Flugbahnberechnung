@@ -269,12 +269,12 @@ bool C_CameraManager::scanChAruco(cv::Mat &image, Camera::C_Camera2 &camera, C_A
   {
   if(image.type() != 16)
     return false;
-  //    cv::Ptr<cv::aruco::Dictionary>            dictionary = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_4X4_250);
-  //    cv::Ptr<cv::aruco::CharucoBoard>          board = cv::aruco::CharucoBoard::create(9, 6, 0.03190f, 0.02002f, dictionary);
-  cv::Ptr<cv::aruco::DetectorParameters>    params = cv::aruco::DetectorParameters::create();
 
+  cv::Ptr<cv::aruco::DetectorParameters>    params = cv::aruco::DetectorParameters::create();
   cv::Ptr<cv::aruco::Dictionary>            dictionary = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_4X4_50);// (cv::aruco::DICT_6X6_250)
   cv::Ptr<cv::aruco::CharucoBoard>          board = cv::aruco::CharucoBoard::create(5, 8, 0.050f, 0.03764f, dictionary);
+
+
 
   cv::Size                                  imgSize;
   std::vector<int>                        markerIds;
@@ -316,18 +316,27 @@ bool C_CameraManager::scanChAruco(cv::Mat &image, Camera::C_Camera2 &camera, C_A
           //      The coordinates of the four corners of the marker in its own coordinate system are:
           //      (-markerLength/2, markerLength/2, 0), (markerLength/2, markerLength/2, 0), (markerLength/2, -markerLength/2, 0), (-markerLength/2, -markerLength/2, 0)
         cv::aruco::drawAxis(image, *camera.getIntrinsic(), *camera.getDistCoeffs(), rvecBoardAxis, tvecBoardAxis, 0.4f);
-        cv::Mat rvecM12, rvecAxisRodL, rvecAxisRodR;
+        cv::Mat rvecM12, rod_rvecAxis;
+
         cv::Mat M10(cv::Mat_<double>(4,4));
         cv::Mat row = cv::Mat::zeros(1, 4, CV_64F);  // 3 cols, 1 row
-        cv::Rodrigues(rvecBoardAxis, rvecAxisRodL);
+        cv::Rodrigues(rvecBoardAxis, rod_rvecAxis);
 
         Pose.clear();
 
-        for(int i = 0; i < 3; i++)
-          for(int j = 0; j < 3; j++)
-            {
-            Pose.HomogenePosenMatrix[i][j] = rvecAxisRodL.at<double>(i,j);
-            }
+        Pose.nx(rod_rvecAxis.at<double>(0,0));
+        Pose.ny(rod_rvecAxis.at<double>(1,0));
+        Pose.nz(rod_rvecAxis.at<double>(2,0));
+
+        Pose.ox(rod_rvecAxis.at<double>(0,1));
+        Pose.oy(rod_rvecAxis.at<double>(1,1));
+        Pose.oz(rod_rvecAxis.at<double>(2,1));
+
+        Pose.ox(rod_rvecAxis.at<double>(0,2));
+        Pose.oy(rod_rvecAxis.at<double>(1,2));
+        Pose.oz(rod_rvecAxis.at<double>(2,2));
+
+
         Pose.px(tvecBoardAxis.val[0]);
         Pose.py(tvecBoardAxis.val[1]);
         Pose.pz(tvecBoardAxis.val[2]);
@@ -467,26 +476,20 @@ void C_CameraManager::calibrateSingleCamera (int current_camera_id,
 void C_CameraManager::calibrate_stereo_camera_aruco(int current_camera_id, int numImages)
   {
   //Verwendete ChAruco Parameter
-  //  cv::Ptr<cv::aruco::Dictionary> dictionary = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_6X6_250);
-  //  cv::Ptr<cv::aruco::CharucoBoard> board = cv::aruco::CharucoBoard::create(9, 6, 0.40f, 0.25f, dictionary);
-  //  cv::Mat boardImage;
-  //  //DINA4 3508 x 2480 px
-  //  board->draw(cv::Size(3200, 2200), boardImage, 10, 1);
-  //  cv::imwrite("../Parameter/Charuco_BoardImage_5_7_0.04f_0.02f_Size(3200, 2200).jpg", boardImage);
 
   //Initialisierung der ChAruco Kalibrierung
-  cv::Ptr<cv::aruco::Dictionary>            dictionary = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_4X4_50);// (cv::aruco::DICT_6X6_250)
-//  cv::Ptr<cv::aruco::CharucoBoard>          board = cv::aruco::CharucoBoard::create(5, 8, 0.05f, 0.03745f, dictionary);
-  cv::Ptr<cv::aruco::CharucoBoard>          board = cv::aruco::CharucoBoard::create(5, 8, 0.050f, 0.03764f, dictionary);
-  cv::Ptr<cv::aruco::DetectorParameters>    params = cv::aruco::DetectorParameters::create();
+  cv::Ptr<cv::aruco::Dictionary>            dictionary  = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_4X4_50);// (cv::aruco::DICT_6X6_250)
+  cv::Ptr<cv::aruco::CharucoBoard>          board       = cv::aruco::CharucoBoard::create(5, 8, 0.050f, 0.03764f, dictionary);
+  cv::Ptr<cv::aruco::DetectorParameters>    params      = cv::aruco::DetectorParameters::create();
   cv::Size                                  imgSize;
+
   //Vektoren zur Speicherung der einzelnen relativen Posen jedes einzelnen Aruco Tags
   std::vector<cv::Mat>                      vecRvec_right, vectec_right, vecRvec_left, vectvec_left;
 
-  std::vector<cv::Vec3d>                        vec_rvecBoardAxisL;
-  std::vector<cv::Vec3d>                        vec_rvecBoardAxisR;
-  std::vector<cv::Vec3d>                        vec_tvecBoardAxisL;
-  std::vector<cv::Vec3d>                        vec_tvecBoardAxisR;
+  std::vector<cv::Vec3d>                    vec_rvecBoardAxisL;
+  std::vector<cv::Vec3d>                    vec_rvecBoardAxisR;
+  std::vector<cv::Vec3d>                    vec_tvecBoardAxisL;
+  std::vector<cv::Vec3d>                    vec_tvecBoardAxisR;
   int rejectedImages = 0;
   int dimension =0;
 

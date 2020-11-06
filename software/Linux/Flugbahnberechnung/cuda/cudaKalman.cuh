@@ -53,7 +53,10 @@ namespace cudaKalman
     float* statePost_devPtr;          //!< corrected state (x(k)): x(k)=x'(k)+K(k)*(z(k)-H*x'(k))
     float* transitionMatrix_devPtr;   //!< state transition matrix (A)
     float* controlMatrix_devPtr;      //!< control matrix (B) (not used if there is no control)
+    float* controlVector_devPtr;      //!< control vector (u) (not used if there is no control)
     float* measurementMatrix_devPtr;  //!< measurement matrix (H)
+    float* measurement_devPtr;        //!< measurement (x)
+
     float* processNoiseCov_devPtr;    //!< process noise covariance matrix (Q)
     float* measurementNoiseCov_devPtr;//!< measurement noise covariance matrix (R)
     float* errorCovPre_devPtr;        //!< priori error estimate covariance matrix (P'(k)): P'(k)=A*P(k-1)*At + Q)*/
@@ -71,15 +74,21 @@ namespace cudaKalman
     float* measurementMatrix_temp_devPtr;
     float* gain_temp_devPtr;
 
+    int dynamParams;
+    int measureParams;
+    int controlParams;
+
 
     void correct            ();
     void predict            ();
     void firstMeasurement   ();
 
+  private:
     void init               ();
     bool initMatrix         (int dynamParams, int measureParams, int controlParams);
     void deinit             ();
     bool deleteMatrix       ();
+    void set_identity       (int dynamParams, int measureParams, int controlParams);
     };//class C_cudaKalman
   }
 
