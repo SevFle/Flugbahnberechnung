@@ -83,9 +83,9 @@ namespace cudaKalman
     int controlParams;
 
 
-    void correct            ();
-    void predict            ();
-    void firstMeasurement   ();
+    int correct            ();
+    int predict            ();
+    int firstMeasurement   ();
 
   private:
     void init               ();

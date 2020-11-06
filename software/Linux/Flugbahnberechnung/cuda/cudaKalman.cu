@@ -4,7 +4,7 @@
 
 #define IDX2C(i,j,ld) (((j)*(ld))+(i))
 
-#define ALERT(cudaStat, message)   if (cudaStat != cudaSuccess){ printf (message); return EXIT_FAILURE;}
+#define ALERT(cudaStat, message)   if (cudaStat != cudaSuccess){ std::cout << message << std::endl; return EXIT_FAILURE;}
 
 
 
@@ -14,7 +14,9 @@ using namespace cudaKalman;
 C_cudaKalman::C_cudaKalman()
   {
   init();
-  initMatrix(9,3,0);
+  this->initMatrix(9,3,0);
+  this->set_identity(9, 3, 0);
+
   }
 C_cudaKalman::~C_cudaKalman()
   {
@@ -22,10 +24,8 @@ C_cudaKalman::~C_cudaKalman()
   }
 void C_cudaKalman::init               ()
   {
-  std::cout << "hello from inti" << std::endl;
   cublasCreate(&this->handle);
   cublasSetStream(this->handle, this->streamkalman);
-
   }
 void C_cudaKalman::deinit             ()
   {
@@ -200,76 +200,76 @@ __host__ bool C_cudaKalman::initMatrix         (int dynamParams, int measurePara
 
   cudaStat = cudaMalloc ((void**)&statePre_devPtr, dynamParams*sizeof(*statePre));
   ALERT(cudaStat, "statePre device memory allocation failed");
-  this->print_matrix(statePre_devPtr, dynamParams, 1, "statePost_devPtr");
+  this->print_matrix(statePre, dynamParams, 1, "statePre");
 
   cudaStat = cudaMalloc ((void**)&statePost_devPtr, dynamParams*sizeof(*statePost));
   ALERT(cudaStat, "statePost device memory allocation failed");
-  this->print_matrix(statePost_devPtr, dynamParams, 1, "statePost_devPtr");
+  this->print_matrix(statePost, dynamParams, 1, "statePost");
 
   cudaStat = cudaMalloc ((void**)&transitionMatrix_devPtr, dynamParams*dynamParams*sizeof(*transitionMatrix));
   ALERT(cudaStat, "transitionMatrix device memory allocation failed");
-  this->print_matrix(transitionMatrix_devPtr, dynamParams, dynamParams, "transitionMatrix_devPtr");
+  this->print_matrix(transitionMatrix, dynamParams, dynamParams, "transitionMatrix");
 
   cudaStat = cudaMalloc ((void**)&transitionMatrix_temp_devPtr, dynamParams*dynamParams*sizeof(*transitionMatrix_temp));
   ALERT(cudaStat, "transitionMatrix device memory allocation failed");
-  this->print_matrix(transitionMatrix_temp_devPtr, dynamParams, dynamParams, "transitionMatrix_temp_devPtr");
+  this->print_matrix(transitionMatrix_temp, dynamParams, dynamParams, "transitionMatrix_temp");
 
   cudaStat = cudaMalloc ((void**)&processNoiseCov_devPtr, dynamParams*dynamParams*sizeof(*processNoiseCov));
   ALERT(cudaStat, "processNoiseCov device memory allocation failed");
-  this->print_matrix(processNoiseCov_devPtr, dynamParams, dynamParams, "processNoiseCov_devPtr");
+  this->print_matrix(processNoiseCov, dynamParams, dynamParams, "processNoiseCov");
 
   cudaStat = cudaMalloc ((void**)&measurementMatrix_devPtr, measureParams*dynamParams*sizeof(*measurementMatrix));
   ALERT(cudaStat, "measurementMatrix device memory allocation failed");
-  this->print_matrix(measurementMatrix_devPtr, measureParams, dynamParams, "measurementMatrix_devPtr");
+  this->print_matrix(measurementMatrix, measureParams, dynamParams, "measurementMatrix");
 
   cudaStat = cudaMalloc ((void**)&measurementNoiseCov_devPtr, measureParams*measureParams*sizeof(*measurementNoiseCov));
   ALERT(cudaStat, "measurementNoiseCov device memory allocation failed");
-  this->print_matrix(measurementNoiseCov_devPtr, measureParams, measureParams, "measurementNoiseCov_devPtr");
+  this->print_matrix(measurementNoiseCov, measureParams, measureParams, "measurementNoiseCov");
 
   cudaStat = cudaMalloc ((void**)&measurement_devPtr, measureParams*sizeof(*measurement));
   ALERT(cudaStat, "measurement device memory allocation failed");
-  this->print_matrix(measurement_devPtr, measureParams, 1, "measurement_devPtr");
+  this->print_matrix(measurement, measureParams, 1, "measurement");
 
   cudaStat = cudaMalloc ((void**)&errorCovPre_devPtr, dynamParams*dynamParams*sizeof(*errorCovPre));
   ALERT(cudaStat, "errorCovPre device memory allocation failed");
-  this->print_matrix(errorCovPre_devPtr, dynamParams, dynamParams, "errorCovPre_devPtr");
+  this->print_matrix(errorCovPre, dynamParams, dynamParams, "errorCovPre");
 
   cudaStat = cudaMalloc ((void**)&errorCovPost_devPtr, dynamParams*dynamParams*sizeof(*errorCovPost));
   ALERT(cudaStat, "errorCovPost device memory allocation failed");
-  this->print_matrix(errorCovPre_devPtr, dynamParams, dynamParams, "errorCovPre_devPtr");
+  this->print_matrix(errorCovPost, dynamParams, dynamParams, "errorCovPost");
 
   cudaStat = cudaMalloc ((void**)&gain_devPtr, dynamParams*measureParams*sizeof(*gain));
   ALERT(cudaStat, "gain device memory allocation failed");
-  this->print_matrix(gain_devPtr, dynamParams, measureParams, "gain_devPtr");
+  this->print_matrix(gain, dynamParams, measureParams, "gain");
 
   cudaStat = cudaMalloc ((void**)&temp1_devPtr, dynamParams*dynamParams*sizeof(*temp1));
   ALERT(cudaStat, "temp1 device memory allocation failed");
-  this->print_matrix(temp1_devPtr, dynamParams, measureParams, "temp1_devPtr");
+  this->print_matrix(temp1, dynamParams, measureParams, "temp1");
 
   cudaStat = cudaMalloc ((void**)&temp2_devPtr, measureParams*dynamParams*sizeof(*temp2));
   ALERT(cudaStat, "temp2 device memory allocation failed");
-  this->print_matrix(temp2_devPtr, measureParams, measureParams, "temp2_devPtr");
+  this->print_matrix(temp2, measureParams, measureParams, "temp2");
 
   cudaStat = cudaMalloc ((void**)&temp2_temp_devPtr, measureParams*dynamParams*sizeof(*temp2_temp));
   ALERT(cudaStat, "temp2 device memory allocation failed");
-  this->print_matrix(temp2_temp_devPtr, measureParams, measureParams, "temp2_temp_devPtr");
+  this->print_matrix(temp2_temp, measureParams, measureParams, "temp2_temp");
 
   cudaStat = cudaMalloc ((void**)&temp3_devPtr, measureParams*measureParams*sizeof(*temp3));
   ALERT(cudaStat, "temp3 device memory allocation failed");
-  this->print_matrix(temp3_devPtr, measureParams, measureParams, "temp3_devPtr");
+  this->print_matrix(temp3, measureParams, measureParams, "temp3");
 
   cudaStat = cudaMalloc ((void**)&temp4_devPtr, measureParams*dynamParams*sizeof(*temp4));
   ALERT(cudaStat, "temp4 device memory allocation failed");
-  this->print_matrix(temp4_devPtr, measureParams, dynamParams, "temp4_devPtr");
+  this->print_matrix(temp4, measureParams, dynamParams, "temp4");
 
   cudaStat = cudaMalloc ((void**)&temp5_devPtr, measureParams*sizeof(*temp5));
   ALERT(cudaStat, "temp5 device memory allocation failed");
-  this->print_matrix(temp5_devPtr, measureParams, 1, "temp5_devPtr");
+  this->print_matrix(temp5, measureParams, 1, "temp5");
 
 
 
 
-  if( controlParams > 0 )
+  if( controlParams !=0 )
     {
     cudaStat = cudaMalloc ((void**)&controlMatrix_devPtr, dynamParams*controlParams*sizeof(*controlMatrix));
     ALERT(cudaStat, "controlMatrix device memory allocation failed");
@@ -279,10 +279,9 @@ __host__ bool C_cudaKalman::initMatrix         (int dynamParams, int measurePara
     }
   std::cout << "Creation of Device CUDA Matrices successful" << std::endl;
 
-  set_identity(dynamParams, measureParams, controlParams);
   }
 
-__host__ int C_cudaKalman::set_identity(int dynamParams, int measureParams, int controlParams)
+int C_cudaKalman::set_identity(int dynamParams, int measureParams, int controlParams)
   {
   std::cout << "Setting Device CUDA Matrices identity" << std::endl;
 
@@ -299,6 +298,8 @@ __host__ int C_cudaKalman::set_identity(int dynamParams, int measureParams, int 
       this->processNoiseCov[i] = 0.0;
       }
     }
+  this->print_matrix(transitionMatrix, dynamParams, dynamParams, "transitionMatrix");
+  this->print_matrix(processNoiseCov, dynamParams, dynamParams, "processNoiseCov");
 
   for(int i=0;i<measureParams*measureParams;i++)
     {
@@ -311,6 +312,7 @@ __host__ int C_cudaKalman::set_identity(int dynamParams, int measureParams, int 
       this->measurementNoiseCov[i] = 0.0;
       }
     }
+  this->print_matrix(measurementNoiseCov, measureParams, measureParams, "measurementNoiseCov");
 
   for(int i=0;i<measureParams*dynamParams;i++)
     {
@@ -323,6 +325,7 @@ __host__ int C_cudaKalman::set_identity(int dynamParams, int measureParams, int 
       this->measurementMatrix[i] = 0.0;
       }
     }
+  this->print_matrix(measurementMatrix, measureParams, dynamParams, "measurementMatrix");
 
   for(int i=0;i<dynamParams*measureParams;i++)
     {
@@ -335,6 +338,7 @@ __host__ int C_cudaKalman::set_identity(int dynamParams, int measureParams, int 
       this->gain[i] = 0.0;
       }
     }
+  this->print_matrix(gain, dynamParams, measureParams, "gain");
 
   stat =  cublasSetMatrix(dynamParams, dynamParams, sizeof(float), transitionMatrix, dynamParams, transitionMatrix_devPtr, dynamParams);
   ALERT(stat, "cublasSetMatrix transitionMatrix failed");
@@ -359,19 +363,52 @@ __host__ int C_cudaKalman::set_identity(int dynamParams, int measureParams, int 
       }
     stat =  cublasSetVector(controlParams, sizeof(float), controlVector, 1, controlVector_devPtr, 1);
     ALERT(stat, "cublasSetMatrix gain failed");
-
-
     }
-  std::cout << "Setting Device CUDA Matrices identity successful" << std::endl;
+  else
+    {
+    std::cout << "Setting Device CUDA Matrices identity successful" << std::endl;
+    }
 
   }
 bool C_cudaKalman::deleteMatrix()
   {
-  delete [] this->statePre;
-  delete [] this->statePost;
+  free(this->statePre);
+  free(this->statePost);
+  free(this->transitionMatrix);
+  free(this->transitionMatrix_temp);
+  free(this->processNoiseCov);
+  free(this->temp1);
+  free(this->errorCovPre);
+  free(this->errorCovPost);
+  free(this->measurementMatrix);
+  free(this->temp2);
+  free(this->temp2_temp);
+  free(this->temp4);
+  free(this->measurementNoiseCov);
+  free(this->temp3);
+  free(this->measurement);
+  free(this->temp5);
+  free(this->gain);
 
+  cudaFree(this->statePre_devPtr);
+  cudaFree(this->statePost_devPtr);
+  cudaFree(this->transitionMatrix_devPtr);
+  cudaFree(this->transitionMatrix_temp_devPtr);
+  cudaFree(this->processNoiseCov_devPtr);
+  cudaFree(this->temp1_devPtr);
+  cudaFree(this->errorCovPre_devPtr);
+  cudaFree(this->errorCovPost_devPtr);
+  cudaFree(this->measurementMatrix_devPtr);
+  cudaFree(this->temp2_devPtr);
+  cudaFree(this->temp2_temp_devPtr);
+  cudaFree(this->temp4_devPtr);
+  cudaFree(this->measurementNoiseCov_devPtr);
+  cudaFree(this->temp3_devPtr);
+  cudaFree(this->measurement_devPtr);
+  cudaFree(this->temp5_devPtr);
+  cudaFree(this->gain_devPtr);
   }
-__device__ void C_cudaKalman::correct            ()
+int C_cudaKalman::correct            ()
   {
   const float* alpha = new float {1.0f};
   const float* beta = new float {0.0f};
@@ -394,7 +431,7 @@ __device__ void C_cudaKalman::correct            ()
 
 
   }
-__device__ void C_cudaKalman::predict            ()
+int C_cudaKalman::predict            ()
   {
   //CUDA MEMCOPY ALPHA BETA EMPTY
   const float* alpha = new float {1.0f};
@@ -422,7 +459,6 @@ __device__ void C_cudaKalman::predict            ()
     // update error covariance matrices: temp1 = A*P(k)
     // x'(k) = x'(k) + B*u(k)
     //statePre += controlMatrix*control;
-    __syncthreads();
     cublasSgemv_v2(this->handle, CUBLAS_OP_N, dynamParams, controlParams, alpha, this->controlMatrix_devPtr, dynamParams, controlMatrix_devPtr, 1, alpha, this->statePre_devPtr, 1);
     }
 
@@ -451,7 +487,7 @@ __device__ void C_cudaKalman::predict            ()
   stat = cublasScopy_v2(this->handle, dynamParams, this->errorCovPre_devPtr, 1, this->errorCovPost_devPtr,1);
   ALERT(stat, "update - cublasScopy_v2 errorCovPre");
   }
-void C_cudaKalman::firstMeasurement   ()
+int C_cudaKalman::firstMeasurement   ()
   {
 
   }
