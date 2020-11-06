@@ -26,15 +26,17 @@ private:
   CameraManager::S_pipelinePayload* pData;
   QTimer*                           Taktgeber;
   cv::Mat*                          imgBuffer[2];
-  C_AbsolutePose*                          Camera0ToWorld;
-  C_AbsolutePose*                          Camera1ToWorld;
-  C_AbsolutePose*                          Camera0ToCamera1;
+  C_AbsolutePose*                   Camera0ToWorld;
+  C_AbsolutePose*                   Camera1ToWorld;
+  C_AbsolutePose*                   Camera0ToCamera1;
+  cv::VideoWriter*                  videowrite;
 
 
   int                               Taktgeber_Intervall;
   int                               Zaehler;
 
   bool                              calibration_running;
+  bool                              videowriter_active;
   int                               photo_id;
   int                               method;
   int                               cameraID;

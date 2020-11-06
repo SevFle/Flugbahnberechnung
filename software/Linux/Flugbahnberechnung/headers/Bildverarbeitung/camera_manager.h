@@ -8,6 +8,9 @@
 
 #include <pthread.h>
 #include <thread>
+#include <iostream>
+#include <cstdint>
+
 #include <memory>
 
 #include "headers/Bildverarbeitung/camera2.h"

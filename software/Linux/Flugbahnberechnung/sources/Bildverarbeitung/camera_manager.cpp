@@ -332,9 +332,9 @@ bool C_CameraManager::scanChAruco(cv::Mat &image, Camera::C_Camera2 &camera, C_A
         Pose.oy(rod_rvecAxis.at<double>(1,1));
         Pose.oz(rod_rvecAxis.at<double>(2,1));
 
-        Pose.ox(rod_rvecAxis.at<double>(0,2));
-        Pose.oy(rod_rvecAxis.at<double>(1,2));
-        Pose.oz(rod_rvecAxis.at<double>(2,2));
+        Pose.ax(rod_rvecAxis.at<double>(0,2));
+        Pose.ay(rod_rvecAxis.at<double>(1,2));
+        Pose.az(rod_rvecAxis.at<double>(2,2));
 
 
         Pose.px(tvecBoardAxis.val[0]);
@@ -368,9 +368,20 @@ void C_CameraManager::calibrateSingleCamera (int current_camera_id,
   vector<cv::Mat>             Tvecs;
   vector<cv::Mat>             TCP_Orientation;
   vector<cv::Mat>             TCP_Position;
+  std::string                 path = "../Parameter/Bilder/Camera_Single_Calibration_" + std::to_string(current_camera_id) + ".avi";
+  cv::VideoCapture            calibCAP;
+  cv::Size imgSIze;
+
 
   int photoID = 0;
   int error_count = 0;
+
+  calibCAP.open(path);
+  if(!calibCAP.isOpened())
+    {
+    cout << "Error opening video stream or file" << endl;
+    return;
+    }
 
   // Füllen des "Obj"-Vektors mit 3D-Koordinaten der Schachbrett-Ecken. Die Koordinaten werden manuell vorgegeben und ergeben sich über Länge
   // und Breite der Schachbrett-Rechtecke über die gesamte Länge und Breite des Schachbrettes. Das Schachbrett-Rechteck hat eine Größe von
@@ -384,74 +395,87 @@ void C_CameraManager::calibrateSingleCamera (int current_camera_id,
       }
     }
 
+
+
   // Abarbeiten aller gespeicherten Bilder
-  while (photoID < absBoardImg)
+  while (calibCAP.isOpened())
     {
     std::cout << "Processing image " << photoID << " out of " << absBoardImg << " images." << endl;
     // Laden des Bildes mit der angegebenen Photo_ID
-    Originalbild = cv::imread ("../Parameter/Bilder/Camera_Single_Calibration_" + std::to_string (current_camera_id) + "_Snapshot_" + std::to_string (photoID) + ".png",1);
-
-    // Umwandeln des geladenen Bildes in ein Grauwertbild und abspeichern dieses in einem anderen Bild-Array
-    cvtColor (Originalbild,Grau_Bild,cv::COLOR_BGR2GRAY);
-
-    // Das geladenene Originalbild nach Schachbrett-Ecken absuchen. Die Anzahl der inneren Ecken über Länge und Breite wird über "Board_Sz" vorgegeben und
-    // die gefundenen Ecken werden in "Corners" abgespeichert. Es wird eine adaptive Schwellwertbildung genutzt und das Bild wird nach Rechtecken
-    // gefiltert. "Found" wird nur true, wenn alle Ecken gefunden wurden. Die Ecken-Koordinaten aus "Corners" sind 2D-Koordinaten der Bildebene.
-    bool Found = findChessboardCorners (Grau_Bild,Board_Sz,Corners,cv::CALIB_CB_ADAPTIVE_THRESH + cv::CALIB_CB_FILTER_QUADS + cv::CALIB_CB_NORMALIZE_IMAGE);
-
-    if (!Found) error_count++;
-
-    if (Found) // Falls Rechtecke gefunden wurden
+    //= cv::imread ("../Parameter/Bilder/Camera_Single_Calibration_" + std::to_string (current_camera_id) + "_Snapshot_" + std::to_string (photoID) + ".png",1);
+    calibCAP >> Originalbild;
+    if(!Originalbild.empty())
       {
-      // Mit Hilfe der gefundenen Ecken in "Corners" werden im Graustufenbild nun die Ecken-Standorte verfeinert. Mit den beiden "Size"-Angaben
-      // wird die Größe der abzusuchenden Bereiche in jedem Iterationsschritt angegeben. Der erste Wert legt die Fenstergröße auf (2*5+1) x (2*5+1) = 11x11
-      // fest, der zweite Wert legt die Mindestgröße fest, wobei die Werte -1 angeben, dass es keine "Totzone" gibt. Mit "TermCriteria" werden die
-      // Ausstiegbedingungen für den Iterationsvorgang angegeben. "EPS" legt eine gewünschte Genauigkeit bzw. Parameteränderung von 0.1 fest. "MAX_ITER"
-      // legt die Anzahl der maximalen Iterationen von 30 fest. Die Ausstiegsbedingung ist eine ODER-Bedingung.
-      cornerSubPix (Grau_Bild,Corners,cv::Size (5,5),cv::Size (-1,-1),cv::TermCriteria (cv::TermCriteria::EPS | cv::TermCriteria::MAX_ITER,30,0.1));
+      // Umwandeln des geladenen Bildes in ein Grauwertbild und abspeichern dieses in einem anderen Bild-Array
+      cvtColor (Originalbild,Grau_Bild,cv::COLOR_BGR2GRAY);
 
-      // Mit dieser Funktion werden die gefundenen Ecken aus "Corners" im Graustufenbild eingezeichnet. Ist "Found" true, wurde das Schachbrett und die
-      // Ecken erkannt und diese werden markiert und mit Linien verbunden. Ist "Found" false, werden nur die gefundenen Ecken mit einem roten Kreis markiert.
-      drawChessboardCorners (Grau_Bild,Board_Sz,Corners,Found);
+      // Das geladenene Originalbild nach Schachbrett-Ecken absuchen. Die Anzahl der inneren Ecken über Länge und Breite wird über "Board_Sz" vorgegeben und
+      // die gefundenen Ecken werden in "Corners" abgespeichert. Es wird eine adaptive Schwellwertbildung genutzt und das Bild wird nach Rechtecken
+      // gefiltert. "Found" wird nur true, wenn alle Ecken gefunden wurden. Die Ecken-Koordinaten aus "Corners" sind 2D-Koordinaten der Bildebene.
+      bool Found = findChessboardCorners (Grau_Bild,Board_Sz,Corners,cv::CALIB_CB_ADAPTIVE_THRESH + cv::CALIB_CB_FILTER_QUADS + cv::CALIB_CB_NORMALIZE_IMAGE);
 
-      // Die gefundenen Ecken-Koordinaten (2D, ohne z-Koordinate) im Vektor "Image-Points" abspeichern.
-      Image_Points.push_back (Corners);
+      if (!Found) error_count++;
 
-      // Alle manuell vorgegebenen Ecken-Koordinaten aus "Obj" in Vektor "Object_Points" ablegen.
-      Object_Points.push_back (Obj);
+      if (Found) // Falls Rechtecke gefunden wurden
+        {
+        // Mit Hilfe der gefundenen Ecken in "Corners" werden im Graustufenbild nun die Ecken-Standorte verfeinert. Mit den beiden "Size"-Angaben
+        // wird die Größe der abzusuchenden Bereiche in jedem Iterationsschritt angegeben. Der erste Wert legt die Fenstergröße auf (2*5+1) x (2*5+1) = 11x11
+        // fest, der zweite Wert legt die Mindestgröße fest, wobei die Werte -1 angeben, dass es keine "Totzone" gibt. Mit "TermCriteria" werden die
+        // Ausstiegbedingungen für den Iterationsvorgang angegeben. "EPS" legt eine gewünschte Genauigkeit bzw. Parameteränderung von 0.1 fest. "MAX_ITER"
+        // legt die Anzahl der maximalen Iterationen von 30 fest. Die Ausstiegsbedingung ist eine ODER-Bedingung.
+        cornerSubPix (Grau_Bild,Corners,cv::Size (5,5),cv::Size (-1,-1),cv::TermCriteria (cv::TermCriteria::EPS | cv::TermCriteria::MAX_ITER,30,0.1));
 
-      // Die entsprechende Roboterpose zum aktuellen Bild in einem Vektor abspeichern. Dieser Vektor wird für
-      // die Eye-In-Hand-Kalibrierung benötigt.
-      cv::Mat Mat_Orientation (cv::Mat_<double> (3,3));
-      cv::Mat Mat_Position (cv::Mat_<double> (3,1));
+        // Mit dieser Funktion werden die gefundenen Ecken aus "Corners" im Graustufenbild eingezeichnet. Ist "Found" true, wurde das Schachbrett und die
+        // Ecken erkannt und diese werden markiert und mit Linien verbunden. Ist "Found" false, werden nur die gefundenen Ecken mit einem roten Kreis markiert.
+        drawChessboardCorners (Grau_Bild,Board_Sz,Corners,Found);
 
-      //// Zuweisung der übermittelten Roboter-TCP-Positionen
-      //for (int i = 0; i < 3; i++)
-      //  {
-      //  Mat_Position.ptr<double>(i)[0] = this->TCP_Poses->at(this->Photo_ID).ptr<double>(i)[3];
-      // }
-      //// Zuweisung der übermittelten Roboter-TCP-Orientierungen
-      //for (int i = 0; i < 3; i++)
-      //  {
-      //  for (int j = 0; j < 3; j++)
-      //    {
-      //    Mat_Orientation.ptr<double>(i)[j] = this->TCP_Poses->at(this->Photo_ID).ptr<double>(i)[j];
-      //    }
-      //  }
+        // Die gefundenen Ecken-Koordinaten (2D, ohne z-Koordinate) im Vektor "Image-Points" abspeichern.
+        Image_Points.push_back (Corners);
 
-      // Ablegen aller Roboter-TCP-Orientierungen und -Positionen in Vektoren
-      //TCP_Orientation.push_back (Mat_Orientation);
-      //TCP_Position.push_back (Mat_Position);
+        // Alle manuell vorgegebenen Ecken-Koordinaten aus "Obj" in Vektor "Object_Points" ablegen.
+        Object_Points.push_back (Obj);
+
+        // Die entsprechende Roboterpose zum aktuellen Bild in einem Vektor abspeichern. Dieser Vektor wird für
+        // die Eye-In-Hand-Kalibrierung benötigt.
+        cv::Mat Mat_Orientation (cv::Mat_<double> (3,3));
+        cv::Mat Mat_Position (cv::Mat_<double> (3,1));
+
+        //// Zuweisung der übermittelten Roboter-TCP-Positionen
+        //for (int i = 0; i < 3; i++)
+        //  {
+        //  Mat_Position.ptr<double>(i)[0] = this->TCP_Poses->at(this->Photo_ID).ptr<double>(i)[3];
+        // }
+        //// Zuweisung der übermittelten Roboter-TCP-Orientierungen
+        //for (int i = 0; i < 3; i++)
+        //  {
+        //  for (int j = 0; j < 3; j++)
+        //    {
+        //    Mat_Orientation.ptr<double>(i)[j] = this->TCP_Poses->at(this->Photo_ID).ptr<double>(i)[j];
+        //    }
+        //  }
+
+        // Ablegen aller Roboter-TCP-Orientierungen und -Positionen in Vektoren
+        //TCP_Orientation.push_back (Mat_Orientation);
+        //TCP_Position.push_back (Mat_Position);
+        }
+
+      // Grauwertbild mit eingezeichneten Ecken abspeichern.
+      imwrite ("../Parameter/Bilder/Camera_Single_Calibration_" + std::to_string (camera_id) + "_Gray_DrawCorners_" + std::to_string (photoID) + ".png",Grau_Bild);
+
+      // Photo-ID für nächsten Durchlauf erhöhen.
+      photoID++;
+      imgSIze.height = Originalbild.rows;
+      imgSIze.width = Originalbild.cols;
+
       }
-
-    // Grauwertbild mit eingezeichneten Ecken abspeichern.
-    imwrite ("../Parameter/Bilder/Camera_Single_Calibration_" + std::to_string (camera_id) + "_Gray_DrawCorners_" + std::to_string (photoID) + ".png",Grau_Bild);
-
-    // Photo-ID für nächsten Durchlauf erhöhen.
-    photoID++;
+    else
+      {
+      break;
+      }
     }
 
-  std::cout << "Analyzed " << absBoardImg - error_count << "good images out of " << absBoardImg << endl;
+
+  std::cout << "Analyzed " << photoID - error_count << "good images out of " << absBoardImg << endl;
 
   // Mit den gefundenen Ecken in 2D-Koordinaten und den vorgegebenen 3D-Koordinaten werden die intrinsischen Parameter (Camera-Matrix) und
   // die Koeffizienten der Verzerrung berechnet. Rvecs und Tvecs erhalten dabei die Orientierung und die Position der Transformationsmatrix
@@ -460,7 +484,7 @@ void C_CameraManager::calibrateSingleCamera (int current_camera_id,
   //The parameters \alpha_{ x } = f \cdot m_{ x } and \alpha_{ y } = f \cdot m_{ y } represent focal length in terms of pixels, 
   //where m_{ x } and m_{ y } are the scale factors relating pixels to distance and f is the focal length in terms of distance.
   std::cout << endl << "Calculating Intrinsic and DistCoeffs. This may take a while, please wait." << endl;
-  *rms = cv::calibrateCamera (Object_Points,Image_Points,Originalbild.size(),intrinsic,distCoeffs,Rvecs,Tvecs);
+  *rms = cv::calibrateCamera (Object_Points,Image_Points, imgSIze,intrinsic,distCoeffs,Rvecs,Tvecs);
   std::cout << "Calculation finished. Saving data." << endl << endl;
 
   //Kopieren der berechneten Daten zur dazugehörigen Kamera
@@ -471,6 +495,7 @@ void C_CameraManager::calibrateSingleCamera (int current_camera_id,
   this->globalObjects->saveManager->saveCameraCalibration(*vecCameras->at(current_camera_id));
   //Reaktivierung der Bildentzerrung
   this->vecCameras->at(current_camera_id)->initRectifyMap();
+
   }
 
 void C_CameraManager::calibrate_stereo_camera_aruco(int current_camera_id, int numImages)
@@ -1507,9 +1532,9 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
         }
       if(this->trackingManager->kalmanAlive)
         {
-          this->trackingManager->processKalman(pData->objektVektor.X, pData->objektVektor.Y, pData->objektVektor.Z);
-//        this->trackingManager->predictKalman                     ();
-//        this->trackingManager->correctKalman                     (pData->objektVektor.X, pData->objektVektor.Y, pData->objektVektor.Z);
+//          this->trackingManager->processKalman(pData->objektVektor.X, pData->objektVektor.Y, pData->objektVektor.Z);
+        this->trackingManager->predictKalman                     ();
+        this->trackingManager->correctKalman                     (pData->objektVektor.X, pData->objektVektor.Y, pData->objektVektor.Z);
         }
       if(!this->trackingManager->kalmanAlive && pData->objektVektor.X !=0.0 && pData->objektVektor.Y !=0.0 && pData->objektVektor.Z !=0.0)
         {

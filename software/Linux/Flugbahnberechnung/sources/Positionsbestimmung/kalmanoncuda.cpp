@@ -196,6 +196,8 @@ const             cv::cuda::GpuMat& C_kalmanOnCuda::predict         (const cv::c
   // handle the case when there will be measurement before the next predict->
   statePre->copyTo(*statePost);
   errorCovPre->copyTo(*errorCovPost);
+
+
   return *statePre;
   }
 cv::cuda::GpuMat& C_kalmanOnCuda::correct                           ( const cv::cuda::GpuMat& measurement )

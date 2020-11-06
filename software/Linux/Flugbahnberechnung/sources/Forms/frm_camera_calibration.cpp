@@ -27,11 +27,13 @@ C_frm_Camera_Calibration::C_frm_Camera_Calibration(C_GlobalObjects* GlobalObject
     this->usrInputAbsPhoto = 0;
 
     this->calibration_running = false;
+    this->videowrite = nullptr;
 
 }
 
 C_frm_Camera_Calibration::~C_frm_Camera_Calibration()
 {
+  this->videowrite = nullptr;
   this->calibration_running = false;
 
   this->usrInputAbsPhoto = 0;
@@ -324,6 +326,10 @@ void C_frm_Camera_Calibration::Taktgeber_Tick()
 
     }
 
+  if(this->videowriter_active == true)
+    {
+    this->sm_Single_camera_calibration();
+    }
   }
 
 void C_frm_Camera_Calibration::on_bt_start_clicked()
@@ -336,7 +342,19 @@ void C_frm_Camera_Calibration::on_bt_start_clicked()
     switch (method)
       {
       case 0:
-        sm_Single_camera_calibration                  ();
+        if(!this->videowriter_active)
+          {
+          this->Ui->lbl_calibration_running->setText("Video active");
+          sm_Single_camera_calibration                  ();
+          }
+        else
+          {
+          this->Ui->lbl_calibration_running->setText("Video stopped");
+          this->videowriter_active = false;
+          this->sm_calibration_state = 2;
+          sm_Single_camera_calibration                  ();
+
+          }
         break;
       case 1:
         sm_Stereo_camera_calibration                  ();
@@ -517,7 +535,8 @@ void C_frm_Camera_Calibration::camera_calibration_thread (void* This)
 
 void C_frm_Camera_Calibration::sm_Single_camera_calibration ()
   {
-  std::string naming = "../Parameter/Bilder/Camera_Single_Calibration_";
+  int codec = cv::VideoWriter::fourcc('M','J','P','G');
+  std::string naming = "../Parameter/Bilder/Camera_Single_Calibration_" + std::to_string(this->Ui->num_camera_id->value()) + ".avi";
   switch (this->sm_calibration_state)
     {
     case 0:
@@ -525,23 +544,31 @@ void C_frm_Camera_Calibration::sm_Single_camera_calibration ()
       this->Ui->num_camera_id->setEnabled(false);
       this->photo_id                        = 0;
       this->usrInputAbsPhoto                = this->Ui->txb_usrInput_images->toPlainText().toInt();
+
       this->Ui->bt_photo->setEnabled        (true);
       this->Ui->bt_start->setText           ("Beenden");
+      this->videowrite = new cv::VideoWriter(naming , codec, 50, cv::Size(1280,720));
+      this->videowriter_active = true;
+
       this->sm_calibration_state            = 1;
       break;
 
       //Take pictures
     case 1:
-      this->Main->cameraManager->vecCameras->at(cameraID)->save_picture    (photo_id,naming,*this->imgBuffer[0]);
+      //this->Main->cameraManager->vecCameras->at(cameraID)->save_picture    (photo_id,naming,*this->imgBuffer[0]);
+      this->videowrite->write(*this->imgBuffer[0]);
       this->Main->frm_Main->FillMat2Lbl(*this->imgBuffer[0], this->Ui->lbl_img_0);
       this->Ui->txb_img_count->setText(QString::number                  (this->photo_id + 1));
       this->photo_id++;
 
-      if (photo_id >= usrInputAbsPhoto)
+      if (this->videowriter_active == true)
+        {
+        this->sm_calibration_state = 1;
+        }
+      else
         {
         this->sm_calibration_state = 2;
         }
-
       break;
 
     case 2:
@@ -549,6 +576,9 @@ void C_frm_Camera_Calibration::sm_Single_camera_calibration ()
       this->calibration_running           = false;
       this->Ui->bt_start->setText         ("Start");
       this->Ui->lbl_calibration_running->setVisible(true);
+      this->videowrite->release();
+      delete (this->videowrite);
+
 
       if(int err = pthread_create(camThread,NULL, (THREADFUNCPTR) &frm_Camera_Calibration::C_frm_Camera_Calibration::camera_calibration_thread, this) !=0)
         {
@@ -560,8 +590,9 @@ void C_frm_Camera_Calibration::sm_Single_camera_calibration ()
           photo_id = 0;
         }
       this->Ui->num_camera_id->setEnabled(true);
-
-      return;
+      this->sm_calibration_state = 0;
+      this->videowriter_active = false;
+    return;
     }
   }
 

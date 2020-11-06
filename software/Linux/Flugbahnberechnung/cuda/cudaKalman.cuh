@@ -6,6 +6,8 @@
 #include <math.h>
 #include <cuda_runtime.h>
 #include <cublas_v2.h>
+#include <stdio.h>
+#include <iostream>
 
 
 #define IDX2C(i,j,ld) (((j)*(ld))+(i))
@@ -40,6 +42,7 @@ namespace cudaKalman
     // temporary matrices
     float* temp1;
     float* temp2;
+    float* temp2_temp;
     float* temp3;
     float* temp4;
     float* temp5;
@@ -49,30 +52,31 @@ namespace cudaKalman
     float* gain_temp;
 
 
-    float* statePre_devPtr;           //!< predicted state (x'(k)): x(k)=A*x(k-1)+B*u(k)
-    float* statePost_devPtr;          //!< corrected state (x(k)): x(k)=x'(k)+K(k)*(z(k)-H*x'(k))
-    float* transitionMatrix_devPtr;   //!< state transition matrix (A)
-    float* controlMatrix_devPtr;      //!< control matrix (B) (not used if there is no control)
-    float* controlVector_devPtr;      //!< control vector (u) (not used if there is no control)
-    float* measurementMatrix_devPtr;  //!< measurement matrix (H)
-    float* measurement_devPtr;        //!< measurement (x)
+    float* statePre_devPtr;           //!< dynamParams
+    float* statePost_devPtr;          //!< dynamParams
+    float* transitionMatrix_devPtr;   //!< dynamParams*dynamParams
+    float* controlMatrix_devPtr;      //!< dynamParams*controlParams
+    float* controlVector_devPtr;      //!< controlParams
+    float* measurementMatrix_devPtr;  //!< measureParams*dynamParams
+    float* measurement_devPtr;        //!< measureParams
 
-    float* processNoiseCov_devPtr;    //!< process noise covariance matrix (Q)
-    float* measurementNoiseCov_devPtr;//!< measurement noise covariance matrix (R)
-    float* errorCovPre_devPtr;        //!< priori error estimate covariance matrix (P'(k)): P'(k)=A*P(k-1)*At + Q)*/
-    float* gain_devPtr;               //!< Kalman gain matrix (K(k)): K(k)=P'(k)*Ht*inv(H*P'(k)*Ht+R)
-    float* errorCovPost_devPtr;       //!< posteriori error estimate covariance matrix (P(k)): P(k)=(I-K(k)*H)*P'(k)
+    float* processNoiseCov_devPtr;    //!< dynamParams*dynamParams (Q)
+    float* measurementNoiseCov_devPtr;//!< measureParams*measureParams (R)
+    float* errorCovPre_devPtr;        //!< dynamParams*dynamParams
+    float* gain_devPtr;               //!< dynamParams*measureParams
+    float* errorCovPost_devPtr;       //!< dynamParams*dynamParams
 
     // temporary matrices
-    float* temp1_devPtr;
-    float* temp2_devPtr;
-    float* temp3_devPtr;
-    float* temp4_devPtr;
-    float* temp5_devPtr;
-    float* transitionMatrix_temp_devPtr;
-    float* controlMatrix_temp_devPtr;
-    float* measurementMatrix_temp_devPtr;
-    float* gain_temp_devPtr;
+    float* temp1_devPtr;              //!< dynamParams*dynamParams
+    float* temp2_devPtr;              //!< measureParams*dynamParams
+    float* temp2_temp_devPtr;         //!< measureParams*dynamParams
+    float* temp3_devPtr;              //!< measureParams*measureParams
+    float* temp4_devPtr                 ;//!< measureParams*dynamParams
+    float* temp5_devPtr;                 //!< measureParams
+    float* transitionMatrix_temp_devPtr; //!< dynamParams*dynamParams
+    float* controlMatrix_temp_devPtr;    //!< dynamParams*controlParams
+    float* measurementMatrix_temp_devPtr;//!< measureParams*dynamParams
+    float* gain_temp_devPtr;             //!< dynamParams*measureParams
 
     int dynamParams;
     int measureParams;
@@ -88,7 +92,7 @@ namespace cudaKalman
     bool initMatrix         (int dynamParams, int measureParams, int controlParams);
     void deinit             ();
     bool deleteMatrix       ();
-    void set_identity       (int dynamParams, int measureParams, int controlParams);
+    int set_identity       (int dynamParams, int measureParams, int controlParams);
     };//class C_cudaKalman
   }
 

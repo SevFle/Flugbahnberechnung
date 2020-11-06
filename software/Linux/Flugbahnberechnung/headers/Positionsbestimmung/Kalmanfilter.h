@@ -37,6 +37,8 @@ namespace kalmanFilter
     cv::cuda::GpuMat* gpuMeasurement;
     cv::cuda::GpuMat* gpuControllvector;
 
+    bool controlActive;
+
 
 
     void init();
