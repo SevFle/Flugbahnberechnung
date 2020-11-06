@@ -92,7 +92,9 @@ namespace cudaKalman
     bool initMatrix         (int dynamParams, int measureParams, int controlParams);
     void deinit             ();
     bool deleteMatrix       ();
-    int set_identity       (int dynamParams, int measureParams, int controlParams);
+    int set_identity        (int dynamParams, int measureParams, int controlParams);
+    void print_matrix       (const float *A, int nr_rows_A, int nr_cols_A, std::string Name) ;
+
     };//class C_cudaKalman
   }
 

@@ -434,35 +434,7 @@ void C_CameraManager::calibrateSingleCamera (int current_camera_id,
 
         // Alle manuell vorgegebenen Ecken-Koordinaten aus "Obj" in Vektor "Object_Points" ablegen.
         Object_Points.push_back (Obj);
-
-        // Die entsprechende Roboterpose zum aktuellen Bild in einem Vektor abspeichern. Dieser Vektor wird für
-        // die Eye-In-Hand-Kalibrierung benötigt.
-        cv::Mat Mat_Orientation (cv::Mat_<double> (3,3));
-        cv::Mat Mat_Position (cv::Mat_<double> (3,1));
-
-        //// Zuweisung der übermittelten Roboter-TCP-Positionen
-        //for (int i = 0; i < 3; i++)
-        //  {
-        //  Mat_Position.ptr<double>(i)[0] = this->TCP_Poses->at(this->Photo_ID).ptr<double>(i)[3];
-        // }
-        //// Zuweisung der übermittelten Roboter-TCP-Orientierungen
-        //for (int i = 0; i < 3; i++)
-        //  {
-        //  for (int j = 0; j < 3; j++)
-        //    {
-        //    Mat_Orientation.ptr<double>(i)[j] = this->TCP_Poses->at(this->Photo_ID).ptr<double>(i)[j];
-        //    }
-        //  }
-
-        // Ablegen aller Roboter-TCP-Orientierungen und -Positionen in Vektoren
-        //TCP_Orientation.push_back (Mat_Orientation);
-        //TCP_Position.push_back (Mat_Position);
         }
-
-      // Grauwertbild mit eingezeichneten Ecken abspeichern.
-      imwrite ("../Parameter/Bilder/Camera_Single_Calibration_" + std::to_string (camera_id) + "_Gray_DrawCorners_" + std::to_string (photoID) + ".png",Grau_Bild);
-
-      // Photo-ID für nächsten Durchlauf erhöhen.
       photoID++;
       imgSIze.height = Originalbild.rows;
       imgSIze.width = Originalbild.cols;
