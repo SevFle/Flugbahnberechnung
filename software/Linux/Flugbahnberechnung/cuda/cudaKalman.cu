@@ -120,9 +120,7 @@ bool  C_cudaKalman::initMatrix          (int dynamParams, int measureParams, int
     }
                                                 //ROWS * COLS * SIZEOF(FLOAT)
   this->transitionMatrix        = (float*)malloc(dynamParams*dynamParams*sizeof(this->transitionMatrix));
-  this->transitionMatrix_temp   = (float*)malloc(dynamParams*dynamParams*sizeof(this->transitionMatrix_temp));
   this->processNoiseCov         = (float*)malloc(dynamParams*dynamParams*sizeof(this->processNoiseCov));
-  this->temp1                   = (float*)malloc(dynamParams*dynamParams*sizeof(this->temp1));
   this->errorCovPre             = (float*)malloc(dynamParams*dynamParams*sizeof(this->errorCovPre));
   this->errorCovPost            = (float*)malloc(dynamParams*dynamParams*sizeof(this->errorCovPost));
   for (int j = 1; j <= dynamParams; j++)
@@ -130,9 +128,7 @@ bool  C_cudaKalman::initMatrix          (int dynamParams, int measureParams, int
     for (int i = 1; i <= dynamParams; i++)
       {
       this->transitionMatrix[IDX2C(i,j,dynamParams)]        = (float)(i * dynamParams + j + 1);
-      this->transitionMatrix_temp[IDX2C(i,j,dynamParams)]   = (float)(i * dynamParams + j + 1);
       this->processNoiseCov[IDX2C(i,j,dynamParams)]         = (float)(i * dynamParams + j + 1);
-      this->temp1[IDX2C(i,j,dynamParams)]                   = (float)(i * dynamParams + j + 1);
       this->errorCovPre[IDX2C(i,j,dynamParams)]             = (float)(i * dynamParams + j + 1);
       this->errorCovPost[IDX2C(i,j,dynamParams)]            = (float)(i * dynamParams + j + 1);
       }
@@ -142,26 +138,18 @@ bool  C_cudaKalman::initMatrix          (int dynamParams, int measureParams, int
     for (int i = 1; i <= dynamParams; i++)
       {
         this->transitionMatrix[IDX2C(i,j,dynamParams)]        = 0.0;
-        this->transitionMatrix_temp[IDX2C(i,j,dynamParams)]   = 0.0;
         this->processNoiseCov[IDX2C(i,j,dynamParams)]         = 0.0;
-        this->temp1[IDX2C(i,j,dynamParams)]                   = 0.0;
         this->errorCovPre[IDX2C(i,j,dynamParams)]             = 0.0;
         this->errorCovPost[IDX2C(i,j,dynamParams)]            = 0.0;
       }
     }
                                                 //ROWS * COLS * SIZEOF(FLOAT)
   this->measurementMatrix       = (float*)malloc(measureParams*dynamParams*sizeof(this->measurementMatrix));
-  this->temp2                   = (float*)malloc(measureParams*dynamParams*sizeof(this->temp2));
-  this->temp2_temp              = (float*)malloc(measureParams*dynamParams*sizeof(this->temp2_temp));
-  this->temp4                   = (float*)malloc(measureParams*dynamParams*sizeof(this->temp4));
   for (int j = 1; j <= dynamParams; j++)
     {
     for (int i = 1; i <= measureParams; i++)
       {
       this->measurementMatrix[IDX2C(i,j,measureParams)]       = (float)(i * measureParams + j + 1);
-      this->temp2[IDX2C(i,j,measureParams)]                   = (float)(i * measureParams + j + 1);
-      this->temp2_temp[IDX2C(i,j,measureParams)]              = (float)(i * measureParams + j + 1);
-      this->temp4[IDX2C(i,j,measureParams)]                   = (float)(i * measureParams + j + 1);
       }
     }
   for (int j = 1; j <= dynamParams; j++)
@@ -169,23 +157,15 @@ bool  C_cudaKalman::initMatrix          (int dynamParams, int measureParams, int
     for (int i = 1; i <= measureParams; i++)
       {
         this->measurementMatrix[IDX2C(i,j,measureParams)]         = 0.0;
-        this->temp2[IDX2C(i,j,measureParams)]                     = 0.0;
-        this->temp2_temp[IDX2C(i,j,measureParams)]                = 0.0;
-        this->temp4[IDX2C(i,j,measureParams)]                     = 0.0;
       }
     }
                                                 //ROWS * COLS * SIZEOF(FLOAT)
   this->measurementNoiseCov     = (float*)malloc(measureParams*measureParams*sizeof(this->measurementMatrix));
-  this->temp3                   = (float*)malloc(measureParams*measureParams*sizeof(this->temp3));
-  this->temp3_inv               = (float*)malloc(measureParams*measureParams*sizeof(this->temp3_inv));
   for (int j = 1; j <= measureParams; j++)
     {
     for (int i = 1; i <= measureParams; i++)
       {
       this->measurementNoiseCov[IDX2C(i,j,measureParams)]       = (float)(i * measureParams + j + 1);
-      this->temp3[IDX2C(i,j,measureParams)]                   = (float)(i * measureParams + j + 1);
-      this->temp3_inv[IDX2C(i,j,measureParams)]                   = (float)(i * measureParams + j + 1);
-
       }
     }
   for (int j = 1; j <= measureParams; j++)
@@ -193,28 +173,22 @@ bool  C_cudaKalman::initMatrix          (int dynamParams, int measureParams, int
     for (int i = 1; i <= measureParams; i++)
       {
         this->measurementNoiseCov[IDX2C(i,j,measureParams)]         = 0.0;
-        this->temp3[IDX2C(i,j,measureParams)]                     = 0.0;
-        this->temp3_inv[IDX2C(i,j,measureParams)]                     = 0.0;
-
       }
     }
                                                 //ROWS * COLS * SIZEOF(FLOAT)
   this->measurement             = (float*)malloc(1*measureParams*sizeof(this->measurement));
-  this->temp5                   = (float*)malloc(1*measureParams*sizeof(this->temp5));
   for (int j = 1; j <= measureParams; j++)
     {
     for (int i = 1; i <= 1; i++)
       {
       this->measurement[IDX2C(i,j,1)]           = (float)(i * 1 + j + 1);
-      this->temp5[IDX2C(i,j,1)]                 = (float)(i * 1 + j + 1);
       }
     }
   for (int j = 1; j <= measureParams; j++)
     {
     for (int i = 1; i <= 1; i++)
       {
-        this->measurement[IDX2C(i,j,1)]         = 0.0;
-        this->temp5[IDX2C(i,j,1)]               = 0.0;
+      this->measurement[IDX2C(i,j,1)]         = 0.0;
       }
     }
                                                 //ROWS * COLS * SIZEOF(FLOAT)
@@ -224,7 +198,6 @@ bool  C_cudaKalman::initMatrix          (int dynamParams, int measureParams, int
     for (int i = 1; i <= dynamParams; i++)
       {
       this->measurementNoiseCov[IDX2C(i,j,dynamParams)]       = (float)(i * dynamParams + j + 1);
-      this->temp3[IDX2C(i,j,dynamParams)]                     = (float)(i * dynamParams + j + 1);
       }
     }
   for (int j = 1; j <= measureParams; j++)
@@ -232,7 +205,6 @@ bool  C_cudaKalman::initMatrix          (int dynamParams, int measureParams, int
     for (int i = 1; i <= dynamParams; i++)
       {
         this->measurementNoiseCov[IDX2C(i,j,dynamParams)]      = 0.0;
-        this->temp3[IDX2C(i,j,dynamParams)]                    = 0.0;
       }
     }
 
@@ -264,10 +236,6 @@ bool  C_cudaKalman::initMatrix          (int dynamParams, int measureParams, int
   ALERT(cudaStat, "transitionMatrix device memory allocation failed");
   this->print_matrix(transitionMatrix, dynamParams, dynamParams, "transitionMatrix");
 
-  cudaStat = cudaMalloc ((void**)&transitionMatrix_temp_devPtr, dynamParams*dynamParams*sizeof(*transitionMatrix_temp));
-  ALERT(cudaStat, "transitionMatrix device memory allocation failed");
-  this->print_matrix(transitionMatrix_temp, dynamParams, dynamParams, "transitionMatrix_temp");
-
   cudaStat = cudaMalloc ((void**)&processNoiseCov_devPtr, dynamParams*dynamParams*sizeof(*processNoiseCov));
   ALERT(cudaStat, "processNoiseCov device memory allocation failed");
   this->print_matrix(processNoiseCov, dynamParams, dynamParams, "processNoiseCov");
@@ -296,22 +264,19 @@ bool  C_cudaKalman::initMatrix          (int dynamParams, int measureParams, int
   ALERT(cudaStat, "gain device memory allocation failed");
   this->print_matrix(gain, dynamParams, measureParams, "gain");
 
-  cudaStat = cudaMalloc ((void**)&temp1_devPtr, dynamParams*dynamParams*sizeof(*temp1));
+  cudaStat = cudaMalloc ((void**)&temp1_devPtr, dynamParams*dynamParams*sizeof(float));
   ALERT(cudaStat, "temp1 device memory allocation failed");
   this->print_matrix(temp1, dynamParams, measureParams, "temp1");
 
-  cudaStat = cudaMalloc ((void**)&temp2_devPtr, measureParams*dynamParams*sizeof(*temp2));
+  cudaStat = cudaMalloc ((void**)&temp2_devPtr, measureParams*dynamParams*sizeof(float));
   ALERT(cudaStat, "temp2 device memory allocation failed");
   this->print_matrix(temp2, measureParams, measureParams, "temp2");
 
-  cudaStat = cudaMalloc ((void**)&temp2_temp_devPtr, measureParams*dynamParams*sizeof(*temp2_temp));
-  ALERT(cudaStat, "temp2 device memory allocation failed");
-  this->print_matrix(temp2_temp, measureParams, measureParams, "temp2_temp");
-
-  cudaStat = cudaMalloc ((void**)&temp3_devPtr, measureParams*measureParams*sizeof(*temp3));
+  cudaStat = cudaMalloc ((void**)&temp3_devPtr, measureParams*measureParams*sizeof(float));
   ALERT(cudaStat, "temp3 device memory allocation failed");
   this->print_matrix(temp3, measureParams, measureParams, "temp3");
-  cudaStat = cudaMalloc ((void**)&temp3_inv_devPtr, measureParams*measureParams*sizeof(*temp3_inv));
+
+  cudaStat = cudaMalloc ((void**)&temp3_inv_devPtr, measureParams*measureParams*sizeof(float));
   ALERT(cudaStat, "temp3_inv device memory allocation failed");
   this->print_matrix(temp3_inv_devPtr, measureParams, measureParams, "temp3");
 
@@ -434,32 +399,23 @@ bool  C_cudaKalman::deleteMatrix        ()
   free(this->statePre);
   free(this->statePost);
   free(this->transitionMatrix);
-  free(this->transitionMatrix_temp);
   free(this->processNoiseCov);
-  free(this->temp1);
   free(this->errorCovPre);
   free(this->errorCovPost);
   free(this->measurementMatrix);
-  free(this->temp2);
-  free(this->temp2_temp);
-  free(this->temp4);
   free(this->measurementNoiseCov);
-  free(this->temp3);
   free(this->measurement);
-  free(this->temp5);
   free(this->gain);
 
   cudaFree(this->statePre_devPtr);
   cudaFree(this->statePost_devPtr);
   cudaFree(this->transitionMatrix_devPtr);
-  cudaFree(this->transitionMatrix_temp_devPtr);
   cudaFree(this->processNoiseCov_devPtr);
   cudaFree(this->temp1_devPtr);
   cudaFree(this->errorCovPre_devPtr);
   cudaFree(this->errorCovPost_devPtr);
   cudaFree(this->measurementMatrix_devPtr);
   cudaFree(this->temp2_devPtr);
-  cudaFree(this->temp2_temp_devPtr);
   cudaFree(this->temp4_devPtr);
   cudaFree(this->measurementNoiseCov_devPtr);
   cudaFree(this->temp3_devPtr);
@@ -483,13 +439,13 @@ int   C_cudaKalman::d_correct           ()
   // MxN = MxK * KxN
   // Signature: handle, operation, operation, M, N, K, alpha, A, lda, B, ldb, beta, C, ldc
   stat = cublasSgemm_v2(this->handle, CUBLAS_OP_N, CUBLAS_OP_T,measureParams, dynamParams, measureParams,
-                        alpha, temp2_devPtr, measureParams, measurementMatrix_devPtr, measureParams, beta, temp2_temp_devPtr, measureParams);
-  ALERT(stat, "correct - temp2_temp = temp2*Ht");
+                        alpha, temp2_devPtr, measureParams, measurementMatrix_devPtr, measureParams, beta, this->temp7_devPtr, measureParams);
+  ALERT(stat, "correct - temp7_devPtr = temp2*Ht");
 
-  // temp2 = temp2_temp + R
+  // temp2 = temp7_devPtr + R
   stat = cublasSgeam(this->handle, CUBLAS_OP_N, CUBLAS_OP_N, measureParams, measureParams,
-                     alpha, this->temp2_temp_devPtr, measureParams, alpha, this->measurementNoiseCov_devPtr, measureParams, this->temp2_devPtr, measureParams);
-  ALERT(stat, "correct - temp2 = temp2_temp + R failed");
+                     alpha, this->temp7_devPtr, measureParams, alpha, this->measurementNoiseCov_devPtr, measureParams, this->temp2_devPtr, measureParams);
+  ALERT(stat, "correct - temp2 = temp7_devPtr + R failed");
 
   inv_kernel<<<1, 1>>>(temp3_devPtr, temp3_inv_devPtr, measureParams);
   // MxN = MxK * KxN
@@ -523,8 +479,6 @@ int   C_cudaKalman::d_correct           ()
   ALERT(stat, "correct - temp10 = K(k)* temp2");
 
   MatSubt<<<1,dynamParams>>>(temp10_devPtr, errorCovPre_devPtr, errorCovPost_devPtr);
-
-
   }
 int   C_cudaKalman::d_predict           ()
   {
