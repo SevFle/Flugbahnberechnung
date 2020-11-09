@@ -9,6 +9,14 @@
 #include <stdio.h>
 #include <iostream>
 
+//for __syncthreads()
+#ifndef __CUDACC__
+#define __CUDACC__
+#endif
+#include <device_functions.h>
+#include <device_launch_parameters.h>
+
+
 
 #define IDX2C(i,j,ld) (((j)*(ld))+(i))
 
@@ -44,6 +52,7 @@ namespace cudaKalman
     float* temp2;
     float* temp2_temp;
     float* temp3;
+    float* temp3_inv;
     float* temp4;
     float* temp5;
     float* transitionMatrix_temp;
@@ -71,6 +80,8 @@ namespace cudaKalman
     float* temp2_devPtr;              //!< measureParams*dynamParams
     float* temp2_temp_devPtr;         //!< measureParams*dynamParams
     float* temp3_devPtr;              //!< measureParams*measureParams
+    float* temp3_inv_devPtr;              //!< measureParams*measureParams
+
     float* temp4_devPtr                 ;//!< measureParams*dynamParams
     float* temp5_devPtr;                 //!< measureParams
     float* transitionMatrix_temp_devPtr; //!< dynamParams*dynamParams
@@ -83,17 +94,20 @@ namespace cudaKalman
     int controlParams;
 
 
-    int correct            ();
-    int predict            ();
-    int firstMeasurement   ();
+  __host__  void h_predict          (float dt);
+  __host__  void h_correct          (float dt);
+  __host__  int h_firstMeasurement  ();
 
   private:
-    void init               ();
-    bool initMatrix         (int dynamParams, int measureParams, int controlParams);
-    void deinit             ();
-    bool deleteMatrix       ();
-    int set_identity        (int dynamParams, int measureParams, int controlParams);
-    void print_matrix       (const float *A, int nr_rows_A, int nr_cols_A, std::string Name) ;
+  __host__  int d_correct         ();
+  __host__  int d_predict         ();
+   __host__   void init             ();
+   __host__   bool initMatrix       (int dynamParams, int measureParams, int controlParams);
+   __host__   void deinit           ();
+   __host__   bool deleteMatrix     ();
+   __host__   int set_identity      (int dynamParams, int measureParams, int controlParams);
+   __host__   void print_matrix     (const float *A, int nr_rows_A, int nr_cols_A, std::string Name) ;
+
 
     };//class C_cudaKalman
   }

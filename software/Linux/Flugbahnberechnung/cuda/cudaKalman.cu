@@ -1,39 +1,88 @@
 #include "cudaKalman.cuh"
 #include <stdio.h>
 #include <iostream>
-
 #define IDX2C(i,j,ld) (((j)*(ld))+(i))
 
-#define ALERT(cudaStat, message)   if (cudaStat != cudaSuccess){ std::cout << message << std::endl; return EXIT_FAILURE;}
-
-
-
-
+#define ALERT(cudaStat, message) \
+  if (cudaStat != cudaSuccess){ \
+    printf("\n");\
+    printf(message);\
+    printf("\n");\
+    return EXIT_FAILURE;\
+    }
+#define PERR(call) \
+  if (call) {\
+   fprintf(stderr, "%s:%d Error [%s] on "#call"\n", __FILE__, __LINE__,\
+      cudaGetErrorString(cudaGetLastError()));\
+   exit(1);\
+  }
+#define ERRCHECK \
+  if (cudaPeekAtLastError()) { \
+    fprintf(stderr, "%s:%d Error [%s]\n", __FILE__, __LINE__,\
+       cudaGetErrorString(cudaGetLastError()));\
+    exit(1);\
+  }
 using namespace cudaKalman;
+__global__ void MatSubt                 (float* A,    float* B,   float* C)
+  {
+  int x = threadIdx.x;
+  int y = threadIdx.y;
+  int id = blockDim.x*y+x;
+  C[id]=A[id]-B[id];
+  }
+__global__ void inv_kernel              (float *a_i,  float *c_o, int n)
+{
+  int *p = (int *)malloc(3*sizeof(int));
+  int *info = (int *)malloc(sizeof(int));
+  int batch;
+  cublasHandle_t hdl;
+  cublasStatus_t status = cublasCreate_v2(&hdl);
+  printf("handle %d n = %d\n", status, n);
 
-C_cudaKalman::C_cudaKalman()
+  info[0] = 0;
+  batch = 1;
+  float **a = (float **)malloc(sizeof(float *));
+  *a = a_i;
+  const float **aconst = (const float **)a;
+  float **c = (float **)malloc(sizeof(float *));
+  *c = c_o;
+  // See
+  // http://docs.nvidia.com/cuda/pdf/CUDA_Dynamic_Parallelism_Programming_Guide.pdf
+  //http://stackoverflow.com/questions/27094612/cublas-matrix-inversion-from-device
+  status = cublasSgetrfBatched(hdl, n, a, n, p, info, batch);
+  __syncthreads();
+  printf("rf %d info %d\n", status, info[0]);
+  status = cublasSgetriBatched(hdl, n, aconst, n, p,
+      c, n, info, batch);
+  __syncthreads();
+  printf("ri %d info %d\n", status, info[0]);
+  cublasDestroy_v2(hdl);
+  printf("done\n");
+}
+
+C_cudaKalman::C_cudaKalman              ()
   {
   init();
   this->initMatrix(9,3,0);
   this->set_identity(9, 3, 0);
 
   }
-C_cudaKalman::~C_cudaKalman()
+C_cudaKalman::~C_cudaKalman             ()
   {
-
+  deinit();
+  deleteMatrix();
   }
-void C_cudaKalman::init               ()
+void  C_cudaKalman::init                ()
   {
   cublasCreate(&this->handle);
   cublasSetStream(this->handle, this->streamkalman);
   }
-void C_cudaKalman::deinit             ()
+void  C_cudaKalman::deinit              ()
   {
   cublasDestroy(this->handle);
 
   }
-
-__host__ bool C_cudaKalman::initMatrix         (int dynamParams, int measureParams, int controlParams)
+bool  C_cudaKalman::initMatrix          (int dynamParams, int measureParams, int controlParams)
   {
   this->dynamParams = dynamParams;
   this->measureParams = measureParams;
@@ -127,13 +176,16 @@ __host__ bool C_cudaKalman::initMatrix         (int dynamParams, int measurePara
     }
                                                 //ROWS * COLS * SIZEOF(FLOAT)
   this->measurementNoiseCov     = (float*)malloc(measureParams*measureParams*sizeof(this->measurementMatrix));
-  this->temp3                   = (float*)malloc(measureParams*measureParams*sizeof(this->temp2));
+  this->temp3                   = (float*)malloc(measureParams*measureParams*sizeof(this->temp3));
+  this->temp3_inv               = (float*)malloc(measureParams*measureParams*sizeof(this->temp3_inv));
   for (int j = 1; j <= measureParams; j++)
     {
     for (int i = 1; i <= measureParams; i++)
       {
       this->measurementNoiseCov[IDX2C(i,j,measureParams)]       = (float)(i * measureParams + j + 1);
       this->temp3[IDX2C(i,j,measureParams)]                   = (float)(i * measureParams + j + 1);
+      this->temp3_inv[IDX2C(i,j,measureParams)]                   = (float)(i * measureParams + j + 1);
+
       }
     }
   for (int j = 1; j <= measureParams; j++)
@@ -142,6 +194,8 @@ __host__ bool C_cudaKalman::initMatrix         (int dynamParams, int measurePara
       {
         this->measurementNoiseCov[IDX2C(i,j,measureParams)]         = 0.0;
         this->temp3[IDX2C(i,j,measureParams)]                     = 0.0;
+        this->temp3_inv[IDX2C(i,j,measureParams)]                     = 0.0;
+
       }
     }
                                                 //ROWS * COLS * SIZEOF(FLOAT)
@@ -257,6 +311,11 @@ __host__ bool C_cudaKalman::initMatrix         (int dynamParams, int measurePara
   cudaStat = cudaMalloc ((void**)&temp3_devPtr, measureParams*measureParams*sizeof(*temp3));
   ALERT(cudaStat, "temp3 device memory allocation failed");
   this->print_matrix(temp3, measureParams, measureParams, "temp3");
+  cudaStat = cudaMalloc ((void**)&temp3_inv_devPtr, measureParams*measureParams*sizeof(*temp3_inv));
+  ALERT(cudaStat, "temp3_inv device memory allocation failed");
+  this->print_matrix(temp3_inv_devPtr, measureParams, measureParams, "temp3");
+
+
 
   cudaStat = cudaMalloc ((void**)&temp4_devPtr, measureParams*dynamParams*sizeof(*temp4));
   ALERT(cudaStat, "temp4 device memory allocation failed");
@@ -281,7 +340,7 @@ __host__ bool C_cudaKalman::initMatrix         (int dynamParams, int measurePara
 
   }
 
-int C_cudaKalman::set_identity(int dynamParams, int measureParams, int controlParams)
+int   C_cudaKalman::set_identity        (int dynamParams, int measureParams, int controlParams)
   {
   std::cout << "Setting Device CUDA Matrices identity" << std::endl;
 
@@ -370,7 +429,7 @@ int C_cudaKalman::set_identity(int dynamParams, int measureParams, int controlPa
     }
 
   }
-bool C_cudaKalman::deleteMatrix()
+bool  C_cudaKalman::deleteMatrix        ()
   {
   free(this->statePre);
   free(this->statePost);
@@ -408,13 +467,14 @@ bool C_cudaKalman::deleteMatrix()
   cudaFree(this->temp5_devPtr);
   cudaFree(this->gain_devPtr);
   }
-int C_cudaKalman::correct            ()
+int   C_cudaKalman::d_correct           ()
   {
   const float* alpha = new float {1.0f};
   const float* beta = new float {0.0f};
   // temp2 = H*P'(k)
   // temp2 = measurementMatrix * errorCovPre;
-  stat = cublasSgemm_v2(this->handle, CUBLAS_OP_N, CUBLAS_OP_N,measureParams,measureParams,measureParams,alpha, this->measurementMatrix_devPtr, measureParams, errorCovPre_devPtr, dynamParams, beta, this->temp2_devPtr, measureParams);
+  stat = cublasSgemm_v2(this->handle, CUBLAS_OP_N, CUBLAS_OP_N,measureParams,measureParams,measureParams,
+                        alpha, this->measurementMatrix_devPtr, measureParams, errorCovPre_devPtr, dynamParams, beta, this->temp2_devPtr, measureParams);
   ALERT(stat, "correct - temp2 = H*P'(k)");
 
   // temp2_temp = temp2*Ht
@@ -422,29 +482,58 @@ int C_cudaKalman::correct            ()
   // Calculate: c = (alpha*a) * b + (beta*c)
   // MxN = MxK * KxN
   // Signature: handle, operation, operation, M, N, K, alpha, A, lda, B, ldb, beta, C, ldc
-  stat = cublasSgemm_v2(this->handle, CUBLAS_OP_N, CUBLAS_OP_T,measureParams, dynamParams, measureParams, alpha, temp2_devPtr, measureParams, measurementMatrix_devPtr, measureParams, beta, temp2_temp_devPtr, measureParams);
+  stat = cublasSgemm_v2(this->handle, CUBLAS_OP_N, CUBLAS_OP_T,measureParams, dynamParams, measureParams,
+                        alpha, temp2_devPtr, measureParams, measurementMatrix_devPtr, measureParams, beta, temp2_temp_devPtr, measureParams);
   ALERT(stat, "correct - temp2_temp = temp2*Ht");
 
   // temp2 = temp2_temp + R
-  stat = cublasSgeam(this->handle, CUBLAS_OP_N, CUBLAS_OP_N, measureParams, measureParams, alpha, this->temp2_temp_devPtr, measureParams, alpha, this->measurementNoiseCov_devPtr, measureParams, this->temp2_devPtr, measureParams);
+  stat = cublasSgeam(this->handle, CUBLAS_OP_N, CUBLAS_OP_N, measureParams, measureParams,
+                     alpha, this->temp2_temp_devPtr, measureParams, alpha, this->measurementNoiseCov_devPtr, measureParams, this->temp2_devPtr, measureParams);
   ALERT(stat, "correct - temp2 = temp2_temp + R failed");
+
+  inv_kernel<<<1, 1>>>(temp3_devPtr, temp3_inv_devPtr, measureParams);
+  // MxN = MxK * KxN
+  // Signature: handle, operation, operation, M, N, K, alpha, A, lda, B, ldb, beta, C, ldc
+
+  stat = cublasSgemm_v2(this->handle, CUBLAS_OP_N, CUBLAS_OP_N,measureParams, dynamParams, measureParams,
+                        alpha, temp3_inv_devPtr, measureParams, temp2_devPtr, measureParams, beta, temp4_devPtr, measureParams);
+  ALERT(stat, "correct - temp4 = temp3_inv * temp2");
+
+  stat = cublasSgeam(this->handle, CUBLAS_OP_T, CUBLAS_OP_N, measureParams, dynamParams,
+                     alpha, temp4_devPtr, measureParams, beta, this->gain_devPtr, dynamParams, this->gain_devPtr, dynamParams);
+  ALERT(stat, "correct - K(k)=temp4_transposed");
+
+
+  stat = cublasSgemm_v2(this->handle,CUBLAS_OP_N, CUBLAS_OP_N,measureParams, 1, dynamParams, alpha,
+                        this->measurementMatrix_devPtr, measureParams, this->statePre, dynamParams, beta, this->temp8_devPtr, measureParams);
+  ALERT(stat, "correct - temp8 = H * x'(k)");
+
+  MatSubt<<<1,measureParams>>>(measurement_devPtr, temp8_devPtr, temp5_devPtr);
+
+  stat = cublasSgemv_v2(this->handle, CUBLAS_OP_N,dynamParams, measureParams, alpha,
+                        this->gain_devPtr, dynamParams, this->temp5_devPtr, 1, beta, this->temp5_devPtr, 1);
+  ALERT(stat, "correct - temp9 = K(k)* temp5");
+
+  stat = cublasSgeam(this->handle, CUBLAS_OP_N, CUBLAS_OP_N, dynamParams, 1, alpha,
+                     this->statePre, dynamParams, alpha, this->temp9_devPtr, dynamParams, this->statePost_devPtr, dynamParams);
+  ALERT(stat, "correct - x(k) = x'(k) + temp9");
+
+  stat = cublasSgemm_v2(this->handle, CUBLAS_OP_N, CUBLAS_OP_N, dynamParams, measureParams, dynamParams, alpha,
+                        this->gain_devPtr, dynamParams, temp2_devPtr, measureParams, beta, this->temp10_devPtr, dynamParams);
+  ALERT(stat, "correct - temp10 = K(k)* temp2");
+
+  MatSubt<<<1,dynamParams>>>(temp10_devPtr, errorCovPre_devPtr, errorCovPost_devPtr);
 
 
   }
-int C_cudaKalman::predict            ()
+int   C_cudaKalman::d_predict           ()
   {
   //CUDA MEMCOPY ALPHA BETA EMPTY
   const float* alpha = new float {1.0f};
   const float* beta = new float {0.0f};
-//  This function performs the matrix-matrix multiplication
-//  C = ? op ( A ) op ( B ) + ? C
-//  where ? and ? are scalars, and A , B and C are matrices stored in column-major format with dimensions op ( A ) m × k , op ( B ) k × n and C m × n , respectively. Also, for matrix A
-//  op ( A ) = A if  transa == CUBLAS_OP_N A T if  transa == CUBLAS_OP_T A H if  transa == CUBLAS_OP_C
-//  and op ( B ) is defined similarly for matrix B .
-
 
 //  This function performs the matrix-vector multiplication
-//  y = ? op ( A ) x + ? y
+//  y = ( A ) x + ? y
 //  where A is a m × n matrix stored in column-major format, x and y are vectors, and ? and ? are scalars. Also, for matrix A
 //   op ( A ) = A  if transa == CUBLAS_OP_N A T  if transa == CUBLAS_OP_T A H  if transa == CUBLAS_OP_H
 
@@ -460,6 +549,7 @@ int C_cudaKalman::predict            ()
     // x'(k) = x'(k) + B*u(k)
     //statePre += controlMatrix*control;
     cublasSgemv_v2(this->handle, CUBLAS_OP_N, dynamParams, controlParams, alpha, this->controlMatrix_devPtr, dynamParams, controlMatrix_devPtr, 1, alpha, this->statePre_devPtr, 1);
+    
     }
 
   // Calculate: c = (alpha*a) * b + (beta*c)
@@ -487,14 +577,12 @@ int C_cudaKalman::predict            ()
   stat = cublasScopy_v2(this->handle, dynamParams, this->errorCovPre_devPtr, 1, this->errorCovPost_devPtr,1);
   ALERT(stat, "update - cublasScopy_v2 errorCovPre");
   }
-int C_cudaKalman::firstMeasurement   ()
+int   C_cudaKalman::h_firstMeasurement  ()
   {
 
   }
-
-//Print matrix A(nr_rows_A, nr_cols_A) storage in column-major format
-void C_cudaKalman::print_matrix(const float *A, int nr_rows_A, int nr_cols_A, std::string Name)
-  {
+void  C_cudaKalman::print_matrix        (const float *A, int nr_rows_A, int nr_cols_A, std::string Name)
+  {//Print matrix A(nr_rows_A, nr_cols_A) storage in column-major format
   std::cout << Name << std::endl;
   for(int i = 0; i < nr_rows_A; ++i)
     {
@@ -506,3 +594,5 @@ void C_cudaKalman::print_matrix(const float *A, int nr_rows_A, int nr_cols_A, st
     }
   std::cout << std::endl;
   }
+
+
