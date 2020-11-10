@@ -30,7 +30,7 @@ namespace trackingManager
     ~C_trackingManager                  ();
 
     plotter::C_plotter*                 dataPlotter;
-    //cudaKalman::C_cudaKalman*           kf;
+    cudaKalman::C_cudaKalman*           kf;
 
 
     int                                 consecutive_found;

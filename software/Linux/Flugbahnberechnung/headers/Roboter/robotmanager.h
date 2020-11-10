@@ -3,6 +3,7 @@
 #include "posen.h"
 #include "robot.h"
 #include "headers/Etc/GlobalObjects.h"
+#include "headers/Etc/mathhelper.h"
 
 using namespace GlobalObjects;
 
@@ -39,6 +40,7 @@ namespace robotManager
     posen::S_Positionsvektor*           objectExit;
     std::atomic<bool>*                  state_machine_running;
     std::thread*                        smThread;
+    C_mathHelper*                       math;
 
 
     bool                                threadActive;

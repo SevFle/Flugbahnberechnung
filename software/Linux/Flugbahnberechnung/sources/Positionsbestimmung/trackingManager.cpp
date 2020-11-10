@@ -98,14 +98,14 @@ C_trackingManager::~C_trackingManager                   ()
   delete (vecCamToWorldPose);
   delete (vecEinheitsVektor);
   delete (vecWorldtoCamPose);
-//  if(this->kf != nullptr)
-//    {
-//    delete(this->kf);
-//    }
-//  else
-//    {
-//    this->kf = nullptr;
-//    }
+  if(this->kf != nullptr)
+    {
+    delete(this->kf);
+    }
+  else
+    {
+    this->kf = nullptr;
+    }
   delete (dataPlotter);
   this->globalObjects = nullptr;
   }

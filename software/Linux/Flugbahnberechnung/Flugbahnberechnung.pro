@@ -87,7 +87,6 @@ headers/Forms/frm_object_calibration.h \
 headers/Forms/frm_object_tracking.h \
 headers/Forms/frm_main.h \
 headers/Forms/frm_robot_calibration.h \
-cuda/cudaKalman.cuh
 
 FORMS += \
     forms/frm_camera_calibration.ui \
@@ -198,3 +197,10 @@ DEPENDPATH += $$PWD/../../../../../../../usr/local/include
 #    sources/Cuda/cudaKalman.cu
 
 
+
+unix:!macx: LIBS += -L$$PWD/../libCuda_v2/ -lCuda_v2
+
+INCLUDEPATH += $$PWD/../libCuda_v2
+DEPENDPATH += $$PWD/../libCuda_v2
+
+unix:!macx: PRE_TARGETDEPS += $$PWD/../libCuda_v2/libCuda_v2.a

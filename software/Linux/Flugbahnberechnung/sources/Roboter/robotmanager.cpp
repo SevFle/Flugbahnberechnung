@@ -1,5 +1,7 @@
  #include "headers/Roboter/robotmanager.h"
 
+
+
 using namespace robotManager;
 
 C_robotManager::C_robotManager(C_GlobalObjects* Globalobjects)
@@ -18,10 +20,12 @@ C_robotManager::C_robotManager(C_GlobalObjects* Globalobjects)
   this->smThread            = nullptr;
   this->Pose_waiting        = new posen::C_AbsolutePose;
   this->Pose_inter_waiting  = new posen::C_AbsolutePose;
+  this->math                = new C_mathHelper;
 
   }
 C_robotManager::~C_robotManager()
   {
+  delete                    (math);
   delete                    (Pose_inter_waiting);
   delete                    (Pose_waiting);
 
@@ -318,28 +322,36 @@ void C_robotManager::sm_BallTracking()
       if(this->roboter->Is_MotionDone())
         {
         this->close_Panda_threading();
-        this->smBallTrackingStep = 9;
+        this->smBallTrackingStep = 8;
         }
       else
         {
         this->smBallTrackingStep = 7;
         }
       break;
-    case 9:
+    case 8:
         //Signal Robot Ready
         break;
 
       //Versuche aktuelle Objektdaten aus der Que zu holen. Falls nicht erfolgreich, bleibe im aktuellen Schritt
-      case 10:
+      case 9:
         if(this->globalObjects->objectPosenQue->try_pop(this->objectPayload))
           {
-          this->smBallTrackingStep = 11;
+          float gainMean = this->math->calcMedian(objectPayload->gain);
+          if(gainMean < 0,2)
+            this->smBallTrackingStep = 10;
+          else
+            this->smBallTrackingStep = 9;
           }
         else
           {
-          this->smBallTrackingStep = 10;
+          this->smBallTrackingStep = 9;
           }
         break;
+
+      case 10:
+      //WHERE TO PROPAGATE THROUGH THE KF PREDICTIon?
+    break;
 
         //Berechne die aktuelle Trajektorie mit den gegebenen Objektdaten. Überprüfe ob in jedem Schritt dt ob sich X,Y,Z selbst mit Anlaufweg (15 cm in Bewegungsrichtung) innerhalb der Roboterkugel befinden
       case 11:
