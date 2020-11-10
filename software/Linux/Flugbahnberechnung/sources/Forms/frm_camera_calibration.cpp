@@ -416,7 +416,7 @@ void C_frm_Camera_Calibration::on_rb_single_calibration_clicked()
 
     this->Ui->label_6->setVisible                     (true);
     this->Ui->label_7->setVisible                     (true);
-
+    this->Ui->txb_usrInput_images->setVisible         (true);
 
     this->Ui->lbl_img_stereo_right->setVisible        (false);
     this->Ui->lbl_img_stereo_left->setVisible         (false);
@@ -534,6 +534,7 @@ void C_frm_Camera_Calibration::sm_Single_camera_calibration ()
   {
   int codec = cv::VideoWriter::fourcc('M','J','P','G');
   std::string naming = "../Parameter/Bilder/Camera_Single_Calibration_" + std::to_string(this->Ui->num_camera_id->value()) + ".avi";
+  int fps =0;
   switch (this->sm_calibration_state)
     {
     case 0:
@@ -546,7 +547,8 @@ void C_frm_Camera_Calibration::sm_Single_camera_calibration ()
       this->Ui->bt_start->setText           ("Beenden");
       this->videowrite = new cv::VideoWriter(naming , codec, 50, cv::Size(1280,720));
       this->videowriter_active = true;
-      this->Taktgeber->setInterval(this->Ui->txb_usrInput_images->toPlainText().toInt());
+      fps = 1000/this->Ui->txb_usrInput_images->toPlainText().toInt();
+      this->Taktgeber->setInterval(fps);
       this->sm_calibration_state            = 1;
       break;
 
