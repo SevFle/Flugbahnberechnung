@@ -53,7 +53,7 @@ namespace cudaKalman
     float* statePost_devPtr;              //!< dynamParams
     float* transitionMatrix_devPtr;       //!< dynamParams*dynamParams
     float* controlMatrix_devPtr;          //!< dynamParams*controlParams
-    float* controlVector_devPtr;          //!< controlParams
+    float* controlValue_devPtr;          //!< controlParams
     float* measurementMatrix_devPtr;      //!< measureParams*dynamParams
     float* measurement_devPtr;            //!< measureParams
     float* processNoiseCov_devPtr;        //!< dynamParams*dynamParams (Q)
@@ -74,7 +74,7 @@ namespace cudaKalman
     float* temp8_devPtr;                  //!< measureParams * 1
     float* temp9_devPtr;                  //!< dynamParams*1
     float* temp10_devPtr;                 //!< dynamParams*dynamParams
-
+    float* temp11_devPtr;                 //!< dynamParams*dynamParams
     int dynamParams;
     int measureParams;
     int controlParams;

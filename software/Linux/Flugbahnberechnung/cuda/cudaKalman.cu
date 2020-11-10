@@ -266,31 +266,36 @@ bool  C_cudaKalman::initMatrix          (int dynamParams, int measureParams, int
 
   cudaStat = cudaMalloc ((void**)&temp1_devPtr, dynamParams*dynamParams*sizeof(float));
   ALERT(cudaStat, "temp1 device memory allocation failed");
-  this->print_matrix(temp1, dynamParams, measureParams, "temp1");
 
   cudaStat = cudaMalloc ((void**)&temp2_devPtr, measureParams*dynamParams*sizeof(float));
   ALERT(cudaStat, "temp2 device memory allocation failed");
-  this->print_matrix(temp2, measureParams, measureParams, "temp2");
 
   cudaStat = cudaMalloc ((void**)&temp3_devPtr, measureParams*measureParams*sizeof(float));
   ALERT(cudaStat, "temp3 device memory allocation failed");
-  this->print_matrix(temp3, measureParams, measureParams, "temp3");
 
   cudaStat = cudaMalloc ((void**)&temp3_inv_devPtr, measureParams*measureParams*sizeof(float));
   ALERT(cudaStat, "temp3_inv device memory allocation failed");
-  this->print_matrix(temp3_inv_devPtr, measureParams, measureParams, "temp3");
 
-
-
-  cudaStat = cudaMalloc ((void**)&temp4_devPtr, measureParams*dynamParams*sizeof(*temp4));
+  cudaStat = cudaMalloc ((void**)&temp4_devPtr, measureParams*dynamParams*sizeof(float));
   ALERT(cudaStat, "temp4 device memory allocation failed");
-  this->print_matrix(temp4, measureParams, dynamParams, "temp4");
 
-  cudaStat = cudaMalloc ((void**)&temp5_devPtr, measureParams*sizeof(*temp5));
+  cudaStat = cudaMalloc ((void**)&temp5_devPtr, measureParams*sizeof(float));
   ALERT(cudaStat, "temp5 device memory allocation failed");
-  this->print_matrix(temp5, measureParams, 1, "temp5");
 
+  cudaStat = cudaMalloc ((void**)&temp6_devPtr, dynamParams*dynamParams*sizeof(float));
+  ALERT(cudaStat, "temp6 device memory allocation failed");
 
+  cudaStat = cudaMalloc ((void**)&temp7_devPtr, measureParams*measureParams*sizeof(float));
+  ALERT(cudaStat, "temp7 device memory allocation failed");
+
+  cudaStat = cudaMalloc ((void**)&temp8_devPtr, measureParams*sizeof(float));
+  ALERT(cudaStat, "temp8 device memory allocation failed");
+
+  cudaStat = cudaMalloc ((void**)&temp9_devPtr, dynamParams*sizeof(float));
+  ALERT(cudaStat, "temp9 device memory allocation failed");
+
+  cudaStat = cudaMalloc ((void**)&temp10_devPtr, dynamParams*dynamParams*sizeof(float));
+  ALERT(cudaStat, "temp10 device memory allocation failed");
 
 
   if( controlParams !=0 )
@@ -298,8 +303,11 @@ bool  C_cudaKalman::initMatrix          (int dynamParams, int measureParams, int
     cudaStat = cudaMalloc ((void**)&controlMatrix_devPtr, dynamParams*controlParams*sizeof(*controlMatrix));
     ALERT(cudaStat, "controlMatrix device memory allocation failed");
 
-    cudaStat = cudaMalloc ((void**)&controlVector_devPtr, controlParams*sizeof(*controlVector));
+    cudaStat = cudaMalloc ((void**)&controlValue_devPtr, controlParams*sizeof(*controlVector));
     ALERT(cudaStat, "controlVector device memory allocation failed");
+
+    cudaStat = cudaMalloc ((void**)&temp11_devPtr, dynamParams*dynamParams*sizeof(float));
+    ALERT(cudaStat, "temp11 device memory allocation failed");
     }
   std::cout << "Creation of Device CUDA Matrices successful" << std::endl;
 
@@ -385,7 +393,7 @@ int   C_cudaKalman::set_identity        (int dynamParams, int measureParams, int
       {
       this->controlVector[i] = -9.807f;
       }
-    stat =  cublasSetVector(controlParams, sizeof(float), controlVector, 1, controlVector_devPtr, 1);
+    stat =  cublasSetVector(controlParams, sizeof(float), controlVector, 1, controlValue_devPtr, 1);
     ALERT(stat, "cublasSetMatrix gain failed");
     }
   else
@@ -411,72 +419,101 @@ bool  C_cudaKalman::deleteMatrix        ()
   cudaFree(this->statePost_devPtr);
   cudaFree(this->transitionMatrix_devPtr);
   cudaFree(this->processNoiseCov_devPtr);
-  cudaFree(this->temp1_devPtr);
   cudaFree(this->errorCovPre_devPtr);
   cudaFree(this->errorCovPost_devPtr);
   cudaFree(this->measurementMatrix_devPtr);
-  cudaFree(this->temp2_devPtr);
-  cudaFree(this->temp4_devPtr);
   cudaFree(this->measurementNoiseCov_devPtr);
-  cudaFree(this->temp3_devPtr);
   cudaFree(this->measurement_devPtr);
-  cudaFree(this->temp5_devPtr);
   cudaFree(this->gain_devPtr);
+  if(this->controlParams > 0)
+    {
+    cudaFree(this->controlMatrix_devPtr);
+    cudaFree(this->controlValue_devPtr);
+    }
+
+  cudaFree(this->temp1_devPtr);
+  cudaFree(this->temp2_devPtr);
+  cudaFree(this->temp3_devPtr);
+  cudaFree(this->temp3_inv_devPtr);
+  cudaFree(this->temp4_devPtr);
+  cudaFree(this->temp5_devPtr);
+  cudaFree(this->temp6_devPtr);
+  cudaFree(this->temp7_devPtr);
+  cudaFree(this->temp8_devPtr);
+  cudaFree(this->temp9_devPtr);
+  cudaFree(this->temp10_devPtr);
+  cudaFree(this->temp11_devPtr);
+
+
   }
 int   C_cudaKalman::d_correct           ()
   {
-  const float* alpha = new float {1.0f};
-  const float* beta = new float {0.0f};
-  // temp2 = H*P'(k)
-  // temp2 = measurementMatrix * errorCovPre;
-  stat = cublasSgemm_v2(this->handle, CUBLAS_OP_N, CUBLAS_OP_N,measureParams,measureParams,measureParams,
-                        alpha, this->measurementMatrix_devPtr, measureParams, errorCovPre_devPtr, dynamParams, beta, this->temp2_devPtr, measureParams);
-  ALERT(stat, "correct - temp2 = H*P'(k)");
-
-  // temp2_temp = temp2*Ht
-  //gemm(temp2, measurementMatrix, 1, measurementNoiseCov, 1, temp3, GEMM_2_T);
+  //############################################## Sgemm_v2 ##############################
   // Calculate: c = (alpha*a) * b + (beta*c)
   // MxN = MxK * KxN
   // Signature: handle, operation, operation, M, N, K, alpha, A, lda, B, ldb, beta, C, ldc
-  stat = cublasSgemm_v2(this->handle, CUBLAS_OP_N, CUBLAS_OP_T,measureParams, dynamParams, measureParams,
-                        alpha, temp2_devPtr, measureParams, measurementMatrix_devPtr, measureParams, beta, this->temp7_devPtr, measureParams);
-  ALERT(stat, "correct - temp7_devPtr = temp2*Ht");
+  //############################################## Sgeam ##############################
+  //Calculate: c = (alpha*A) + (beta*B)
+  // MxN = Mx + xB
+  // Signature: handle, operation, operation, M, N, alpha, A, lda, beta, B, ldb, C, ldc
+  //############################################## Sgemv_v2 ##############################
+  //Calculate: y = (alpha*A)*x + (beta*y)
+  // MxN = MxN
+  // Signature: handle, operation, operation, M, N, alpha, A, lda, beta, B, ldb, C, ldc
+  //######################################################################################
+  const float* alpha = new float {1.0f};
+  const float* beta = new float {0.0f};
+  stat = cublasSgemm_v2   (this->handle, CUBLAS_OP_N, CUBLAS_OP_N,measureParams,dynamParams,dynamParams,
+                          alpha, this->measurementMatrix_devPtr, measureParams, errorCovPre_devPtr, dynamParams, beta, this->temp2_devPtr, measureParams);
+  ALERT                   (stat, "correct - temp2 = H*P'(k)");
 
-  // temp2 = temp7_devPtr + R
-  stat = cublasSgeam(this->handle, CUBLAS_OP_N, CUBLAS_OP_N, measureParams, measureParams,
-                     alpha, this->temp7_devPtr, measureParams, alpha, this->measurementNoiseCov_devPtr, measureParams, this->temp2_devPtr, measureParams);
-  ALERT(stat, "correct - temp2 = temp7_devPtr + R failed");
+
+  stat = cublasSgemm_v2   (this->handle, CUBLAS_OP_N, CUBLAS_OP_T,measureParams, measureParams, dynamParams,
+                          alpha, temp2_devPtr, measureParams, measurementMatrix_devPtr, dynamParams, beta, this->temp7_devPtr, measureParams);
+  ALERT                   (stat, "correct - temp7_devPtr = temp2*Ht");
+
+
+  stat = cublasSgeam      (this->handle, CUBLAS_OP_N, CUBLAS_OP_N, measureParams, measureParams,
+                          alpha, this->temp7_devPtr, measureParams, alpha, this->measurementNoiseCov_devPtr, measureParams, this->temp3_devPtr, measureParams);
+  ALERT                   (stat, "correct - temp3 = temp7_devPtr + R failed");
+
 
   inv_kernel<<<1, 1>>>(temp3_devPtr, temp3_inv_devPtr, measureParams);
-  // MxN = MxK * KxN
-  // Signature: handle, operation, operation, M, N, K, alpha, A, lda, B, ldb, beta, C, ldc
+
 
   stat = cublasSgemm_v2(this->handle, CUBLAS_OP_N, CUBLAS_OP_N,measureParams, dynamParams, measureParams,
                         alpha, temp3_inv_devPtr, measureParams, temp2_devPtr, measureParams, beta, temp4_devPtr, measureParams);
   ALERT(stat, "correct - temp4 = temp3_inv * temp2");
 
-  stat = cublasSgeam(this->handle, CUBLAS_OP_T, CUBLAS_OP_N, measureParams, dynamParams,
+
+  stat = cublasSgeam(this->handle, CUBLAS_OP_T, CUBLAS_OP_N, dynamParams, measureParams,
                      alpha, temp4_devPtr, measureParams, beta, this->gain_devPtr, dynamParams, this->gain_devPtr, dynamParams);
   ALERT(stat, "correct - K(k)=temp4_transposed");
 
 
-  stat = cublasSgemm_v2(this->handle,CUBLAS_OP_N, CUBLAS_OP_N,measureParams, 1, dynamParams, alpha,
-                        this->measurementMatrix_devPtr, measureParams, this->statePre, dynamParams, beta, this->temp8_devPtr, measureParams);
+
+  stat = cublasSgemv_v2(this->handle, CUBLAS_OP_N, measureParams,dynamParams, alpha, this->measurementMatrix_devPtr, measureParams,
+                        this->statePre_devPtr, 1, beta, this->temp8_devPtr, 1);
   ALERT(stat, "correct - temp8 = H * x'(k)");
+
 
   MatSubt<<<1,measureParams>>>(measurement_devPtr, temp8_devPtr, temp5_devPtr);
 
+
   stat = cublasSgemv_v2(this->handle, CUBLAS_OP_N,dynamParams, measureParams, alpha,
-                        this->gain_devPtr, dynamParams, this->temp5_devPtr, 1, beta, this->temp5_devPtr, 1);
+                        this->gain_devPtr, dynamParams, this->temp5_devPtr, 1, beta, this->temp9_devPtr, 1); //y = (alpha*A)*x + (beta*Y)
   ALERT(stat, "correct - temp9 = K(k)* temp5");
+
 
   stat = cublasSgeam(this->handle, CUBLAS_OP_N, CUBLAS_OP_N, dynamParams, 1, alpha,
                      this->statePre, dynamParams, alpha, this->temp9_devPtr, dynamParams, this->statePost_devPtr, dynamParams);
   ALERT(stat, "correct - x(k) = x'(k) + temp9");
 
-  stat = cublasSgemm_v2(this->handle, CUBLAS_OP_N, CUBLAS_OP_N, dynamParams, measureParams, dynamParams, alpha,
+
+  stat = cublasSgemm_v2(this->handle, CUBLAS_OP_N, CUBLAS_OP_N, dynamParams, dynamParams, measureParams, alpha,
                         this->gain_devPtr, dynamParams, temp2_devPtr, measureParams, beta, this->temp10_devPtr, dynamParams);
   ALERT(stat, "correct - temp10 = K(k)* temp2");
+
 
   MatSubt<<<1,dynamParams>>>(temp10_devPtr, errorCovPre_devPtr, errorCovPost_devPtr);
   }
@@ -486,24 +523,21 @@ int   C_cudaKalman::d_predict           ()
   const float* alpha = new float {1.0f};
   const float* beta = new float {0.0f};
 
-//  This function performs the matrix-vector multiplication
-//  y = ( A ) x + ? y
-//  where A is a m × n matrix stored in column-major format, x and y are vectors, and ? and ? are scalars. Also, for matrix A
-//   op ( A ) = A  if transa == CUBLAS_OP_N A T  if transa == CUBLAS_OP_T A H  if transa == CUBLAS_OP_H
-
   //update the state: x'(k) = A*x(k)
   //statePre = transitionMatrix*statePost;
-  stat = cublasSgemv_v2(this->handle, CUBLAS_OP_N, dynamParams, dynamParams, alpha, this->transitionMatrix_devPtr, dynamParams, statePost_devPtr, 1, beta, this->statePre_devPtr, 1);
+  stat = cublasSgemv_v2(this->handle, CUBLAS_OP_N, dynamParams, dynamParams, alpha, this->transitionMatrix_devPtr, dynamParams, statePost_devPtr, 1, beta, this->statePre_devPtr, 1); //y = (alpha*A)*x + (beta*Y)
   ALERT(stat, "update - x'(k) = A*x(k)");
 
   if(this->controlParams > 0)
     {
+    printf("Control activated\n");
     //NICHT GEBRAUCHT FÜR STACHNISS MODELL
     // update error covariance matrices: temp1 = A*P(k)
     // x'(k) = x'(k) + B*u(k)
     //statePre += controlMatrix*control;
-    cublasSgemv_v2(this->handle, CUBLAS_OP_N, dynamParams, controlParams, alpha, this->controlMatrix_devPtr, dynamParams, controlMatrix_devPtr, 1, alpha, this->statePre_devPtr, 1);
-    
+    cublasSgemv_v2(this->handle, CUBLAS_OP_N, dynamParams, controlParams, alpha, this->controlMatrix_devPtr, dynamParams, controlMatrix_devPtr, 1, alpha, this->statePre_devPtr, 1); //y = (alpha*A)*x + (beta*Y)
+    //cublasSaxpy_v2(this->handle, dynamParams*dynamParams, controlVector, controlMatrix_devPtr, 1, this->temp11_devPtr, 1);
+
     }
 
   // Calculate: c = (alpha*a) * b + (beta*c)
@@ -516,11 +550,11 @@ int   C_cudaKalman::d_predict           ()
 
   // A_temp = temp1*At
   //gemm(temp1, transitionMatrix, 1, processNoiseCov, 1, errorCovPre, GEMM_2_T);
-  stat = cublasSgemm_v2(this->handle, CUBLAS_OP_N, CUBLAS_OP_T, dynamParams, dynamParams, dynamParams, alpha, this->temp1_devPtr, dynamParams, this->transitionMatrix_devPtr, dynamParams, beta ,this->transitionMatrix_temp_devPtr, dynamParams);
+  stat = cublasSgemm_v2(this->handle, CUBLAS_OP_N, CUBLAS_OP_T, dynamParams, dynamParams, dynamParams, alpha, this->temp1_devPtr, dynamParams, this->transitionMatrix_devPtr, dynamParams, beta ,this->temp6_devPtr, dynamParams);
   ALERT(stat, "update - A_temp = temp1*At");
 
   // P'(k) = A_temp + Q
-  stat = cublasSgeam(this->handle, CUBLAS_OP_N, CUBLAS_OP_N, dynamParams, dynamParams, alpha, this->transitionMatrix_temp_devPtr, dynamParams, alpha, processNoiseCov_devPtr, dynamParams, errorCovPre_devPtr, dynamParams);
+  stat = cublasSgeam(this->handle, CUBLAS_OP_N, CUBLAS_OP_N, dynamParams, dynamParams, alpha, this->temp6_devPtr, dynamParams, alpha, processNoiseCov_devPtr, dynamParams, errorCovPre_devPtr, dynamParams);
   ALERT(stat, "update - P'(k) = A_temp + Q");
 
 
@@ -528,7 +562,7 @@ int   C_cudaKalman::d_predict           ()
   stat = cublasScopy_v2(this->handle, dynamParams, this->statePre_devPtr, 1, this->statePost_devPtr,1);
   ALERT(stat, "update - cublasScopy_v2 statePre");
 
-  stat = cublasScopy_v2(this->handle, dynamParams, this->errorCovPre_devPtr, 1, this->errorCovPost_devPtr,1);
+  stat = cublasScopy_v2(this->handle, dynamParams*dynamParams, this->errorCovPre_devPtr, 1, this->errorCovPost_devPtr,1);
   ALERT(stat, "update - cublasScopy_v2 errorCovPre");
   }
 int   C_cudaKalman::h_firstMeasurement  ()
