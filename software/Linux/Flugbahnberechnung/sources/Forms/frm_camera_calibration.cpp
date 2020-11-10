@@ -405,7 +405,7 @@ void C_frm_Camera_Calibration::on_rb_single_calibration_clicked()
     this->cameraID                                    = 0;
     this->Ui->grpb_Camera_0->setTitle(QString("Pose Kamera " + QString::number(this->Ui->num_camera_id->value())));
     this->Ui->grpb_Camera_1->setVisible(false);
-
+    this->Ui->lbl_num_calibration_pictures->setText   ("Bilder pro Sekunde");
 
     std::lock_guard<std::mutex> lck                   (*this->Main->cameraManager->getLock());
     this->Main->cameraManager->pipelineFlush->store               (true);
@@ -414,7 +414,6 @@ void C_frm_Camera_Calibration::on_rb_single_calibration_clicked()
     this->Ui->rb_stereo_calibration->setChecked       (false);
     this->Ui->rb_single_calibration->setChecked       (true);
 
-    this->Ui->label_5->setVisible                     (true);
     this->Ui->label_6->setVisible                     (true);
     this->Ui->label_7->setVisible                     (true);
 
@@ -425,7 +424,6 @@ void C_frm_Camera_Calibration::on_rb_single_calibration_clicked()
     this->Ui->txb_edge_width->setVisible              (true);
     this->Ui->txb_edge_height->setVisible             (true);
     this->Ui->txb_edge_length->setVisible             (true);
-    this->Ui->txb_usrInput_images->setVisible         (true);
 
     this->Ui->lbl_stereo_camera_current_cam->setText("");
 
@@ -446,7 +444,6 @@ void C_frm_Camera_Calibration::on_rb_stereo_calibration_clicked()
     this->Ui->grpb_Camera_1->setVisible(true);
 
     this->Ui->bt_start->setText("Kalibrieren");
-    this->Ui->label_5->setVisible                     (false);
     this->Ui->label_6->setVisible                     (false);
     this->Ui->label_7->setVisible                     (false);
 
@@ -504,7 +501,7 @@ void C_frm_Camera_Calibration::camera_calibration_thread (void* This)
                                                        (static_cast<frm_Camera_Calibration::C_frm_Camera_Calibration*>(This)->cameraID,
                                                         static_cast<frm_Camera_Calibration::C_frm_Camera_Calibration*>(This)->Ui->txb_edge_width->toPlainText().toInt(),
                                                         static_cast<frm_Camera_Calibration::C_frm_Camera_Calibration*>(This)->Ui->txb_edge_height->toPlainText().toInt(),
-                                                        static_cast<frm_Camera_Calibration::C_frm_Camera_Calibration*>(This)->Ui->txb_usrInput_images->toPlainText().toInt(),
+                                                        static_cast<frm_Camera_Calibration::C_frm_Camera_Calibration*>(This)->Ui->txb_img_count->toPlainText().toInt(),
                                                         static_cast<frm_Camera_Calibration::C_frm_Camera_Calibration*>(This)->Ui->txb_edge_length->toPlainText().toFloat()/ 1000.0f, &rms);
 
       static_cast<frm_Camera_Calibration::C_frm_Camera_Calibration*>(This)->
@@ -549,7 +546,7 @@ void C_frm_Camera_Calibration::sm_Single_camera_calibration ()
       this->Ui->bt_start->setText           ("Beenden");
       this->videowrite = new cv::VideoWriter(naming , codec, 50, cv::Size(1280,720));
       this->videowriter_active = true;
-
+      this->Taktgeber->setInterval(this->Ui->txb_usrInput_images->toPlainText().toInt());
       this->sm_calibration_state            = 1;
       break;
 
@@ -576,6 +573,7 @@ void C_frm_Camera_Calibration::sm_Single_camera_calibration ()
       this->calibration_running           = false;
       this->Ui->bt_start->setText         ("Start");
       this->Ui->lbl_calibration_running->setVisible(true);
+      this->Taktgeber->setInterval(this->Ui->num_TimerIntervall->value());
       this->videowrite->release();
       delete (this->videowrite);
 

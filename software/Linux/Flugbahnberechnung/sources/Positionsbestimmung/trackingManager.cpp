@@ -9,7 +9,7 @@ C_trackingManager::C_trackingManager                    (C_GlobalObjects* Global
   this->dataPlotter         = new plotter::C_plotter;
 
   this->Positionsvektor_alt = new S_Positionsvektor;
-  this->kalmanfilter        = new kalmanFilter::C_kalmanFilter;
+  //this->kf        = nullptr;
 
   this->vecWorldtoCamPose   = new std::vector<C_AbsolutePose>;
   this->vecEinheitsVektor   = new std::vector<C_AbsolutePose>;
@@ -98,6 +98,14 @@ C_trackingManager::~C_trackingManager                   ()
   delete (vecCamToWorldPose);
   delete (vecEinheitsVektor);
   delete (vecWorldtoCamPose);
+//  if(this->kf != nullptr)
+//    {
+//    delete(this->kf);
+//    }
+//  else
+//    {
+//    this->kf = nullptr;
+//    }
   delete (dataPlotter);
   this->globalObjects = nullptr;
   }
@@ -345,56 +353,34 @@ void C_trackingManager::predictPixelMovement            (int& predX, int& predY,
   }
 void C_trackingManager::predictKalman                   ()
   {
-  this->kalmanfilter->predict(this->dTime);
+  //this->kf->h_predict(this->dTime);
   this->positionPayload = new GlobalObjects::S_PositionPayload;
 
-  this->positionPayload->predPosition->X = this->kalmanfilter->predictedState->at<float>(0);
-  this->positionPayload->predPosition->Y = this->kalmanfilter->predictedState->at<float>(1);
-  this->positionPayload->predPosition->Z = this->kalmanfilter->predictedState->at<float>(2);
+//  this->positionPayload->predPosition->X = this->kalmanfilter->predictedState->at<float>(0);
+//  this->positionPayload->predPosition->Y = this->kalmanfilter->predictedState->at<float>(1);
+//  this->positionPayload->predPosition->Z = this->kalmanfilter->predictedState->at<float>(2);
 
-  this->positionPayload->predVelocity[0] = this->kalmanfilter->predictedState->at<float>(3);
-  this->positionPayload->predVelocity[1] = this->kalmanfilter->predictedState->at<float>(4);
-  this->positionPayload->predVelocity[2] = this->kalmanfilter->predictedState->at<float>(5);
-  if(!this->globalObjects->objectPosenQue->try_push(positionPayload))
-    {
-    delete (this->positionPayload);
-    this->positionPayload = nullptr;
-    }
+//  this->positionPayload->predVelocity[0] = this->kalmanfilter->predictedState->at<float>(3);
+//  this->positionPayload->predVelocity[1] = this->kalmanfilter->predictedState->at<float>(4);
+//  this->positionPayload->predVelocity[2] = this->kalmanfilter->predictedState->at<float>(5);
+//  if(!this->globalObjects->objectPosenQue->try_push(positionPayload))
+//    {
+//    delete (this->positionPayload);
+//    this->positionPayload = nullptr;
+//    }
 
 
   }
 void C_trackingManager::correctKalman                   (float x, float y, float z)
   {
-  this->kalmanfilter->correct     (x,y,z);
-  }
-void C_trackingManager::processKalman                   (float x, float y, float z)
-  {
-  //Predict state
-  std::cout << "############################# PROCESS KALMAN ##################################"<< std::endl;
-
-  std::cout << "Timestamp ms" << this->dTime << std::endl;
-
-  this->kalmanfilter->processKalman(this->dTime, x,y,z);
-  this->positionPayload = new GlobalObjects::S_PositionPayload;
-
-  this->positionPayload->predPosition->X = this->kalmanfilter->predictedState->at<float>(0);
-  this->positionPayload->predPosition->Y = this->kalmanfilter->predictedState->at<float>(1);
-  this->positionPayload->predPosition->Z = this->kalmanfilter->predictedState->at<float>(2);
-
-  this->positionPayload->predVelocity[0] = this->kalmanfilter->predictedState->at<float>(3);
-  this->positionPayload->predVelocity[1] = this->kalmanfilter->predictedState->at<float>(4);
-  this->positionPayload->predVelocity[2] = this->kalmanfilter->predictedState->at<float>(5);
-  if(!this->globalObjects->objectPosenQue->try_push(positionPayload))
-    {
-    delete (this->positionPayload);
-    this->positionPayload = nullptr;
-    }
-  //Correct state
-  //this->kalmanfilter->correct(x,y,z);
-
-
+  //this->kf->h_correct(x,y,z);
   }
 double C_trackingManager::getDTime                      () const
   {
   return dTime;
+  }
+void C_trackingManager::createKf(int dynamParams, int measParams, int controlParams)
+  {
+  //this->kf = new cudaKalman::C_cudaKalman(dynamParams, measParams, controlParams);
+  this->kalmanAlive = true;
   }

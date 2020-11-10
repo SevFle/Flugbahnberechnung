@@ -21,7 +21,7 @@ C_kalmanFilter::C_kalmanFilter ()
   this->gpuMeasurement        = new cv::cuda::GpuMat;
   this->controllvector        = new cv::Mat;
   this->gpuControllvector     = new cv::cuda::GpuMat;
-  this->testkalman            = new cudaKalman::C_cudaKalman;
+  //this->testkalman            = new cudaKalman::C_cudaKalman;
 
   this->controlActive         = false;
 
@@ -29,7 +29,7 @@ C_kalmanFilter::C_kalmanFilter ()
 C_kalmanFilter::~C_kalmanFilter ()
   {
   this->controlActive         = false;
-  delete (this->testkalman);
+  //delete (this->testkalman);
   delete (gpuControllvector);
   delete (controllvector);
   delete (gpuMeasurement);

@@ -23,15 +23,15 @@ qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
-
+SYSTEM_TYPE = 64
 DESTDIR     = $$system(pwd)
+#CUDA_OBJECTS_DIR = ./
 OBJECTS_DIR = $$DESTDIR/Obj
-# C++ flags
-QMAKE_CXXFLAGS_RELEASE =-03
+
 
 
 ############################################### CUDA SOURCES ################################################
-CUDA_SOURCES += cuda/cudaKalman.cu
+#CUDA_SOURCES += cuda/cudaKalman.cu
 
 SOURCES += \
   sources/Etc/mathhelper.cpp \
@@ -101,25 +101,55 @@ FORMS += \
 
 
 ################################################ CUDA NVCC ###################################################
-CUDA_DIR = /usr/local/cuda
+#CUDA_DIR = /usr/local/cuda-10.1
 
-INCLUDEPATH  += $$CUDA_DIR/include
-QMAKE_LIBDIR += $$CUDA_DIR/lib64
-LIBS += -lcudart -lcuda -lcublas
-CUDA_ARCH = sm_75
+#SYSTEM_TYPE =64
+#CUDA_ARCH = sm_75
 
 
-# Here are some NVCC flags I've always used by default.
-NVCCFLAGS     = --compiler-options -fno-strict-aliasing -use_fast_math --ptxas-options=-v
-CUDA_INC = $$join(INCLUDEPATH,' -I','-I',' ')
-cuda.commands = $$CUDA_DIR/bin/nvcc -m64 -O3 -arch=$$CUDA_ARCH -c $$NVCCFLAGS \
-                $$CUDA_INC $$LIBS  ${QMAKE_FILE_NAME} -o ${QMAKE_FILE_OUT} \
-                2>&1 | sed -r \"s/\\(([0-9]+)\\)/:\\1/g\" 1>&2
-cuda.dependency_type = TYPE_C
-cuda.depend_command = $$CUDA_DIR/bin/nvcc -M $$CUDA_INC $$NVCCFLAGS ${QMAKE_FILE_NAME}| sed \"s/^.*: //\"
-cuda.input = CUDA_SOURCES
-cuda.output = $${OBJECTS_DIR}/${QMAKE_FILE_BASE}$${QMAKE_EXT_OBJ}
-QMAKE_EXTRA_COMPILERS += cuda
+#INCLUDEPATH  += $$CUDA_DIR/include
+#LIBS += -L$$CUDA_DIR/lib64 -lcudart -lcuda -lcublas
+
+## Here are some NVCC flags I've always used by default.
+#NVCCFLAGS     = --compiler-options -fno-strict-aliasing -use_fast_math --ptxas-options=-v
+#CUDA_INC = $$join(INCLUDEPATH,' -I','-I',' ')
+#cuda.commands = $$CUDA_DIR/bin/nvcc -m64 -O3 -arch=$$CUDA_ARCH  $$NVCCFLAGS \
+#                $$CUDA_INC $$LIBS  ${QMAKE_FILE_NAME} -o ${QMAKE_FILE_OUT} \
+#                2>&1 | sed -r \"s/\\(([0-9]+)\\)/:\\1/g\" 1>&2
+#cuda.dependency_type = TYPE_C
+#cuda.depend_command = $$CUDA_DIR/bin/nvcc -M $$CUDA_INC $$NVCCFLAGS ${QMAKE_FILE_NAME}| sed \"s/^.*: //\"
+#cuda.input = CUDA_SOURCES
+#cuda.output = $${OBJECTS_DIR}/${QMAKE_FILE_BASE}$${QMAKE_EXT_OBJ}
+#QMAKE_EXTRA_COMPILERS += cuda
+
+#CUDA_DIR = /usr/local/cuda-10.1
+#CUDA_ARCH = sm_75
+#NVCC_OPTIONS = --use_fast_math
+#HOST_COMPILER=$$QMAKE_CXX
+#LIB_PATH=x86_64-linux
+
+#equals(HOST_COMPILER, "aarch64-linux-gnu-g++") {
+#    LIB_PATH=aarch64-linux
+#}
+
+#INCLUDEPATH += $$CUDA_DIR/include
+#QMAKE_LIBDIR += $$CUDA_DIR/lib64
+#LIBS += -L$$CUDA_DIR/lib64 -lcudart -lcuda -lcublas
+
+#CONFIG(debug, debug|release) { #debug
+#    cuda_d.commands = $$CUDA_DIR/bin/nvcc -ccbin $$HOST_COMPILER -D_DEBUG $$NVCC_OPTIONS -m64  -arch=$$CUDA_ARCH -dc -o ${QMAKE_FILE_OUT} ${QMAKE_FILE_NAME}
+#    cuda_d.dependency_type = TYPE_C
+#    cuda_d.input = CUDA_SOURCES
+#    cuda_d.output = cuda/${QMAKE_FILE_BASE}.o
+#    QMAKE_EXTRA_COMPILERS += cuda_d
+#} else { #release
+#    cuda.commands = $$CUDA_DIR/bin/nvcc -ccbin $$HOST_COMPILER $$NVCC_OPTIONS -m64 -arch=$$CUDA_ARCH -dc -o ${QMAKE_FILE_OUT} ${QMAKE_FILE_NAME}
+#    cuda.dependency_type = TYPE_C
+#    cuda.input = CUDA_SOURCES
+#    cuda.output = cuda/${QMAKE_FILE_BASE}.o
+#    QMAKE_EXTRA_COMPILERS += cuda
+#}
+
 
 ################################################## OPENCV INCLUDE ##############################################
 

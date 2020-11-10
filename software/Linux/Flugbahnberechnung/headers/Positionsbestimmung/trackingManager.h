@@ -30,7 +30,8 @@ namespace trackingManager
     ~C_trackingManager                  ();
 
     plotter::C_plotter*                 dataPlotter;
-    kalmanFilter::C_kalmanFilter*       kalmanfilter;
+    //cudaKalman::C_cudaKalman*           kf;
+
 
     int                                 consecutive_found;
     bool                                kalmanAlive;
@@ -88,8 +89,8 @@ namespace trackingManager
 
     void predictPixelMovement                         (int& predX, int& predY, int pixelVelocityX, int pixelVelocityY, int ist_X, int ist_Y);
 
+    void createKf                                     (int dynamParams, int measParams, int controlParams);
     void predictKalman                                ();
-    void processKalman                                (float x, float y, float z);
     void correctKalman                                (float x, float y, float z);
 
     bool getAlive                                     () const;

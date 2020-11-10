@@ -159,8 +159,8 @@ void ::C_frm_Main::on_bt_apply_clicked()
 void C_frm_Main::initialize(void* This)
   {
   static_cast<frm_Main::C_frm_Main*>(This)->finished.store(false);
+  static_cast<frm_Main::C_frm_Main*>(This)->Main->cameraManager->trackingManager->createKf(9,3,0);
   static_cast<frm_Main::C_frm_Main*>(This)->Main->cameraManager->openCameras();
-  static_cast<frm_Main::C_frm_Main*>(This)->Main->cameraManager->trackingManager->kalmanfilter->create(9, 3, 0, CV_32FC1);
   QString IP = static_cast<frm_Main::C_frm_Main*>(This)->Ui->txb_robot_ip->toPlainText();
   std::string IPAdresse;
   IPAdresse = IP.toStdString();

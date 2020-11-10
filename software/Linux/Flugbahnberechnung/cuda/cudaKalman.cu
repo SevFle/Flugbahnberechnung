@@ -22,7 +22,7 @@
        cudaGetErrorString(cudaGetLastError()));\
     exit(1);\
   }
-using namespace cudaKalman;
+
 __global__ void MatSubt                 (float* A,    float* B,   float* C)
   {
   int x = threadIdx.x;
@@ -60,11 +60,17 @@ __global__ void inv_kernel              (float *a_i,  float *c_o, int n)
   printf("done\n");
 }
 
-C_cudaKalman::C_cudaKalman              ()
+
+using namespace cudaKalman;
+
+C_cudaKalman::C_cudaKalman              (int dynamParams, int measureParams, int controlParams)
   {
-  init();
-  this->initMatrix(9,3,0);
-  this->set_identity(9, 3, 0);
+  this->dynamParams = dynamParams;
+  this->measureParams = measureParams;
+  this->controlParams = controlParams;
+  this->init();
+  this->initMatrix(dynamParams,measureParams,controlParams);
+  this->set_identity(dynamParams,measureParams,controlParams);
 
   }
 C_cudaKalman::~C_cudaKalman             ()
@@ -102,20 +108,20 @@ bool  C_cudaKalman::initMatrix          (int dynamParams, int measureParams, int
                                                 //ROWS * COLS * SIZEOF(FLOAT)
   this->statePre                = (float*)malloc(1*dynamParams*sizeof(this->statePre));
   this->statePost               = (float*)malloc(1*dynamParams*sizeof(this->statePre));
-  for (int j = 1; j <= dynamParams; j++)
+  for (int j = 1; j <= 1; j++)
     {
-    for (int i = 1; i <= 1; i++)
+    for (int i = 1; i <= dynamParams; i++)
       {
-      this->statePre[IDX2C(i,j,1)]                = (float)(i * 1 + j + 1);
-      this->statePost[IDX2C(i,j,1)]               = (float)(i * 1 + j + 1);
+      this->statePre[IDX2C(i,j,dynamParams)]                = (float)(i * dynamParams + j + 1);
+      this->statePost[IDX2C(i,j,dynamParams)]               = (float)(i * dynamParams + j + 1);
       }
     }
-  for (int j = 1; j <= dynamParams; j++)
+  for (int j = 1; j <= 1; j++)
     {
-    for (int i = 1; i <= 1; i++)
+    for (int i = 1; i <= dynamParams; i++)
       {
-      this->statePre[IDX2C(i,j,1)]                = 0.0;
-      this->statePre[IDX2C(i,j,1)]                = 0.0;
+      this->statePre[IDX2C(i,j,dynamParams)]                = 0.0f;
+      this->statePre[IDX2C(i,j,dynamParams)]                = 0.0f;
       }
     }
                                                 //ROWS * COLS * SIZEOF(FLOAT)
@@ -137,10 +143,10 @@ bool  C_cudaKalman::initMatrix          (int dynamParams, int measureParams, int
     {
     for (int i = 1; i <= dynamParams; i++)
       {
-        this->transitionMatrix[IDX2C(i,j,dynamParams)]        = 0.0;
-        this->processNoiseCov[IDX2C(i,j,dynamParams)]         = 0.0;
-        this->errorCovPre[IDX2C(i,j,dynamParams)]             = 0.0;
-        this->errorCovPost[IDX2C(i,j,dynamParams)]            = 0.0;
+        this->transitionMatrix[IDX2C(i,j,dynamParams)]        = 0.0f;
+        this->processNoiseCov[IDX2C(i,j,dynamParams)]         = 0.0f;
+        this->errorCovPre[IDX2C(i,j,dynamParams)]             = 0.0f;
+        this->errorCovPost[IDX2C(i,j,dynamParams)]            = 0.0f;
       }
     }
                                                 //ROWS * COLS * SIZEOF(FLOAT)
@@ -156,7 +162,7 @@ bool  C_cudaKalman::initMatrix          (int dynamParams, int measureParams, int
     {
     for (int i = 1; i <= measureParams; i++)
       {
-        this->measurementMatrix[IDX2C(i,j,measureParams)]         = 0.0;
+        this->measurementMatrix[IDX2C(i,j,measureParams)]         = 0.0f;
       }
     }
                                                 //ROWS * COLS * SIZEOF(FLOAT)
@@ -172,23 +178,23 @@ bool  C_cudaKalman::initMatrix          (int dynamParams, int measureParams, int
     {
     for (int i = 1; i <= measureParams; i++)
       {
-        this->measurementNoiseCov[IDX2C(i,j,measureParams)]         = 0.0;
+        this->measurementNoiseCov[IDX2C(i,j,measureParams)]         = 0.0f;
       }
     }
                                                 //ROWS * COLS * SIZEOF(FLOAT)
-  this->measurement             = (float*)malloc(1*measureParams*sizeof(this->measurement));
-  for (int j = 1; j <= measureParams; j++)
+  this->measurement             = (float*)malloc(measureParams*1*sizeof(this->measurement));
+  for (int j = 1; j <= 1; j++)
     {
-    for (int i = 1; i <= 1; i++)
+    for (int i = 1; i <= measureParams; i++)
       {
-      this->measurement[IDX2C(i,j,1)]           = (float)(i * 1 + j + 1);
+      this->measurement[IDX2C(i,j,measureParams)]           = (float)(i * measureParams + j + 1);
       }
     }
-  for (int j = 1; j <= measureParams; j++)
+  for (int j = 1; j <= 1; j++)
     {
-    for (int i = 1; i <= 1; i++)
+    for (int i = 1; i <= measureParams; i++)
       {
-      this->measurement[IDX2C(i,j,1)]         = 0.0;
+      this->measurement[IDX2C(i,j,measureParams)]         = 0.0f;
       }
     }
                                                 //ROWS * COLS * SIZEOF(FLOAT)
@@ -204,7 +210,7 @@ bool  C_cudaKalman::initMatrix          (int dynamParams, int measureParams, int
     {
     for (int i = 1; i <= dynamParams; i++)
       {
-        this->measurementNoiseCov[IDX2C(i,j,dynamParams)]      = 0.0;
+        this->measurementNoiseCov[IDX2C(i,j,dynamParams)]      = 0.0f;
       }
     }
 
@@ -212,11 +218,6 @@ bool  C_cudaKalman::initMatrix          (int dynamParams, int measureParams, int
     {
     this->controlMatrix = new float[dynamParams*controlParams];
     this->controlVector = new float[controlParams];
-    }
-
-  if (!statePre | !statePost |!transitionMatrix | !processNoiseCov |!measurementMatrix | !measurementNoiseCov |!measurement | !errorCovPre |!errorCovPost)
-    {
-    return false;
     }
   std::cout << "Creation of Host CUDA Matrices successful" << std::endl;
 
@@ -310,7 +311,7 @@ bool  C_cudaKalman::initMatrix          (int dynamParams, int measureParams, int
     ALERT(cudaStat, "temp11 device memory allocation failed");
     }
   std::cout << "Creation of Device CUDA Matrices successful" << std::endl;
-
+  return 0;
   }
 
 int   C_cudaKalman::set_identity        (int dynamParams, int measureParams, int controlParams)
@@ -400,6 +401,7 @@ int   C_cudaKalman::set_identity        (int dynamParams, int measureParams, int
     {
     std::cout << "Setting Device CUDA Matrices identity successful" << std::endl;
     }
+  return 0;
 
   }
 bool  C_cudaKalman::deleteMatrix        ()
@@ -443,9 +445,106 @@ bool  C_cudaKalman::deleteMatrix        ()
   cudaFree(this->temp9_devPtr);
   cudaFree(this->temp10_devPtr);
   cudaFree(this->temp11_devPtr);
-
+  return true;
 
   }
+
+int   C_cudaKalman::h_firstMeasurement  (float x, float y, float z, float vx, float vy, float vz, float errorCovPre)
+  {
+  std::cout << "##################################### h_firstMeasurement called ################################" << std::endl;
+  this->measurement[0] = x;
+  this->measurement[1] = y;
+  this->measurement[2] = z;
+  this->measurement[3] = vx;
+  this->measurement[4] = vy;
+  this->measurement[5] = vz;
+  this->measurement[8] = -9.807f;
+
+  this->print_matrix(this->measurement, dynamParams, 1, " STEP FIRST HIT - measurement:");
+
+  stat = cublasSetVector(measureParams, sizeof(float), this->measurement, 1, this->measurement_devPtr, 1);
+  ALERT(stat, "h_firstMeasurement - cublasSetVector Measurement failed");
+
+  //  a = (float *)malloc (M * N * sizeof (*a));
+  //  if (!a) {
+  //      printf ("host memory allocation failed");
+  //      return EXIT_FAILURE;
+  //  }
+  for (int j = 0; j < dynamParams; j++)
+    {
+    for (int i = 0; i < dynamParams; i++)
+      {
+        if(i ==j)
+          {
+          this->errorCovPre[IDX2C(i,j,dynamParams)] = errorCovPre;
+          }
+        else
+          {
+          this->errorCovPre[IDX2C(i,j,dynamParams)] = 0.0f;
+          }
+      }
+    }
+
+  return 0;
+  }
+int   C_cudaKalman::h_correct(float x, float y, float z)
+  {
+  std::cout << "##################################### h_correct called ################################" << std::endl;
+  this->measurement[IDX2C(0,1,measureParams)] = x;
+  this->measurement[IDX2C(1,1,measureParams)] = y;
+  this->measurement[IDX2C(2,1,measureParams)] = z;
+  stat = cublasSetVector(measureParams, sizeof(float), this->measurement, 1, this->measurement_devPtr, 1);
+  ALERT(stat, "h_correct - cublasSetVector Measurement failed");
+  this->d_correct();
+  //ALTERNATIVE
+  //d_correct<<<1,1>>>();
+  return 0;
+
+  }
+int   C_cudaKalman::h_predict(float dt)
+  {
+  std::cout << "##################################### h_predict called ################################" << std::endl;
+
+  //  a = (float *)malloc (M * N * sizeof (*a));
+  //Set identity
+  for (int j = 0; j < dynamParams; j++)
+    {
+    for (int i = 0; i < dynamParams; i++)
+      {
+      if(j == i)
+        {
+        this->transitionMatrix[IDX2C(i,j,dynamParams)] = 1.0f;
+        }
+      else
+        {
+        this->transitionMatrix[IDX2C(i,j,dynamParams)] = 0.0f;
+        }
+      }
+    }
+
+  //set dt
+  for (int i = 0; i < dynamParams*dynamParams; i++)
+    {
+    if(i == 3 | i %10 == 3)
+      {
+      this->transitionMatrix[i] = dt;
+      }
+    else if (i == 6 | i %10 == 6 && i << 30)
+      {
+      this->transitionMatrix[i] = 0.5*(std::pow(dt, 2));
+      }
+    }
+
+  this->print_matrix(this->transitionMatrix, dynamParams, dynamParams, " STEP CORRECTION - TransitionMatrix:");
+  stat = cublasSetMatrix(dynamParams, dynamParams, 1, this->transitionMatrix, dynamParams, this->transitionMatrix_devPtr, dynamParams);
+  ALERT(stat, "h_predict - cublasSetMatrix transitionMatrix failed");
+
+  this->d_predict();
+  return 0;
+
+  }
+
+
 int   C_cudaKalman::d_correct           ()
   {
   //############################################## Sgemm_v2 ##############################
@@ -516,6 +615,8 @@ int   C_cudaKalman::d_correct           ()
 
 
   MatSubt<<<1,dynamParams>>>(temp10_devPtr, errorCovPre_devPtr, errorCovPost_devPtr);
+  return 0;
+
   }
 int   C_cudaKalman::d_predict           ()
   {
@@ -564,9 +665,7 @@ int   C_cudaKalman::d_predict           ()
 
   stat = cublasScopy_v2(this->handle, dynamParams*dynamParams, this->errorCovPre_devPtr, 1, this->errorCovPost_devPtr,1);
   ALERT(stat, "update - cublasScopy_v2 errorCovPre");
-  }
-int   C_cudaKalman::h_firstMeasurement  ()
-  {
+  return 0;
 
   }
 void  C_cudaKalman::print_matrix        (const float *A, int nr_rows_A, int nr_cols_A, std::string Name)

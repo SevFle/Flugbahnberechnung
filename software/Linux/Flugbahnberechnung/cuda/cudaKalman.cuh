@@ -1,8 +1,6 @@
 #ifndef __cudaKalman_H
 #define __cudaKalman_H
 
-
-
 #include <math.h>
 #include <cuda_runtime.h>
 #include <cublas_v2.h>
@@ -13,10 +11,6 @@
 #ifndef __CUDACC__
 #define __CUDACC__
 #endif
-#include <device_functions.h>
-#include <device_launch_parameters.h>
-
-
 
 #define IDX2C(i,j,ld) (((j)*(ld))+(i))
 
@@ -26,7 +20,7 @@ namespace cudaKalman
   class C_cudaKalman
     {
   public:
-    C_cudaKalman();
+    C_cudaKalman(int dynamParams, int measureParams, int controlParams);
     ~C_cudaKalman();
 
     cudaError_t            cudaStat;
@@ -80,19 +74,19 @@ namespace cudaKalman
     int controlParams;
 
 
-  __host__  void h_predict          (float dt);
-  __host__  void h_correct          (float dt);
-  __host__  int h_firstMeasurement  ();
+    int h_predict           (float dt);
+    int h_correct           (float x, float y, float z);
+    int  h_firstMeasurement  (float x, float y, float z, float vx, float vy, float vz, float errorCovPre);
 
   private:
-  __host__  int d_correct         ();
-  __host__  int d_predict         ();
-  __host__   void init             ();
-  __host__   bool initMatrix       (int dynamParams, int measureParams, int controlParams);
-  __host__   void deinit           ();
-  __host__   bool deleteMatrix     ();
-  __host__   int set_identity      (int dynamParams, int measureParams, int controlParams);
-  __host__   void print_matrix     (const float *A, int nr_rows_A, int nr_cols_A, std::string Name) ;
+    int   d_correct          ();
+    int   d_predict         ();
+     void init               ();
+     bool initMatrix       (int dynamParams, int measureParams, int controlParams);
+     void deinit           ();
+     bool deleteMatrix     ();
+     int  set_identity      (int dynamParams, int measureParams, int controlParams);
+     void print_matrix     (const float *A, int nr_rows_A, int nr_cols_A, std::string Name) ;
 
 
     };//class C_cudaKalman
