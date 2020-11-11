@@ -1,3 +1,0 @@
-/home/laborml/Projects/Flugbahnberechnung/software/Linux/libCuda_v2/CMakeFiles/rebuild_cache.dir
-/home/laborml/Projects/Flugbahnberechnung/software/Linux/libCuda_v2/CMakeFiles/libCuda_v2.dir
-/home/laborml/Projects/Flugbahnberechnung/software/Linux/libCuda_v2/CMakeFiles/edit_cache.dir
