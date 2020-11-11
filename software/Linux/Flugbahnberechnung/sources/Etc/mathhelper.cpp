@@ -5,10 +5,11 @@ C_mathHelper::C_mathHelper()
 
   }
 
-C_mathHelper::calcMedian(float Matrix[][])
+float C_mathHelper::calcMedian(float Matrix[][4])
   {
   int sum = 0;
   int validNum = 0;
+  int N =0;
 
    for (int i=0; i<N; i++)
      {

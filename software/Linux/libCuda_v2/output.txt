@@ -1,0 +1,92 @@
+laborml@laborml-System-Product-Name:~/Projects/Flugbahnberechnung/software/Linux/libCuda_v2$ make
+[ 33%] Building CUDA object CMakeFiles/libCuda_v2.dir/cudaKalman.cu.o
+/home/laborml/Projects/Flugbahnberechnung/software/Linux/libCuda_v2/cudaKalman.cu: In member function ‘int cudaKalman::C_cudaKalman::set_identity(int, int, int)’:
+/home/laborml/Projects/Flugbahnberechnung/software/Linux/libCuda_v2/cudaKalman.cu:377:27: warning: comparison between ‘enum cublasStatus_t’ and ‘enum cudaError’ [-Wenum-compare]
+   ALERT(stat, "cublasSetMatrix transitionMatrix failed");
+                           ^
+/home/laborml/Projects/Flugbahnberechnung/software/Linux/libCuda_v2/cudaKalman.cu:380:27: warning: comparison between ‘enum cublasStatus_t’ and ‘enum cudaError’ [-Wenum-compare]
+   ALERT(stat, "cublasSetMatrix processNoiseCov failed");
+                           ^
+/home/laborml/Projects/Flugbahnberechnung/software/Linux/libCuda_v2/cudaKalman.cu:383:27: warning: comparison between ‘enum cublasStatus_t’ and ‘enum cudaError’ [-Wenum-compare]
+   ALERT(stat, "cublasSetMatrix measurementNoiseCov failed");
+                           ^
+/home/laborml/Projects/Flugbahnberechnung/software/Linux/libCuda_v2/cudaKalman.cu:386:27: warning: comparison between ‘enum cublasStatus_t’ and ‘enum cudaError’ [-Wenum-compare]
+   ALERT(stat, "cublasSetMatrix measurementMatrix failed");
+                           ^
+/home/laborml/Projects/Flugbahnberechnung/software/Linux/libCuda_v2/cudaKalman.cu:389:27: warning: comparison between ‘enum cublasStatus_t’ and ‘enum cudaError’ [-Wenum-compare]
+   ALERT(stat, "cublasSetMatrix gain failed");
+                           ^
+/home/laborml/Projects/Flugbahnberechnung/software/Linux/libCuda_v2/cudaKalman.cu:398:27: warning: comparison between ‘enum cublasStatus_t’ and ‘enum cudaError’ [-Wenum-compare]
+     ALERT(stat, "cublasSetMatrix gain failed");
+                           ^
+/home/laborml/Projects/Flugbahnberechnung/software/Linux/libCuda_v2/cudaKalman.cu: In member function ‘int cudaKalman::C_cudaKalman::h_firstMeasurement(float, float, float, float, float, float, float)’:
+/home/laborml/Projects/Flugbahnberechnung/software/Linux/libCuda_v2/cudaKalman.cu:466:27: warning: comparison between ‘enum cublasStatus_t’ and ‘enum cudaError’ [-Wenum-compare]
+   ALERT(stat, "h_firstMeasurement - cublasSetVector Measurement failed");
+                           ^
+/home/laborml/Projects/Flugbahnberechnung/software/Linux/libCuda_v2/cudaKalman.cu: In member function ‘int cudaKalman::C_cudaKalman::h_correct(float, float, float)’:
+/home/laborml/Projects/Flugbahnberechnung/software/Linux/libCuda_v2/cudaKalman.cu:497:27: warning: comparison between ‘enum cublasStatus_t’ and ‘enum cudaError’ [-Wenum-compare]
+   ALERT(stat, "h_correct - cublasSetVector Measurement failed");
+                           ^
+/home/laborml/Projects/Flugbahnberechnung/software/Linux/libCuda_v2/cudaKalman.cu: In member function ‘int cudaKalman::C_cudaKalman::h_predict(float)’:
+/home/laborml/Projects/Flugbahnberechnung/software/Linux/libCuda_v2/cudaKalman.cu:540:27: warning: comparison between ‘enum cublasStatus_t’ and ‘enum cudaError’ [-Wenum-compare]
+   ALERT(stat, "h_predict - cublasSetMatrix transitionMatrix failed");
+                           ^
+/home/laborml/Projects/Flugbahnberechnung/software/Linux/libCuda_v2/cudaKalman.cu: In member function ‘int cudaKalman::C_cudaKalman::d_correct()’:
+/home/laborml/Projects/Flugbahnberechnung/software/Linux/libCuda_v2/cudaKalman.cu:567:27: warning: comparison between ‘enum cublasStatus_t’ and ‘enum cudaError’ [-Wenum-compare]
+   ALERT                   (stat, "correct - temp2 = H*P'(k)");
+                           ^
+/home/laborml/Projects/Flugbahnberechnung/software/Linux/libCuda_v2/cudaKalman.cu:572:27: warning: comparison between ‘enum cublasStatus_t’ and ‘enum cudaError’ [-Wenum-compare]
+   ALERT                   (stat, "correct - temp7_devPtr = temp2*Ht");
+                           ^
+/home/laborml/Projects/Flugbahnberechnung/software/Linux/libCuda_v2/cudaKalman.cu:577:27: warning: comparison between ‘enum cublasStatus_t’ and ‘enum cudaError’ [-Wenum-compare]
+   ALERT                   (stat, "correct - temp3 = temp7_devPtr + R failed");
+                           ^
+/home/laborml/Projects/Flugbahnberechnung/software/Linux/libCuda_v2/cudaKalman.cu:585:27: warning: comparison between ‘enum cublasStatus_t’ and ‘enum cudaError’ [-Wenum-compare]
+   ALERT(stat, "correct - temp4 = temp3_inv * temp2");
+                           ^
+/home/laborml/Projects/Flugbahnberechnung/software/Linux/libCuda_v2/cudaKalman.cu:590:27: warning: comparison between ‘enum cublasStatus_t’ and ‘enum cudaError’ [-Wenum-compare]
+   ALERT(stat, "correct - K(k)=temp4_transposed");
+                           ^
+/home/laborml/Projects/Flugbahnberechnung/software/Linux/libCuda_v2/cudaKalman.cu:596:27: warning: comparison between ‘enum cublasStatus_t’ and ‘enum cudaError’ [-Wenum-compare]
+   ALERT(stat, "correct - temp8 = H * x'(k)");
+                           ^
+/home/laborml/Projects/Flugbahnberechnung/software/Linux/libCuda_v2/cudaKalman.cu:604:27: warning: comparison between ‘enum cublasStatus_t’ and ‘enum cudaError’ [-Wenum-compare]
+   ALERT(stat, "correct - temp9 = K(k)* temp5");
+                           ^
+/home/laborml/Projects/Flugbahnberechnung/software/Linux/libCuda_v2/cudaKalman.cu:609:27: warning: comparison between ‘enum cublasStatus_t’ and ‘enum cudaError’ [-Wenum-compare]
+   ALERT(stat, "correct - x(k) = x'(k) + temp9");
+                           ^
+/home/laborml/Projects/Flugbahnberechnung/software/Linux/libCuda_v2/cudaKalman.cu:614:27: warning: comparison between ‘enum cublasStatus_t’ and ‘enum cudaError’ [-Wenum-compare]
+   ALERT(stat, "correct - temp10 = K(k)* temp2");
+                           ^
+/home/laborml/Projects/Flugbahnberechnung/software/Linux/libCuda_v2/cudaKalman.cu: In member function ‘int cudaKalman::C_cudaKalman::d_predict()’:
+/home/laborml/Projects/Flugbahnberechnung/software/Linux/libCuda_v2/cudaKalman.cu:630:27: warning: comparison between ‘enum cublasStatus_t’ and ‘enum cudaError’ [-Wenum-compare]
+   ALERT(stat, "update - x'(k) = A*x(k)");
+                           ^
+/home/laborml/Projects/Flugbahnberechnung/software/Linux/libCuda_v2/cudaKalman.cu:650:27: warning: comparison between ‘enum cublasStatus_t’ and ‘enum cudaError’ [-Wenum-compare]
+   ALERT(stat, "update - temp1 = A*P(k)");
+                           ^
+/home/laborml/Projects/Flugbahnberechnung/software/Linux/libCuda_v2/cudaKalman.cu:655:27: warning: comparison between ‘enum cublasStatus_t’ and ‘enum cudaError’ [-Wenum-compare]
+   ALERT(stat, "update - A_temp = temp1*At");
+                           ^
+/home/laborml/Projects/Flugbahnberechnung/software/Linux/libCuda_v2/cudaKalman.cu:659:27: warning: comparison between ‘enum cublasStatus_t’ and ‘enum cudaError’ [-Wenum-compare]
+   ALERT(stat, "update - P'(k) = A_temp + Q");
+                           ^
+/home/laborml/Projects/Flugbahnberechnung/software/Linux/libCuda_v2/cudaKalman.cu:664:27: warning: comparison between ‘enum cublasStatus_t’ and ‘enum cudaError’ [-Wenum-compare]
+   ALERT(stat, "update - cublasScopy_v2 statePre");
+                           ^
+/home/laborml/Projects/Flugbahnberechnung/software/Linux/libCuda_v2/cudaKalman.cu:667:27: warning: comparison between ‘enum cublasStatus_t’ and ‘enum cudaError’ [-Wenum-compare]
+   ALERT(stat, "update - cublasScopy_v2 errorCovPre");
+                           ^
+[ 66%] Linking CUDA device code CMakeFiles/libCuda_v2.dir/cmake_device_link.o
+nvlink error   : Undefined reference to 'cublasCreate_v2' in 'CMakeFiles/libCuda_v2.dir/cudaKalman.cu.o'
+nvlink error   : Undefined reference to 'cublasSgetrfBatched' in 'CMakeFiles/libCuda_v2.dir/cudaKalman.cu.o'
+nvlink error   : Undefined reference to 'cublasSgetriBatched' in 'CMakeFiles/libCuda_v2.dir/cudaKalman.cu.o'
+nvlink error   : Undefined reference to 'cublasDestroy_v2' in 'CMakeFiles/libCuda_v2.dir/cudaKalman.cu.o'
+CMakeFiles/libCuda_v2.dir/build.make:102: recipe for target 'CMakeFiles/libCuda_v2.dir/cmake_device_link.o' failed
+make[2]: *** [CMakeFiles/libCuda_v2.dir/cmake_device_link.o] Error 255
+CMakeFiles/Makefile2:94: recipe for target 'CMakeFiles/libCuda_v2.dir/all' failed
+make[1]: *** [CMakeFiles/libCuda_v2.dir/all] Error 2
+Makefile:102: recipe for target 'all' failed
+make: *** [all] Error 2
+

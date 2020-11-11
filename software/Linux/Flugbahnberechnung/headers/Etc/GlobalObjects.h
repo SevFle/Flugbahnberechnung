@@ -22,7 +22,7 @@ namespace GlobalObjects
     posen::S_Positionsvektor*     predPosition;
     double                        predVelocity[3];
     double                        dt;
-    float                         gain[][];
+    float                         gain[][5];
     };
   class C_GlobalObjects
     {

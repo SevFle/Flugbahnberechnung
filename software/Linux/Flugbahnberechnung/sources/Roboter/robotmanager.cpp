@@ -335,18 +335,18 @@ void C_robotManager::sm_BallTracking()
 
       //Versuche aktuelle Objektdaten aus der Que zu holen. Falls nicht erfolgreich, bleibe im aktuellen Schritt
       case 9:
-        if(this->globalObjects->objectPosenQue->try_pop(this->objectPayload))
-          {
-          float gainMean = this->math->calcMedian(objectPayload->gain);
-          if(gainMean < 0,2)
-            this->smBallTrackingStep = 10;
-          else
-            this->smBallTrackingStep = 9;
-          }
-        else
-          {
-          this->smBallTrackingStep = 9;
-          }
+//        if(this->globalObjects->objectPosenQue->try_pop(this->objectPayload))
+//          {
+//          //float gainMean = this->math->calcMedian(objectPayload->gain);
+//          //if(gainMean < 0,2)
+//            this->smBallTrackingStep = 10;
+//          else
+//            this->smBallTrackingStep = 9;
+//          }
+//        else
+//          {
+//          this->smBallTrackingStep = 9;
+//          }
         break;
 
       case 10:

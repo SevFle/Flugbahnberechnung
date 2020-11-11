@@ -151,11 +151,10 @@ FORMS += \
 
 
 ################################################## OPENCV INCLUDE ##############################################
+unix:!macx: LIBS += -L$$PWD/../../../../../../../usr/local/lib/ -lopencv_world
 
-unix:!macx: LIBS += -L$$PWD/../../../../../libs/opencv420/lib/ -lopencv_world
-
-INCLUDEPATH += $$PWD/../../../../../libs/opencv420/include
-DEPENDPATH += $$PWD/../../../../../libs/opencv420/include
+INCLUDEPATH += $$PWD/../../../../../../../usr/local/include/opencv4
+DEPENDPATH += $$PWD/../../../../../../../usr/local/include/opencv4
 
 ################################################## GSTREAMER INCLUDE ###########################################
 
@@ -179,12 +178,12 @@ DEPENDPATH += $$PWD/../libCuda/include
 
 unix:!macx: PRE_TARGETDEPS += $$PWD/../libCuda/lib/libgpu.a
 
-unix:!macx: LIBS += -L$$PWD/../../../../../../../usr/local/cuda-10.1/lib64/ -lcudart -lcudadevrt -lcuda
+unix:!macx: LIBS += -L$$PWD/../../../../../../../usr/local/cuda/lib64/ -lcudart -lcudadevrt -lcuda
 
-INCLUDEPATH += $$PWD/../../../../../../../usr/local/cuda-10.1/include
+INCLUDEPATH += $$PWD/../../../../../../../usr/local/cuda/include
 INCLUDEPATH += $$PWD/../../../../../../../usr/local/include/eigen3
 
-DEPENDPATH += $$PWD/../../../../../../../usr/local/cuda-10.1/include
+DEPENDPATH += $$PWD/../../../../../../../usr/local/cuda/include
 
 unix:!macx: LIBS += -L$$PWD/../../../../../../../usr/local/lib/ -lfranka
 
@@ -198,9 +197,4 @@ DEPENDPATH += $$PWD/../../../../../../../usr/local/include
 
 
 
-unix:!macx: LIBS += -L$$PWD/../libCuda_v2/ -lCuda_v2
 
-INCLUDEPATH += $$PWD/../libCuda_v2
-DEPENDPATH += $$PWD/../libCuda_v2
-
-unix:!macx: PRE_TARGETDEPS += $$PWD/../libCuda_v2/libCuda_v2.a

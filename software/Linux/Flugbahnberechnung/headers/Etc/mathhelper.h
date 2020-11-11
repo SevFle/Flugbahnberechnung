@@ -8,7 +8,7 @@ public:
   C_mathHelper();
 
 
-  float calcMedian(float Matrix[m][n]);
+  float calcMedian(float Matrix[][4]);
   };
 
 #endif // C_MATHHELPER_H
