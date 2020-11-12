@@ -4,6 +4,9 @@
 #include "opencv2/opencv.hpp"
 #include "opencv2/core/cuda.hpp"
 #include "opencv2/highgui.hpp"
+
+#include "opencv2/opencv_modules.hpp"
+#include <opencv2/cudawarping.hpp>
 #include "libCuda.h"
 
 #include "camera2.h"

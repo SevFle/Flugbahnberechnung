@@ -1,6 +1,8 @@
 #ifndef __Camera_Manager_H
 #define __Camera_Manager_H
 
+#define printmatrix(string, matrix) std::cout << string << ": " << std::endl << matrix << std::endl;
+
 
 
 /************************************************************ Includes *******************************************************************/

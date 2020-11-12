@@ -52,7 +52,7 @@ SOURCES += \
   sources/Bildverarbeitung/camera_manager.cpp \
   sources/Positionsbestimmung/trackingManager.cpp \
   sources/Positionsbestimmung/Kalmanfilter.cpp \
-  sources/Positionsbestimmung/kalmanoncuda.cpp \
+  #sources/Positionsbestimmung/kalmanoncuda.cpp \
   sources/Forms/frm_camera_calibration.cpp \
   sources/Forms/frm_camera_positioning.cpp \
   sources/Forms/frm_camera_positioning_pose.cpp \
@@ -79,7 +79,7 @@ headers/Bildverarbeitung/imagefilter.h \
 headers/Bildverarbeitung/camera_manager.h \
 headers/Positionsbestimmung/trackingManager.h \
 headers/Positionsbestimmung/Kalmanfilter.h \
-headers/Positionsbestimmung/kalmanoncuda.h \
+#headers/Positionsbestimmung/kalmanoncuda.h \
 headers/Forms/frm_camera_calibration.h \
 headers/Forms/frm_camera_positioning.h \
 headers/Forms/frm_camera_positioning_pose.h \
@@ -194,7 +194,4 @@ DEPENDPATH += $$PWD/../../../../../../../usr/local/include
 
 #DISTFILES += \
 #    sources/Cuda/cudaKalman.cu
-
-
-
 
