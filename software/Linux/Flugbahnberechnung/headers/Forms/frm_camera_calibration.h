@@ -68,7 +68,9 @@ private slots:
   void on_rb_single_calibration_clicked ();
   void on_rb_stereo_calibration_clicked ();
   void on_bt_photo_clicked              ();
-  void ShowTable                        ();
+  void lockUI();
+  void unlockUI();
+  void switchUI();
 
   void on_num_TimerIntervall_valueChanged(int arg1);
   void on_bt_pose_estimation_clicked();

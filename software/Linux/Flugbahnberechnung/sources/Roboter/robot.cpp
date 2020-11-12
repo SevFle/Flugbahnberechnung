@@ -2054,6 +2054,289 @@ CartesianVelocities          C_Robot_Panda::CartesianVel_Callback_Function_Objec
   RobotToTCP_Pos.Y = this->RobotToControlFrame_Pos.Y + ControlFrameToTCP_Pos.Y;
   RobotToTCP_Pos.Z = this->RobotToControlFrame_Pos.Z + ControlFrameToTCP_Pos.Z;
 
+
+
+
+  // Bestimmung der Sollpose und Sollorientierung
+  CartesianPose      Soll_Pose = {{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0}};
+  Quaternion<double> Soll_Orientierung;
+  Soll_Pose.O_T_EE[0]  = Vector_n.X;
+  Soll_Pose.O_T_EE[1]  = Vector_n.Y;
+  Soll_Pose.O_T_EE[2]  = Vector_n.Z;
+  Soll_Pose.O_T_EE[4]  = Vector_o.X;
+  Soll_Pose.O_T_EE[5]  = Vector_o.Y;
+  Soll_Pose.O_T_EE[6]  = Vector_o.Z;
+  Soll_Pose.O_T_EE[8]  = Vector_a.X;
+  Soll_Pose.O_T_EE[9]  = Vector_a.Y;
+  Soll_Pose.O_T_EE[10] = Vector_a.Z;
+  Soll_Pose.O_T_EE[12] = RobotToTCP_Pos.X;
+  Soll_Pose.O_T_EE[13] = RobotToTCP_Pos.Y;
+  Soll_Pose.O_T_EE[14] = RobotToTCP_Pos.Z;
+  this->FrankaOrientationToQuaternion(Soll_Pose, Soll_Orientierung);
+
+  /****************************************************************************************/
+  /* Bestimmung der Parameter für translatorische Positionsregelung                       */
+  /****************************************************************************************/
+  double Ist_X                    = Ist_Pose.O_T_EE   [12];
+  double Ist_Y                    = Ist_Pose.O_T_EE   [13];
+  double Ist_Z                    = Ist_Pose.O_T_EE   [14];
+  double Soll_X                   = Soll_Pose.O_T_EE  [12];
+  double Soll_Y                   = Soll_Pose.O_T_EE  [13];
+  double Soll_Z                   = Soll_Pose.O_T_EE  [14];
+  double Regelabweichung_Pos_X    = Soll_X - Ist_X; // Regelabweichung durch Differentbildung von Positionen
+  double Regelabweichung_Pos_Y    = Soll_Y - Ist_Y; // Regelabweichung durch Differentbildung von Positionen
+  double Regelabweichung_Pos_Z    = Soll_Z - Ist_Z; // Regelabweichung durch Differentbildung von Positionen
+
+  /****************************************************************************************/
+  /* Bestimmung der Parameter für rotatorische Orientierungsregelung                      */
+  /****************************************************************************************/
+  double             Delta_Winkel;
+  Quaternion<double> Delta_Orientierung;
+  double             Rotation_Axis_TCPFrame   [3];
+  double             Rotation_Axis_RobotFrame [3];
+  Delta_Orientierung               = Ist_Orientierung.inverse() * Soll_Orientierung;
+  this->Get_RotationAngle            (Delta_Orientierung, Delta_Winkel);
+  this->Get_UnitRotationAxis         (Delta_Orientierung, Rotation_Axis_TCPFrame);
+  Rotation_Axis_RobotFrame[0]      = Ist_Pose.O_T_EE[0]  * Rotation_Axis_TCPFrame[0] +
+                                     Ist_Pose.O_T_EE[4]  * Rotation_Axis_TCPFrame[1] +
+                                     Ist_Pose.O_T_EE[8]  * Rotation_Axis_TCPFrame[2];
+  Rotation_Axis_RobotFrame[1]      = Ist_Pose.O_T_EE[1]  * Rotation_Axis_TCPFrame[0] +
+                                     Ist_Pose.O_T_EE[5]  * Rotation_Axis_TCPFrame[1] +
+                                     Ist_Pose.O_T_EE[9]  * Rotation_Axis_TCPFrame[2];
+  Rotation_Axis_RobotFrame[2]      = Ist_Pose.O_T_EE[2]  * Rotation_Axis_TCPFrame[0] +
+                                     Ist_Pose.O_T_EE[6]  * Rotation_Axis_TCPFrame[1] +
+                                     Ist_Pose.O_T_EE[10] * Rotation_Axis_TCPFrame[2];
+
+  double Regelabweichung_Orient_RX = Rotation_Axis_RobotFrame[0] * Delta_Winkel; // Regelabweichung durch Division von Orientierungs-Quaternionen
+  double Regelabweichung_Orient_RY = Rotation_Axis_RobotFrame[1] * Delta_Winkel; // Regelabweichung durch Division von Orientierungs-Quaternionen
+  double Regelabweichung_Orient_RZ = Rotation_Axis_RobotFrame[2] * Delta_Winkel; // Regelabweichung durch Division von Orientierungs-Quaternionen
+
+  /****************************************************************************************/
+  /* Bestimmung der Stellwerte der Positonsregelung                                       */
+  /****************************************************************************************/
+  this->PID_Regler_X_OT->PID_Regler    (Regelabweichung_Pos_X,     Stellwert_Pos_VX);
+  this->PID_Regler_Y_OT->PID_Regler    (Regelabweichung_Pos_Y,     Stellwert_Pos_VY);
+  this->PID_Regler_Z_OT->PID_Regler    (Regelabweichung_Pos_Z,     Stellwert_Pos_VZ);
+  this->PID_Regler_RX_OT->PID_Regler   (Regelabweichung_Orient_RX, Stellwert_Orient_VRX);
+  this->PID_Regler_RY_OT->PID_Regler   (Regelabweichung_Orient_RY, Stellwert_Orient_VRY);
+  this->PID_Regler_RZ_OT->PID_Regler   (Regelabweichung_Orient_RZ, Stellwert_Orient_VRZ);
+
+
+  /****************************************************************************************/
+  /* Bestimmung des Geschwindigkeitsvektors und Festlegung von maximalen Geschwindig-     */
+  /* keitswerten bzw. Stellwerten. Die maximalen resultierenden Geschwindigkeitswerte     */
+  /* sind laut offizieller Doku für kartesische Bewegung:                                 */
+  /* Translation = 1.7   [m/s]                                                            */
+  /* Rotation    = 2.5   [rad/s]                                                          */
+  /* Ellbogen    = 2.175 [rad/s]                                                          */
+  /* Für den Anwendungsfall werden die Maximalwerte wie folgt festgelegt:                 */
+  /* Translation = 1.2   [m/s]                                                            */
+  /* Rotation    = 2.0   [rad/s]                                                          */
+  /* Ellbogen    = nicht berücksichtigt                                                   */
+  /****************************************************************************************/
+  double Stellwert_Pos_max    = 1.2;
+  double Stellwert_Orient_max = 2.0;
+  double Stellwert_Pos_Abs    = sqrt(Stellwert_Pos_VX     * Stellwert_Pos_VX     + Stellwert_Pos_VY     * Stellwert_Pos_VY     + Stellwert_Pos_VZ     * Stellwert_Pos_VZ);
+  double Stellwert_Orient_Abs = sqrt(Stellwert_Orient_VRX * Stellwert_Orient_VRX + Stellwert_Orient_VRY * Stellwert_Orient_VRY + Stellwert_Orient_VRZ * Stellwert_Orient_VRZ);
+
+  if (Stellwert_Pos_Abs > Stellwert_Pos_max)
+    {
+    Stellwert_Pos_VX     *= Stellwert_Pos_max    / Stellwert_Pos_Abs;
+    Stellwert_Pos_VY     *= Stellwert_Pos_max    / Stellwert_Pos_Abs;
+    Stellwert_Pos_VZ     *= Stellwert_Pos_max    / Stellwert_Pos_Abs;
+    }
+  if (Stellwert_Orient_Abs > Stellwert_Orient_max)
+    {
+    Stellwert_Orient_VRX *= Stellwert_Orient_max / Stellwert_Orient_Abs;
+    Stellwert_Orient_VRY *= Stellwert_Orient_max / Stellwert_Orient_Abs;
+    Stellwert_Orient_VRZ *= Stellwert_Orient_max / Stellwert_Orient_Abs;
+    }
+
+  if (!Error)
+    {
+    TCP_Velocity = {{Stellwert_Pos_VX, Stellwert_Pos_VY, Stellwert_Pos_VZ, Stellwert_Orient_VRX, Stellwert_Orient_VRY, Stellwert_Orient_VRZ}};
+    }
+  else
+    {
+    TCP_Velocity = {{0.0, 0.0, 0.0, 0.0, 0.0, 0.0,}};
+    }
+
+  if (!this->Stop_ObjectTracking)
+    {
+    return (TCP_Velocity);
+    }
+  else
+    {
+    return (MotionFinished(TCP_Velocity));
+    }
+  }
+CartesianVelocities          C_Robot_Panda::CartesianVel_Callback_Function_ReadyTarget                   (double&                time,              const RobotState&    Robot_State,            Duration&           Duration)
+  {
+  *this->Panda_RobotState = Robot_State;
+  time += Duration.toSec();
+
+  // Startpose, Startquaternion und Abstand zwischen TCP / Kamera und Regel-KS  bei t = 0.0 initialisieren.
+  if (time == 0.0)
+    {
+    this->PID_Regler_X_OT->Reset_PID_Regler  ();
+    this->PID_Regler_Y_OT->Reset_PID_Regler  ();
+    this->PID_Regler_Z_OT->Reset_PID_Regler  ();
+    this->PID_Regler_X_OT->Reset_PID_Regler  ();
+    this->PID_Regler_Y_OT->Reset_PID_Regler  ();
+    this->PID_Regler_Z_OT->Reset_PID_Regler  ();
+
+    CartesianVelocities TCP_Velocity = {{0.0, 0.0, 0.0, 0.0, 0.0, 0.0}};
+
+    return (TCP_Velocity);
+    }
+
+  /****************************************************************************************/
+  /* Vorinitialisierung des TCP-Geschwindigkeitsvektors und der Stellwerte                */
+  /****************************************************************************************/
+  CartesianVelocities TCP_Velocity = {{0.0, 0.0, 0.0, 0.0, 0.0, 0.0}};
+  double Stellwert_Pos_VX          = 0.0;
+  double Stellwert_Pos_VY          = 0.0;
+  double Stellwert_Pos_VZ          = 0.0;
+  double Stellwert_Orient_VRX      = 0.0;
+  double Stellwert_Orient_VRY      = 0.0;
+  double Stellwert_Orient_VRZ      = 0.0;
+
+  /****************************************************************************************/
+  /* Bewegung des Roboters Anhand von Fallunterscheidung festlegen:                       */
+  /* Fall 1 - E_ObjectTracking::Object_Not_Found: Die Kamera des Roboters hat das Objekt  */
+  /*                                              nicht erfasst. Der Roboter richtet sich */
+  /*                                              nach der ihm letzten bekannten Objekt-  */
+  /*                                              position aus.                           */
+  /* Fall 2 - E_ObjectTracking::Mono_Object:    : Nur die Kamera des eigenen Roboters hat */
+  /*                                              das Objekt erkannt. Der Roboter ver-    */
+  /*                                              folgt das Objekt nur in xy-Ebene und    */
+  /*                                              kennt keine Tiefeninformation des Ob-   */
+  /*                                              jektes. Der Abstand zwischen Regel-KS   */
+  /*                                              und TCP / Kamera bleibt identisch.      */
+  /* Fall 3 - E_ObjectTracking::Stereo_Object:  : Beide Roboter-Kameras haben das Objekt  */
+  /*                                              erfasst. Tiefeninformationen liegen vor */
+  /*                                              und beide Roboter können dem Objekt in  */
+  /*                                              xyz-Ebene folgen.                       */
+  /****************************************************************************************/
+
+  // Vorinitialisierung
+  S_Positionsvektor ControlFrameToObject_Pos;
+  bool              Error                     = false;
+
+  // Bestimmung der Ist-Pose und des Ist-Quaternion bezogen auf das Roboter-KS
+  CartesianPose Ist_Pose (Robot_State.O_T_EE);
+  Quaternion<double> Ist_Orientierung;
+  this->FrankaOrientationToQuaternion(Ist_Pose, Ist_Orientierung);
+
+  if (this->enum_ObjectTracking == E_ObjectTracking::Mono_Object)
+    {
+    // Transformation des Lichtstrahlvektors im Kamera-KS auf das Regel-KS [Px]
+    S_Positionsvektor CamToObject_Pos_CF;
+    CamToObject_Pos_CF.X = Ist_Pose.O_T_EE[0]  * this->Lichtstrahl_Einheitsvektor.X +
+                           Ist_Pose.O_T_EE[4]  * this->Lichtstrahl_Einheitsvektor.Y +
+                           Ist_Pose.O_T_EE[8]  * this->Lichtstrahl_Einheitsvektor.Z;
+    CamToObject_Pos_CF.Y = Ist_Pose.O_T_EE[1]  * this->Lichtstrahl_Einheitsvektor.X +
+                           Ist_Pose.O_T_EE[5]  * this->Lichtstrahl_Einheitsvektor.Y +
+                           Ist_Pose.O_T_EE[9]  * this->Lichtstrahl_Einheitsvektor.Z;
+    CamToObject_Pos_CF.Z = Ist_Pose.O_T_EE[2]  * this->Lichtstrahl_Einheitsvektor.X +
+                           Ist_Pose.O_T_EE[6]  * this->Lichtstrahl_Einheitsvektor.Y +
+                           Ist_Pose.O_T_EE[10] * this->Lichtstrahl_Einheitsvektor.Z;
+
+    // Berechne der geschätzten Ballposition
+    double CamToObject_Pos_Abs = this->ControlFrameToObject_Pos_Abs - this->ControlFrameToTCP_Pos_Abs;
+    ControlFrameToObject_Pos.X = this->ControlFrameToTCP_Pos.X + CamToObject_Pos_CF.X * CamToObject_Pos_Abs;
+    ControlFrameToObject_Pos.Y = this->ControlFrameToTCP_Pos.Y + CamToObject_Pos_CF.Y * CamToObject_Pos_Abs;
+    ControlFrameToObject_Pos.Z = this->ControlFrameToTCP_Pos.Z + CamToObject_Pos_CF.Z * CamToObject_Pos_Abs;
+    }
+  else if ((this->enum_ObjectTracking == E_ObjectTracking::Object_Not_Found) || (this->enum_ObjectTracking == E_ObjectTracking::Stereo_Object))
+    {
+    /****************************************************************************************/
+    /* Bestimmung der Soll-Pose des TCP / Kamera bezogen auf das Roboter-KS                 */
+    /* Das Welt-KS, Roboter-Basis-KS und Regel-KS (Kugel-KS) haben identische Orientierung! */
+    /****************************************************************************************/
+    // Objektposition bezogen auf das Roboter-KS bestimmen
+    S_Positionsvektor RobotToObject_Vector;
+    RobotToObject_Vector.X = this->WorldToObject_Pos.X - this->Abs_WorldToRobot_Pose.px();
+    RobotToObject_Vector.Y = this->WorldToObject_Pos.Y - this->Abs_WorldToRobot_Pose.py();
+    RobotToObject_Vector.Z = this->WorldToObject_Pos.Z - this->Abs_WorldToRobot_Pose.pz();
+
+    // Objektposition bezogen auf das Regel-KS bestimmen
+    ControlFrameToObject_Pos.X = RobotToObject_Vector.X - this->RobotToControlFrame_Pos.X;
+    ControlFrameToObject_Pos.Y = RobotToObject_Vector.Y - this->RobotToControlFrame_Pos.Y;
+    ControlFrameToObject_Pos.Z = RobotToObject_Vector.Z - this->RobotToControlFrame_Pos.Z;
+    }
+  else
+    {
+    // Hier werden im Fehlerfall Dummywerte gesetzt, um Abstürze bei weiterer Berechnung (Division durch 0) zu vermeiden.
+    // Die Error-Abfrage erfolgt nochmals bei setzten der kartesischen Geschwindigkeiten am Ende der Funktion.
+    Error                    = true;
+    ControlFrameToObject_Pos = {1.0, 1.0, 1.0, 0.0};
+    }
+
+  // Bestimmung des Annäherungsvektors des TCP / Kamera bezogen auf das Regel-KS
+  this->ControlFrameToObject_Pos_Abs  = sqrt(ControlFrameToObject_Pos.X * ControlFrameToObject_Pos.X +
+                                             ControlFrameToObject_Pos.Y * ControlFrameToObject_Pos.Y +
+                                             ControlFrameToObject_Pos.Z * ControlFrameToObject_Pos.Z);
+  S_Positionsvektor Vector_a;
+  Vector_a.X                          = ControlFrameToObject_Pos.X / this->ControlFrameToObject_Pos_Abs;
+  Vector_a.Y                          = ControlFrameToObject_Pos.Y / this->ControlFrameToObject_Pos_Abs;
+  Vector_a.Z                          = ControlFrameToObject_Pos.Z / this->ControlFrameToObject_Pos_Abs;
+
+  // Bestimmung des Normalenvektor des TCP / Kamera bezogen auf das Regel-KS (Vektor n immer parallel zur xy-Ebene des Regel-Basis-KS)
+  double            Vector_n_Abs;        // (Betrag des Vektor-Kreuzproduktes |a x e|)
+  S_Positionsvektor Vector_ez;           // Pseudovektor (nur z-Richtung)
+  S_Positionsvektor Vector_n;            // n = (a x ez) / (|a x ez|)
+  Vector_ez.X  = 0.0;
+  Vector_ez.Y  = 0.0;
+  Vector_ez.Z  = 1.0;
+  Vector_n     = this->Calc_Vector_Produkt(Vector_a, Vector_ez);
+  Vector_n_Abs = this->Calc_Vector_Betrag(Vector_n);
+  Vector_n.X  /= Vector_n_Abs;
+  Vector_n.Y  /= Vector_n_Abs;
+  Vector_n.Z  /= Vector_n_Abs;
+
+  // Bestimmung des Orientierungsvektors des TCP / Kamera bezogen auf das Regel-KS
+  S_Positionsvektor Vector_o; // o = a x n
+  double            Vector_o_Abs;
+  Vector_o     = this->Calc_Vector_Produkt(Vector_a, Vector_n);
+  Vector_o_Abs = this->Calc_Vector_Betrag(Vector_o);
+  Vector_o.X  /= Vector_o_Abs;
+  Vector_o.Y  /= Vector_o_Abs;
+  Vector_o.Z  /= Vector_o_Abs;
+
+  // Bestimmung der TCP- / Kameraposition bezogen auf das Regel-KS
+  double Positionsfaktor  = 1.0 / 2.0; // Beliebiger Wert
+  this->ControlFrameToTCP_Pos.X = ControlFrameToObject_Pos.X * Positionsfaktor;
+  this->ControlFrameToTCP_Pos.Y = ControlFrameToObject_Pos.Y * Positionsfaktor;
+  this->ControlFrameToTCP_Pos.Z = ControlFrameToObject_Pos.Z * Positionsfaktor;
+
+  // Einschränkung der TCP- / Kameraposition bezogen auf das Regel-KS durch festgelegte Grenze /
+  // Kugel um das Regel-KS herum. Die TCP- / Kameraposition soll sich immer innerhalb
+  // des Kugelschale befinden.
+  double Innenradius               = 0.1;
+  double Aussenradius              = 0.75;
+  this->ControlFrameToTCP_Pos_Abs  = sqrt(this->ControlFrameToTCP_Pos.X * this->ControlFrameToTCP_Pos.X +
+                                          this->ControlFrameToTCP_Pos.Y * this->ControlFrameToTCP_Pos.Y +
+                                          this->ControlFrameToTCP_Pos.Z * this->ControlFrameToTCP_Pos.Z);
+  if (this->ControlFrameToTCP_Pos_Abs < Innenradius)
+    {
+    this->ControlFrameToTCP_Pos.X *= Innenradius  / this->ControlFrameToTCP_Pos_Abs;
+    this->ControlFrameToTCP_Pos.Y *= Innenradius  / this->ControlFrameToTCP_Pos_Abs;
+    this->ControlFrameToTCP_Pos.Z *= Innenradius  / this->ControlFrameToTCP_Pos_Abs;
+    }
+  else if (this->ControlFrameToTCP_Pos_Abs > Aussenradius)
+    {
+    this->ControlFrameToTCP_Pos.X *= Aussenradius / this->ControlFrameToTCP_Pos_Abs;
+    this->ControlFrameToTCP_Pos.Y *= Aussenradius / this->ControlFrameToTCP_Pos_Abs;
+    this->ControlFrameToTCP_Pos.Z *= Aussenradius / this->ControlFrameToTCP_Pos_Abs;
+    }
+
+  // Bestimmung der TCP- / Kameraposition bezogen auf das Roboter-KS
+  S_Positionsvektor RobotToTCP_Pos;
+  RobotToTCP_Pos.X = this->RobotToControlFrame_Pos.X + ControlFrameToTCP_Pos.X;
+  RobotToTCP_Pos.Y = this->RobotToControlFrame_Pos.Y + ControlFrameToTCP_Pos.Y;
+  RobotToTCP_Pos.Z = this->RobotToControlFrame_Pos.Z + ControlFrameToTCP_Pos.Z;
+
   // Bestimmung der Sollpose und Sollorientierung
   CartesianPose      Soll_Pose = {{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0}};
   Quaternion<double> Soll_Orientierung;
@@ -3375,6 +3658,11 @@ void                         C_Robot_Panda::Panda_Processor_ObjectTracking      
     //Franka_Exception = "Empty";
     }
   }
+void                         C_Robot_Panda::Panda_Processor_ReadyTarget                                   (void)
+{
+
+}
+
 void                         C_Robot_Panda::Get_TCP_Frame                                                (double                 (&TCP_Frame)[4][4])
   {
   *this->Panda_RobotState = this->Panda_Robot->readOnce();

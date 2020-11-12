@@ -9,16 +9,6 @@ using namespace GlobalObjects;
 
 namespace robotManager
   {
-  struct robotConstraints
-    {
-    double X  =  0.60;
-    double nX = -0.30;
-    double Y  =  0.60;
-    double nY = -0.60;
-    double Z  =  0.80;
-    double nZ = -0.20;
-
-    };
 
   class C_robotManager
     {
@@ -30,8 +20,8 @@ namespace robotManager
     C_GlobalObjects*                    globalObjects;
     std::thread*                        robotThread;
     GlobalObjects::S_PositionPayload*   objectPayload;
-    robotManager::robotConstraints*     outerConstraints;
-    robotManager::robotConstraints*     innerConstraints;
+    GlobalObjects::robotConstraints*    outerConstraints;
+    GlobalObjects::robotConstraints*    innerConstraints;
 
     C_AbsolutePose*                     Pose_waiting;
     C_AbsolutePose*                     Pose_inter_waiting;

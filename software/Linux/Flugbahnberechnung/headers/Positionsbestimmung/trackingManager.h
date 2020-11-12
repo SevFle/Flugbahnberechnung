@@ -60,8 +60,9 @@ namespace trackingManager
     double                              objectVelocity [3];
     double                              objectAcceleration [3];
     double                              dTime;
+    double                              gainthreshold;
 
-    milliseconds*                        dTimestamp;
+    milliseconds*                       dTimestamp;
     Clock*                              timer;
     Clock::time_point*                  timestamp_ms;
     Clock::time_point*                  timestamp_ms_old;
@@ -87,6 +88,7 @@ namespace trackingManager
 
     void predictPixelMovement                         (int& predX, int& predY, int pixelVelocityX, int pixelVelocityY, int ist_X, int ist_Y);
     void predictKalman                                ();
+    S_Posenvektor iteratekf                           (posen::S_Positionsvektor& predBall_in, posen::S_Positionsvektor& predBall_out, double& timeOnTarget_in, double& timeOnTarget_out, double& timeOnTarget_mid);
     bool getAlive                                     () const;
     void setAlive                                     (bool value);
 
@@ -99,6 +101,7 @@ namespace trackingManager
     void setInitZoneAlive                             (bool value);
     void setTime                                      ();
     double getDTime() const;
+    bool inConstraint                                 (posen::S_Posenvektor b);
     };
   }
 #endif

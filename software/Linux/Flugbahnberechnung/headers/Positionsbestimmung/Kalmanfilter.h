@@ -31,6 +31,7 @@ namespace kalmanFilter
     void correct(float x, float y, float z);
     void initFirstPosition(float x, float y, float z, float vx, float vy, float vz);
     void reset();
+    cv::Scalar getGainMean();
     };
   }
 #endif

@@ -12,8 +12,8 @@ C_robotManager::C_robotManager(C_GlobalObjects* Globalobjects)
   this->threadActive        = false;
   this->smBallTrackingStep  = 0;
   this->objectPayload       = nullptr;
-  this->outerConstraints    = new robotManager::robotConstraints;
-  this->innerConstraints    = new robotManager::robotConstraints;
+  this->outerConstraints    = new GlobalObjects::robotConstraints;
+  this->innerConstraints    = new GlobalObjects::robotConstraints;
   this->objectEntry         = new posen::S_Positionsvektor;
   this->objectExit          = new posen::S_Positionsvektor;
   this->state_machine_running = new std::atomic<bool>(false);
@@ -177,7 +177,10 @@ void C_robotManager::sm_BallTracking()
   {
   C_RelativePose tcpPose;
   C_AbsolutePose WorldToRobot = this->roboter->Abs_WorldToRobot_Pose;
+  C_AbsolutePose RobotToWorld = this->roboter->Abs_RobotToWorld_Pose;
+
   C_AbsolutePose RobotToObject;
+  C_AbsolutePose estimateBall;
 
   S_Posenvektor  WorldToObject;
 
@@ -189,7 +192,7 @@ void C_robotManager::sm_BallTracking()
   C_AbsolutePose temp;
   posen::S_Positionsvektor deltaHome, deltaIntermediate, deltaReady, deltaMin;
 
-  robotManager::robotConstraints ConstraintsInWorld;
+  GlobalObjects::robotConstraints ConstraintsInWorld;
 
   double distanceObjectToRobot_X = 0.0;
   double distanceObjectToRobot_Y = 0.0;
@@ -209,6 +212,7 @@ void C_robotManager::sm_BallTracking()
 
 
   bool inRange = false;
+  bool robotHitReady = false;
   std::cout << "Robot preparing in World " << std::endl;
   while(*this->state_machine_running == true)
     {
@@ -230,6 +234,7 @@ void C_robotManager::sm_BallTracking()
         std::cout << "Robot Constraints in World nY: " << ConstraintsInWorld.nY << std::endl;
         std::cout << "Robot Constraints in World Z: " << ConstraintsInWorld.Z << std::endl;
         std::cout << "Robot Constraints in World nZ: " << ConstraintsInWorld.nZ << std::endl;
+
 
         Panda_Vel_max   = abs(1.7);
         Panda_Acc_max   = abs(4);
@@ -335,137 +340,40 @@ void C_robotManager::sm_BallTracking()
 
       //Versuche aktuelle Objektdaten aus der Que zu holen. Falls nicht erfolgreich, bleibe im aktuellen Schritt
       case 9:
-//        if(this->globalObjects->objectPosenQue->try_pop(this->objectPayload))
-//          {
-//          //float gainMean = this->math->calcMedian(objectPayload->gain);
-//          //if(gainMean < 0,2)
-//            this->smBallTrackingStep = 10;
-//          else
-//            this->smBallTrackingStep = 9;
-//          }
-//        else
-//          {
-//          this->smBallTrackingStep = 9;
-//          }
+        if(this->globalObjects->objectPosenQue->try_pop(this->objectPayload))
+          {
+          this->smBallTrackingStep = 10;
+          }
+        else
+          {
+          this->smBallTrackingStep = 9;
+          }
         break;
 
       case 10:
-      //WHERE TO PROPAGATE THROUGH THE KF PREDICTIon?
-    break;
-
-        //Berechne die aktuelle Trajektorie mit den gegebenen Objektdaten. Überprüfe ob in jedem Schritt dt ob sich X,Y,Z selbst mit Anlaufweg (15 cm in Bewegungsrichtung) innerhalb der Roboterkugel befinden
-      case 11:
-        distanceObjectToRobot_X = 0.0;
-        distanceObjectToRobot_Y = 0.0;
-        distanceObjectToRobot_Z = 0.0;
-
-        WorldToObject.X         = this->objectPayload->predPosition->X;
-        WorldToObject.Y         = this->objectPayload->predPosition->Y;
-        WorldToObject.Z         = this->objectPayload->predPosition->Z;
-
-
-        distanceObjectToRobot_X =  WorldToRobot.HomogenePosenMatrix[0][3] - WorldToObject.X;
-        distanceObjectToRobot_Y =  WorldToRobot.HomogenePosenMatrix[1][3] - WorldToObject.Y;
-        distanceObjectToRobot_Z =  WorldToRobot.HomogenePosenMatrix[2][3] - WorldToObject.Z;
-
-        v0 = std::sqrt((this->objectPayload->predVelocity[0]*this->objectPayload->predVelocity[0]) + (this->objectPayload->predVelocity[1]*this->objectPayload->predVelocity[1])
-                                                                                                   + (this->objectPayload->predVelocity[2]*this->objectPayload->predVelocity[2]));
-        height = WorldToObject.Z;
-
-        theta = std::tan(this->objectPayload->predVelocity[2]/this->objectPayload->predVelocity[0]);
-        distance = ((v0*v0)* std::sin(2*theta))/9.807;
-        //Xt = Xt-1 + Vx*t
-        //Yt = Yt-1 + Vx*t
-        //Zt = Zt-1 + Vz*t - 0.5*g*t*t
-
-        //Height z at distance x = initialheight + x*tan(launchangle) - (g*x²)/2*(v0*cos
-        timeOfFlight = (2*v0*std::sin(theta))/9.807;
-        timestep = timeOfFlight/aufloesung;
-
-        for(int i =0; i <=timeOfFlight; i = i+ timestep)
           {
-          double vx = this->objectPayload->predVelocity[0];
-          double x = WorldToObject.X + vx*i;
+          //Transformiere die erwartete Pose zurück in RobotPose und fahre sie an wenn sie im Arbeitsraum (CONSTRAINT) liegt.
+//          estimateBall.px(this->objectPayload->predPosition->X);
+//          estimateBall.py(this->objectPayload->predPosition->Y);
+//          estimateBall.py(this->objectPayload->predPosition->Z);
 
-          double vy = this->objectPayload->predVelocity[1];
-          double y = WorldToObject.Y + vy*i;
+//          waitForHitRobot_TCP = RobotToWorld.operator *(estimateBall);
+//          robotHitReady = true;
+//          if(this->objectPayload->timeOnTarget_mid <= 1.0)
+//            {
+//            this->smBallTrackingStep = 12;
+//            }
+//          else
+//           {
 
-          double vz = this->objectPayload->predVelocity[2] - 9.807*i;
-          double z = WorldToObject.Z + this->objectPayload->predVelocity[2]*i - 0.5*9.807*i*i;
-
-          //Wenn die Objekttrajektorie die äußeren Begrenzung des Roboterkäfigs erreicht, setzte diesen Punkt als Entry
-          if(x > ConstraintsInWorld.nX && x < outerConstraints->Y &&
-             y > ConstraintsInWorld.nY && y < outerConstraints->Y &&
-             z > ConstraintsInWorld.nZ && z < outerConstraints->Z && !inRange)
-            {
-            this->objectEntry->X = x;
-            this->objectEntry->X = x;
-            this->objectEntry->X = x;
-            inRange = true;
-            }
-          //Wenn die Objekttrajektorie die äußeren Begrenzung des Roboterkäfigs verlässt, setzte diesen Punkt als exit.
-          //Kalkuliere den Mittelpunkt der Geraden zwischen Entry(X,Y,Z) und Exit(X,Y,Z) und setze diesen als Wartepunkt für den Roboter
-          else if  (x < ConstraintsInWorld.nX && x > outerConstraints->Y &&
-                    y < ConstraintsInWorld.nY && y > outerConstraints->Y &&
-                    z < ConstraintsInWorld.nZ && z > outerConstraints->Z && inRange)
-            {
-            this->objectExit->X = x;
-            this->objectExit->X = x;
-            this->objectExit->X = x;
-            inRange = false;
-
-            waitForHitWorld.px((this->objectEntry->X+this->objectExit->X)/2);
-            waitForHitWorld.py((this->objectEntry->Y+this->objectExit->Y)/2);
-            waitForHitWorld.pz((this->objectEntry->Z+this->objectExit->Z)/2);
-
-            std::cout << "################## Robot preparing for hit ##############################" << ConstraintsInWorld.X << std::endl;
-            std::cout << "Waiting at X: " << waitForHitWorld.px() << std::endl;
-            std::cout << "Waiting at Y: " << waitForHitWorld.py() << std::endl;
-            std::cout << "Waiting at Z: " << waitForHitWorld.pz() << std::endl;
-
-            this->smBallTrackingStep = 12;
-            }
-           else
-            {
-            this->smBallTrackingStep = 11;
-            }
+//           }
           }
-        //vx = v0x
-        //x = x0 + v0x*t
+    break;
+      case 11:
 
-        //vy = v0y
-        //y = y0 + v0y*t
-
-        //vz = v0z - g*t
-        //z = z0+v0z*t-0.5*g*t*t
         break;
       case 12:
-        //Transformiere die WartePosition von Welt- zu Robotkoordinatensystem
-
-        waitForHitWorld.InversHomogenousPose(waitForHitWorld, waitForHitWorld_inv.HomogenePosenMatrix);
-        //temp = waitForHitWorld_inv.operator*()
-
-
-        //Überprüfe auf welcher Seite des Roboter das Objekt landen wird.
-        //Wenn Objekt vor dem Robot ist (-0.40 < Y < 0.27)
-        if(waitForHitRobot.py() > -0.40 && waitForHitRobot.py() < 0.27)
-          {
-
-          }
-
-        //Wenn Ball zwischen der linken seite vom Robot ist (Y+)
-        if(waitForHitRobot.py() >= 0.27)
-          {
-
-          }
-
-        //Wenn Ball zwischen der rechten seite vom Robot ist (Y-)
-        if(waitForHitRobot.py() <= -0.40)
-          {
-
-          }
-
-
+      //FAHRE DEM BALL ENTGEGEN,
 
         break;
 

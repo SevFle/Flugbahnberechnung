@@ -106,3 +106,9 @@ void C_kalmanFilter::initFirstPosition(float x, float y, float z, float vx, floa
 
   }
 
+cv::Scalar C_kalmanFilter::getGainMean()
+  {
+  cv::Scalar gainMean = cv::mean(this->kf->gain);
+  return gainMean;
+  }
+

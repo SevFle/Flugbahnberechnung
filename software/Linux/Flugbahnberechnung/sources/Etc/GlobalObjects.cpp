@@ -16,6 +16,8 @@ C_GlobalObjects::C_GlobalObjects ()
   this->saveManager         = new Savemanager::c_SaveManager;
   this->watchdog            = nullptr;
   this->globalLock          = new std::mutex;
+  this->constraintsInWorld  = new robotConstraints;
+  this->constraintsInRobot  = new robotConstraints;
 
   this->objectPosenQue =  new tbb::concurrent_bounded_queue<GlobalObjects::S_PositionPayload*>;
   this->objectPosenQue->set_capacity(5);
@@ -24,6 +26,9 @@ C_GlobalObjects::C_GlobalObjects ()
 C_GlobalObjects::~C_GlobalObjects ()
   {
   delete                    (objectPosenQue);
+
+  delete                    (constraintsInRobot);
+  delete                    (constraintsInWorld);
 
   delete                    (globalLock);
   this->watchdog            = nullptr;

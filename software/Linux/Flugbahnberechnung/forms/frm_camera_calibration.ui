@@ -275,6 +275,12 @@
      <property name="readOnly">
       <bool>false</bool>
      </property>
+     <property name="markdown">
+      <string/>
+     </property>
+     <property name="placeholderText">
+      <string>0</string>
+     </property>
     </widget>
     <widget class="QTextEdit" name="txb_edge_length">
      <property name="geometry">
@@ -292,6 +298,12 @@
      </property>
      <property name="readOnly">
       <bool>false</bool>
+     </property>
+     <property name="markdown">
+      <string/>
+     </property>
+     <property name="placeholderText">
+      <string>0</string>
      </property>
     </widget>
     <widget class="QTextEdit" name="txb_edge_width">
@@ -311,11 +323,17 @@
      <property name="readOnly">
       <bool>false</bool>
      </property>
+     <property name="markdown">
+      <string/>
+     </property>
+     <property name="placeholderText">
+      <string>0</string>
+     </property>
     </widget>
     <widget class="QTextEdit" name="txb_edge_height">
      <property name="geometry">
       <rect>
-       <x>130</x>
+       <x>150</x>
        <y>270</y>
        <width>104</width>
        <height>31</height>
@@ -328,6 +346,72 @@
      </property>
      <property name="readOnly">
       <bool>false</bool>
+     </property>
+     <property name="markdown">
+      <string/>
+     </property>
+     <property name="placeholderText">
+      <string>0</string>
+     </property>
+    </widget>
+    <widget class="QTextEdit" name="txb_max_image">
+     <property name="geometry">
+      <rect>
+       <x>130</x>
+       <y>130</y>
+       <width>104</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>11</pointsize>
+      </font>
+     </property>
+     <property name="readOnly">
+      <bool>false</bool>
+     </property>
+     <property name="markdown">
+      <string/>
+     </property>
+     <property name="placeholderText">
+      <string>0</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lbl_max_video_length">
+     <property name="geometry">
+      <rect>
+       <x>130</x>
+       <y>100</y>
+       <width>251</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>14</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>Max. Bilder</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_14">
+     <property name="geometry">
+      <rect>
+       <x>120</x>
+       <y>270</y>
+       <width>21</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>24</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>x</string>
      </property>
     </widget>
    </widget>
@@ -467,6 +551,9 @@
      <property name="readOnly">
       <bool>true</bool>
      </property>
+     <property name="placeholderText">
+      <string>0</string>
+     </property>
     </widget>
     <widget class="QTextEdit" name="txb_worker_2">
      <property name="geometry">
@@ -484,6 +571,9 @@
      </property>
      <property name="readOnly">
       <bool>true</bool>
+     </property>
+     <property name="placeholderText">
+      <string>0</string>
      </property>
     </widget>
     <widget class="QTextEdit" name="txb_worker_4">
@@ -503,6 +593,9 @@
      <property name="readOnly">
       <bool>true</bool>
      </property>
+     <property name="placeholderText">
+      <string>0</string>
+     </property>
     </widget>
     <widget class="QTextEdit" name="txb_worker_3">
      <property name="geometry">
@@ -520,6 +613,9 @@
      </property>
      <property name="readOnly">
       <bool>true</bool>
+     </property>
+     <property name="placeholderText">
+      <string>0</string>
      </property>
     </widget>
     <widget class="QTextEdit" name="txb_worker_5">
@@ -539,6 +635,9 @@
      <property name="readOnly">
       <bool>true</bool>
      </property>
+     <property name="placeholderText">
+      <string>0</string>
+     </property>
     </widget>
     <widget class="QTextEdit" name="txb_worker_6">
      <property name="geometry">
@@ -557,6 +656,9 @@
      <property name="readOnly">
       <bool>true</bool>
      </property>
+     <property name="placeholderText">
+      <string>0</string>
+     </property>
     </widget>
     <widget class="QTextEdit" name="txb_worker_7">
      <property name="geometry">
@@ -574,6 +676,9 @@
      </property>
      <property name="readOnly">
       <bool>true</bool>
+     </property>
+     <property name="placeholderText">
+      <string>0</string>
      </property>
     </widget>
     <widget class="QLabel" name="label_36">
@@ -719,6 +824,9 @@
      <property name="readOnly">
       <bool>true</bool>
      </property>
+     <property name="placeholderText">
+      <string>0</string>
+     </property>
     </widget>
     <widget class="QTextEdit" name="txb_fps">
      <property name="geometry">
@@ -736,6 +844,9 @@
      </property>
      <property name="readOnly">
       <bool>true</bool>
+     </property>
+     <property name="placeholderText">
+      <string>0</string>
      </property>
     </widget>
     <widget class="QLabel" name="label_33">
@@ -791,6 +902,9 @@
      <property name="readOnly">
       <bool>true</bool>
      </property>
+     <property name="placeholderText">
+      <string>0</string>
+     </property>
     </widget>
     <widget class="QLabel" name="label_43">
      <property name="geometry">
@@ -826,6 +940,9 @@
      </property>
      <property name="readOnly">
       <bool>true</bool>
+     </property>
+     <property name="placeholderText">
+      <string>0</string>
      </property>
     </widget>
     <widget class="QLabel" name="label_8">
@@ -899,6 +1016,9 @@
      <property name="readOnly">
       <bool>true</bool>
      </property>
+     <property name="placeholderText">
+      <string>0</string>
+     </property>
     </widget>
     <widget class="QTextEdit" name="txb_nx">
      <property name="geometry">
@@ -911,6 +1031,9 @@
      </property>
      <property name="readOnly">
       <bool>true</bool>
+     </property>
+     <property name="placeholderText">
+      <string>0</string>
      </property>
     </widget>
     <widget class="QTextEdit" name="txb_ox">
@@ -925,6 +1048,9 @@
      <property name="readOnly">
       <bool>true</bool>
      </property>
+     <property name="placeholderText">
+      <string>0</string>
+     </property>
     </widget>
     <widget class="QTextEdit" name="txb_ax">
      <property name="geometry">
@@ -937,6 +1063,9 @@
      </property>
      <property name="readOnly">
       <bool>true</bool>
+     </property>
+     <property name="placeholderText">
+      <string>0</string>
      </property>
     </widget>
     <widget class="QTextEdit" name="txb_ny">
@@ -951,6 +1080,9 @@
      <property name="readOnly">
       <bool>true</bool>
      </property>
+     <property name="placeholderText">
+      <string>0</string>
+     </property>
     </widget>
     <widget class="QTextEdit" name="txb_oy">
      <property name="geometry">
@@ -963,6 +1095,9 @@
      </property>
      <property name="readOnly">
       <bool>true</bool>
+     </property>
+     <property name="placeholderText">
+      <string>0</string>
      </property>
     </widget>
     <widget class="QTextEdit" name="txb_ay">
@@ -977,6 +1112,9 @@
      <property name="readOnly">
       <bool>true</bool>
      </property>
+     <property name="placeholderText">
+      <string>0</string>
+     </property>
     </widget>
     <widget class="QTextEdit" name="txb_py">
      <property name="geometry">
@@ -989,6 +1127,9 @@
      </property>
      <property name="readOnly">
       <bool>true</bool>
+     </property>
+     <property name="placeholderText">
+      <string>0</string>
      </property>
     </widget>
     <widget class="QTextEdit" name="txb_nz">
@@ -1003,6 +1144,9 @@
      <property name="readOnly">
       <bool>true</bool>
      </property>
+     <property name="placeholderText">
+      <string>0</string>
+     </property>
     </widget>
     <widget class="QTextEdit" name="txb_oz">
      <property name="geometry">
@@ -1015,6 +1159,9 @@
      </property>
      <property name="readOnly">
       <bool>true</bool>
+     </property>
+     <property name="placeholderText">
+      <string>0</string>
      </property>
     </widget>
     <widget class="QTextEdit" name="txb_az">
@@ -1029,6 +1176,9 @@
      <property name="readOnly">
       <bool>true</bool>
      </property>
+     <property name="placeholderText">
+      <string>0</string>
+     </property>
     </widget>
     <widget class="QTextEdit" name="txb_pz">
      <property name="geometry">
@@ -1041,6 +1191,9 @@
      </property>
      <property name="readOnly">
       <bool>true</bool>
+     </property>
+     <property name="placeholderText">
+      <string>0</string>
      </property>
     </widget>
    </widget>
@@ -1071,6 +1224,9 @@
      <property name="readOnly">
       <bool>true</bool>
      </property>
+     <property name="placeholderText">
+      <string>0</string>
+     </property>
     </widget>
     <widget class="QTextEdit" name="txb_nx_2">
      <property name="geometry">
@@ -1083,6 +1239,9 @@
      </property>
      <property name="readOnly">
       <bool>true</bool>
+     </property>
+     <property name="placeholderText">
+      <string>0</string>
      </property>
     </widget>
     <widget class="QTextEdit" name="txb_ox_2">
@@ -1097,6 +1256,9 @@
      <property name="readOnly">
       <bool>true</bool>
      </property>
+     <property name="placeholderText">
+      <string>0</string>
+     </property>
     </widget>
     <widget class="QTextEdit" name="txb_ax_2">
      <property name="geometry">
@@ -1109,6 +1271,9 @@
      </property>
      <property name="readOnly">
       <bool>true</bool>
+     </property>
+     <property name="placeholderText">
+      <string>0</string>
      </property>
     </widget>
     <widget class="QTextEdit" name="txb_ny_2">
@@ -1123,6 +1288,9 @@
      <property name="readOnly">
       <bool>true</bool>
      </property>
+     <property name="placeholderText">
+      <string>0</string>
+     </property>
     </widget>
     <widget class="QTextEdit" name="txb_oy_2">
      <property name="geometry">
@@ -1135,6 +1303,9 @@
      </property>
      <property name="readOnly">
       <bool>true</bool>
+     </property>
+     <property name="placeholderText">
+      <string>0</string>
      </property>
     </widget>
     <widget class="QTextEdit" name="txb_ay_2">
@@ -1149,6 +1320,9 @@
      <property name="readOnly">
       <bool>true</bool>
      </property>
+     <property name="placeholderText">
+      <string>0</string>
+     </property>
     </widget>
     <widget class="QTextEdit" name="txb_py_2">
      <property name="geometry">
@@ -1161,6 +1335,9 @@
      </property>
      <property name="readOnly">
       <bool>true</bool>
+     </property>
+     <property name="placeholderText">
+      <string>0</string>
      </property>
     </widget>
     <widget class="QTextEdit" name="txb_nz_2">
@@ -1175,6 +1352,9 @@
      <property name="readOnly">
       <bool>true</bool>
      </property>
+     <property name="placeholderText">
+      <string>0</string>
+     </property>
     </widget>
     <widget class="QTextEdit" name="txb_oz_2">
      <property name="geometry">
@@ -1187,6 +1367,9 @@
      </property>
      <property name="readOnly">
       <bool>true</bool>
+     </property>
+     <property name="placeholderText">
+      <string>0</string>
      </property>
     </widget>
     <widget class="QTextEdit" name="txb_az_2">
@@ -1201,6 +1384,9 @@
      <property name="readOnly">
       <bool>true</bool>
      </property>
+     <property name="placeholderText">
+      <string>0</string>
+     </property>
     </widget>
     <widget class="QTextEdit" name="txb_pz_2">
      <property name="geometry">
@@ -1213,6 +1399,9 @@
      </property>
      <property name="readOnly">
       <bool>true</bool>
+     </property>
+     <property name="placeholderText">
+      <string>0</string>
      </property>
     </widget>
    </widget>
@@ -1253,6 +1442,9 @@ aufnehmen</string>
        <width>91</width>
        <height>31</height>
       </rect>
+     </property>
+     <property name="placeholderText">
+      <string>0</string>
      </property>
     </widget>
     <widget class="QLabel" name="lbl_calibration_running_2">
@@ -1306,6 +1498,9 @@ aufnehmen</string>
        <height>31</height>
       </rect>
      </property>
+     <property name="placeholderText">
+      <string>0</string>
+     </property>
     </widget>
     <widget class="QTextEdit" name="txb_fx">
      <property name="geometry">
@@ -1315,6 +1510,9 @@ aufnehmen</string>
        <width>81</width>
        <height>31</height>
       </rect>
+     </property>
+     <property name="placeholderText">
+      <string>0</string>
      </property>
     </widget>
     <widget class="QLabel" name="lbl_calibration_running_4">
@@ -1347,6 +1545,9 @@ aufnehmen</string>
        <height>31</height>
       </rect>
      </property>
+     <property name="placeholderText">
+      <string>0</string>
+     </property>
     </widget>
     <widget class="QTextEdit" name="txb_cx">
      <property name="geometry">
@@ -1356,6 +1557,9 @@ aufnehmen</string>
        <width>81</width>
        <height>31</height>
       </rect>
+     </property>
+     <property name="placeholderText">
+      <string>0</string>
      </property>
     </widget>
     <widget class="QLabel" name="lbl_calibration_running_5">
@@ -1428,6 +1632,9 @@ aufnehmen</string>
      <property name="readOnly">
       <bool>true</bool>
      </property>
+     <property name="placeholderText">
+      <string>0</string>
+     </property>
     </widget>
     <widget class="QTextEdit" name="txb_nx_3">
      <property name="geometry">
@@ -1440,6 +1647,9 @@ aufnehmen</string>
      </property>
      <property name="readOnly">
       <bool>true</bool>
+     </property>
+     <property name="placeholderText">
+      <string>0</string>
      </property>
     </widget>
     <widget class="QTextEdit" name="txb_ox_3">
@@ -1454,6 +1664,9 @@ aufnehmen</string>
      <property name="readOnly">
       <bool>true</bool>
      </property>
+     <property name="placeholderText">
+      <string>0</string>
+     </property>
     </widget>
     <widget class="QTextEdit" name="txb_ax_3">
      <property name="geometry">
@@ -1466,6 +1679,9 @@ aufnehmen</string>
      </property>
      <property name="readOnly">
       <bool>true</bool>
+     </property>
+     <property name="placeholderText">
+      <string>0</string>
      </property>
     </widget>
     <widget class="QTextEdit" name="txb_ny_3">
@@ -1480,6 +1696,9 @@ aufnehmen</string>
      <property name="readOnly">
       <bool>true</bool>
      </property>
+     <property name="placeholderText">
+      <string>0</string>
+     </property>
     </widget>
     <widget class="QTextEdit" name="txb_oy_3">
      <property name="geometry">
@@ -1492,6 +1711,9 @@ aufnehmen</string>
      </property>
      <property name="readOnly">
       <bool>true</bool>
+     </property>
+     <property name="placeholderText">
+      <string>0</string>
      </property>
     </widget>
     <widget class="QTextEdit" name="txb_ay_3">
@@ -1506,6 +1728,9 @@ aufnehmen</string>
      <property name="readOnly">
       <bool>true</bool>
      </property>
+     <property name="placeholderText">
+      <string>0</string>
+     </property>
     </widget>
     <widget class="QTextEdit" name="txb_py_3">
      <property name="geometry">
@@ -1518,6 +1743,9 @@ aufnehmen</string>
      </property>
      <property name="readOnly">
       <bool>true</bool>
+     </property>
+     <property name="placeholderText">
+      <string>0</string>
      </property>
     </widget>
     <widget class="QTextEdit" name="txb_nz_3">
@@ -1532,6 +1760,9 @@ aufnehmen</string>
      <property name="readOnly">
       <bool>true</bool>
      </property>
+     <property name="placeholderText">
+      <string>0</string>
+     </property>
     </widget>
     <widget class="QTextEdit" name="txb_oz_3">
      <property name="geometry">
@@ -1544,6 +1775,9 @@ aufnehmen</string>
      </property>
      <property name="readOnly">
       <bool>true</bool>
+     </property>
+     <property name="placeholderText">
+      <string>0</string>
      </property>
     </widget>
     <widget class="QTextEdit" name="txb_az_3">
@@ -1558,6 +1792,9 @@ aufnehmen</string>
      <property name="readOnly">
       <bool>true</bool>
      </property>
+     <property name="placeholderText">
+      <string>0</string>
+     </property>
     </widget>
     <widget class="QTextEdit" name="txb_pz_3">
      <property name="geometry">
@@ -1570,6 +1807,9 @@ aufnehmen</string>
      </property>
      <property name="readOnly">
       <bool>true</bool>
+     </property>
+     <property name="placeholderText">
+      <string>0</string>
      </property>
     </widget>
    </widget>
@@ -1610,6 +1850,9 @@ aufnehmen</string>
      <property name="readOnly">
       <bool>true</bool>
      </property>
+     <property name="placeholderText">
+      <string>0</string>
+     </property>
     </widget>
     <widget class="QLabel" name="label">
      <property name="geometry">
@@ -1649,6 +1892,9 @@ aufnehmen</string>
      <property name="readOnly">
       <bool>true</bool>
      </property>
+     <property name="placeholderText">
+      <string>0</string>
+     </property>
     </widget>
     <widget class="QLabel" name="label_3">
      <property name="geometry">
@@ -1674,6 +1920,9 @@ aufnehmen</string>
      </property>
      <property name="readOnly">
       <bool>true</bool>
+     </property>
+     <property name="placeholderText">
+      <string>0</string>
      </property>
     </widget>
     <widget class="QLabel" name="label_9">
@@ -1701,6 +1950,9 @@ aufnehmen</string>
      <property name="readOnly">
       <bool>true</bool>
      </property>
+     <property name="placeholderText">
+      <string>0</string>
+     </property>
     </widget>
     <widget class="QLabel" name="label_10">
      <property name="geometry">
@@ -1727,6 +1979,9 @@ aufnehmen</string>
      <property name="readOnly">
       <bool>true</bool>
      </property>
+     <property name="placeholderText">
+      <string>0</string>
+     </property>
     </widget>
     <widget class="QLabel" name="label_11">
      <property name="geometry">
@@ -1752,6 +2007,9 @@ aufnehmen</string>
      </property>
      <property name="readOnly">
       <bool>true</bool>
+     </property>
+     <property name="placeholderText">
+      <string>0</string>
      </property>
     </widget>
    </widget>
@@ -1782,6 +2040,9 @@ aufnehmen</string>
      <property name="readOnly">
       <bool>true</bool>
      </property>
+     <property name="placeholderText">
+      <string>0</string>
+     </property>
     </widget>
     <widget class="QTextEdit" name="txb_nx_camera1_pose">
      <property name="geometry">
@@ -1794,6 +2055,9 @@ aufnehmen</string>
      </property>
      <property name="readOnly">
       <bool>true</bool>
+     </property>
+     <property name="placeholderText">
+      <string>0</string>
      </property>
     </widget>
     <widget class="QTextEdit" name="txb_ox_camera1_pose">
@@ -1808,6 +2072,9 @@ aufnehmen</string>
      <property name="readOnly">
       <bool>true</bool>
      </property>
+     <property name="placeholderText">
+      <string>0</string>
+     </property>
     </widget>
     <widget class="QTextEdit" name="txb_ax_camera1_pose">
      <property name="geometry">
@@ -1820,6 +2087,9 @@ aufnehmen</string>
      </property>
      <property name="readOnly">
       <bool>true</bool>
+     </property>
+     <property name="placeholderText">
+      <string>0</string>
      </property>
     </widget>
     <widget class="QTextEdit" name="txb_ny_camera1_pose">
@@ -1834,6 +2104,9 @@ aufnehmen</string>
      <property name="readOnly">
       <bool>true</bool>
      </property>
+     <property name="placeholderText">
+      <string>0</string>
+     </property>
     </widget>
     <widget class="QTextEdit" name="txb_oy_camera1_pose">
      <property name="geometry">
@@ -1846,6 +2119,9 @@ aufnehmen</string>
      </property>
      <property name="readOnly">
       <bool>true</bool>
+     </property>
+     <property name="placeholderText">
+      <string>0</string>
      </property>
     </widget>
     <widget class="QTextEdit" name="txb_ay_camera1_pose">
@@ -1860,6 +2136,9 @@ aufnehmen</string>
      <property name="readOnly">
       <bool>true</bool>
      </property>
+     <property name="placeholderText">
+      <string>0</string>
+     </property>
     </widget>
     <widget class="QTextEdit" name="txb_py_camera1_pose">
      <property name="geometry">
@@ -1872,6 +2151,9 @@ aufnehmen</string>
      </property>
      <property name="readOnly">
       <bool>true</bool>
+     </property>
+     <property name="placeholderText">
+      <string>0</string>
      </property>
     </widget>
     <widget class="QTextEdit" name="txb_nz_camera1_pose">
@@ -1886,6 +2168,9 @@ aufnehmen</string>
      <property name="readOnly">
       <bool>true</bool>
      </property>
+     <property name="placeholderText">
+      <string>0</string>
+     </property>
     </widget>
     <widget class="QTextEdit" name="txb_oz_camera1_pose">
      <property name="geometry">
@@ -1898,6 +2183,9 @@ aufnehmen</string>
      </property>
      <property name="readOnly">
       <bool>true</bool>
+     </property>
+     <property name="placeholderText">
+      <string>0</string>
      </property>
     </widget>
     <widget class="QTextEdit" name="txb_az_camera1_pose">
@@ -1912,6 +2200,9 @@ aufnehmen</string>
      <property name="readOnly">
       <bool>true</bool>
      </property>
+     <property name="placeholderText">
+      <string>0</string>
+     </property>
     </widget>
     <widget class="QTextEdit" name="txb_pz_camera1_pose">
      <property name="geometry">
@@ -1924,6 +2215,9 @@ aufnehmen</string>
      </property>
      <property name="readOnly">
       <bool>true</bool>
+     </property>
+     <property name="placeholderText">
+      <string>0</string>
      </property>
     </widget>
    </widget>

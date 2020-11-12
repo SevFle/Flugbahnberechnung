@@ -40,10 +40,10 @@
    <widget class="QGroupBox" name="groupBox">
     <property name="geometry">
      <rect>
-      <x>20</x>
+      <x>0</x>
       <y>0</y>
-      <width>1881</width>
-      <height>701</height>
+      <width>1351</width>
+      <height>491</height>
      </rect>
     </property>
     <property name="title">
@@ -54,8 +54,8 @@
       <rect>
        <x>10</x>
        <y>30</y>
-       <width>900</width>
-       <height>661</height>
+       <width>651</width>
+       <height>441</height>
       </rect>
      </property>
      <property name="text">
@@ -65,10 +65,10 @@
     <widget class="QLabel" name="lbl_img_right">
      <property name="geometry">
       <rect>
-       <x>970</x>
+       <x>680</x>
        <y>30</y>
-       <width>900</width>
-       <height>661</height>
+       <width>651</width>
+       <height>441</height>
       </rect>
      </property>
      <property name="text">
@@ -92,8 +92,8 @@
    <widget class="QGroupBox" name="groupBox_2">
     <property name="geometry">
      <rect>
-      <x>170</x>
-      <y>710</y>
+      <x>0</x>
+      <y>610</y>
       <width>1181</width>
       <height>151</height>
      </rect>
@@ -501,7 +501,7 @@
     <property name="geometry">
      <rect>
       <x>1360</x>
-      <y>709</y>
+      <y>20</y>
       <width>541</width>
       <height>491</height>
      </rect>
@@ -511,8 +511,8 @@
    <widget class="QGroupBox" name="groupBox_4">
     <property name="geometry">
      <rect>
-      <x>170</x>
-      <y>860</y>
+      <x>0</x>
+      <y>490</y>
       <width>1181</width>
       <height>121</height>
      </rect>
@@ -989,8 +989,8 @@
    <widget class="QGroupBox" name="groupBox_3">
     <property name="geometry">
      <rect>
-      <x>0</x>
-      <y>710</y>
+      <x>1190</x>
+      <y>490</y>
       <width>161</width>
       <height>231</height>
      </rect>
@@ -1138,8 +1138,8 @@
    <widget class="QGroupBox" name="groupBox_5">
     <property name="geometry">
      <rect>
-      <x>170</x>
-      <y>990</y>
+      <x>0</x>
+      <y>760</y>
       <width>1181</width>
       <height>151</height>
      </rect>
@@ -1453,28 +1453,30 @@
       <string>Acceleration [X]</string>
      </property>
     </widget>
-    <widget class="QTextEdit" name="txb_activeCamera_2">
+    <widget class="QLabel" name="lbl_gain_mean">
      <property name="geometry">
       <rect>
-       <x>1080</x>
-       <y>10</y>
-       <width>71</width>
-       <height>31</height>
+       <x>870</x>
+       <y>30</y>
+       <width>141</width>
+       <height>21</height>
       </rect>
      </property>
-     <property name="readOnly">
-      <bool>true</bool>
+     <property name="font">
+      <font>
+       <pointsize>14</pointsize>
+      </font>
      </property>
-     <property name="placeholderText">
-      <string>0</string>
+     <property name="text">
+      <string>Gain Mean</string>
      </property>
     </widget>
-    <widget class="QTextEdit" name="txb_activeCamera_3">
+    <widget class="QTextEdit" name="txb_gain_mean">
      <property name="geometry">
       <rect>
-       <x>1080</x>
-       <y>50</y>
-       <width>71</width>
+       <x>1020</x>
+       <y>20</y>
+       <width>141</width>
        <height>31</height>
       </rect>
      </property>

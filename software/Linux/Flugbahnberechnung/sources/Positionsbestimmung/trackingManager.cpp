@@ -20,6 +20,7 @@ C_trackingManager::C_trackingManager                    (C_GlobalObjects* Global
   this->vecPixelVelocityY   = new std::vector<float>;
   this->vecPixelVelocityZ   = new std::vector<float>;
   this->objektVektorTm1     = new S_Positionsvektor;
+  this->gainthreshold       = 0;
 
   this->dTime               = 0;
 
@@ -35,6 +36,7 @@ C_trackingManager::C_trackingManager                    (C_GlobalObjects* Global
     this->objectAcceleration[i] = 0.0f;
     this->PredVelocity[i]       = 0.0;
     }
+  this->gainthreshold     = 0;
   this->dTimestamp        = new milliseconds;
   this->timestamp_ms      = new Clock::time_point;
   this->timestamp_ms_old  = new Clock::time_point;
@@ -347,24 +349,95 @@ void C_trackingManager::predictPixelMovement            (int& predX, int& predY,
 void C_trackingManager::predictKalman                   ()
   {
   this->kf->predict(this->dTime);
-  this->positionPayload = new GlobalObjects::S_PositionPayload;
-
-  this->positionPayload->predPosition->X = this->kf->state_pre->at<float>(0);
-  this->positionPayload->predPosition->Y = this->kf->state_pre->at<float>(1);
-  this->positionPayload->predPosition->Z = this->kf->state_pre->at<float>(2);
-  this->positionPayload->predVelocity[0] = this->kf->state_pre->at<float>(3);
-  this->positionPayload->predVelocity[1] = this->kf->state_pre->at<float>(4);
-  this->positionPayload->predVelocity[2] = this->kf->state_pre->at<float>(5);
-  if(!this->globalObjects->objectPosenQue->try_push(positionPayload))
+  cv::Scalar gain = this->kf->getGainMean();
+  if (gain.val[0] < this->gainthreshold)
     {
-    delete (this->positionPayload);
-    this->positionPayload = nullptr;
+    posen::S_Posenvektor robotReadyPose;
+    this->positionPayload                   = new GlobalObjects::S_PositionPayload;
+
+    robotReadyPose                          = this->iteratekf(positionPayload->predBall_in, positionPayload->predBall_out, positionPayload->timeOnTarget_in, positionPayload->timeOnTarget_out, positionPayload->timeOnTarget_mid);
+    //this->positionPayload->predPosition     = robotReadyPose;
+
+    if(!this->globalObjects->objectPosenQue->try_push(positionPayload))
+      {
+      delete (this->positionPayload);
+      this->positionPayload = nullptr;
+      }
     }
-
-
   }
 double C_trackingManager::getDTime                      () const
   {
   return dTime;
   }
+posen::S_Posenvektor C_trackingManager::iteratekf(posen::S_Positionsvektor& predBall_in, posen::S_Positionsvektor& predBall_out, double& timeOnTarget_in, double& timeOnTarget_out, double& timeOnTarget_mid)
+  {
+  bool ball_exit        = false;
+  bool ball_inRange     = false;
+  int  time             = 0;
+  bool exit             = false;
+  double tot_in         = 0.0;
+  double tot_out        = 0.0;
+
+
+  posen::S_Posenvektor pose_ball_in;
+  posen::S_Posenvektor pose_ball_out;
+
+  posen::S_Posenvektor pose_delta;
+  posen::S_Posenvektor pose_waitForHit;
+
+  while(!exit)
+    {
+    this->kf->predict(time);
+    ballpose.X = this->kf->state_pre->at<double>(0,0);
+    ballpose.Y = this->kf->state_pre->at<double>(1,0);
+    ballpose.Z = this->kf->state_pre->at<double>(2,0);
+
+    //Wenn die Objekttrajektorie die äußeren Begrenzung des Roboterkäfigs erreicht, setzte diesen Punkt als Entry
+    if(ball_inRange == false && this->inConstraint(ballpose))
+      {
+      pos_ball_in   = ballpose;
+      predBall_in   = predBall_in;
+      ball_inRange = true;
+      tot_in = time;
+      timeOnTarget_in = time;
+
+      }
+    //Wenn die Objekttrajektorie die äußeren Begrenzung des Roboterkäfigs verlässt, setzte diesen Punkt als exit.
+    if(!this->inConstraint(ballpose) && ball_inRange == true && ball_exit == false)
+      {
+      pos_ball_out = ballpose;
+      predBall_out = ballpose;
+      exit = true;
+      tot_out = time;
+      timeOnTarget_out = time;
+      }
+    time +=dt;
+    }
+  //Kalkuliere den Mittelpunkt der Geraden zwischen Entry(X,Y,Z) und Exit(X,Y,Z) und setze diesen als Wartepunkt für den Roboter
+  pose_delta.X((pose_ball_in.X+pose_ball_out.X)/2);
+  pose_delta.Y((pose_ball_in.Y+pose_ball_out.Y)/2);
+  pose_delta.Z((pose_ball_in.Z+pose_ball_out.Z)/2);
+
+  pose_waitForHit.X((pose_delta.X+pose_ball_out.X)/2);
+  pose_waitForHit.Y((pose_delta.Y+pose_ball_out.Y)/2);
+  pose_waitForHit.Z((pose_delta.Z+pose_ball_out.Z)/2);
+
+  timeOnTarget_mid = (tot_in + tot_out)/2;
+
+  return pose_waitForHit;
+  }
+bool C_trackingManager::inConstraint                    (posen::S_Posenvektor b)
+  {
+  if(b.X >= this->globalObjects->constraintsInWorld->X && b.X <= this->globalObjects->constraintsInWorld->nX &&
+     b.Y >= this->globalObjects->constraintsInWorld->nY && b.Y <= this->globalObjects->constraintsInWorld->Y &&
+     b.Z >= this->globalObjects->constraintsInWorld->nZ && b.Z <= this->globalObjects->constraintsInWorld->Z &&)
+    {
+    return true;
+    }
+  else
+    {
+    return false;
+    }
+  }
+
 

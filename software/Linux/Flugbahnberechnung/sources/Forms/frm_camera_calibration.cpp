@@ -28,11 +28,13 @@ C_frm_Camera_Calibration::C_frm_Camera_Calibration(C_GlobalObjects* GlobalObject
 
     this->calibration_running = false;
     this->videowrite = nullptr;
+    this->videowriter_active = false;
 
 }
 
 C_frm_Camera_Calibration::~C_frm_Camera_Calibration()
 {
+  this->videowriter_active = false;
   this->videowrite = nullptr;
   this->calibration_running = false;
 
@@ -403,34 +405,16 @@ void C_frm_Camera_Calibration::on_rb_single_calibration_clicked()
     this->Ui->num_camera_id->setSingleStep            (1);
     this->Ui->num_camera_id->setMaximum               (GlobalObjects->absCameras-1);
     this->cameraID                                    = 0;
-    this->Ui->grpb_Camera_0->setTitle(QString("Pose Kamera " + QString::number(this->Ui->num_camera_id->value())));
-    this->Ui->grpb_Camera_1->setVisible(false);
-    this->Ui->lbl_num_calibration_pictures->setText   ("Bilder pro Sekunde");
 
     std::lock_guard<std::mutex> lck                   (*this->Main->cameraManager->getLock());
-    this->Main->cameraManager->pipelineFlush->store               (true);
+    this->Main->cameraManager->pipelineFlush->store   (true);
     this->Main->cameraManager->setArrActiveCameras    (0,0);
-    this->Main->cameraManager->pipelineFlush->store               (false);
+    this->Main->cameraManager->pipelineFlush->store   (false);
     this->Ui->rb_stereo_calibration->setChecked       (false);
     this->Ui->rb_single_calibration->setChecked       (true);
+    this->switchUI();
 
-    this->Ui->label_6->setVisible                     (true);
-    this->Ui->label_7->setVisible                     (true);
-    this->Ui->txb_usrInput_images->setVisible         (true);
 
-    this->Ui->lbl_img_stereo_right->setVisible        (false);
-    this->Ui->lbl_img_stereo_left->setVisible         (false);
-
-    this->Ui->txb_edge_width->setVisible              (true);
-    this->Ui->txb_edge_height->setVisible             (true);
-    this->Ui->txb_edge_length->setVisible             (true);
-
-    this->Ui->lbl_stereo_camera_current_cam->setText("");
-
-   this->Ui->lbl_img_single_calibration->setVisible   (true);
-    this->Ui->grpb_cameraMatrix->setVisible(true);
-    this->Ui->grpb_betraegeDerVektoren->setVisible(false);
-    this->Ui->grpb_last_pose->setVisible(false);
 }
 
 void C_frm_Camera_Calibration::on_rb_stereo_calibration_clicked()
@@ -439,36 +423,18 @@ void C_frm_Camera_Calibration::on_rb_stereo_calibration_clicked()
     this->Ui->num_camera_id->setValue                 (0);
     this->Ui->num_camera_id->setSingleStep            (1);
     this->Ui->num_camera_id->setMaximum               (GlobalObjects->absCameras-2);
-    this->Ui->grpb_Camera_0->setTitle(QString("Pose Kamera " + QString::number(this->Ui->num_camera_id->value())));
-    this->Ui->grpb_Camera_1->setTitle(QString("Pose Kamera " + QString::number(this->Ui->num_camera_id->value() + 1)));
-    this->Ui->grpb_Camera_1->setVisible(true);
-
-    this->Ui->bt_start->setText("Kalibrieren");
-    this->Ui->label_6->setVisible                     (false);
-    this->Ui->label_7->setVisible                     (false);
-
-    this->Ui->txb_edge_width->setVisible              (false);
-    this->Ui->txb_edge_height->setVisible             (false);
-    this->Ui->txb_edge_length->setVisible             (false);
-
-    this->Ui->txb_usrInput_images->setVisible         (false);
 
     this->cameraID                            = 0;
     std::lock_guard<std::mutex> lck (*this->Main->cameraManager->getLock());
-    this->Main->cameraManager->pipelineFlush->store               (true);
+    this->Main->cameraManager->pipelineFlush->store   (true);
     this->Main->cameraManager->setArrActiveCameras    (0,0);
     this->Main->cameraManager->setArrActiveCameras    (1,1);
-    this->Main->cameraManager->pipelineFlush->store               (false);
+    this->Main->cameraManager->pipelineFlush->store   (false);
     this->Ui->rb_stereo_calibration->setChecked       (true);
     this->Ui->rb_single_calibration->setChecked       (false);
+    this->switchUI();
 
-    this->Ui->lbl_img_single_calibration->setVisible  (false);
-    this->Ui->lbl_img_stereo_left->setVisible         (true);
-    this->Ui->lbl_img_stereo_right->setVisible        (true);
-    this->Ui->lbl_stereo_camera_current_cam->setText("Stereo");
-    this->Ui->grpb_cameraMatrix->setVisible(false);
-    this->Ui->grpb_betraegeDerVektoren->setVisible(true);
-    this->Ui->grpb_last_pose->setVisible(true);
+
     this->writeSavedCamPose();
 
 }
@@ -538,18 +504,19 @@ void C_frm_Camera_Calibration::sm_Single_camera_calibration ()
   switch (this->sm_calibration_state)
     {
     case 0:
+      this->lockUI();
       this->cameraID                        = this->Ui->num_camera_id->value();
-      this->Ui->num_camera_id->setEnabled(false);
       this->photo_id                        = 0;
-      this->usrInputAbsPhoto                = this->Ui->txb_usrInput_images->toPlainText().toInt();
-
       this->Ui->bt_photo->setEnabled        (true);
       this->Ui->bt_start->setText           ("Beenden");
-      this->videowrite = new cv::VideoWriter(naming , codec, 50, cv::Size(1280,720));
-      this->videowriter_active = true;
+
+      this->videowrite                      = new cv::VideoWriter(naming , codec, 50, cv::Size(1280,720));
+      this->videowriter_active              = true;
+
       fps = 1000/this->Ui->txb_usrInput_images->toPlainText().toInt();
-      this->Taktgeber->setInterval(fps);
+      this->Taktgeber->setInterval          (fps);
       this->sm_calibration_state            = 1;
+      this->Ui->txb_max_image->setEnabled   (false);
       break;
 
       //Take pictures
@@ -559,22 +526,25 @@ void C_frm_Camera_Calibration::sm_Single_camera_calibration ()
       this->Main->frm_Main->FillMat2Lbl(*this->imgBuffer[0], this->Ui->lbl_img_0);
       this->Ui->txb_img_count->setText(QString::number                  (this->photo_id + 1));
       this->photo_id++;
-
-      if (this->videowriter_active == true)
-        {
-        this->sm_calibration_state = 1;
-        }
-      else
+      if(this->photo_id  >= this->Ui->txb_max_image->toPlainText().toInt())
         {
         this->sm_calibration_state = 2;
+        break;
+        }
+      else if (this->videowriter_active == true)
+        {
+        this->sm_calibration_state = 1;
         }
       break;
 
     case 2:
+      this->unlockUI();
       this->Ui->bt_photo->setVisible      (false);
       this->calibration_running           = false;
       this->Ui->bt_start->setText         ("Start");
       this->Ui->lbl_calibration_running->setVisible(true);
+      this->Ui->lbl_calibration_running->setText("Kalibrierung läuft");
+
       this->Taktgeber->setInterval(this->Ui->num_TimerIntervall->value());
       this->videowrite->release();
       delete (this->videowrite);
@@ -589,13 +559,11 @@ void C_frm_Camera_Calibration::sm_Single_camera_calibration ()
         {
           photo_id = 0;
         }
-      this->Ui->num_camera_id->setEnabled(true);
       this->sm_calibration_state = 0;
       this->videowriter_active = false;
     return;
     }
   }
-
 void C_frm_Camera_Calibration::sm_Stereo_camera_calibration ()
   {
   this->Main->cameraManager->calculate_camera_pose(this->Ui->num_camera_id->value(), this->Ui->num_camera_id->value()+1, *this->Camera0ToCamera1);
@@ -608,6 +576,7 @@ void C_frm_Camera_Calibration::sm_Stereo_camera_calibration ()
   this->Ui->lbl_stereo_camera_current_cam->setText(Qtext);
   this->writeSavedCamPose();
   }
+
 void C_frm_Camera_Calibration::writeSavedCamPose()
   {
   C_AbsolutePose KameraPose;
@@ -669,21 +638,6 @@ void C_frm_Camera_Calibration::writeAbsoluteAmount()
    this->Ui->txb_zeile_z->setText(QString::number(zeile_z));
 
   }
-void C_frm_Camera_Calibration::ShowTable()
-  {
-  switch(method)
-    {
-     case 0:
-
-      break;
-    case 1:
-      //this->Ui->tblv_stereo_output->data
-      break;
-    default:
-      return;
-
-    }
-  }
 
 void frm_Camera_Calibration::C_frm_Camera_Calibration::on_num_TimerIntervall_valueChanged(int arg1)
   {
@@ -701,4 +655,108 @@ void frm_Camera_Calibration::C_frm_Camera_Calibration::on_bt_pose_estimation_cli
 
   this->GlobalObjects->saveManager->saveCameraCos(*this->Main->cameraManager->vecCameras->at(0));
   std::cout << "Camera 0 to world saved, world set." << std::endl;
+  }
+
+
+void C_frm_Camera_Calibration::lockUI()
+  {
+  switch(method)
+    {
+  case 0:
+    this->Ui->num_camera_id->setEnabled(false);
+    this->Ui->rb_single_calibration->setEnabled(false);
+    this->Ui->rb_stereo_calibration->setEnabled(false);
+    this->Ui->txb_edge_height->setEnabled(false);
+    this->Ui->txb_edge_length->setEnabled(false);
+    this->Ui->txb_edge_width->setEnabled(false);
+    this->Ui->txb_max_image->setEnabled(false);
+    this->Ui->txb_usrInput_images->setEnabled(false);
+  break;
+  case 1:
+    this->Ui->num_camera_id->setEnabled(false);
+    this->Ui->rb_single_calibration->setEnabled(false);
+    this->Ui->rb_stereo_calibration->setEnabled(false);
+  break;
+    }
+  }
+void C_frm_Camera_Calibration::unlockUI()
+  {
+  switch(method)
+    {
+  case 0:
+    this->Ui->num_camera_id->setEnabled(true);
+    this->Ui->rb_single_calibration->setEnabled(true);
+    this->Ui->rb_stereo_calibration->setEnabled(true);
+    this->Ui->txb_edge_height->setEnabled(true);
+    this->Ui->txb_edge_length->setEnabled(true);
+    this->Ui->txb_edge_width->setEnabled(true);
+    this->Ui->txb_max_image->setEnabled(true);
+    this->Ui->txb_usrInput_images->setEnabled(true);
+  break;
+  case 1:
+    this->Ui->num_camera_id->setEnabled(true);
+    this->Ui->rb_single_calibration->setEnabled(true);
+    this->Ui->rb_stereo_calibration->setEnabled(true);
+  break;
+    }
+  }
+void C_frm_Camera_Calibration::switchUI()
+  {
+  switch(method)
+    {
+  case 0:
+    this->Ui->label_6->setVisible                     (true);
+    this->Ui->label_7->setVisible                     (true);
+    this->Ui->txb_usrInput_images->setVisible         (true);
+
+    this->Ui->lbl_img_stereo_right->setVisible        (false);
+    this->Ui->lbl_img_stereo_left->setVisible         (false);
+
+    this->Ui->txb_edge_width->setVisible              (true);
+    this->Ui->txb_edge_height->setVisible             (true);
+    this->Ui->txb_edge_length->setVisible             (true);
+
+
+   this->Ui->lbl_img_single_calibration->setVisible   (true);
+    this->Ui->grpb_cameraMatrix->setVisible           (true);
+    this->Ui->grpb_betraegeDerVektoren->setVisible    (false);
+    this->Ui->grpb_last_pose->setVisible              (false);
+    this->Ui->lbl_max_video_length->setVisible        (true);
+    this->Ui->txb_max_image->setVisible               (true);
+    this->Ui->grpb_Camera_1->setVisible               (false);
+    this->Ui->grpb_2_m12->setVisible                  (false);
+    this->Ui->grpb_Camera_0->setTitle                 (QString("Pose Kamera " + QString::number(this->Ui->num_camera_id->value())));
+    this->Ui->lbl_num_calibration_pictures->setText   ("FPS");
+    this->Ui->lbl_stereo_camera_current_cam->setText  ("");
+    this->Ui->lbl_calibration_running->setText        ("");
+  break;
+  case 1:
+    this->Ui->lbl_img_single_calibration->setVisible  (false);
+    this->Ui->lbl_img_stereo_left->setVisible         (true);
+    this->Ui->lbl_img_stereo_right->setVisible        (true);
+    this->Ui->lbl_stereo_camera_current_cam->setText  ("Stereo");
+    this->Ui->grpb_cameraMatrix->setVisible           (false);
+    this->Ui->grpb_betraegeDerVektoren->setVisible    (true);
+    this->Ui->grpb_last_pose->setVisible              (true);
+    this->Ui->lbl_max_video_length->setVisible        (false);
+    this->Ui->txb_max_image->setVisible               (false);
+
+    this->Ui->grpb_Camera_0->setTitle                 (QString("Pose Kamera " + QString::number(this->Ui->num_camera_id->value())));
+    this->Ui->grpb_Camera_1->setTitle                 (QString("Pose Kamera " + QString::number(this->Ui->num_camera_id->value() + 1)));
+    this->Ui->grpb_Camera_1->setVisible               (true);
+
+    this->Ui->bt_start->setText                       ("Kalibrieren");
+    this->Ui->label_6->setVisible                     (false);
+    this->Ui->label_7->setVisible                     (false);
+
+    this->Ui->txb_edge_width->setVisible              (false);
+    this->Ui->txb_edge_height->setVisible             (false);
+    this->Ui->txb_edge_length->setVisible             (false);
+
+    this->Ui->txb_usrInput_images->setVisible         (false);
+    this->Ui->grpb_2_m12->setVisible                  (true);
+
+  break;
+    }
+
   }
