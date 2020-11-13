@@ -1653,10 +1653,13 @@ C_Robot_Panda::C_Robot_Panda                                                    
   this->Panda_Omega_max                                     = 0.0;
   this->Panda_Alpha_max                                     = 0.0;
   this->SM_Panda_Processor_Calibrate_Camera_Enabled         = false;
+  this->signalPose.store                                    (false);
   }
 /**************************************************************** Destruktor ****************************************************************/
 C_Robot_Panda::~C_Robot_Panda                                                                         ()
   {
+  this->signalPose.store                                    (false);
+
   this->SM_Panda_Processor_Calibrate_Camera_Enabled         = false;
   this->Panda_Alpha_max                                     = 0.0;
   this->Panda_Omega_max                                     = 0.0;
@@ -2170,7 +2173,7 @@ CartesianVelocities          C_Robot_Panda::CartesianVel_Callback_Function_Objec
     return (MotionFinished(TCP_Velocity));
     }
   }
-CartesianVelocities          C_Robot_Panda::CartesianVel_Callback_Function_ReadyTarget                   (double&                time,              const RobotState&    Robot_State,            Duration&           Duration)
+CartesianVelocities          C_Robot_Panda::CartesianVel_Callback_Function_ContinousMovement             (double&                time,              const RobotState&    Robot_State,            Duration&           Duration)
   {
   *this->Panda_RobotState = Robot_State;
   time += Duration.toSec();
@@ -2225,134 +2228,46 @@ CartesianVelocities          C_Robot_Panda::CartesianVel_Callback_Function_Ready
 
   // Bestimmung der Ist-Pose und des Ist-Quaternion bezogen auf das Roboter-KS
   CartesianPose Ist_Pose (Robot_State.O_T_EE);
+
   Quaternion<double> Ist_Orientierung;
   this->FrankaOrientationToQuaternion(Ist_Pose, Ist_Orientierung);
+  CartesianPose      Soll_Pose = {{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0}};
+  Quaternion<double> Soll_Orientierung;
 
-  if (this->enum_ObjectTracking == E_ObjectTracking::Mono_Object)
+  if(this->signalPose == true)
     {
-    // Transformation des Lichtstrahlvektors im Kamera-KS auf das Regel-KS [Px]
-    S_Positionsvektor CamToObject_Pos_CF;
-    CamToObject_Pos_CF.X = Ist_Pose.O_T_EE[0]  * this->Lichtstrahl_Einheitsvektor.X +
-                           Ist_Pose.O_T_EE[4]  * this->Lichtstrahl_Einheitsvektor.Y +
-                           Ist_Pose.O_T_EE[8]  * this->Lichtstrahl_Einheitsvektor.Z;
-    CamToObject_Pos_CF.Y = Ist_Pose.O_T_EE[1]  * this->Lichtstrahl_Einheitsvektor.X +
-                           Ist_Pose.O_T_EE[5]  * this->Lichtstrahl_Einheitsvektor.Y +
-                           Ist_Pose.O_T_EE[9]  * this->Lichtstrahl_Einheitsvektor.Z;
-    CamToObject_Pos_CF.Z = Ist_Pose.O_T_EE[2]  * this->Lichtstrahl_Einheitsvektor.X +
-                           Ist_Pose.O_T_EE[6]  * this->Lichtstrahl_Einheitsvektor.Y +
-                           Ist_Pose.O_T_EE[10] * this->Lichtstrahl_Einheitsvektor.Z;
-
-    // Berechne der geschätzten Ballposition
-    double CamToObject_Pos_Abs = this->ControlFrameToObject_Pos_Abs - this->ControlFrameToTCP_Pos_Abs;
-    ControlFrameToObject_Pos.X = this->ControlFrameToTCP_Pos.X + CamToObject_Pos_CF.X * CamToObject_Pos_Abs;
-    ControlFrameToObject_Pos.Y = this->ControlFrameToTCP_Pos.Y + CamToObject_Pos_CF.Y * CamToObject_Pos_Abs;
-    ControlFrameToObject_Pos.Z = this->ControlFrameToTCP_Pos.Z + CamToObject_Pos_CF.Z * CamToObject_Pos_Abs;
-    }
-  else if ((this->enum_ObjectTracking == E_ObjectTracking::Object_Not_Found) || (this->enum_ObjectTracking == E_ObjectTracking::Stereo_Object))
-    {
-    /****************************************************************************************/
-    /* Bestimmung der Soll-Pose des TCP / Kamera bezogen auf das Roboter-KS                 */
-    /* Das Welt-KS, Roboter-Basis-KS und Regel-KS (Kugel-KS) haben identische Orientierung! */
-    /****************************************************************************************/
-    // Objektposition bezogen auf das Roboter-KS bestimmen
-    S_Positionsvektor RobotToObject_Vector;
-    RobotToObject_Vector.X = this->WorldToObject_Pos.X - this->Abs_WorldToRobot_Pose.px();
-    RobotToObject_Vector.Y = this->WorldToObject_Pos.Y - this->Abs_WorldToRobot_Pose.py();
-    RobotToObject_Vector.Z = this->WorldToObject_Pos.Z - this->Abs_WorldToRobot_Pose.pz();
-
-    // Objektposition bezogen auf das Regel-KS bestimmen
-    ControlFrameToObject_Pos.X = RobotToObject_Vector.X - this->RobotToControlFrame_Pos.X;
-    ControlFrameToObject_Pos.Y = RobotToObject_Vector.Y - this->RobotToControlFrame_Pos.Y;
-    ControlFrameToObject_Pos.Z = RobotToObject_Vector.Z - this->RobotToControlFrame_Pos.Z;
+    // Bestimmung der Sollpose und Sollorientierung
+    Soll_Pose.O_T_EE[0]  = this->Abs_TargetPose.nx();
+    Soll_Pose.O_T_EE[1]  = this->Abs_TargetPose.ny();
+    Soll_Pose.O_T_EE[2]  = this->Abs_TargetPose.nz();
+    Soll_Pose.O_T_EE[4]  = this->Abs_TargetPose.ox();
+    Soll_Pose.O_T_EE[5]  = this->Abs_TargetPose.oy();
+    Soll_Pose.O_T_EE[6]  = this->Abs_TargetPose.oz();
+    Soll_Pose.O_T_EE[8]  = this->Abs_TargetPose.ax();
+    Soll_Pose.O_T_EE[9]  = this->Abs_TargetPose.ay();
+    Soll_Pose.O_T_EE[10] = this->Abs_TargetPose.az();
+    Soll_Pose.O_T_EE[12] = this->Abs_TargetPose.px();
+    Soll_Pose.O_T_EE[13] = this->Abs_TargetPose.py();
+    Soll_Pose.O_T_EE[14] = this->Abs_TargetPose.pz();
+    this->FrankaOrientationToQuaternion(Soll_Pose, Soll_Orientierung);
     }
   else
     {
-    // Hier werden im Fehlerfall Dummywerte gesetzt, um Abstürze bei weiterer Berechnung (Division durch 0) zu vermeiden.
-    // Die Error-Abfrage erfolgt nochmals bei setzten der kartesischen Geschwindigkeiten am Ende der Funktion.
-    Error                    = true;
-    ControlFrameToObject_Pos = {1.0, 1.0, 1.0, 0.0};
+    // Bestimmung der Sollpose und Sollorientierung
+    Soll_Pose.O_T_EE[0]  = Ist_Pose.O_T_EE[0];
+    Soll_Pose.O_T_EE[1]  = Ist_Pose.O_T_EE[1];
+    Soll_Pose.O_T_EE[2]  = Ist_Pose.O_T_EE[2];
+    Soll_Pose.O_T_EE[4]  = Ist_Pose.O_T_EE[4];
+    Soll_Pose.O_T_EE[5]  = Ist_Pose.O_T_EE[5];
+    Soll_Pose.O_T_EE[6]  = Ist_Pose.O_T_EE[6];
+    Soll_Pose.O_T_EE[8]  = Ist_Pose.O_T_EE[8];
+    Soll_Pose.O_T_EE[9]  = Ist_Pose.O_T_EE[9];
+    Soll_Pose.O_T_EE[10] = Ist_Pose.O_T_EE[10];
+    Soll_Pose.O_T_EE[12] = Ist_Pose.O_T_EE[12];
+    Soll_Pose.O_T_EE[13] = Ist_Pose.O_T_EE[13];
+    Soll_Pose.O_T_EE[14] = Ist_Pose.O_T_EE[14];
+    this->FrankaOrientationToQuaternion(Soll_Pose, Soll_Orientierung);
     }
-
-  // Bestimmung des Annäherungsvektors des TCP / Kamera bezogen auf das Regel-KS
-  this->ControlFrameToObject_Pos_Abs  = sqrt(ControlFrameToObject_Pos.X * ControlFrameToObject_Pos.X +
-                                             ControlFrameToObject_Pos.Y * ControlFrameToObject_Pos.Y +
-                                             ControlFrameToObject_Pos.Z * ControlFrameToObject_Pos.Z);
-  S_Positionsvektor Vector_a;
-  Vector_a.X                          = ControlFrameToObject_Pos.X / this->ControlFrameToObject_Pos_Abs;
-  Vector_a.Y                          = ControlFrameToObject_Pos.Y / this->ControlFrameToObject_Pos_Abs;
-  Vector_a.Z                          = ControlFrameToObject_Pos.Z / this->ControlFrameToObject_Pos_Abs;
-
-  // Bestimmung des Normalenvektor des TCP / Kamera bezogen auf das Regel-KS (Vektor n immer parallel zur xy-Ebene des Regel-Basis-KS)
-  double            Vector_n_Abs;        // (Betrag des Vektor-Kreuzproduktes |a x e|)
-  S_Positionsvektor Vector_ez;           // Pseudovektor (nur z-Richtung)
-  S_Positionsvektor Vector_n;            // n = (a x ez) / (|a x ez|)
-  Vector_ez.X  = 0.0;
-  Vector_ez.Y  = 0.0;
-  Vector_ez.Z  = 1.0;
-  Vector_n     = this->Calc_Vector_Produkt(Vector_a, Vector_ez);
-  Vector_n_Abs = this->Calc_Vector_Betrag(Vector_n);
-  Vector_n.X  /= Vector_n_Abs;
-  Vector_n.Y  /= Vector_n_Abs;
-  Vector_n.Z  /= Vector_n_Abs;
-
-  // Bestimmung des Orientierungsvektors des TCP / Kamera bezogen auf das Regel-KS
-  S_Positionsvektor Vector_o; // o = a x n
-  double            Vector_o_Abs;
-  Vector_o     = this->Calc_Vector_Produkt(Vector_a, Vector_n);
-  Vector_o_Abs = this->Calc_Vector_Betrag(Vector_o);
-  Vector_o.X  /= Vector_o_Abs;
-  Vector_o.Y  /= Vector_o_Abs;
-  Vector_o.Z  /= Vector_o_Abs;
-
-  // Bestimmung der TCP- / Kameraposition bezogen auf das Regel-KS
-  double Positionsfaktor  = 1.0 / 2.0; // Beliebiger Wert
-  this->ControlFrameToTCP_Pos.X = ControlFrameToObject_Pos.X * Positionsfaktor;
-  this->ControlFrameToTCP_Pos.Y = ControlFrameToObject_Pos.Y * Positionsfaktor;
-  this->ControlFrameToTCP_Pos.Z = ControlFrameToObject_Pos.Z * Positionsfaktor;
-
-  // Einschränkung der TCP- / Kameraposition bezogen auf das Regel-KS durch festgelegte Grenze /
-  // Kugel um das Regel-KS herum. Die TCP- / Kameraposition soll sich immer innerhalb
-  // des Kugelschale befinden.
-  double Innenradius               = 0.1;
-  double Aussenradius              = 0.75;
-  this->ControlFrameToTCP_Pos_Abs  = sqrt(this->ControlFrameToTCP_Pos.X * this->ControlFrameToTCP_Pos.X +
-                                          this->ControlFrameToTCP_Pos.Y * this->ControlFrameToTCP_Pos.Y +
-                                          this->ControlFrameToTCP_Pos.Z * this->ControlFrameToTCP_Pos.Z);
-  if (this->ControlFrameToTCP_Pos_Abs < Innenradius)
-    {
-    this->ControlFrameToTCP_Pos.X *= Innenradius  / this->ControlFrameToTCP_Pos_Abs;
-    this->ControlFrameToTCP_Pos.Y *= Innenradius  / this->ControlFrameToTCP_Pos_Abs;
-    this->ControlFrameToTCP_Pos.Z *= Innenradius  / this->ControlFrameToTCP_Pos_Abs;
-    }
-  else if (this->ControlFrameToTCP_Pos_Abs > Aussenradius)
-    {
-    this->ControlFrameToTCP_Pos.X *= Aussenradius / this->ControlFrameToTCP_Pos_Abs;
-    this->ControlFrameToTCP_Pos.Y *= Aussenradius / this->ControlFrameToTCP_Pos_Abs;
-    this->ControlFrameToTCP_Pos.Z *= Aussenradius / this->ControlFrameToTCP_Pos_Abs;
-    }
-
-  // Bestimmung der TCP- / Kameraposition bezogen auf das Roboter-KS
-  S_Positionsvektor RobotToTCP_Pos;
-  RobotToTCP_Pos.X = this->RobotToControlFrame_Pos.X + ControlFrameToTCP_Pos.X;
-  RobotToTCP_Pos.Y = this->RobotToControlFrame_Pos.Y + ControlFrameToTCP_Pos.Y;
-  RobotToTCP_Pos.Z = this->RobotToControlFrame_Pos.Z + ControlFrameToTCP_Pos.Z;
-
-  // Bestimmung der Sollpose und Sollorientierung
-  CartesianPose      Soll_Pose = {{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0}};
-  Quaternion<double> Soll_Orientierung;
-  Soll_Pose.O_T_EE[0]  = Vector_n.X;
-  Soll_Pose.O_T_EE[1]  = Vector_n.Y;
-  Soll_Pose.O_T_EE[2]  = Vector_n.Z;
-  Soll_Pose.O_T_EE[4]  = Vector_o.X;
-  Soll_Pose.O_T_EE[5]  = Vector_o.Y;
-  Soll_Pose.O_T_EE[6]  = Vector_o.Z;
-  Soll_Pose.O_T_EE[8]  = Vector_a.X;
-  Soll_Pose.O_T_EE[9]  = Vector_a.Y;
-  Soll_Pose.O_T_EE[10] = Vector_a.Z;
-  Soll_Pose.O_T_EE[12] = RobotToTCP_Pos.X;
-  Soll_Pose.O_T_EE[13] = RobotToTCP_Pos.Y;
-  Soll_Pose.O_T_EE[14] = RobotToTCP_Pos.Z;
-  this->FrankaOrientationToQuaternion(Soll_Pose, Soll_Orientierung);
 
   /****************************************************************************************/
   /* Bestimmung der Parameter für translatorische Positionsregelung                       */
@@ -3242,7 +3157,7 @@ double                       C_Robot_Panda::Calc_Vector_Betrag                  
   }
 
 /******************************************************* ffentliche Anwender-Methoden ******************************************************/
-void                         C_Robot_Panda::Panda_Processor_MoveToPose_Slow                             (void)
+void                         C_Robot_Panda::Panda_Processor_MoveToPose_Slow                              (void)
   {
   if (this->SM_Panda_Processor_Move_Robot_Slow_Enabled)
     {
@@ -3658,10 +3573,45 @@ void                         C_Robot_Panda::Panda_Processor_ObjectTracking      
     //Franka_Exception = "Empty";
     }
   }
-void                         C_Robot_Panda::Panda_Processor_ReadyTarget                                   (void)
+void                         C_Robot_Panda::Panda_Processor_ContinousMovement                            (void)
 {
+  std::array<double, 7> lower_torque_threshold = {100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0};
+  std::array<double, 7> upper_torque_threshold = {100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0};
+  std::array<double, 6> lower_force_threshold  = {100.0, 100.0, 100.0, 100.0, 100.0, 100.0};
+  std::array<double, 6> upper_force_threshold  = {100.0, 100.0, 100.0, 100.0, 100.0, 100.0};
+  this->Panda_Robot->setCollisionBehavior(lower_torque_threshold, upper_torque_threshold, lower_force_threshold, upper_force_threshold);
 
-}
+  // Deklaration und Definition der Callback-Lambda-Funktion und der dazu benötigten Variablen
+  double time            = 0.0;
+  //double tau             = 0.0;
+
+//  std::function<franka::Torques(const franka::RobotState&, franka::Duration)> Motion_Control_Callback = [this, &time, &tau]
+//                                                                                                        (const franka::RobotState& robot_state, franka::Duration duration)
+//                                                                                                        ->franka::Torques
+//    {
+//    return (this->CartesianImpedance_Callback_Function_ObjectTracking(time, robot_state, duration, tau));
+//    };
+  std::function<franka::CartesianVelocities(const franka::RobotState&, franka::Duration)> Motion_Control_Callback = [this, &time]
+                                                                                                                (const franka::RobotState& robot_state, franka::Duration duration)
+                                                                                                                ->franka::CartesianVelocities
+    {
+    return (this->CartesianVel_Callback_Function_ContinousMovement(time, robot_state, duration));
+    };
+
+
+  // Aufruf der Lambda-Callback-Funktion
+  try
+    {
+    this->Panda_Robot->control(Motion_Control_Callback, ControllerMode::kJointImpedance, true, 1.0);
+    }
+  catch (const franka::Exception& ex)
+    {
+    // Falls ein Fehler auftritt, soll das weitere Ausführen der State-Machine verhindert werden
+    //const char* Franka_Exception = ex.what();
+    this->Panda_Robot->automaticErrorRecovery();
+    //Franka_Exception = "Empty";
+    }
+  }
 
 void                         C_Robot_Panda::Get_TCP_Frame                                                (double                 (&TCP_Frame)[4][4])
   {

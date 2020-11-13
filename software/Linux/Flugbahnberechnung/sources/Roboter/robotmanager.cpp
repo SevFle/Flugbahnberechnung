@@ -21,7 +21,6 @@ C_robotManager::C_robotManager(C_GlobalObjects* Globalobjects)
   this->Pose_waiting        = new posen::C_AbsolutePose;
   this->Pose_inter_waiting  = new posen::C_AbsolutePose;
   this->math                = new C_mathHelper;
-
   }
 C_robotManager::~C_robotManager()
   {
@@ -140,6 +139,7 @@ bool C_robotManager::moveRobotToTarget(C_AbsolutePose* targetPose)
     return false;
   this->roboter->Set_Target_Pose(*targetPose);
   this->roboter->SM_Panda_Processor_Move_Robot_Slow_Enabled = true;
+  this->threadSelector = threadselector::singlePose;
   this->robotThread = new std::thread (&C_robotManager::open_Panda_threading, this);
   this->threadActive = true;
   return true;
@@ -155,17 +155,31 @@ bool C_robotManager::close_Panda_threading()
 
 void C_robotManager::open_Panda_threading(void* This)
   {
-  while(static_cast<robotManager::C_robotManager*>(This)->roboter->SM_Panda_Processor_Move_Robot_Slow_Enabled)
+  switch(static_cast<robotManager::C_robotManager*>(This)->threadSelector)
     {
-    static_cast<robotManager::C_robotManager*>(This)->roboter->Panda_Processor_MoveToPose_Slow();
+    case singlePose:
+      while(static_cast<robotManager::C_robotManager*>(This)->roboter->SM_Panda_Processor_Move_Robot_Slow_Enabled)
+        {
+        static_cast<robotManager::C_robotManager*>(This)->roboter->Panda_Processor_MoveToPose_Slow();
+        }
+      std::cout << "Movement done " << std::endl;
+      break;
+    case continousMovement:
+      while(static_cast<robotManager::C_robotManager*>(This)->roboter->SM_Panda_Processor_Move_Robot_Slow_Enabled)
+        {
+        static_cast<robotManager::C_robotManager*>(This)->roboter->Panda_Processor_ContinousMovement();
+        }
+      break;
     }
-  std::cout << "Movement done " << std::endl;
   }
 
 void C_robotManager::start_smTracking                   ()
   {
   this->state_machine_running->store(true);
+  this->threadSelector = threadselector::continousMovement;
   this->smThread = new std::thread(&robotManager::C_robotManager::threadHelper,this);
+  this->robotThread = new std::thread (&C_robotManager::open_Panda_threading, this);
+
   }
 void C_robotManager::threadHelper                (void* This)
   {
@@ -175,7 +189,7 @@ void C_robotManager::threadHelper                (void* This)
 
 void C_robotManager::sm_BallTracking()
   {
-  C_RelativePose tcpPose;
+  C_AbsolutePose tcpPose;
   C_AbsolutePose WorldToRobot = this->roboter->Abs_WorldToRobot_Pose;
   C_AbsolutePose RobotToWorld = this->roboter->Abs_RobotToWorld_Pose;
 
@@ -209,6 +223,10 @@ void C_robotManager::sm_BallTracking()
   double Panda_Acc_max   = 0;
   double Panda_Omega_max = 0;
   double Panda_Alpha_max = 0;
+  double verschleifen_grob = 0.1;
+  double verschleifen_fein = 0.03;
+  double Abs_tcp_pose = 0.0;
+
 
 
   bool inRange = false;
@@ -246,7 +264,7 @@ void C_robotManager::sm_BallTracking()
 
         //Berechne die Distanz zu den drei vorgespeicherten Posen und vergleiche die Distanz. Die kürzeste Strecke wird angefahren
         //
-        this->getAbsoluteHomogenousBaseToTCP(&tcpPose);
+        this->getAbsoluteHomogenousBaseToTCP(tcpPose);
         deltaHome.X = tcpPose.px() - this->roboter->Abs_Home_Pose.px();
         deltaHome.Y = tcpPose.py() - this->roboter->Abs_Home_Pose.py();
         deltaHome.Z = tcpPose.pz() - this->roboter->Abs_Home_Pose.pz();
@@ -282,21 +300,35 @@ void C_robotManager::sm_BallTracking()
         else
           {
           std::cout << "No vaild Pose found, Moving to Home" << std::endl;
-          }
-
-
         this->smBallTrackingStep = 2;
       break;
 
-        //Fahre Roboter zur HomePosition
       case 2:
         this->moveRobotToTarget(&this->roboter->Abs_Home_Pose);
-        this->smBallTrackingStep = 3;
-        break;
-      case 3:
-        if(this->roboter->Is_MotionDone())
+        this->roboter->signalPose.store(true);
+        this->roboter->Get_Current_TCP_Pose_Motion(tcpPose);
+        Abs_tcp_pose  = sqrt(tcpPose.px() * tcpPose.px() +
+                             tcpPose.py() * tcpPose.py() +
+                             tcpPose.pz() * tcpPose.pz());
+        if (Abs_tcp_pose < verschleifen_grob)
           {
-          this->close_Panda_threading();
+          this->smBallTrackingStep = 3;
+          }
+        else
+          {
+          this->smBallTrackingStep = 2;
+          }
+        break;
+
+      case 3:
+        this->moveRobotToTarget(&this->roboter->Abs_inter_waiting_Pose);
+        this->roboter->signalPose.store(true);
+        this->roboter->Get_Current_TCP_Pose_Motion(tcpPose);
+        Abs_tcp_pose  = sqrt(tcpPose.px() * tcpPose.px() +
+                             tcpPose.py() * tcpPose.py() +
+                             tcpPose.pz() * tcpPose.pz());
+        if (Abs_tcp_pose < verschleifen_grob)
+          {
           this->smBallTrackingStep = 4;
           }
         else
@@ -305,34 +337,30 @@ void C_robotManager::sm_BallTracking()
           }
         break;
     case 4:
-      this->moveRobotToTarget(&this->roboter->Abs_inter_waiting_Pose);
-      this->smBallTrackingStep = 5;
+        this->moveRobotToTarget(&this->roboter->Abs_waiting_Pose);
+        this->roboter->signalPose.store(true);
+        this->roboter->Get_Current_TCP_Pose_Motion(tcpPose);
+        Abs_tcp_pose  = sqrt(tcpPose.px() * tcpPose.px() +
+                             tcpPose.py() * tcpPose.py() +
+                             tcpPose.pz() * tcpPose.pz());
+        if (Abs_tcp_pose < verschleifen_fein)
+          {
+          this->roboter->signalPose.store(false);
+          this->smBallTrackingStep = 5;
+          }
+        else
+          {
+          this->smBallTrackingStep = 4;
+          }
+        break;
+
       break;
     case 5:
-      if(this->roboter->Is_MotionDone())
-        {
-        this->close_Panda_threading();
-        this->smBallTrackingStep = 6;
-        }
-      else
-        {
-        this->smBallTrackingStep = 5;
-        }
       break;
     case 6:
-      this->moveRobotToTarget(&this->roboter->Abs_waiting_Pose);
       this->smBallTrackingStep = 7;
       break;
     case 7:
-      if(this->roboter->Is_MotionDone())
-        {
-        this->close_Panda_threading();
-        this->smBallTrackingStep = 8;
-        }
-      else
-        {
-        this->smBallTrackingStep = 7;
-        }
       break;
     case 8:
         //Signal Robot Ready

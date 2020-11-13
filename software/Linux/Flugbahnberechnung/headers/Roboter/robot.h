@@ -22,6 +22,8 @@
 #include <mutex>
 #include <thread>
 #include <iostream>
+#include <atomic>
+
 
 /************************************************************** using namespaces **************************************************************/
 using namespace franka;
@@ -244,12 +246,13 @@ namespace Robot_Panda
     double                            Panda_Alpha_max;
     bool                              SM_Panda_Processor_Calibrate_Camera_Enabled;
     bool                              SM_Panda_Processor_Move_Robot_Slow_Enabled;
+    std::atomic<bool>                 signalPose;
     /*************************************************** Nicht ffentliche private Methoden *****************************************************/
     private:
     CartesianPose                     CartesianPose_Callback_Function_abs_Weg_Trapez          (double&                time,                   const RobotState&      Robot_State,               Duration& Duration);  // Erstellt die Callback-Funktion fr die Bewegung des Panda
     CartesianVelocities               CartesianPose_Callback_Function_abs_Vel_Trapez          (double&                time,                   const RobotState&      Robot_State,               Duration& Duration);  // Erstellt die Callback-Funktion fr die Bewegung des Panda
     CartesianVelocities               CartesianVel_Callback_Function_ObjectTracking           (double&                time,                   const RobotState&      Robot_State,               Duration& Duration);  // Erstellt die Callback-Funktion fr die Bewegung des Panda
-    CartesianVelocities               CartesianVel_Callback_Function_ReadyTarget              (double&                time,                   const RobotState&      Robot_State,               Duration& Duration);  // Erstellt die Callback-Funktion fr die Bewegung des Panda
+    CartesianVelocities               CartesianVel_Callback_Function_ContinousMovement        (double&                time,                   const RobotState&      Robot_State,               Duration& Duration);  // Erstellt die Callback-Funktion fr die Bewegung des Panda
     CartesianPose                     CartesianPose_Callback_Function_Inkrementell_Weg_Trapez (double&                time,                   const RobotState&      Robot_State,               Duration& Duration);  // Erstellt die Callback-Funktion fr die Bewegung des Panda
     Torques                           Torque_Callback_Motion_Controller                       (double&                time,                   const RobotState&      Robot_State,               Duration& Duration);  // Erstellt die Callback-Funktion fr die Bewegung des Panda
     Torques                           CartesianImpedance_Callback_Function                    (double&                time,                   const RobotState&      Robot_State,               Duration& Duration);  // Erstellt die Callback-Funktion fr die Bewegung des Panda
@@ -279,7 +282,7 @@ namespace Robot_Panda
     void                              Panda_Processor_MoveToPose_Slow                         (void);
     void                              Panda_Processor_Calibrate_Camera                        (void);                                                                                                                                                               // Funktion, welche im Thread ausgefhrt werden kann
     void                              Panda_Processor_ObjectTracking                          (void);
-    void                              Panda_Processor_ReadyTarget                             (void);
+    void                              Panda_Processor_ContinousMovement                       (void);
     void                              Get_TCP_Frame                                           (double                 (&TCP_Frame)[4][4]);                                                                                                                          // Ldt den aktuellen TCP-Frame aus der Steuerung und schreibt diesen direkt in den bergebenen Parameter
     void                              Set_TCP_Frame                                           (double                 (&TCP_Frame)[4][4]);                                                                                                                          // Schreibt den TCP-Frame aus dem bergebenen Parameter direkt in die Steuerung
     void                              Get_EndEffector_Load                                    (double&                Mass,                   double                  (&Center_Of_Mass)[3],     double    (&Inertia_Tensor)[3][3]);                                 // Ldt die aktuellen End-Effektor-Massenwerte aus der Steuerung und schreibt diese direkt in die bergebenen Parameter

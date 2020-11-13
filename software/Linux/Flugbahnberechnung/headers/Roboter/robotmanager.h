@@ -12,6 +12,12 @@ namespace robotManager
 
   class C_robotManager
     {
+    enum threadselector
+      {
+      singlePose,
+      continousMovement
+      };
+
   public:
     C_robotManager                      (C_GlobalObjects* globalObjects);
     ~C_robotManager                     ();
@@ -31,7 +37,7 @@ namespace robotManager
     std::atomic<bool>*                  state_machine_running;
     std::thread*                        smThread;
     C_mathHelper*                       math;
-
+    threadselector                      threadSelector;
 
     bool                                threadActive;
     bool                                robotReady;
