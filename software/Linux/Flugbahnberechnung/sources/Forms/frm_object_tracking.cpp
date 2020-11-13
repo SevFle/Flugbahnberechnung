@@ -224,6 +224,7 @@ void frm_Object_Tracking::C_frm_Object_Tracking::on_bt_start_clicked()
     this->Ui->lbl_thread_running->              setEnabled  (false);
     this->Ui->bt_start->                        setText     ("Start Tracking");
     this->Main->cameraManager->stopTracking();
+    this->Main->robotManager->stop_smTracking();
     }
 }
 

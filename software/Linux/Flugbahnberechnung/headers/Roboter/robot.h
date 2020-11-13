@@ -247,6 +247,7 @@ namespace Robot_Panda
     bool                              SM_Panda_Processor_Calibrate_Camera_Enabled;
     bool                              SM_Panda_Processor_Move_Robot_Slow_Enabled;
     std::atomic<bool>                 signalPose;
+    std::atomic<bool>                 signalMotionDone;
     /*************************************************** Nicht ffentliche private Methoden *****************************************************/
     private:
     CartesianPose                     CartesianPose_Callback_Function_abs_Weg_Trapez          (double&                time,                   const RobotState&      Robot_State,               Duration& Duration);  // Erstellt die Callback-Funktion fr die Bewegung des Panda

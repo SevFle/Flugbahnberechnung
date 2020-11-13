@@ -95,7 +95,7 @@
       <x>0</x>
       <y>610</y>
       <width>1181</width>
-      <height>151</height>
+      <height>141</height>
      </rect>
     </property>
     <property name="title">
@@ -410,7 +410,7 @@
     <widget class="QLabel" name="label_11">
      <property name="geometry">
       <rect>
-       <x>880</x>
+       <x>700</x>
        <y>30</y>
        <width>141</width>
        <height>21</height>
@@ -428,7 +428,7 @@
     <widget class="QTextEdit" name="txb_activeCamera_0">
      <property name="geometry">
       <rect>
-       <x>1030</x>
+       <x>850</x>
        <y>20</y>
        <width>41</width>
        <height>31</height>
@@ -444,7 +444,7 @@
     <widget class="QTextEdit" name="txb_activeCamera_1">
      <property name="geometry">
       <rect>
-       <x>1080</x>
+       <x>900</x>
        <y>20</y>
        <width>41</width>
        <height>31</height>
@@ -460,7 +460,7 @@
     <widget class="QLabel" name="label_found">
      <property name="geometry">
       <rect>
-       <x>880</x>
+       <x>700</x>
        <y>70</y>
        <width>291</width>
        <height>51</height>
@@ -1141,18 +1141,18 @@
       <x>0</x>
       <y>760</y>
       <width>1181</width>
-      <height>151</height>
+      <height>161</height>
      </rect>
     </property>
     <property name="title">
-     <string/>
+     <string>Kalmanfilter estimate</string>
     </property>
     <widget class="QTextEdit" name="txb_position_z_2">
      <property name="geometry">
       <rect>
        <x>130</x>
-       <y>100</y>
-       <width>141</width>
+       <y>110</y>
+       <width>91</width>
        <height>31</height>
       </rect>
      </property>
@@ -1167,8 +1167,8 @@
      <property name="geometry">
       <rect>
        <x>130</x>
-       <y>20</y>
-       <width>141</width>
+       <y>30</y>
+       <width>91</width>
        <height>31</height>
       </rect>
      </property>
@@ -1183,8 +1183,8 @@
      <property name="geometry">
       <rect>
        <x>130</x>
-       <y>60</y>
-       <width>141</width>
+       <y>70</y>
+       <width>91</width>
        <height>31</height>
       </rect>
      </property>
@@ -1195,29 +1195,11 @@
       <string>0</string>
      </property>
     </widget>
-    <widget class="QLabel" name="label_15">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>30</y>
-       <width>101</width>
-       <height>21</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <pointsize>14</pointsize>
-      </font>
-     </property>
-     <property name="text">
-      <string>est. Position [X]</string>
-     </property>
-    </widget>
     <widget class="QLabel" name="label_16">
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>70</y>
+       <y>80</y>
        <width>101</width>
        <height>21</height>
       </rect>
@@ -1235,7 +1217,7 @@
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>110</y>
+       <y>120</y>
        <width>101</width>
        <height>21</height>
       </rect>
@@ -1252,9 +1234,9 @@
     <widget class="QTextEdit" name="txb_velocity_z_2">
      <property name="geometry">
       <rect>
-       <x>400</x>
-       <y>100</y>
-       <width>141</width>
+       <x>350</x>
+       <y>110</y>
+       <width>91</width>
        <height>31</height>
       </rect>
      </property>
@@ -1268,8 +1250,8 @@
     <widget class="QLabel" name="label_18">
      <property name="geometry">
       <rect>
-       <x>280</x>
-       <y>70</y>
+       <x>230</x>
+       <y>80</y>
        <width>101</width>
        <height>21</height>
       </rect>
@@ -1286,8 +1268,8 @@
     <widget class="QLabel" name="label_19">
      <property name="geometry">
       <rect>
-       <x>280</x>
-       <y>30</y>
+       <x>230</x>
+       <y>40</y>
        <width>101</width>
        <height>21</height>
       </rect>
@@ -1304,8 +1286,8 @@
     <widget class="QLabel" name="label_20">
      <property name="geometry">
       <rect>
-       <x>280</x>
-       <y>110</y>
+       <x>230</x>
+       <y>120</y>
        <width>101</width>
        <height>21</height>
       </rect>
@@ -1322,9 +1304,9 @@
     <widget class="QTextEdit" name="txb_velocity_x_2">
      <property name="geometry">
       <rect>
-       <x>400</x>
-       <y>20</y>
-       <width>141</width>
+       <x>350</x>
+       <y>30</y>
+       <width>91</width>
        <height>31</height>
       </rect>
      </property>
@@ -1338,9 +1320,9 @@
     <widget class="QTextEdit" name="txb_velocity_y_2">
      <property name="geometry">
       <rect>
-       <x>400</x>
-       <y>60</y>
-       <width>141</width>
+       <x>350</x>
+       <y>70</y>
+       <width>91</width>
        <height>31</height>
       </rect>
      </property>
@@ -1354,9 +1336,9 @@
     <widget class="QTextEdit" name="txb_acceleration_z_2">
      <property name="geometry">
       <rect>
-       <x>720</x>
-       <y>100</y>
-       <width>141</width>
+       <x>600</x>
+       <y>110</y>
+       <width>91</width>
        <height>31</height>
       </rect>
      </property>
@@ -1370,9 +1352,9 @@
     <widget class="QTextEdit" name="txb_acceleration_x_2">
      <property name="geometry">
       <rect>
-       <x>720</x>
-       <y>20</y>
-       <width>141</width>
+       <x>600</x>
+       <y>30</y>
+       <width>91</width>
        <height>31</height>
       </rect>
      </property>
@@ -1386,9 +1368,9 @@
     <widget class="QTextEdit" name="txb_acceleration_y_2">
      <property name="geometry">
       <rect>
-       <x>720</x>
-       <y>60</y>
-       <width>141</width>
+       <x>600</x>
+       <y>70</y>
+       <width>91</width>
        <height>31</height>
       </rect>
      </property>
@@ -1399,65 +1381,11 @@
       <string>0</string>
      </property>
     </widget>
-    <widget class="QLabel" name="label_21">
-     <property name="geometry">
-      <rect>
-       <x>570</x>
-       <y>70</y>
-       <width>141</width>
-       <height>21</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <pointsize>14</pointsize>
-      </font>
-     </property>
-     <property name="text">
-      <string>Acceleration [Y]</string>
-     </property>
-    </widget>
-    <widget class="QLabel" name="label_22">
-     <property name="geometry">
-      <rect>
-       <x>570</x>
-       <y>110</y>
-       <width>141</width>
-       <height>21</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <pointsize>14</pointsize>
-      </font>
-     </property>
-     <property name="text">
-      <string>Acceleration [Z]</string>
-     </property>
-    </widget>
-    <widget class="QLabel" name="label_23">
-     <property name="geometry">
-      <rect>
-       <x>570</x>
-       <y>30</y>
-       <width>141</width>
-       <height>21</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <pointsize>14</pointsize>
-      </font>
-     </property>
-     <property name="text">
-      <string>Acceleration [X]</string>
-     </property>
-    </widget>
     <widget class="QLabel" name="lbl_gain_mean">
      <property name="geometry">
       <rect>
-       <x>870</x>
-       <y>30</y>
+       <x>700</x>
+       <y>40</y>
        <width>141</width>
        <height>21</height>
       </rect>
@@ -1474,9 +1402,9 @@
     <widget class="QTextEdit" name="txb_gain_mean">
      <property name="geometry">
       <rect>
-       <x>1020</x>
-       <y>20</y>
-       <width>141</width>
+       <x>810</x>
+       <y>30</y>
+       <width>91</width>
        <height>31</height>
       </rect>
      </property>
@@ -1485,6 +1413,78 @@
      </property>
      <property name="placeholderText">
       <string>0</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_24">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>40</y>
+       <width>101</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>14</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>Position [X]</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_25">
+     <property name="geometry">
+      <rect>
+       <x>450</x>
+       <y>120</y>
+       <width>141</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>14</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>Acceleration [Z]</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_26">
+     <property name="geometry">
+      <rect>
+       <x>450</x>
+       <y>40</y>
+       <width>141</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>14</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>Acceleration [X]</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_27">
+     <property name="geometry">
+      <rect>
+       <x>450</x>
+       <y>80</y>
+       <width>141</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>14</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>Acceleration [Y]</string>
      </property>
     </widget>
    </widget>

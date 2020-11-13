@@ -1654,10 +1654,13 @@ C_Robot_Panda::C_Robot_Panda                                                    
   this->Panda_Alpha_max                                     = 0.0;
   this->SM_Panda_Processor_Calibrate_Camera_Enabled         = false;
   this->signalPose.store                                    (false);
+  this->signalMotionDone.store                              (false);
+
   }
 /**************************************************************** Destruktor ****************************************************************/
 C_Robot_Panda::~C_Robot_Panda                                                                         ()
   {
+  this->signalMotionDone.store                              (false);
   this->signalPose.store                                    (false);
 
   this->SM_Panda_Processor_Calibrate_Camera_Enabled         = false;
@@ -2204,26 +2207,8 @@ CartesianVelocities          C_Robot_Panda::CartesianVel_Callback_Function_Conti
   double Stellwert_Orient_VRY      = 0.0;
   double Stellwert_Orient_VRZ      = 0.0;
 
-  /****************************************************************************************/
-  /* Bewegung des Roboters Anhand von Fallunterscheidung festlegen:                       */
-  /* Fall 1 - E_ObjectTracking::Object_Not_Found: Die Kamera des Roboters hat das Objekt  */
-  /*                                              nicht erfasst. Der Roboter richtet sich */
-  /*                                              nach der ihm letzten bekannten Objekt-  */
-  /*                                              position aus.                           */
-  /* Fall 2 - E_ObjectTracking::Mono_Object:    : Nur die Kamera des eigenen Roboters hat */
-  /*                                              das Objekt erkannt. Der Roboter ver-    */
-  /*                                              folgt das Objekt nur in xy-Ebene und    */
-  /*                                              kennt keine Tiefeninformation des Ob-   */
-  /*                                              jektes. Der Abstand zwischen Regel-KS   */
-  /*                                              und TCP / Kamera bleibt identisch.      */
-  /* Fall 3 - E_ObjectTracking::Stereo_Object:  : Beide Roboter-Kameras haben das Objekt  */
-  /*                                              erfasst. Tiefeninformationen liegen vor */
-  /*                                              und beide Roboter können dem Objekt in  */
-  /*                                              xyz-Ebene folgen.                       */
-  /****************************************************************************************/
 
   // Vorinitialisierung
-  S_Positionsvektor ControlFrameToObject_Pos;
   bool              Error                     = false;
 
   // Bestimmung der Ist-Pose und des Ist-Quaternion bezogen auf das Roboter-KS
@@ -2253,20 +2238,9 @@ CartesianVelocities          C_Robot_Panda::CartesianVel_Callback_Function_Conti
     }
   else
     {
-    // Bestimmung der Sollpose und Sollorientierung
-    Soll_Pose.O_T_EE[0]  = Ist_Pose.O_T_EE[0];
-    Soll_Pose.O_T_EE[1]  = Ist_Pose.O_T_EE[1];
-    Soll_Pose.O_T_EE[2]  = Ist_Pose.O_T_EE[2];
-    Soll_Pose.O_T_EE[4]  = Ist_Pose.O_T_EE[4];
-    Soll_Pose.O_T_EE[5]  = Ist_Pose.O_T_EE[5];
-    Soll_Pose.O_T_EE[6]  = Ist_Pose.O_T_EE[6];
-    Soll_Pose.O_T_EE[8]  = Ist_Pose.O_T_EE[8];
-    Soll_Pose.O_T_EE[9]  = Ist_Pose.O_T_EE[9];
-    Soll_Pose.O_T_EE[10] = Ist_Pose.O_T_EE[10];
-    Soll_Pose.O_T_EE[12] = Ist_Pose.O_T_EE[12];
-    Soll_Pose.O_T_EE[13] = Ist_Pose.O_T_EE[13];
-    Soll_Pose.O_T_EE[14] = Ist_Pose.O_T_EE[14];
-    this->FrankaOrientationToQuaternion(Soll_Pose, Soll_Orientierung);
+    //Halte aktuelle IST-Positon
+    TCP_Velocity = {{0.0, 0.0, 0.0, 0.0, 0.0, 0.0,}};
+    return (TCP_Velocity);
     }
 
   /****************************************************************************************/
@@ -2329,10 +2303,13 @@ CartesianVelocities          C_Robot_Panda::CartesianVel_Callback_Function_Conti
   /* Rotation    = 2.0   [rad/s]                                                          */
   /* Ellbogen    = nicht berücksichtigt                                                   */
   /****************************************************************************************/
-  double Stellwert_Pos_max    = 1.2;
-  double Stellwert_Orient_max = 2.0;
+  double Stellwert_Pos_max    = 0.2;
+  double Stellwert_Orient_max = 0.2;
   double Stellwert_Pos_Abs    = sqrt(Stellwert_Pos_VX     * Stellwert_Pos_VX     + Stellwert_Pos_VY     * Stellwert_Pos_VY     + Stellwert_Pos_VZ     * Stellwert_Pos_VZ);
   double Stellwert_Orient_Abs = sqrt(Stellwert_Orient_VRX * Stellwert_Orient_VRX + Stellwert_Orient_VRY * Stellwert_Orient_VRY + Stellwert_Orient_VRZ * Stellwert_Orient_VRZ);
+
+  std::cout << "Stellwert_Pos_Abs: " << Stellwert_Pos_Abs << std::endl;
+  std::cout << "Stellwert_Orient_Abs: " << Stellwert_Orient_Abs << std::endl;
 
   if (Stellwert_Pos_Abs > Stellwert_Pos_max)
     {
@@ -2350,13 +2327,20 @@ CartesianVelocities          C_Robot_Panda::CartesianVel_Callback_Function_Conti
   if (!Error)
     {
     TCP_Velocity = {{Stellwert_Pos_VX, Stellwert_Pos_VY, Stellwert_Pos_VZ, Stellwert_Orient_VRX, Stellwert_Orient_VRY, Stellwert_Orient_VRZ}};
+    std::cout << "Stellwert_Pos_VX: " << Stellwert_Pos_VX << "  [m/s]" << std::endl;
+    std::cout << "Stellwert_Pos_VY: " << Stellwert_Pos_VY << "  [m/s]" << std::endl;
+    std::cout << "Stellwert_Pos_VZ: " << Stellwert_Pos_VZ << "  [m/s]" << std::endl;
+    std::cout << "Stellwert_Orient_VRX: " << Stellwert_Orient_VRX << "  [rad/s]" << std::endl;
+    std::cout << "Stellwert_Orient_VRY: " << Stellwert_Orient_VRY << "  [rad/s]" << std::endl;
+    std::cout << "Stellwert_Orient_VRZ: " << Stellwert_Orient_VRZ << "  [rad/s]" << std::endl << std::endl << std::endl;
+
     }
   else
     {
     TCP_Velocity = {{0.0, 0.0, 0.0, 0.0, 0.0, 0.0,}};
     }
 
-  if (!this->Stop_ObjectTracking)
+  if (this->signalMotionDone == false)
     {
     return (TCP_Velocity);
     }
@@ -3541,6 +3525,7 @@ void                         C_Robot_Panda::Panda_Processor_ObjectTracking      
   std::array<double, 6> lower_force_threshold  = {100.0, 100.0, 100.0, 100.0, 100.0, 100.0};
   std::array<double, 6> upper_force_threshold  = {100.0, 100.0, 100.0, 100.0, 100.0, 100.0};
   this->Panda_Robot->setCollisionBehavior(lower_torque_threshold, upper_torque_threshold, lower_force_threshold, upper_force_threshold);
+  this->Panda_Robot->setCartesianImpedance({{2000, 2000, 2000, 100, 100, 100}});
 
   // Deklaration und Definition der Callback-Lambda-Funktion und der dazu benötigten Variablen
   double time            = 0.0;
@@ -3563,7 +3548,7 @@ void                         C_Robot_Panda::Panda_Processor_ObjectTracking      
   // Aufruf der Lambda-Callback-Funktion
   try
     {
-    this->Panda_Robot->control(Motion_Control_Callback, ControllerMode::kJointImpedance, true, 1.0);
+    this->Panda_Robot->control(Motion_Control_Callback, ControllerMode::kCartesianImpedance, true, 1.0);
     }
   catch (const franka::Exception& ex)
     {
@@ -3580,7 +3565,7 @@ void                         C_Robot_Panda::Panda_Processor_ContinousMovement   
   std::array<double, 6> lower_force_threshold  = {100.0, 100.0, 100.0, 100.0, 100.0, 100.0};
   std::array<double, 6> upper_force_threshold  = {100.0, 100.0, 100.0, 100.0, 100.0, 100.0};
   this->Panda_Robot->setCollisionBehavior(lower_torque_threshold, upper_torque_threshold, lower_force_threshold, upper_force_threshold);
-
+  this->Panda_Robot->setCartesianImpedance({{2000, 2000, 2000, 100, 100, 100}});
   // Deklaration und Definition der Callback-Lambda-Funktion und der dazu benötigten Variablen
   double time            = 0.0;
   //double tau             = 0.0;
@@ -3602,7 +3587,7 @@ void                         C_Robot_Panda::Panda_Processor_ContinousMovement   
   // Aufruf der Lambda-Callback-Funktion
   try
     {
-    this->Panda_Robot->control(Motion_Control_Callback, ControllerMode::kJointImpedance, true, 1.0);
+    this->Panda_Robot->control(Motion_Control_Callback, ControllerMode::kCartesianImpedance, true, 1.0);
     }
   catch (const franka::Exception& ex)
     {
