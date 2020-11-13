@@ -1089,7 +1089,6 @@ void C_CameraManager::startTracking()
 void C_CameraManager::stopTracking()
   {
   *this->roistatus = objectLost;
-
   this->filterFlags->setObjectDetection(false);
   this->filterFlags->setRoiAdjustment(false);
   this->filterFlags->setTrackingActive(false);
@@ -1504,7 +1503,6 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
         }
       if(this->trackingManager->kalmanAlive)
         {
-//          this->trackingManager->processKalman(pData->objektVektor.X, pData->objektVektor.Y, pData->objektVektor.Z);
         this->trackingManager->predictKalman                     ();
         this->trackingManager->kf->correct                       (pData->objektVektor.X, pData->objektVektor.Y, pData->objektVektor.Z);
         }

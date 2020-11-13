@@ -38,41 +38,37 @@ namespace robotManager
     std::thread*                        smThread;
     C_mathHelper*                       math;
     threadselector                      threadSelector;
+    std::vector<C_AbsolutePose>         vec_AbsPosenBezier;
 
     bool                                threadActive;
     bool                                robotReady;
     int                                 smBallTrackingStep;
 
 
-    void initTCP                            ();
-    void initRobot                          (std::string IPAdresse);
-    bool moveRobotToTarget                  (C_AbsolutePose* targetPose);
-    void sm_BallTracking                    ();
-    bool close_Panda_threading              ();
+    void initTCP                              ();
+    void initRobot                            (std::string IPAdresse);
+    bool moveRobotToTarget                    (C_AbsolutePose* targetPose);
+    void sm_BallTracking                      ();
+    bool close_Panda_threading                ();
 
-    void start_smTracking                   ();
-    void stop_smTracking                    ();
-    C_AbsolutePose calibrateRobotBaseToWorld    (C_AbsolutePose& worldToCam,  C_RelativePose& BoardToTCP);
-
-
+    void start_smTracking                     ();
+    void stop_smTracking                      ();
+    C_AbsolutePose calibrateRobotBaseToWorld  (C_AbsolutePose& worldToCam,  C_RelativePose& BoardToTCP);
   private:
-    static void open_Panda_threading        (void *This);
-    static void threadHelper                (void* This);
-    void boundingBoxToWorld                 ();
-    float mix(float a, float b, float t);
-    float BezierQuadratic(float A, float B, float C, float t);
-    float BezierCubic(float A, float B, float C, float D, float t);
-    float BezierQuartic(float A, float B, float C, float D, float E, float t);
-    float BezierQuintic(float A, float B, float C, float D, float E, float F, float t);
-    float BezierSextic(float A, float B, float C, float D, float E, float F, float G, float t);
-
-
-
+    static void open_Panda_threading          (void *This);
+    static void threadHelper                  (void* This);
+    void boundingBoxToWorld                   ();
+    float mix                                 (float a, float b, float t);
+    float BezierQuadratic                     (float A, float B, float C, float t);
+    float BezierCubic                         (float A, float B, float C, float D, float t);
+    float BezierQuartic                       (float A, float B, float C, float D, float E, float t);
+    float BezierQuintic                       (float A, float B, float C, float D, float E, float F, float t);
+    float BezierSextic                        (float A, float B, float C, float D, float E, float F, float G, float t);
     /************************************************* GETTER SETTER *******************************************************************/
   public:
-    void getAbsoluteHomogenousBaseToTCP     (posen::C_RelativePose* TcpPose);
-    void getAbsoluteHomogenousBaseToTCP     (posen::C_AbsolutePose* TcpPose);
-    void getAbsoluteHomogenousBaseToWorld   (posen::C_AbsolutePose* BasePose);
+    void getAbsoluteHomogenousBaseToTCP       (posen::C_RelativePose* TcpPose);
+    void getAbsoluteHomogenousBaseToTCP       (posen::C_AbsolutePose* TcpPose);
+    void getAbsoluteHomogenousBaseToWorld     (posen::C_AbsolutePose* BasePose);
     };
   }
 

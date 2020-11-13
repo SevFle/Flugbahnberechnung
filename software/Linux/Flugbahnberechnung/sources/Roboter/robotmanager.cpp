@@ -203,6 +203,8 @@ void C_robotManager::stop_smTracking                    ()
   {
   this->state_machine_running->store(false);
   this->roboter->signalMotionDone.store(true);
+  std::this_thread::sleep_for (std::chrono::milliseconds (500));
+
   this->threadSelector = threadselector::continousMovement;
   this->smThread->join();
   this->robotThread->join();
@@ -259,11 +261,11 @@ void C_robotManager::sm_BallTracking()
   C_AbsolutePose tcpPose;
   C_AbsolutePose WorldToRobot = this->roboter->Abs_WorldToRobot_Pose;
   C_AbsolutePose RobotToWorld = this->roboter->Abs_RobotToWorld_Pose;
+  C_AbsolutePose bezierMidPose;
 
   C_AbsolutePose RobotToObject;
   C_AbsolutePose estimateBall;
 
-  S_Posenvektor       WorldToObject;
   S_Positionsvektor   TCPToTargetPose;
   C_AbsolutePose      waitForHitWorld;
   C_RelativePose      waitForHitWorld_inv;
@@ -275,16 +277,6 @@ void C_robotManager::sm_BallTracking()
 
   GlobalObjects::robotConstraints ConstraintsInWorld;
 
-  double distanceObjectToRobot_X = 0.0;
-  double distanceObjectToRobot_Y = 0.0;
-  double distanceObjectToRobot_Z = 0.0;
-  double v0 = 0.0;
-  double height = 0.0;
-  double theta = 0.0;
-  double timeOfFlight = 0.0;
-  int aufloesung = 200;
-  double timestep = 0.0;
-  double distance = 0.0;
 
   double Panda_Vel_max   = 0;
   double Panda_Acc_max   = 0;
@@ -293,11 +285,13 @@ void C_robotManager::sm_BallTracking()
   double verschleifen_grob = 0.1;
   double verschleifen_fein = 0.03;
   double Abs_tcp_pose = 0.0;
+  int iterator = 0;
 
-
+  const float bezier_iterations = 20;
 
   bool inRange = false;
   bool robotHitReady = false;
+  bool robotInKugel = false;
   std::cout << "Robot preparing in World " << std::endl;
   while(*this->state_machine_running == true)
     {
@@ -327,17 +321,24 @@ void C_robotManager::sm_BallTracking()
         deltaHome.X = std::abs(tcpPose.px() - this->roboter->Abs_Home_Pose.px());
         deltaHome.Y = std::abs(tcpPose.py() - this->roboter->Abs_Home_Pose.py());
         deltaHome.Z = std::abs(tcpPose.pz() - this->roboter->Abs_Home_Pose.pz());
-        deltaHome.length = std::sqrt((deltaHome.X*deltaHome.X) + (deltaHome.Y*deltaHome.Y) + (deltaHome.Z*deltaHome.Z));
+        deltaHome.length = std::sqrt((deltaHome.X*deltaHome.X) +
+                                     (deltaHome.Y*deltaHome.Y) +
+                                     (deltaHome.Z*deltaHome.Z));
 
         deltaIntermediate.X = std::abs(tcpPose.px() - this->roboter->Abs_inter_waiting_Pose.px());
         deltaIntermediate.Y = std::abs(tcpPose.py() - this->roboter->Abs_inter_waiting_Pose.py());
         deltaIntermediate.Z = std::abs(tcpPose.pz() - this->roboter->Abs_inter_waiting_Pose.pz());
-        deltaIntermediate.length = std::sqrt((deltaIntermediate.X*deltaIntermediate.X) + (deltaIntermediate.Y*deltaIntermediate.Y) + (deltaIntermediate.Z*deltaIntermediate.Z));
+        deltaIntermediate.length = std::sqrt((deltaIntermediate.X*deltaIntermediate.X) +
+                                             (deltaIntermediate.Y*deltaIntermediate.Y) +
+                                             (deltaIntermediate.Z*deltaIntermediate.Z));
 
-        deltaReady.X = std::abs(tcpPose.px() - this->roboter->Abs_waiting_Pose.px());
-        deltaReady.Y = std::abs(tcpPose.py() - this->roboter->Abs_waiting_Pose.py());
-        deltaReady.Z = std::abs(tcpPose.pz() - this->roboter->Abs_waiting_Pose.pz());
-        deltaReady.length = std::sqrt((deltaReady.X*deltaReady.X) + (deltaReady.Y*deltaReady.Y) + (deltaReady.Z*deltaReady.Z));
+
+        deltaReady.X = std::abs         (tcpPose.px() - this->roboter->Abs_waiting_Pose.px());
+        deltaReady.Y = std::abs         (tcpPose.py() - this->roboter->Abs_waiting_Pose.py());
+        deltaReady.Z = std::abs         (tcpPose.pz() - this->roboter->Abs_waiting_Pose.pz());
+        deltaReady.length = std::sqrt   ((deltaReady.X*deltaReady.X) +
+                                        (deltaReady.Y*deltaReady.Y) +
+                                        (deltaReady.Z*deltaReady.Z));
 
         deltaMin.length = std::min({deltaHome.length, deltaIntermediate.length, deltaReady.length});
 
@@ -366,32 +367,54 @@ void C_robotManager::sm_BallTracking()
 
     break;
 
+      //Bezier Kurve mit Home und Intermediate als Zwischenpunkte
       case 2:
-      if(this->roboter->signalPose == false)
+    for (int i = 0; i < bezier_iterations; ++i)
+      {
+      float t = ((float)i) / (float(bezier_iterations - 1));
+      bezierMidPose.px(this->BezierQuadratic(tcpPose.px(), this->roboter->Abs_inter_waiting_Pose.px(), this->roboter->Abs_waiting_Pose.px(), t));
+      bezierMidPose.py(this->BezierQuadratic(tcpPose.py(), this->roboter->Abs_inter_waiting_Pose.py(), this->roboter->Abs_waiting_Pose.py(), t));
+      bezierMidPose.pz(this->BezierQuadratic(tcpPose.pz(), this->roboter->Abs_inter_waiting_Pose.pz(), this->roboter->Abs_waiting_Pose.pz(), t));
+
+      bezierMidPose.nx(this->BezierQuadratic(tcpPose.nx(), this->roboter->Abs_inter_waiting_Pose.nx(), this->roboter->Abs_waiting_Pose.nx(), t));
+      bezierMidPose.ny(this->BezierQuadratic(tcpPose.ny(), this->roboter->Abs_inter_waiting_Pose.ny(), this->roboter->Abs_waiting_Pose.ny(), t));
+      bezierMidPose.nz(this->BezierQuadratic(tcpPose.nz(), this->roboter->Abs_inter_waiting_Pose.nz(), this->roboter->Abs_waiting_Pose.nz(), t));
+
+      bezierMidPose.ox(this->BezierQuadratic(tcpPose.ox(), this->roboter->Abs_inter_waiting_Pose.ox(), this->roboter->Abs_waiting_Pose.ox(), t));
+      bezierMidPose.oy(this->BezierQuadratic(tcpPose.oy(), this->roboter->Abs_inter_waiting_Pose.oy(), this->roboter->Abs_waiting_Pose.oy(), t));
+      bezierMidPose.oz(this->BezierQuadratic(tcpPose.oz(), this->roboter->Abs_inter_waiting_Pose.oz(), this->roboter->Abs_waiting_Pose.oz(), t));
+
+      bezierMidPose.ax(this->BezierQuadratic(tcpPose.ax(), this->roboter->Abs_inter_waiting_Pose.ax(), this->roboter->Abs_waiting_Pose.ax(), t));
+      bezierMidPose.ay(this->BezierQuadratic(tcpPose.ay(), this->roboter->Abs_inter_waiting_Pose.ay(), this->roboter->Abs_waiting_Pose.ay(), t));
+      bezierMidPose.az(this->BezierQuadratic(tcpPose.az(), this->roboter->Abs_inter_waiting_Pose.az(), this->roboter->Abs_waiting_Pose.az(), t));
+
+      this->vec_AbsPosenBezier.push_back(bezierMidPose);
+      }
+
+      while(iterator <= bezier_iterations -1)
         {
-        this->roboter->Set_Target_Pose(this->roboter->Abs_Home_Pose);
-        this->roboter->signalPose.store(true);
-        }
-      else
-        {
-        this->roboter->Get_Current_TCP_Pose_Motion(tcpPose);
-        TCPToTargetPose.X = (tcpPose.px() - this->roboter->Abs_Home_Pose.px());
-        TCPToTargetPose.Y = (tcpPose.py() - this->roboter->Abs_Home_Pose.pz());
-        TCPToTargetPose.Z = (tcpPose.pz() - this->roboter->Abs_Home_Pose.py());
-        }
-        Abs_tcp_pose  = sqrt(TCPToTargetPose.X * TCPToTargetPose.X +
-                             TCPToTargetPose.Y * TCPToTargetPose.Y +
-                             TCPToTargetPose.Z * TCPToTargetPose.Z);
-        if (Abs_tcp_pose < verschleifen_grob && Abs_tcp_pose != 0.0)
+        this->roboter->signalPose.store               (true);
+        this->roboter->Set_Target_Pose                (this->vec_AbsPosenBezier.at(iterator));
+        this->roboter->Get_Current_TCP_Pose_Motion    (tcpPose);
+
+        TCPToTargetPose.X       = tcpPose.px() - this->vec_AbsPosenBezier.at(iterator).px();
+        TCPToTargetPose.Y       = tcpPose.py() - this->vec_AbsPosenBezier.at(iterator).py();
+        TCPToTargetPose.Z       = tcpPose.pz() - this->vec_AbsPosenBezier.at(iterator).pz();
+
+        TCPToTargetPose.length  = sqrt                (std::pow(TCPToTargetPose.X,2) +
+                                                       std::pow(TCPToTargetPose.Y,2) +
+                                                       std::pow(TCPToTargetPose.Z,2));
+
+        if (TCPToTargetPose.length < verschleifen_grob && iterator <= bezier_iterations -1 )
           {
-          this->smBallTrackingStep = 2;
+          iterator++;
           }
-        else
-          {
-          this->smBallTrackingStep = 2;
-          }
+        }
+        this->smBallTrackingStep = 5;
+          //nächster step
         break;
 
+      //Bezier Kurve mit Home als Zwischenpunkt
       case 3:
         this->roboter->Set_Target_Pose(this->roboter->Abs_inter_waiting_Pose);
         this->roboter->signalPose.store(true);
@@ -401,22 +424,34 @@ void C_robotManager::sm_BallTracking()
                              tcpPose.pz() * tcpPose.pz());
         if (Abs_tcp_pose < verschleifen_grob)
           {
-          this->smBallTrackingStep = 4;
+          this->smBallTrackingStep = 5;
           }
         else
           {
           this->smBallTrackingStep = 3;
           }
         break;
+
+        //Direktes anfahren
     case 4:
-      this->roboter->Set_Target_Pose(this->roboter->Abs_waiting_Pose);
+      if(this->roboter->signalPose == false)
+        {
+        this->roboter->Set_Target_Pose(this->roboter->Abs_waiting_Pose);
         this->roboter->signalPose.store(true);
+        }
+      else
+        {
         this->roboter->Get_Current_TCP_Pose_Motion(tcpPose);
-        Abs_tcp_pose  = sqrt(tcpPose.px() * tcpPose.px() +
-                             tcpPose.py() * tcpPose.py() +
-                             tcpPose.pz() * tcpPose.pz());
-        if (Abs_tcp_pose < verschleifen_fein)
+        TCPToTargetPose.X = (tcpPose.px() - this->roboter->Abs_waiting_Pose.px());
+        TCPToTargetPose.Y = (tcpPose.py() - this->roboter->Abs_waiting_Pose.pz());
+        TCPToTargetPose.Z = (tcpPose.pz() - this->roboter->Abs_waiting_Pose.py());
+        }
+        Abs_tcp_pose  = sqrt(TCPToTargetPose.X * TCPToTargetPose.X +
+                             TCPToTargetPose.Y * TCPToTargetPose.Y +
+                             TCPToTargetPose.Z * TCPToTargetPose.Z);
+        if (Abs_tcp_pose < 0.03 && Abs_tcp_pose != 0.0)
           {
+          this->roboter->signalPose.store(false);
           this->smBallTrackingStep = 5;
           }
         else
@@ -425,8 +460,16 @@ void C_robotManager::sm_BallTracking()
           }
         break;
 
-      break;
     case 5:
+      if(this->roboter->Pose_Reached(this->roboter->Panda_RobotState->O_T_EE,this->roboter->Abs_waiting_Pose,0.001 ,0.01))
+      {
+      this->roboter->signalPose.store(false);
+      this->smBallTrackingStep = 6;
+      }
+      else
+      {
+      this->smBallTrackingStep = 5;
+      }
       break;
     case 6:
       this->smBallTrackingStep = 7;

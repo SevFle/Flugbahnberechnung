@@ -258,8 +258,6 @@ namespace Robot_Panda
     Torques                           Torque_Callback_Motion_Controller                       (double&                time,                   const RobotState&      Robot_State,               Duration& Duration);  // Erstellt die Callback-Funktion fr die Bewegung des Panda
     Torques                           CartesianImpedance_Callback_Function                    (double&                time,                   const RobotState&      Robot_State,               Duration& Duration);  // Erstellt die Callback-Funktion fr die Bewegung des Panda
     bool                              Pose_Reached                                            (double                 Ist,                    double                 Soll,                      double    Epsilon);
-    bool                              Pose_Reached                                            (CartesianPose          Ist_Pose,               CartesianPose          Soll_Pose,                 double    Epsilon_T,                   double    Epsilon_R);
-    bool                              Pose_Reached                                            (std::array<double, 16>      Ist_Pose,               C_AbsolutePose         Soll_Pose,                 double    Epsilon_T,                   double    Epsilon_R);
     void                              HomogenousOrientationToQuaternion                       (Quaternion<double>&    Quat,                   C_AbsolutePose         AbsolutePose);
     void                              HomogenousOrientationToQuaternion                       (Quaternion<double>&    Quat,                   C_RelativePose         RelativePose);
     void                              HomogenousPoseToFrankaPose                              (CartesianPose&         FrankaPose,             C_AbsolutePose         AbsolutePose);
@@ -302,6 +300,8 @@ namespace Robot_Panda
     void                              Get_WorldToTCP_Pose_ObjectTracking                      (C_AbsolutePose&        WorldToTCP_Pose);
     void                              Get_WorldToTCP_Pose_ObjectTracking                      (C_AbsolutePose         TCP_Pose,               C_AbsolutePose&         WorldToTCP_Pose);
     void                              Set_Target_Pose                                         (C_AbsolutePose&        targetPose);
+    bool                              Pose_Reached                                            (CartesianPose          Ist_Pose,               CartesianPose          Soll_Pose,                 double    Epsilon_T,                   double    Epsilon_R);
+    bool                              Pose_Reached                                            (std::array<double, 16>      Ist_Pose,               C_AbsolutePose         Soll_Pose,                 double    Epsilon_T,                   double    Epsilon_R);
     };
   }
 #endif

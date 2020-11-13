@@ -2303,8 +2303,8 @@ CartesianVelocities          C_Robot_Panda::CartesianVel_Callback_Function_Conti
   /* Rotation    = 2.0   [rad/s]                                                          */
   /* Ellbogen    = nicht berücksichtigt                                                   */
   /****************************************************************************************/
-  double Stellwert_Pos_max    = 0.2;
-  double Stellwert_Orient_max = 0.2;
+  double Stellwert_Pos_max    = 0.1;
+  double Stellwert_Orient_max = 0.1;
   double Stellwert_Pos_Abs    = sqrt(Stellwert_Pos_VX     * Stellwert_Pos_VX     + Stellwert_Pos_VY     * Stellwert_Pos_VY     + Stellwert_Pos_VZ     * Stellwert_Pos_VZ);
   double Stellwert_Orient_Abs = sqrt(Stellwert_Orient_VRX * Stellwert_Orient_VRX + Stellwert_Orient_VRY * Stellwert_Orient_VRY + Stellwert_Orient_VRZ * Stellwert_Orient_VRZ);
 
@@ -3565,7 +3565,7 @@ void                         C_Robot_Panda::Panda_Processor_ContinousMovement   
   std::array<double, 6> lower_force_threshold  = {100.0, 100.0, 100.0, 100.0, 100.0, 100.0};
   std::array<double, 6> upper_force_threshold  = {100.0, 100.0, 100.0, 100.0, 100.0, 100.0};
   this->Panda_Robot->setCollisionBehavior(lower_torque_threshold, upper_torque_threshold, lower_force_threshold, upper_force_threshold);
-  this->Panda_Robot->setCartesianImpedance({{2000, 2000, 2000, 100, 100, 100}});
+  this->Panda_Robot->setCartesianImpedance({{2000, 2000, 200, 100, 100, 100}});
   // Deklaration und Definition der Callback-Lambda-Funktion und der dazu benötigten Variablen
   double time            = 0.0;
   //double tau             = 0.0;
