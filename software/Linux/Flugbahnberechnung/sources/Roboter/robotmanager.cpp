@@ -256,6 +256,50 @@ float C_robotManager::BezierSextic(float A, float B, float C, float D, float E, 
   return mix(ABCDEF, BCDEFG, t);
   }
 
+C_AbsolutePose C_robotManager::computeBezier              (C_AbsolutePose start, C_AbsolutePose mid, C_AbsolutePose end, float t)
+  {
+  C_AbsolutePose bezierPose;
+
+  bezierPose.px(this->BezierQuadratic(start.px(), mid.px(), end.px(), t));
+  bezierPose.py(this->BezierQuadratic(start.py(), mid.py(), end.py(), t));
+  bezierPose.pz(this->BezierQuadratic(start.pz(), mid.pz(), end.pz(), t));
+
+  bezierPose.nx(this->BezierQuadratic(start.nx(), mid.nx(), end.nx(), t));
+  bezierPose.ny(this->BezierQuadratic(start.ny(), mid.ny(), end.ny(), t));
+  bezierPose.nz(this->BezierQuadratic(start.nz(), mid.nz(), end.nz(), t));
+
+  bezierPose.ox(this->BezierQuadratic(start.ox(), mid.ox(), end.ox(), t));
+  bezierPose.oy(this->BezierQuadratic(start.oy(), mid.oy(), end.oy(), t));
+  bezierPose.oz(this->BezierQuadratic(start.oz(), mid.oz(), end.oz(), t));
+
+  bezierPose.ax(this->BezierQuadratic(start.ax(), mid.ax(), end.ax(), t));
+  bezierPose.ay(this->BezierQuadratic(start.ay(), mid.ay(), end.ay(), t));
+  bezierPose.az(this->BezierQuadratic(start.az(), mid.az(), end.az(), t));
+
+  }
+
+C_AbsolutePose C_robotManager::computeBezier              (C_AbsolutePose start, C_AbsolutePose mid1, C_AbsolutePose mid2, C_AbsolutePose end, float t)
+  {
+  C_AbsolutePose bezierPose;
+
+  bezierPose.px(this->BezierCubic(start.px(), mid1.px(), mid2.px(), end.px(), t));
+  bezierPose.py(this->BezierCubic(start.py(), mid1.py(), mid2.py(), end.py(), t));
+  bezierPose.pz(this->BezierCubic(start.pz(), mid1.pz(), mid2.pz(),end.pz(), t));
+
+  bezierPose.nx(this->BezierCubic(start.nx(), mid1.nx(), mid2.nx(), end.nx(), t));
+  bezierPose.ny(this->BezierCubic(start.ny(), mid1.ny(), mid2.ny(), end.ny(), t));
+  bezierPose.nz(this->BezierCubic(start.nz(), mid1.nz(), mid2.nz(), end.nz(), t));
+
+  bezierPose.ox(this->BezierCubic(start.ox(), mid1.ox(), mid2.ox(), end.ox(), t));
+  bezierPose.oy(this->BezierCubic(start.oy(), mid1.oy(), mid2.oy(), end.oy(), t));
+  bezierPose.oz(this->BezierCubic(start.oz(), mid1.oz(), mid2.oz(), end.oz(), t));
+
+  bezierPose.ax(this->BezierCubic(start.ax(), mid1.ax(), mid2.ax(), end.ax(), t));
+  bezierPose.ay(this->BezierCubic(start.ay(), mid1.ay(), mid2.ay(), end.ay(), t));
+  bezierPose.az(this->BezierCubic(start.az(), mid1.az(), mid2.az(), end.az(), t));
+  }
+
+
 void C_robotManager::sm_BallTracking()
   {
   C_AbsolutePose tcpPose;
@@ -372,22 +416,7 @@ void C_robotManager::sm_BallTracking()
     for (int i = 0; i < bezier_iterations; ++i)
       {
       float t = ((float)i) / (float(bezier_iterations - 1));
-      bezierMidPose.px(this->BezierQuadratic(tcpPose.px(), this->roboter->Abs_inter_waiting_Pose.px(), this->roboter->Abs_waiting_Pose.px(), t));
-      bezierMidPose.py(this->BezierQuadratic(tcpPose.py(), this->roboter->Abs_inter_waiting_Pose.py(), this->roboter->Abs_waiting_Pose.py(), t));
-      bezierMidPose.pz(this->BezierQuadratic(tcpPose.pz(), this->roboter->Abs_inter_waiting_Pose.pz(), this->roboter->Abs_waiting_Pose.pz(), t));
-
-      bezierMidPose.nx(this->BezierQuadratic(tcpPose.nx(), this->roboter->Abs_inter_waiting_Pose.nx(), this->roboter->Abs_waiting_Pose.nx(), t));
-      bezierMidPose.ny(this->BezierQuadratic(tcpPose.ny(), this->roboter->Abs_inter_waiting_Pose.ny(), this->roboter->Abs_waiting_Pose.ny(), t));
-      bezierMidPose.nz(this->BezierQuadratic(tcpPose.nz(), this->roboter->Abs_inter_waiting_Pose.nz(), this->roboter->Abs_waiting_Pose.nz(), t));
-
-      bezierMidPose.ox(this->BezierQuadratic(tcpPose.ox(), this->roboter->Abs_inter_waiting_Pose.ox(), this->roboter->Abs_waiting_Pose.ox(), t));
-      bezierMidPose.oy(this->BezierQuadratic(tcpPose.oy(), this->roboter->Abs_inter_waiting_Pose.oy(), this->roboter->Abs_waiting_Pose.oy(), t));
-      bezierMidPose.oz(this->BezierQuadratic(tcpPose.oz(), this->roboter->Abs_inter_waiting_Pose.oz(), this->roboter->Abs_waiting_Pose.oz(), t));
-
-      bezierMidPose.ax(this->BezierQuadratic(tcpPose.ax(), this->roboter->Abs_inter_waiting_Pose.ax(), this->roboter->Abs_waiting_Pose.ax(), t));
-      bezierMidPose.ay(this->BezierQuadratic(tcpPose.ay(), this->roboter->Abs_inter_waiting_Pose.ay(), this->roboter->Abs_waiting_Pose.ay(), t));
-      bezierMidPose.az(this->BezierQuadratic(tcpPose.az(), this->roboter->Abs_inter_waiting_Pose.az(), this->roboter->Abs_waiting_Pose.az(), t));
-
+      bezierMidPose = this->computeBezier(tcpPose, this->roboter->Abs_inter_waiting_Pose,  this->roboter->Abs_waiting_Pose, t);
       this->vec_AbsPosenBezier.push_back(bezierMidPose);
       }
 

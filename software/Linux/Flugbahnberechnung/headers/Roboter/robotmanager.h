@@ -64,6 +64,9 @@ namespace robotManager
     float BezierQuartic                       (float A, float B, float C, float D, float E, float t);
     float BezierQuintic                       (float A, float B, float C, float D, float E, float F, float t);
     float BezierSextic                        (float A, float B, float C, float D, float E, float F, float G, float t);
+    C_AbsolutePose computeBezier              (C_AbsolutePose start, C_AbsolutePose mid, C_AbsolutePose end, float t);
+    C_AbsolutePose computeBezier              (C_AbsolutePose start, C_AbsolutePose mid1, C_AbsolutePose mid2, C_AbsolutePose End, float t);
+
     /************************************************* GETTER SETTER *******************************************************************/
   public:
     void getAbsoluteHomogenousBaseToTCP       (posen::C_RelativePose* TcpPose);
