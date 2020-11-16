@@ -49,6 +49,9 @@ public:
 
   void setTaktgeber_Intervall(int value);
 
+private:
+  void writePrediction();
+
 private slots:
   void Fill_Mat_2_Lbl(cv::Mat& img, QLabel* label);
 

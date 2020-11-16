@@ -36,7 +36,7 @@ namespace trackingManager
 
     S_Positionsvektor*                  PredPosition;
     double                              PredVelocity[3];
-
+    cv::Scalar                          gainMean;
     private:
     C_GlobalObjects*                    globalObjects;
     S_Positionsvektor*                  Positionsvektor_alt;

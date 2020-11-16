@@ -297,6 +297,16 @@ C_AbsolutePose C_robotManager::computeBezier              (C_AbsolutePose start,
   bezierPose.ax(this->BezierCubic(start.ax(), mid1.ax(), mid2.ax(), end.ax(), t));
   bezierPose.ay(this->BezierCubic(start.ay(), mid1.ay(), mid2.ay(), end.ay(), t));
   bezierPose.az(this->BezierCubic(start.az(), mid1.az(), mid2.az(), end.az(), t));
+  return bezierPose;
+  }
+float C_robotManager::computeBezierlength(std::vector<C_AbsolutePose>& vecOfBezierPoints)
+  {
+  float bezierlength = 0.0;
+  for (auto it = std::begin(vecOfBezierPoints); it < std::end(vecOfBezierPoints); it++)
+    {
+    bezierlength += std::sqrt(std::pow(it++ - it, 2) + std::pow(it++ - it, 2));
+    }
+  return bezierlength;
   }
 
 
@@ -320,7 +330,14 @@ void C_robotManager::sm_BallTracking()
   posen::S_Positionsvektor deltaHome, deltaIntermediate, deltaReady, deltaMin;
 
   GlobalObjects::robotConstraints ConstraintsInWorld;
-
+ //########################################
+ //maxVel 1.7 m/s
+ //maxAcc 13.0 m/s²
+ //maxJerk 6500.0 m/s³
+ //########################################
+  const double maxVel= 1.2;
+  const double maxAcc = 9.0;
+  const double maxJerk= 5000;
 
   double Panda_Vel_max   = 0;
   double Panda_Acc_max   = 0;
@@ -344,12 +361,13 @@ void C_robotManager::sm_BallTracking()
       //Berechne Robot Bewegungsraum zu Weltkoordinaten
       case 0:
         //Transformiere die Roboter Boundingbox ins Weltkoordinatensystem
-        ConstraintsInWorld.X  = this->roboter->Abs_WorldToRobot_Pose.px() + this->outerConstraints->X;
-        ConstraintsInWorld.nX = this->roboter->Abs_WorldToRobot_Pose.px() - this->outerConstraints->nX;
-        ConstraintsInWorld.Y  = this->roboter->Abs_WorldToRobot_Pose.py() + this->outerConstraints->Y;
-        ConstraintsInWorld.nY = this->roboter->Abs_WorldToRobot_Pose.py() - this->outerConstraints->nY;
-        ConstraintsInWorld.Z  = this->roboter->Abs_WorldToRobot_Pose.pz() + this->outerConstraints->Z;
-        ConstraintsInWorld.nZ = this->roboter->Abs_WorldToRobot_Pose.pz() - this->outerConstraints->nZ;
+
+        ConstraintsInWorld.X  = this->roboter->Abs_RobotToWorld_Pose.px() + this->outerConstraints->X;
+        ConstraintsInWorld.nX = this->roboter->Abs_RobotToWorld_Pose.px() - this->outerConstraints->nX;
+        ConstraintsInWorld.Y  = this->roboter->Abs_RobotToWorld_Pose.py() + this->outerConstraints->Y;
+        ConstraintsInWorld.nY = this->roboter->Abs_RobotToWorld_Pose.py() - this->outerConstraints->nY;
+        ConstraintsInWorld.Z  = this->roboter->Abs_RobotToWorld_Pose.pz() + this->outerConstraints->Z;
+        ConstraintsInWorld.nZ = this->roboter->Abs_RobotToWorld_Pose.pz() - this->outerConstraints->nZ;
 
         Panda_Vel_max   = abs(0.2);
         Panda_Acc_max   = abs(1);
@@ -361,50 +379,6 @@ void C_robotManager::sm_BallTracking()
 
         //Berechne die Distanz zu den drei vorgespeicherten Posen und vergleiche die Distanz. Die kürzeste Strecke wird angefahren
         //
-        this->roboter->Get_Current_TCP_Pose(tcpPose);
-        deltaHome.X = std::abs(tcpPose.px() - this->roboter->Abs_Home_Pose.px());
-        deltaHome.Y = std::abs(tcpPose.py() - this->roboter->Abs_Home_Pose.py());
-        deltaHome.Z = std::abs(tcpPose.pz() - this->roboter->Abs_Home_Pose.pz());
-        deltaHome.length = std::sqrt((deltaHome.X*deltaHome.X) +
-                                     (deltaHome.Y*deltaHome.Y) +
-                                     (deltaHome.Z*deltaHome.Z));
-
-        deltaIntermediate.X = std::abs(tcpPose.px() - this->roboter->Abs_inter_waiting_Pose.px());
-        deltaIntermediate.Y = std::abs(tcpPose.py() - this->roboter->Abs_inter_waiting_Pose.py());
-        deltaIntermediate.Z = std::abs(tcpPose.pz() - this->roboter->Abs_inter_waiting_Pose.pz());
-        deltaIntermediate.length = std::sqrt((deltaIntermediate.X*deltaIntermediate.X) +
-                                             (deltaIntermediate.Y*deltaIntermediate.Y) +
-                                             (deltaIntermediate.Z*deltaIntermediate.Z));
-
-
-        deltaReady.X = std::abs         (tcpPose.px() - this->roboter->Abs_waiting_Pose.px());
-        deltaReady.Y = std::abs         (tcpPose.py() - this->roboter->Abs_waiting_Pose.py());
-        deltaReady.Z = std::abs         (tcpPose.pz() - this->roboter->Abs_waiting_Pose.pz());
-        deltaReady.length = std::sqrt   ((deltaReady.X*deltaReady.X) +
-                                        (deltaReady.Y*deltaReady.Y) +
-                                        (deltaReady.Z*deltaReady.Z));
-
-        deltaMin.length = std::min({deltaHome.length, deltaIntermediate.length, deltaReady.length});
-
-        if(deltaMin.length == deltaHome.length)
-          {
-          this->smBallTrackingStep = 2;
-          break;
-          }
-        else if(deltaMin.length == deltaIntermediate.length)
-          {
-          this->smBallTrackingStep = 2;
-          break;
-          }
-        else if(deltaMin.length == deltaReady.length)
-          {
-          this->smBallTrackingStep = 2;
-          break;
-          }
-        else
-          {
-          std::cout << "No vaild Pose found, Moving to Home" << std::endl;
-          }
         this->smBallTrackingStep = 2;
       break;
     case 1:
@@ -439,57 +413,14 @@ void C_robotManager::sm_BallTracking()
           iterator++;
           }
         }
+        this->vec_AbsPosenBezier.clear();
         this->smBallTrackingStep = 5;
           //nächster step
         break;
 
-      //Bezier Kurve mit Home als Zwischenpunkt
-      case 3:
-        this->roboter->Set_Target_Pose(this->roboter->Abs_inter_waiting_Pose);
-        this->roboter->signalPose.store(true);
-        this->roboter->Get_Current_TCP_Pose_Motion(tcpPose);
-        Abs_tcp_pose  = sqrt(tcpPose.px() * tcpPose.px() +
-                             tcpPose.py() * tcpPose.py() +
-                             tcpPose.pz() * tcpPose.pz());
-        if (Abs_tcp_pose < verschleifen_grob)
-          {
-          this->smBallTrackingStep = 5;
-          }
-        else
-          {
-          this->smBallTrackingStep = 3;
-          }
-        break;
-
-        //Direktes anfahren
-    case 4:
-      if(this->roboter->signalPose == false)
-        {
-        this->roboter->Set_Target_Pose(this->roboter->Abs_waiting_Pose);
-        this->roboter->signalPose.store(true);
-        }
-      else
-        {
-        this->roboter->Get_Current_TCP_Pose_Motion(tcpPose);
-        TCPToTargetPose.X = (tcpPose.px() - this->roboter->Abs_waiting_Pose.px());
-        TCPToTargetPose.Y = (tcpPose.py() - this->roboter->Abs_waiting_Pose.pz());
-        TCPToTargetPose.Z = (tcpPose.pz() - this->roboter->Abs_waiting_Pose.py());
-        }
-        Abs_tcp_pose  = sqrt(TCPToTargetPose.X * TCPToTargetPose.X +
-                             TCPToTargetPose.Y * TCPToTargetPose.Y +
-                             TCPToTargetPose.Z * TCPToTargetPose.Z);
-        if (Abs_tcp_pose < 0.03 && Abs_tcp_pose != 0.0)
-          {
-          this->roboter->signalPose.store(false);
-          this->smBallTrackingStep = 5;
-          }
-        else
-          {
-          this->smBallTrackingStep = 4;
-          }
-        break;
 
     case 5:
+      this->roboter->Set_Target_Pose                (this->roboter->Abs_waiting_Pose);
       if(this->roboter->Pose_Reached(this->roboter->Panda_RobotState->O_T_EE,this->roboter->Abs_waiting_Pose,0.001 ,0.01))
       {
       this->roboter->signalPose.store(false);
@@ -500,43 +431,60 @@ void C_robotManager::sm_BallTracking()
       this->smBallTrackingStep = 5;
       }
       break;
+
     case 6:
+      //Signal Robot Ready
       this->smBallTrackingStep = 7;
       break;
     case 7:
+      if(this->globalObjects->objectPosenQue->try_pop(this->objectPayload))
+        {
+        this->smBallTrackingStep = 10;
+        }
+      else
+        {
+        this->smBallTrackingStep = 7;
+        }
       break;
     case 8:
-        //Signal Robot Ready
-        break;
+//      this->roboter->Get_Current_TCP_Pose_Motion(tcpPose);
+//      //Fahre Roboter zur rechten Seite (-Y)bezogen auf sein KOS
+//      if(this->objectPayload->predBall_in->Y > this->roboter->Abs_WorldToRobot_Pose.py())
+//        {
+//        }
+//      //Fahre Roboter zur linken Seite (+Y) bezogen auf sein KOS
+//      else if(this->objectPayload->predBall_in->Y < this->roboter->Abs_WorldToRobot_Pose.py())
+//        {
+//        tcpPose.py(0.3);
+//        this->roboter->Set_Target_Pose(tcpPose);
+//        }
 
-      //Versuche aktuelle Objektdaten aus der Que zu holen. Falls nicht erfolgreich, bleibe im aktuellen Schritt
-      case 9:
-        if(this->globalObjects->objectPosenQue->try_pop(this->objectPayload))
-          {
-          this->smBallTrackingStep = 10;
-          }
-        else
-          {
-          this->smBallTrackingStep = 9;
-          }
-        break;
+//      this->roboter->signalPose.store(true);
+    break;
+    case 9:
+
+    break;
 
       case 10:
-          //Transformiere die erwartete Pose zurück in RobotPose und fahre sie an wenn sie im Arbeitsraum (CONSTRAINT) liegt.
-//          estimateBall.px(this->objectPayload->predPosition->X);
-//          estimateBall.py(this->objectPayload->predPosition->Y);
-//          estimateBall.py(this->objectPayload->predPosition->Z);
+      {
+      C_AbsolutePose pose_BallIn, pose_BallOut, pose_ballMed;
+      float length, execTime;
 
-//          waitForHitRobot_TCP = RobotToWorld.operator *(estimateBall);
-//          robotHitReady = true;
-//          if(this->objectPayload->timeOnTarget_mid <= 1.0)
-//            {
-//            this->smBallTrackingStep = 12;
-//            }
-//          else
-//           {
+      this->roboter->Get_Current_TCP_Pose_Motion(tcpPose);
+      //Berechne Kurve für die aktuell verfügbaren Balldaten
+      for (int i = 0; i < bezier_iterations; ++i)
+        {
+        float t = ((float)i) / (float(bezier_iterations - 1));
+        bezierMidPose = this->computeBezier(tcpPose, pose_BallOut, pose_ballMed,  pose_BallIn, t);
+        this->vec_AbsPosenBezier.push_back(bezierMidPose);
+        }
+      //Berechne die Länge der Kurve [m]
+      length    = this->computeBezierlength(this->vec_AbsPosenBezier);
 
-//           }
+      //Berechne die benötigte Zeit zur Ausführung der Bewegung
+      execTime  = length/maxVel;
+
+      }
     break;
     }//switch
     }//while

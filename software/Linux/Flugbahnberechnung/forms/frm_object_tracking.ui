@@ -1147,7 +1147,7 @@
     <property name="title">
      <string>Kalmanfilter estimate</string>
     </property>
-    <widget class="QTextEdit" name="txb_position_z_2">
+    <widget class="QTextEdit" name="txb_position_z_pred">
      <property name="geometry">
       <rect>
        <x>130</x>
@@ -1163,7 +1163,7 @@
       <string>0</string>
      </property>
     </widget>
-    <widget class="QTextEdit" name="txb_position_x_2">
+    <widget class="QTextEdit" name="txb_position_x_pred">
      <property name="geometry">
       <rect>
        <x>130</x>
@@ -1179,7 +1179,7 @@
       <string>0</string>
      </property>
     </widget>
-    <widget class="QTextEdit" name="txb_position_y_2">
+    <widget class="QTextEdit" name="txb_position_y_pred">
      <property name="geometry">
       <rect>
        <x>130</x>
@@ -1231,7 +1231,7 @@
       <string>Position [Z]</string>
      </property>
     </widget>
-    <widget class="QTextEdit" name="txb_velocity_z_2">
+    <widget class="QTextEdit" name="txb_velocity_z_pred">
      <property name="geometry">
       <rect>
        <x>350</x>
@@ -1301,7 +1301,7 @@
       <string>Velocity [Z]</string>
      </property>
     </widget>
-    <widget class="QTextEdit" name="txb_velocity_x_2">
+    <widget class="QTextEdit" name="txb_velocity_x_pred">
      <property name="geometry">
       <rect>
        <x>350</x>
@@ -1317,7 +1317,7 @@
       <string>0</string>
      </property>
     </widget>
-    <widget class="QTextEdit" name="txb_velocity_y_2">
+    <widget class="QTextEdit" name="txb_velocity_y_pred">
      <property name="geometry">
       <rect>
        <x>350</x>
@@ -1333,7 +1333,7 @@
       <string>0</string>
      </property>
     </widget>
-    <widget class="QTextEdit" name="txb_acceleration_z_2">
+    <widget class="QTextEdit" name="txb_acceleration_z_pred">
      <property name="geometry">
       <rect>
        <x>600</x>
@@ -1349,7 +1349,7 @@
       <string>0</string>
      </property>
     </widget>
-    <widget class="QTextEdit" name="txb_acceleration_x_2">
+    <widget class="QTextEdit" name="txb_acceleration_x_pred">
      <property name="geometry">
       <rect>
        <x>600</x>
@@ -1365,7 +1365,7 @@
       <string>0</string>
      </property>
     </widget>
-    <widget class="QTextEdit" name="txb_acceleration_y_2">
+    <widget class="QTextEdit" name="txb_acceleration_y_pred">
      <property name="geometry">
       <rect>
        <x>600</x>

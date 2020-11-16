@@ -35,7 +35,7 @@ void C_kalmanFilter::init(int dynamParams, int measureParams, int controlParams,
   this->dynamParams   = dynamParams;
   this->type          = type;
   this->kf            = new cv::KalmanFilter(this->dynamParams, this->measureParams, this->controlParams, type);
-  this->measurement   = new cv::Mat_<float>(dynamParams,1);
+  this->measurement   = new cv::Mat_<float>(measureParams,1);
   this->state_post    = new cv::Mat;
   this->state_pre     = new cv::Mat;
 
@@ -44,7 +44,6 @@ void C_kalmanFilter::init(int dynamParams, int measureParams, int controlParams,
   }
 void C_kalmanFilter::reset()
   {
-  std::cout << "##################### KALMAN RESET PHASE ######################" << std::endl;
   this->kf->init(this->dynamParams, this->measureParams, this->controlParams, this->type);
   }
 void C_kalmanFilter::predict(float dT)
@@ -56,7 +55,6 @@ void C_kalmanFilter::predict(float dT)
     }
   else
     {
-    std::cout << "##################### KALMAN PREDICT PHASE ######################" << std::endl;
     //STACHNISS METHODE
 
     this->kf->transitionMatrix.at<float>(2) = dtSeconds;
@@ -68,31 +66,22 @@ void C_kalmanFilter::predict(float dT)
     this->kf->transitionMatrix.at<float>(33) = dtSeconds;
     this->kf->transitionMatrix.at<float>(43) = dtSeconds;
     this->kf->transitionMatrix.at<float>(53) = dtSeconds;
-
-
-    //this->kalmanOnCuda->transitionMatrix->upload(*this->transitionMatrix);
-    std::cout << "Kalmanfilter->transitionMatrix [A] at " << dtSeconds << ": " << std::endl << this->kf->transitionMatrix <<std::endl;
-
-
     *this->state_pre = this->kf->predict();
-    std::cout << "Kalmanfilter->Prediction at " << dtSeconds << ": " << std::endl << this->state_pre<<std::endl;
+    std::cout << "transitionmatrix: " << std::endl << this->kf->transitionMatrix << std::endl;
     }
 
 
   }
 void C_kalmanFilter::correct(float x, float y, float z)
   {
-  std::cout << "##################### KALMAN CORRECTION PHASE ######################" << std::endl;
   this->measurement->at<float>(0) = x;
   this->measurement->at<float>(1) = y;
   this->measurement->at<float>(2) = z;
-  std::cout << "Kalmanfilter->measurement "<< std::endl << *this->measurement <<std::endl;
 
   this->kf->correct(*this->measurement);
   }
 void C_kalmanFilter::initFirstPosition(float x, float y, float z, float vx, float vy, float vz)
   {
-  std::cout << "##################### KALMAN INIT FIRST POSITION PHASE ######################" << std::endl;
   this->kf->statePost.at<float>(0)         = x;
   this->kf->statePost.at<float>(1)         = y;
   this->kf->statePost.at<float>(2)         = z;
@@ -101,14 +90,17 @@ void C_kalmanFilter::initFirstPosition(float x, float y, float z, float vx, floa
   this->kf->statePost.at<float>(5)         = vz;
   this->kf->statePost.at<float>(8)         = -9.807;
 
-  cv::setIdentity(this->kf->errorCovPre, cv::Scalar(1e-1));
-  //this->kalmanOnCuda->errorCovPre->upload(*this->errorCovPre);
-
+  cv::setIdentity(this->kf->errorCovPre, cv::Scalar(1));
+  this->kf->gain.at<float>(0,0) = 1.0;
+  this->kf->gain.at<float>(1,1) = 1.0;
+  this->kf->gain.at<float>(2,2) = 1.0;
+  std::cout << "gain on first hit: " << std::endl << this->kf->gain << std::endl;
   }
 
 cv::Scalar C_kalmanFilter::getGainMean()
   {
   cv::Scalar gainMean = cv::mean(this->kf->gain);
+  std::cout << "gain: " << std::endl << this->kf->gain << std::endl;
   return gainMean;
   }
 

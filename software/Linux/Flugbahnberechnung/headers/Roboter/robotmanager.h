@@ -66,6 +66,8 @@ namespace robotManager
     float BezierSextic                        (float A, float B, float C, float D, float E, float F, float G, float t);
     C_AbsolutePose computeBezier              (C_AbsolutePose start, C_AbsolutePose mid, C_AbsolutePose end, float t);
     C_AbsolutePose computeBezier              (C_AbsolutePose start, C_AbsolutePose mid1, C_AbsolutePose mid2, C_AbsolutePose End, float t);
+    C_AbsolutePose computePoseInWorld         (C_AbsolutePose Abs_pose);
+    float computeBezierlength                 (std::vector<C_AbsolutePose>& vecOfBezierPoints);
 
     /************************************************* GETTER SETTER *******************************************************************/
   public:

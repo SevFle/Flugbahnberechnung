@@ -129,8 +129,7 @@ void C_frm_Object_Tracking::Taktgeber_Tick()
       this->Ui->txb_acceleration_x->setText(QString::number(pData->objectAcceleration[0], 'f', 3));
       this->Ui->txb_acceleration_y->setText(QString::number(pData->objectAcceleration[1], 'f', 3));
       this->Ui->txb_acceleration_z->setText(QString::number(pData->objectAcceleration[2], 'f', 3));
-
-
+      this->writePrediction();
         }
     else
       {
@@ -228,7 +227,32 @@ void frm_Object_Tracking::C_frm_Object_Tracking::on_bt_start_clicked()
     }
 }
 
+void C_frm_Object_Tracking::writePrediction()
+  {
+  if(pData->found)
+    {
+    this->Ui->txb_position_x_pred->setText(QString::number(this->Main->cameraManager->trackingManager->PredPosition->X));
+    this->Ui->txb_position_y_pred->setText(QString::number(this->Main->cameraManager->trackingManager->PredPosition->Y));
+    this->Ui->txb_position_z_pred->setText(QString::number(this->Main->cameraManager->trackingManager->PredPosition->Z));
 
+    this->Ui->txb_velocity_x_pred->setText(QString::number(this->Main->cameraManager->trackingManager->PredVelocity[0]));
+    this->Ui->txb_velocity_y_pred->setText(QString::number(this->Main->cameraManager->trackingManager->PredVelocity[1]));
+    this->Ui->txb_velocity_z_pred->setText(QString::number(this->Main->cameraManager->trackingManager->PredVelocity[2]));
+
+    this->Ui->txb_gain_mean->setText(QString::number(this->Main->cameraManager->trackingManager->gainMean(0)));
+    }
+  else
+    {
+    this->Ui->txb_position_x_pred->setText(QString::number(0));
+    this->Ui->txb_position_y_pred->setText(QString::number(0));
+    this->Ui->txb_position_z_pred->setText(QString::number(0));
+
+    this->Ui->txb_velocity_x_pred->setText(QString::number(0));
+    this->Ui->txb_velocity_y_pred->setText(QString::number(0));
+    this->Ui->txb_velocity_z_pred->setText(QString::number(0));
+
+    }
+  }
 void frm_Object_Tracking::C_frm_Object_Tracking::on_num_camera_id_valueChanged(int arg1)
 {
 this->cameraID = arg1;

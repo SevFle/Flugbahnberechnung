@@ -316,11 +316,6 @@ void C_trackingManager::calcObjectVeloctiy(S_Positionsvektor &objektVektor, floa
   this->objektVektorTm1->X = objektVektor.X;
   this->objektVektorTm1->Y = objektVektor.Y;
   this->objektVektorTm1->Z = objektVektor.Z;
-
-  std::cout << std::endl << "Velocity X: " << objectVelocity[0] << std::endl;
-  std::cout << std::endl << "Velocity Y: " << objectVelocity[1] << std::endl;
-  std::cout << std::endl << "Velocity Z: " << objectVelocity[2] << std::endl;
-
   }
 void C_trackingManager::calcPixelAcceleration           ()
   {
@@ -349,8 +344,17 @@ void C_trackingManager::predictPixelMovement            (int& predX, int& predY,
 void C_trackingManager::predictKalman                   ()
   {
   this->kf->predict(this->dTime);
-  cv::Scalar gain = this->kf->getGainMean();
-  if (gain.val[0] < this->gainthreshold)
+  this->PredPosition->X = this->kf->state_pre->at<double>(0,0);
+  this->PredPosition->Y = this->kf->state_pre->at<double>(1,0);
+  this->PredPosition->Z = this->kf->state_pre->at<double>(2,0);
+
+  this->PredVelocity[0] = this->kf->state_pre->at<double>(3,0);
+  this->PredVelocity[0] = this->kf->state_pre->at<double>(4,0);
+  this->PredVelocity[0] = this->kf->state_pre->at<double>(5,0);
+
+
+  this->gainMean = this->kf->getGainMean();
+  if (gainMean.val[0] < this->gainthreshold)
     {
     posen::S_Positionsvektor robotReadyPose;
     this->positionPayload                   = new GlobalObjects::S_PositionPayload;

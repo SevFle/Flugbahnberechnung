@@ -2308,8 +2308,6 @@ CartesianVelocities          C_Robot_Panda::CartesianVel_Callback_Function_Conti
   double Stellwert_Pos_Abs    = sqrt(Stellwert_Pos_VX     * Stellwert_Pos_VX     + Stellwert_Pos_VY     * Stellwert_Pos_VY     + Stellwert_Pos_VZ     * Stellwert_Pos_VZ);
   double Stellwert_Orient_Abs = sqrt(Stellwert_Orient_VRX * Stellwert_Orient_VRX + Stellwert_Orient_VRY * Stellwert_Orient_VRY + Stellwert_Orient_VRZ * Stellwert_Orient_VRZ);
 
-  std::cout << "Stellwert_Pos_Abs: " << Stellwert_Pos_Abs << std::endl;
-  std::cout << "Stellwert_Orient_Abs: " << Stellwert_Orient_Abs << std::endl;
 
   if (Stellwert_Pos_Abs > Stellwert_Pos_max)
     {
@@ -2327,12 +2325,6 @@ CartesianVelocities          C_Robot_Panda::CartesianVel_Callback_Function_Conti
   if (!Error)
     {
     TCP_Velocity = {{Stellwert_Pos_VX, Stellwert_Pos_VY, Stellwert_Pos_VZ, Stellwert_Orient_VRX, Stellwert_Orient_VRY, Stellwert_Orient_VRZ}};
-    std::cout << "Stellwert_Pos_VX: " << Stellwert_Pos_VX << "  [m/s]" << std::endl;
-    std::cout << "Stellwert_Pos_VY: " << Stellwert_Pos_VY << "  [m/s]" << std::endl;
-    std::cout << "Stellwert_Pos_VZ: " << Stellwert_Pos_VZ << "  [m/s]" << std::endl;
-    std::cout << "Stellwert_Orient_VRX: " << Stellwert_Orient_VRX << "  [rad/s]" << std::endl;
-    std::cout << "Stellwert_Orient_VRY: " << Stellwert_Orient_VRY << "  [rad/s]" << std::endl;
-    std::cout << "Stellwert_Orient_VRZ: " << Stellwert_Orient_VRZ << "  [rad/s]" << std::endl << std::endl << std::endl;
 
     }
   else

@@ -1497,7 +1497,7 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
       //Setze die erste Position des erfassten Objektes falls es N mal hintereinander gefunden wurde;
       if(this->trackingManager->consecutive_found > 2)
         {
-        //this->trackingManager->kf->h_firstMeasurement(pData->objektVektor.X, pData->objektVektor.Y, pData->objektVektor.Z, pData->objectVelocity[0], pData->objectVelocity[1], pData->objectVelocity[2], 2.0f);
+        this->trackingManager->kf->initFirstPosition(pData->objektVektor.X, pData->objektVektor.Y, pData->objektVektor.Z, pData->objectVelocity[0], pData->objectVelocity[1], pData->objectVelocity[2]);
         this->trackingManager->kalmanAlive                      = true;
         this->trackingManager->consecutive_found                = 0;
         }
@@ -1523,6 +1523,13 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
       pData->objektVektor.X = 0;
       pData->objektVektor.Y = 0;
       pData->objektVektor.Z = 0;
+      this->trackingManager->PredPosition->X = 0.0;
+      this->trackingManager->PredPosition->Y = 0.0;
+      this->trackingManager->PredPosition->Z = 0.0;
+
+      this->trackingManager->PredVelocity[0] = 0.0;
+      this->trackingManager->PredVelocity[0] = 0.0;
+      this->trackingManager->PredVelocity[0] = 0.0;
       this->trackingManager->consecutive_found = 0;
       this->trackingManager->setTime();
 
