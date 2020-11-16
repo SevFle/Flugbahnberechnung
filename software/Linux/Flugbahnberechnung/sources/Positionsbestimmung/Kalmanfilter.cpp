@@ -41,6 +41,15 @@ void C_kalmanFilter::init(int dynamParams, int measureParams, int controlParams,
 
   this->kf->statePost.copyTo  (*this->state_post);
   this->kf->statePre.copyTo   (*this->state_pre);
+
+  this->kf->processNoiseCov.at<float>(0) = 1e-2;
+  this->kf->processNoiseCov.at<float>(7) = 1e-2;
+  this->kf->processNoiseCov.at<float>(14) = 5.0f;
+  this->kf->processNoiseCov.at<float>(21) = 5.0f;
+  this->kf->processNoiseCov.at<float>(28) = 1e-2;
+  this->kf->processNoiseCov.at<float>(35) = 1e-2;
+
+  cv::setIdentity(this->kf->measurementNoiseCov, cv::Scalar(1e-1));
   }
 void C_kalmanFilter::reset()
   {
