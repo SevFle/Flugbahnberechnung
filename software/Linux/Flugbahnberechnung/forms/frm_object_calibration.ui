@@ -46,10 +46,10 @@
    <widget class="QLabel" name="lbl_imgFinal">
     <property name="geometry">
      <rect>
-      <x>1110</x>
+      <x>900</x>
       <y>0</y>
-      <width>451</width>
-      <height>401</height>
+      <width>661</width>
+      <height>381</height>
      </rect>
     </property>
     <property name="text">
@@ -1484,10 +1484,10 @@
    <widget class="QGroupBox" name="groupBox_4">
     <property name="geometry">
      <rect>
-      <x>850</x>
-      <y>350</y>
+      <x>860</x>
+      <y>390</y>
       <width>241</width>
-      <height>471</height>
+      <height>431</height>
      </rect>
     </property>
     <property name="title">

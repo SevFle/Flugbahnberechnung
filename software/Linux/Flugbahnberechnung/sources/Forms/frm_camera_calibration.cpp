@@ -729,6 +729,8 @@ void C_frm_Camera_Calibration::switchUI()
     this->Ui->lbl_num_calibration_pictures->setText   ("FPS");
     this->Ui->lbl_stereo_camera_current_cam->setText  ("");
     this->Ui->lbl_calibration_running->setText        ("");
+    this->Ui->lbl_x->setVisible                       (true);
+
   break;
   case 1:
     this->Ui->lbl_img_single_calibration->setVisible  (false);
@@ -755,6 +757,7 @@ void C_frm_Camera_Calibration::switchUI()
 
     this->Ui->txb_usrInput_images->setVisible         (false);
     this->Ui->grpb_2_m12->setVisible                  (true);
+    this->Ui->lbl_x->setVisible                       (false);
 
   break;
     }

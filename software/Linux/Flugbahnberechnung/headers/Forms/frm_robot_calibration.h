@@ -27,7 +27,7 @@ namespace frm_Robot_Calibration
     C_AbsolutePose*                   pose_WorldToRobotBase;
     C_RelativePose*                   robotTcpPose;
     CameraManager::S_pipelinePayload* pData;
-
+    QMessageBox*          MsgBox;
 
 
     int                               Taktgeber_Intervall;

@@ -19,12 +19,14 @@ C_frm_Robot_Calibration::C_frm_Robot_Calibration(C_GlobalObjects* GlobalObjects,
   this->Zaehler = 0;
   this->cameraID = 0;
   this->moving = false;
-
+  this->MsgBox = new QMessageBox;
 
   }
 
 C_frm_Robot_Calibration::~C_frm_Robot_Calibration()
   {
+  delete (this->MsgBox);
+
   this->moving = false;
 
   this->cameraID = 0;
@@ -73,6 +75,8 @@ void C_frm_Robot_Calibration::closeEvent(QCloseEvent* CloseEvent)
  disconnect                 (this->Taktgeber, &QTimer::timeout, this, &C_frm_Robot_Calibration::Taktgeber_Tick);
  this->Zaehler              = 0;
  this->cameraID             = 0;
+ this->ui->num_camID->setMaximum     (GlobalObjects->absCameras-1);
+
 
  }
 
@@ -402,6 +406,9 @@ void frm_Robot_Calibration::C_frm_Robot_Calibration::on_bt_set_home_clicked()
 {
 C_AbsolutePose Pose;
 this->Main->robotManager->roboter->Get_Current_TCP_Pose(Pose);
+this->MsgBox->setText("Der Roboter setzt sich nun in Bewegung. \n Räumen Sie bitte das Umfeld frei!");
+this->MsgBox->setIcon(QMessageBox::Critical);
+this->MsgBox->exec();
 
 if(this->ui->rb_home_Pose->isChecked())
   {
@@ -485,6 +492,9 @@ void frm_Robot_Calibration::C_frm_Robot_Calibration::on_bt_move_home_clicked()
   this->Main->robotManager->roboter->Set_Panda_Vel_Acc_max(Panda_Vel_max, Panda_Acc_max, Panda_Omega_max, Panda_Alpha_max);
 
   this->disableUi();
+  this->MsgBox->setText("Der Roboter setzt sich nun in Bewegung. \n Räumen Sie bitte das Umfeld frei!");
+  this->MsgBox->setIcon(QMessageBox::Critical);
+  this->MsgBox->exec();
 
   C_AbsolutePose target;
   if(this->ui->rb_home_Pose->isChecked())
@@ -646,6 +656,10 @@ void frm_Robot_Calibration::C_frm_Robot_Calibration::on_bt_set_constraint_clicke
 void frm_Robot_Calibration::C_frm_Robot_Calibration::on_bt_set_robot_horizontal_clicked()
   {
   C_AbsolutePose Horizontal;
+  this->MsgBox->setText("Der Roboter setzt sich nun in Bewegung. \n Räumen Sie bitte das Umfeld frei!");
+  this->MsgBox->setIcon(QMessageBox::Critical);
+  this->MsgBox->exec();
+
   if(this->ui->rb_rel_pose->isChecked())
   {
   Horizontal.px(this->robotTcpPose->HomogenePosenMatrix[0][3]);

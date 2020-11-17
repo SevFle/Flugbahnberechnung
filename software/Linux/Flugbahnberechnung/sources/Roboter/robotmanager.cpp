@@ -203,6 +203,7 @@ void C_robotManager::stop_smTracking                    ()
   {
   this->state_machine_running->store(false);
   this->roboter->signalMotionDone.store(true);
+  this->roboter->signalPose.store(false);
   std::this_thread::sleep_for (std::chrono::milliseconds (500));
 
   this->threadSelector = threadselector::continousMovement;

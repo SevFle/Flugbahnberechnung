@@ -2332,13 +2332,14 @@ CartesianVelocities          C_Robot_Panda::CartesianVel_Callback_Function_Conti
     TCP_Velocity = {{0.0, 0.0, 0.0, 0.0, 0.0, 0.0,}};
     }
 
-  if (this->signalMotionDone == false)
+  if (this->signalMotionDone == true)
     {
-    return (TCP_Velocity);
+    TCP_Velocity = {{0.0, 0.0, 0.0, 0.0, 0.0, 0.0,}};
+    return (MotionFinished(TCP_Velocity));
     }
   else
     {
-    return (MotionFinished(TCP_Velocity));
+    return (TCP_Velocity);
     }
   }
 CartesianPose                C_Robot_Panda::CartesianPose_Callback_Function_Inkrementell_Weg_Trapez      (double&                time,              const RobotState&    Robot_State,            Duration&           Duration)

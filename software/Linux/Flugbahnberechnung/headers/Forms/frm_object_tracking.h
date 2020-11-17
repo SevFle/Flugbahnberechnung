@@ -30,7 +30,7 @@ private:
   QTimer*                     Taktgeber;
   C_GlobalObjects*            GlobalObjects;
   Main::C_Main*                     Main;
-
+  QMessageBox*          MsgBox;
   CameraManager::S_pipelinePayload*       pData;
 
 

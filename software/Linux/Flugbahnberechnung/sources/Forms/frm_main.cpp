@@ -53,7 +53,7 @@ QPalette p = this->Ui->txb_init->palette();
 p.setColor(QPalette::Base, Qt::red);
 p.setColor(QPalette::Text, Qt::white);
 this->Ui->txb_init->setPalette(p);
-this->Ui->txb_init->setText(QString("Uninitialised"));
+this->Ui->txb_init->setText(QString("Uninitialisiert"));
 this->Ui->txb_robot_ip->setText(QString("10.104.0.204"));
 }
 
@@ -127,7 +127,7 @@ void C_frm_Main::Taktgeber_Tick()
         p.setColor(QPalette::Base, Qt::green);
         p.setColor(QPalette::Text, Qt::black);
         this->Ui->txb_init->setPalette(p);
-        this->Ui->txb_init->setText(QString("Ready"));
+        this->Ui->txb_init->setText(QString("Bereit"));
 
         this->finished.store(false);
         this->running.store(false);
@@ -152,14 +152,14 @@ void ::C_frm_Main::on_bt_apply_clicked()
     p.setColor(QPalette::Base, Qt::yellow);
     p.setColor(QPalette::Text, Qt::black);
     this->Ui->txb_init->setPalette(p);
-    this->Ui->txb_init->setText(QString("Wait"));
+    this->Ui->txb_init->setText(QString("Warten"));
     this->running.store(true);
     }
   }
 void C_frm_Main::initialize(void* This)
   {
   static_cast<frm_Main::C_frm_Main*>(This)->finished.store(false);
-  static_cast<frm_Main::C_frm_Main*>(This)->Main->cameraManager->trackingManager->kf->init(9,3,0, CV_32F);
+  static_cast<frm_Main::C_frm_Main*>(This)->Main->cameraManager->trackingManager->kf->init(9,3,0, CV_32FC1);
   static_cast<frm_Main::C_frm_Main*>(This)->Main->cameraManager->openCameras();
   QString IP = static_cast<frm_Main::C_frm_Main*>(This)->Ui->txb_robot_ip->toPlainText();
   std::string IPAdresse;

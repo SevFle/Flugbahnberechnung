@@ -15,15 +15,16 @@ C_frm_Object_Tracking::C_frm_Object_Tracking(C_GlobalObjects* GlobalObjects, C_M
     this->cameraID                = 0;
     this->Plotter_Intervall       = 0;
     this->Zaehler_old             = 0;
-
     this->container = QWidget::createWindowContainer(this->Main->cameraManager->trackingManager->dataPlotter->graph);
     this->Ui->horizontalLayout->addWidget(container);
-
+    this->MsgBox = new QMessageBox;
 
     }
 
 C_frm_Object_Tracking::~C_frm_Object_Tracking()
   {
+  delete (this->MsgBox);
+
   delete (this->container);
   this->Zaehler_old             = 0;
   this->Plotter_Intervall       = 0;
@@ -205,6 +206,10 @@ void frm_Object_Tracking::C_frm_Object_Tracking::on_bt_start_clicked()
   {
   if (!this->Main->cameraManager->getFilterFlags()->getTrackingActive())
     {
+    this->MsgBox->setText("Der Roboter setzt sich nun in Bewegung. \n Räumen Sie bitte das Umfeld frei!");
+    this->MsgBox->setIcon(QMessageBox::Critical);
+    this->MsgBox->exec();
+
     this->Ui->lbl_thread_running->              setEnabled  (true);
     this->Ui->bt_start->                        setText     ("Stop");
     this->Main->cameraManager->pipelineFlush->store(true);
@@ -239,7 +244,7 @@ void C_frm_Object_Tracking::writePrediction()
     this->Ui->txb_velocity_y_pred->setText(QString::number(this->Main->cameraManager->trackingManager->PredVelocity[1]));
     this->Ui->txb_velocity_z_pred->setText(QString::number(this->Main->cameraManager->trackingManager->PredVelocity[2]));
 
-    this->Ui->txb_gain_mean->setText(QString::number(this->Main->cameraManager->trackingManager->gainMean(0)));
+    this->Ui->txb_gain_mean->setText(QString::number(this->Main->cameraManager->trackingManager->gainMean[0]));
     }
   else
     {
@@ -250,7 +255,7 @@ void C_frm_Object_Tracking::writePrediction()
     this->Ui->txb_velocity_x_pred->setText(QString::number(0));
     this->Ui->txb_velocity_y_pred->setText(QString::number(0));
     this->Ui->txb_velocity_z_pred->setText(QString::number(0));
-
+    this->Ui->txb_gain_mean->setText(QString::number(0));
     }
   }
 void frm_Object_Tracking::C_frm_Object_Tracking::on_num_camera_id_valueChanged(int arg1)

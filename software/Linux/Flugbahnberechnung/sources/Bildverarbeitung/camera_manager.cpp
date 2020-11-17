@@ -1164,12 +1164,10 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
 
        pData->Filter[i]       = *vecCameras[pData->cameraID[i]]->getFilterproperties();
        }
-
      return pData;
      }
     }
   )&
-
   //STEP 1: GRAB PICTURE FROM ARRAY-ACTIVE_CAMERAS
   tbb::make_filter<S_pipelinePayload*, S_pipelinePayload*>(tbb::filter::serial_in_order, [&] (S_pipelinePayload *pData)->S_pipelinePayload*
     {
@@ -1495,7 +1493,7 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
         }
 
       //Setze die erste Position des erfassten Objektes falls es N mal hintereinander gefunden wurde;
-      if(this->trackingManager->consecutive_found > 2)
+      if(this->trackingManager->consecutive_found > 2 && !this->trackingManager->kalmanAlive)
         {
         this->trackingManager->kf->initFirstPosition(pData->objektVektor.X, pData->objektVektor.Y, pData->objektVektor.Z, pData->objectVelocity[0], pData->objectVelocity[1], pData->objectVelocity[2]);
         this->trackingManager->kalmanAlive                      = true;
@@ -1510,8 +1508,6 @@ void C_CameraManager::pipelineTracking(std::vector<Camera::C_Camera2*> vecCamera
         {
         this->trackingManager->consecutive_found++;
         }
-
-
       }
     else
       {
